@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Server-Raten im Zwei-Spalten-Widget</title>
+    <style>
+        /* Wichtig: Der Body des iFrames muss transparent sein. */
+        body {
+            background-color: transparent;
+            font-family: sans-serif;
+            color: #ffffff;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* NEUER HAUPT-CONTAINER: Für responsive, nebeneinander liegende Anordnung */
+        .main-wrapper {
+            display: flex;
+            flex-wrap: wrap; /* Lässt die Panels auf kleinen Bildschirmen umbrechen */
+            gap: 30px; /* Abstand zwischen den Blöcken */
+            justify-content: center;
+            /* Wichtig: Fügt Platz für den Box-Shadow hinzu, damit er nicht abgeschnitten wird */
+            padding: 30px; 
+        }
+
+        /* Haupt-Stil für das Panel (beide Blöcke) */
+        .rate-block {
+            background-color: rgba(0, 0, 0, 0.7);
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 3px solid #ff8800;
+            text-align: left;
+            
+            /* Responsive Breite: Nimmt Platz weg, springt aber nicht über 450px */
+            flex: 1 1 400px; 
+            max-width: 450px;
+
+            /* Initialer Schatten und Übergang für den Hover-Effekt */
+            box-shadow: 0 0 10px 2px rgba(255, 136, 0, 0.4), 0 4px 15px rgba(0, 0, 0, 0.5);
+            transition: box-shadow 0.3s ease-in-out;
+        }
+
+        /* Der REINE CSS HOVER EFFEKT */
+        .rate-block:hover {
+            /* Erhöht den Schatten, um das Leuchten zu erzeugen */
+            box-shadow: 0 0 30px 5px rgba(255, 136, 0, 0.8), 0 4px 15px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Überschrift-Stil */
+        .rate-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            border-bottom: 3px solid #ff8800;
+            display: inline-block;
+            padding-bottom: 0.25rem;
+            color: #ffffff;
+        }
+
+        /* Tabellen- und Zellenstile */
+        .rate-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .rate-table th, .rate-table td {
+            padding: 0.75rem 0;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .rate-table th {
+            font-weight: 700;
+            color: #ff8800;
+            padding-top: 0;
+        }
+        .rate-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Einstellungs-Werte (rechte Spalte) */
+        .multiplier {
+            text-align: right;
+            font-weight: 600;
+            color: #f7f7f7;
+        }
+
+        /* Fussnoten-Text */
+        .footer-text {
+            font-size: 0.875rem; 
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: 1rem;
+            line-height: 1.6;
+        }
+
+        /* Textstile für die erste Spalte (Einstellungen) */
+        .setting-name {
+            color: #ffffff;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+
+<div class="main-wrapper">
+
+    <!-- =========== BLOCK 1: WERKTAGS-RATEN =========== -->
+    <div class="rate-block">
+        
+        <h3 class="rate-title">Werkstags-Raten</h3>
+        
+        <table class="rate-table">
+            <thead>
+                <tr>
+                    <th>Einstellung</th>
+                    <th class="multiplier">Multiplikator</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="setting-name">XP-Rate</td>
+                    <td class="multiplier">1.0x</td>
+                </tr>
+                <tr>
+                    <td class="setting-name">Farmen</td>
+                    <td class="multiplier">2.0x</td>
+                </tr>
+                <tr>
+                    <td class="setting-name">Zähmung</td>
+                    <td class="multiplier">5.0x</td>
+                </tr>
+                <tr>
+                    <td class="setting-name">Brüten</td>
+                    <td class="multiplier">10.0x</td>
+                </tr>
+                <tr>
+                    <td class="setting-name" style="border-bottom: none;">Reifen</td>
+                    <td class="multiplier" style="border-bottom: none;">10.0x</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p class="footer-text">
+            Diese Raten sind von Montag 00:00 Uhr bis Freitag 00:00 Uhr aktiv. Ideal für Spieler, die unter der Woche konstant Fortschritte erzielen möchten.
+        </p>
+    </div>
+
+    <!-- =========== BLOCK 2: WOCHENEND-RATEN =========== -->
+    <div class="rate-block">
+        
+        <h3 class="rate-title">Wochenend-Raten</h3>
+        
+        <table class="rate-table">
+            <thead>
+                <tr>
+                    <th>Einstellung</th>
+                    <th class="multiplier">Multiplikator</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="setting-name">XP-Rate</td>
+                    <td class="multiplier">2.0x</td>
+                </tr>
+                <tr>
+                    <td class="setting-name">Farmen</td>
+                    <td class="multiplier">4.0x</td>
+                </tr>
+                <tr>
+                    <td class="setting-name">Zähmung</td>
+                    <td class="multiplier">10.0x</td>
+                </tr>
+                <tr>
+                    <td class="setting-name">Brüten</td>
+                    <td class="multiplier">20.0x</td>
+                </tr>
+                <tr>
+                    <td class="setting-name" style="border-bottom: none;">Reifen</td>
+                    <td class="multiplier" style="border-bottom: none;">20.0x</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p class="footer-text">
+            Diese Bonus-Raten sind von Freitag 00:00 Uhr bis Montag 00:00 Uhr aktiv. Nutze das Wochenende, um besonders schnelle Fortschritte zu erzielen!
+        </p>
+    </div>
+
+</div>
+
+</body>
+</html>
