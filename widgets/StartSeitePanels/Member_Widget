@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statistik: Mitglieder</title>
+    <style>
+        /* Wichtig: Der Body des iFrames muss transparent sein. */
+        body {
+            background-color: transparent;
+            font-family: sans-serif;
+            color: #ffffff;
+            margin: 0;
+            padding: 0;
+            /* Extra Padding für den Box-Shadow */
+            padding: 20px; 
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Stil für die einzelne Statistik-Card */
+        .stat-card {
+            background-color: rgba(0, 0, 0, 0.85);
+            border-radius: 12px;
+            padding: 1.5rem 1rem;
+            text-align: center;
+            border-bottom: 3px solid #ff8800;
+            
+            width: 100%;
+            max-width: 250px;
+            
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+            transition: all 0.3s ease-in-out;
+            cursor: default;
+        }
+        
+        /* Hover-Effekt: Leichter Lift und Glow */
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.6), 0 0 15px rgba(255, 136, 0, 0.5); 
+        }
+
+        /* Obere Zahl/Wert */
+        .stat-value {
+            font-size: 2.25rem;
+            font-weight: 800;
+            color: #ff8800;
+            line-height: 1.1;
+            margin-bottom: 0.25rem;
+        }
+
+        /* Untere Beschreibung */
+        .stat-label {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #ffffff;
+            opacity: 0.8;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="stat-card">
+        <!-- Anzeige des Ladestatus -->
+        <div id="stat-mitglieder" class="stat-value">...</div>
+        <div class="stat-label">Mitglieder</div>
+    </div>
+
+    <script>
+        const memberCountElement = document.getElementById('stat-mitglieder');
+        // Ihre Discord Server ID
+        const DISCORD_GUILD_ID = '811710111725912085';
+        // Die korrekte API URL
+        const API_URL = `https://discordapp.com/api/guilds/${DISCORD_GUILD_ID}/widget.json`;
+
+        async function updateMemberCount() {
+            try {
+                // Setze auf Ladezustand
+                memberCountElement.textContent = '...'; 
+
+                const response = await fetch(API_URL);
+                
+                if (!response.ok) {
+                    throw new Error(`API Fehler: ${response.status} ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                
+                // Wir verwenden presence_count (Anzahl der Online-Mitglieder), da total_members nicht immer verfügbar ist
+                // und presence_count dynamischer ist.
+                const memberCount = data.presence_count || 0; 
+                
+                // Update mit Präfix
+                memberCountElement.textContent = `+${memberCount}`;
+
+            } catch (error) {
+                console.error('Fehler beim Abrufen der Discord-Daten:', error);
+                // Zeige einen Fehlerzustand an
+                memberCountElement.textContent = 'FEHLER';
+                // WICHTIG: Prüfen Sie, ob das Discord Widget in Ihren Server-Einstellungen aktiviert ist!
+            }
+        }
+        
+        // Führt die Funktion einmal aus, um den Startwert zu laden
+        updateMemberCount();
+
+        // Stellt den Aktualisierungs-Intervall ein (alle 5 Minuten, um Discord nicht zu überlasten)
+        setInterval(updateMemberCount, 300000); 
+
+    </script>
+</body>
+</html>
