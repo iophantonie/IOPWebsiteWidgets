@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Token Shop Adventskalender</title>
+    <style>
+        /* Wichtig: Der Body des iFrames muss transparent sein. */
+        body {
+            background-color: transparent;
+            font-family: sans-serif;
+            color: #ffffff;
+            margin: 0;
+            padding: 0;
+            /* Extra Padding für den Box-Shadow */
+            padding: 10px 20px; 
+            display: flex;
+            justify-content: center;
+        }
+
+        /* --- KEYFRAMES FÜR WEIHNACHTS-PULS --- */
+        @keyframes christmasGlow {
+            0% {
+                /* Start: Dezenter Gold-Glow */
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.4), 0 0 5px rgba(255, 215, 0, 0.4);
+                border-color: rgba(0, 100, 0, 0.8); /* Dunkelgrün Rand */
+            }
+            50% {
+                /* Höhepunkt: Starker Gold-Glow */
+                box-shadow: 0 0 20px rgba(255, 215, 0, 0.8), 0 0 5px rgba(0, 100, 0, 0.6);
+                border-color: #FFD700; /* Goldener Rand */
+            }
+            100% {
+                /* Zurück zum Start */
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.4), 0 0 5px rgba(255, 215, 0, 0.4);
+                border-color: rgba(0, 100, 0, 0.8);
+            }
+        }
+
+        /* Stil für die Haupt-Bar (nimmt die volle Breite ein) */
+        .calendar-bar {
+            background-color: rgba(0, 0, 0, 0.9);
+            border-radius: 8px;
+            padding: 1rem 1.5rem;
+            text-align: center;
+            
+            /* WEIHNACHTSGRÜN AKZENT */
+            border: 3px solid rgba(0, 100, 0, 0.8); 
+            
+            width: 100%;
+            max-width: 100%;
+            
+            /* ANIMATION ANWENDEN */
+            animation: christmasGlow 4s infinite ease-in-out;
+            transition: all 0.3s ease-in-out; /* Für den initialen Ladezustand */
+        }
+        
+        /* Hover-Effekt entfernen, da die Animation läuft */
+        .calendar-bar:hover {
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.7); 
+        }
+
+        /* Container für die obere Zeile (Timer + Info) */
+        .info-row {
+            display: flex;
+            justify-content: center;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 10px 20px;
+        }
+
+        /* Countdown-Wert */
+        .countdown-value {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #FFD700; /* Gold */
+            line-height: 1.1;
+            margin-bottom: 0.25rem;
+        }
+        
+        /* Countdown-Label (Status) */
+        .countdown-label {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #ffffff;
+            opacity: 0.9;
+            text-transform: uppercase;
+            /* NEU: Margin zur Trennung der unteren Statuszeile */
+            margin-bottom: 0.5rem; 
+        }
+        
+        /* Stil für den Special Day Hinweis */
+        .special-day {
+            font-weight: 700;
+            color: #FFEB3B; /* Gelb für Special Box (Gold) */
+            text-shadow: 0 0 5px #FFEB3B;
+        }
+        
+        /* Stil für den inaktiven Kalender */
+        .calendar-inactive {
+            color: rgba(255, 255, 255, 0.4);
+            font-weight: 600;
+        }
+        
+        /* Stil für die obere Zeile */
+        .timer-pre-label {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #ffffff;
+            opacity: 0.9;
+            text-transform: uppercase;
+            /* Wichtig: Um die Label in der Mitte zu halten */
+            width: 100%; 
+            margin-bottom: 5px;
+        }
+
+        /* --- VISUELLE KALENDERLEISTE --- */
+        .calendar-visuals {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 15px;
+            padding-top: 10px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .door {
+            width: 30px;
+            height: 30px;
+            margin: 2px;
+            line-height: 30px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            border-radius: 4px;
+            color: #fff;
+            opacity: 0.5;
+            background-color: rgba(255, 255, 255, 0.1);
+            transition: all 0.3s;
+        }
+
+        .door.active {
+            opacity: 1;
+            background-color: #006400; /* Aktive Tür: Weihnachtsgrün */
+            border: 2px solid #FFD700; /* Goldrand um die aktive Tür */
+            transform: scale(1.05);
+        }
+
+        .door.open {
+            opacity: 1;
+            background-color: #383838; /* Bereits geöffnete Tür: Dunkelgrau/Edel */
+            box-shadow: inset 0 0 5px rgba(255, 255, 255, 0.2);
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .door.special {
+            background-color: #FFEB3B; /* Special Box: Gelb/Gold */
+            color: #333;
+            text-shadow: none;
+            box-shadow: 0 0 8px #FFEB3B;
+        }
+        
+        .door.christmas {
+            background-color: #8B0000; /* Heiligabend: Dunkelrot */
+            color: #fff;
+            border: 2px solid #FFD700; /* Goldrand */
+            box-shadow: 0 0 10px #FFD700;
+            transform: scale(1.1);
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="calendar-bar">
+        
+        <!-- NEU: Haupt-Überschrift (Oben) -->
+        <div class="timer-pre-label">NÄCHSTES TÜRCHEN IN:</div>
+
+        <div class="info-row">
+            
+            <!-- Mitte: Der Countdown-Wert (wird durch JS gefüllt) -->
+            <div id="calendar-timer" class="countdown-value">--:--:--</div>
+
+        </div>
+
+        <!-- Die Hauptstatus-Meldung (Unten) -->
+        <div id="calendar-status" class="countdown-label"></div>
+        
+        <!-- NEU: VISUELLE BAR FÜR DIE TÜREN -->
+        <div id="calendar-visuals" class="calendar-visuals">
+            <!-- Türchen werden hier durch JavaScript eingefügt -->
+        </div>
+
+    </div>
+
+    <script>
+        const timerElement = document.getElementById('calendar-timer');
+        const statusElement = document.getElementById('calendar-status');
+        const barElement = document.querySelector('.calendar-bar');
+        const visualsContainer = document.getElementById('calendar-visuals');
+
+        // WICHTIG: Die Daten basieren auf 2025. Das Jahr MUSS angepasst werden, wenn das Widget in einem anderen Jahr verwendet wird!
+        const START_DATE = new Date('2025-12-01T00:00:00');
+        const END_DATE = new Date('2025-12-25T00:00:00'); // Bis 24.12. inkl. (öffnet Tür am 25. um 00:00)
+        
+        // Adventssonntage + Heiligabend (index-basierte Prüfung in JS)
+        const specialDaysIndices = [
+            1, // 1. Dezember ist Special Box (Tür 1)
+            7, // Tür 7
+            14, // Tür 14
+            21, // Tür 21
+            24  // Tür 24 (Weihnachtsbox)
+        ];
+        
+        // --- FUNKTIONEN ---
+
+        function getDaysDifference(date1, date2) {
+            const oneDay = 24 * 60 * 60 * 1000;
+            // Stelle sicher, dass die Zeitzone ignoriert wird, indem nur das Datum verglichen wird
+            const diffTime = Date.UTC(date2.getFullYear(), date2.getMonth(), date2.getDate()) - Date.UTC(date1.getFullYear(), date1.getMonth(), date1.getDate());
+            return Math.floor(diffTime / oneDay);
+        }
+
+        function createVisuals(currentDoor) {
+            visualsContainer.innerHTML = ''; // Vorherige Türen entfernen
+            for (let i = 1; i <= 24; i++) {
+                const door = document.createElement('div');
+                door.className = 'door';
+                door.textContent = i;
+                
+                // 1. Färbe Special Days
+                if (specialDaysIndices.includes(i)) {
+                    if (i === 24) {
+                        door.classList.add('christmas');
+                        door.textContent = 'XMAS';
+                    } else {
+                        door.classList.add('special');
+                    }
+                }
+                
+                // 2. Zustand prüfen (Geöffnet vs. Aktuell vs. Geschlossen)
+                if (i < currentDoor) {
+                    door.classList.add('open'); // Bereits geöffnet (Dunkelgrau)
+                } else if (i === currentDoor) {
+                    door.classList.add('active'); // Aktuelle Tür (Grün/Gold)
+                } 
+                // Sonst bleibt es inaktiv (opacity 0.5)
+
+                visualsContainer.appendChild(door);
+            }
+        }
+
+        function updateCalendar() {
+            const now = new Date();
+            
+            // Korrigierte Berechnung des aktuellen Tags, um Zeitzonendifferenzen zu minimieren
+            const localStart = new Date(START_DATE.getTime());
+            
+            // 1. Prüfe, ob der Kalenderzeitraum aktiv ist
+            if (now < START_DATE || now >= END_DATE) {
+                timerElement.textContent = 'INAKTIV';
+                statusElement.textContent = (now < START_DATE) 
+                    ? 'START: 01. DEZEMBER' 
+                    : 'TÜRCHEN SIND OFFFEN!'; // Angepasst, da alle Türchen offen bleiben
+                barElement.classList.add('calendar-inactive');
+                
+                // Zeige den Zustand am 24.12. wenn abgeschlossen
+                const finalDoor = (now >= END_DATE) ? 24 : 0;
+                createVisuals(finalDoor); 
+                return;
+            }
+
+            barElement.classList.remove('calendar-inactive');
+
+            // 2. Finde die aktuelle Türnummer
+            const dayDiff = getDaysDifference(localStart, now);
+            const currentDoor = dayDiff + 1;
+            
+            // NEU: Visuals nur einmal oder bei Türwechsel erstellen
+            if (visualsContainer.children.length === 0 || visualsContainer.dataset.lastDoor != currentDoor) {
+                 createVisuals(currentDoor);
+                 visualsContainer.dataset.lastDoor = currentDoor;
+            }
+
+            // 3. Finde das nächste Ziel (00:00 Uhr am nächsten Tag)
+            const nextDay = new Date(now);
+            nextDay.setDate(now.getDate() + 1);
+            nextDay.setHours(0, 0, 0, 0); // 00:00 Uhr des nächsten Tages
+
+            let timeUntilNextDoor = nextDay.getTime() - now.getTime();
+            
+            // 4. Prüfe auf Sonderstatus (Special Box oder Weihnachtsbox)
+            let statusMessage = `TÜRCHEN ${currentDoor} IST HEUTE AKTIV!`;
+            
+            const isSpecialDay = specialDaysIndices.includes(currentDoor);
+
+            if (isSpecialDay) {
+                if (currentDoor === 24) {
+                    statusMessage = `<span class="special-day">WEIHNACHTS-BOX AKTIV!</span>`;
+                } else {
+                    statusMessage = `<span class="special-day">SPECIAL BOX AKTIV!</span>`;
+                }
+            }
+
+            // 5. Formatiere den Countdown
+            const totalSeconds = Math.floor(timeUntilNextDoor / 1000);
+            const hours = Math.floor(totalSeconds / 3600);
+            const minutes = Math.floor((totalSeconds % 3600) / 60);
+            const seconds = totalSeconds % 60;
+
+            const formattedTime = [hours, minutes, seconds]
+                .map(t => t.toString().padStart(2, '0'))
+                .join(':');
+
+            // Aktualisiere die Anzeige
+            timerElement.textContent = formattedTime;
+            
+            // 6. Setze den Status (Unten)
+            if (currentDoor <= 24) {
+                 // Zeigt den aktuellen Türchenstatus unten an
+                 statusElement.innerHTML = statusMessage;
+            } else {
+                 statusElement.innerHTML = 'ALLE TÜRCHEN OFFEN';
+            }
+        }
+
+        // Starte den Countdown und aktualisiere jede Sekunde
+        updateCalendar();
+        // Aktualisiere jede Sekunde
+        setInterval(updateCalendar, 1000); 
+
+    </script>
+</body>
+</html>
