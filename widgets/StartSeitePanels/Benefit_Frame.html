@@ -81,9 +81,13 @@
             padding: 1.5rem;
         }
         .tab-pane {
+            /* NEU: Aktiviert den Übergang für die Panels */
+            opacity: 0;
+            transition: opacity 0.4s ease-in-out;
             display: none;
         }
         .tab-pane.active {
+            opacity: 1;
             display: block;
         }
         
@@ -284,25 +288,52 @@
     // JavaScript für die Tab-Umschaltung
     document.addEventListener('DOMContentLoaded', () => {
         const tabButtons = document.querySelectorAll('.tab-button');
+        const tabContents = document.querySelector('.tab-content');
         const tabPanes = document.querySelectorAll('.tab-pane');
+        let currentActivePane = null;
 
         // Funktion zum Wechseln der Tabs
         function switchTab(targetTabId) {
-            // Alle Buttons deaktivieren
+            
+            const targetPane = document.getElementById(targetTabId);
+            
+            // 1. Alle Buttons deaktivieren
             tabButtons.forEach(button => button.classList.remove('active'));
-            // Alle Panels verstecken
-            tabPanes.forEach(pane => pane.classList.remove('active'));
-
-            // Den Ziel-Button aktivieren
+            
+            // 2. Den Ziel-Button aktivieren
             const activeButton = document.querySelector(`.tab-button[data-tab="${targetTabId}"]`);
             if (activeButton) {
                 activeButton.classList.add('active');
             }
-            
-            // Das Ziel-Panel anzeigen
-            const activePane = document.getElementById(targetTabId);
-            if (activePane) {
-                activePane.classList.add('active');
+
+            // Wenn bereits ein Panel aktiv ist, faden wir es aus
+            if (currentActivePane && currentActivePane !== targetPane) {
+                
+                // 3. Altes Panel ausblenden (Opacity auf 0 setzen)
+                currentActivePane.style.opacity = '0';
+                
+                // Setzen des display:none, nachdem die Transition abgeschlossen ist (400ms)
+                setTimeout(() => {
+                    currentActivePane.style.display = 'none';
+
+                    // 4. Neues Panel einblenden
+                    targetPane.style.display = 'block';
+                    // Timeout (10ms) ist notwendig, um dem Browser Zeit zu geben, display:block zu registrieren,
+                    // bevor opacity:1 gesetzt wird, damit die Transition funktioniert.
+                    setTimeout(() => {
+                        targetPane.style.opacity = '1';
+                        currentActivePane = targetPane; // Aktives Panel aktualisieren
+                    }, 10);
+                }, 400); // Wartet 400ms (entspricht der CSS Transition Zeit)
+                
+            } else if (!currentActivePane) {
+                // Initialer Start ohne Fade
+                targetPane.style.display = 'block';
+                targetPane.style.opacity = '1';
+                currentActivePane = targetPane;
+            } else {
+                // Wenn das gleiche Panel geklickt wird, nichts tun
+                return;
             }
         }
 
