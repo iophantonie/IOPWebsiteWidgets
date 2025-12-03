@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statistik: Server Uptime</title>
+    <style>
+        /* Wichtig: Der Body des iFrames muss transparent sein. */
+        body {
+            background-color: transparent;
+            font-family: sans-serif;
+            color: #ffffff;
+            margin: 0;
+            padding: 0;
+            /* Extra Padding für den Box-Shadow */
+            padding: 20px; 
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Stil für die einzelne Statistik-Card */
+        .stat-card {
+            background-color: rgba(0, 0, 0, 0.85);
+            border-radius: 12px;
+            padding: 1.5rem 1rem;
+            text-align: center;
+            /* FEUERROT AKZENT */
+            border-bottom: 3px solid #E53935;
+            
+            width: 100%;
+            max-width: 250px;
+            
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+            transition: all 0.3s ease-in-out;
+            cursor: default;
+        }
+        
+        /* Hover-Effekt: Leichter Lift und Glow */
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.6), 
+                        /* FEUERROT GLOW */
+                        0 0 15px rgba(229, 57, 53, 0.7); 
+        }
+
+        /* Obere Zahl/Wert */
+        .stat-value {
+            font-size: 2.25rem;
+            font-weight: 800;
+            /* FEUERROT ZAHL */
+            color: #E53935;
+            line-height: 1.1;
+            margin-bottom: 0.25rem;
+            /* Setzt das Layout für den Pfeil */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Stil für den Pfeil-Indikator */
+        #stat-indicator {
+            font-size: 0.6em; /* Kleiner als die Hauptzahl */
+            font-weight: 900;
+            margin-left: 5px;
+            padding-top: 5px; /* Korrigiert die vertikale Ausrichtung des Pfeils */
+        }
+        
+        .indicator-up {
+            color: #388E3C; /* Dunkelgrün */
+        }
+        
+        .indicator-down {
+            color: #D32F2F; /* Dunkelrot */
+        }
+
+        /* Untere Beschreibung */
+        .stat-label {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #ffffff;
+            opacity: 0.8;
+            text-transform: uppercase;
+            line-height: 1.2; 
+        }
+    </style>
+</head>
+<body>
+
+    <div class="stat-card">
+        <!-- NEU: Platzhalter für den Pfeil -->
+        <div class="stat-value">
+            <span id="uptime-value">99,85 %</span>
+            <span id="stat-indicator"></span>
+        </div>
+        <div class="stat-label">Server Uptime</div>
+    </div>
+
+    <script>
+        const uptimeValueElement = document.getElementById('uptime-value');
+        const indicatorElement = document.getElementById('stat-indicator');
+        
+        let lastUptime = 99.85; // Initialwert
+        const MIN_UPTIME = 99.30;
+        const MAX_UPTIME = 99.99;
+
+        function updateUptime() {
+            // 1. Generiere einen neuen Uptime-Wert
+            // Zufallszahl zwischen MIN_UPTIME (99.30) und MAX_UPTIME (99.99)
+            const newUptime = (Math.random() * (MAX_UPTIME - MIN_UPTIME) + MIN_UPTIME);
+            const formattedUptime = newUptime.toFixed(2);
+            
+            // 2. Bestimme die Richtung der Änderung
+            if (newUptime > lastUptime) {
+                // Wert ist gestiegen
+                indicatorElement.textContent = '▲'; 
+                indicatorElement.className = 'indicator-up';
+            } else if (newUptime < lastUptime) {
+                // Wert ist gesunken
+                indicatorElement.textContent = '▼'; 
+                indicatorElement.className = 'indicator-down';
+            } else {
+                // Wert hat sich nicht geändert
+                indicatorElement.textContent = ''; 
+                indicatorElement.className = '';
+            }
+            
+            // 3. Aktualisiere den angezeigten Wert und speichere den neuen Wert
+            uptimeValueElement.textContent = `${formattedUptime.replace('.', ',')} %`;
+            lastUptime = newUptime;
+        }
+
+        // Führt die Funktion einmal aus, um den Startwert zu festigen und den ersten Pfeil zu setzen
+        updateUptime();
+
+        // Stellt den Aktualisierungs-Intervall ein (alle 60 Sekunden)
+        setInterval(updateUptime, 60000); 
+    </script>
+</body>
+</html>
