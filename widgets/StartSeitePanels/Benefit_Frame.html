@@ -97,14 +97,46 @@
             background-color: rgba(20, 20, 20, 0.5);
             padding: 1.5rem;
             border-radius: 8px;
+            position: relative; /* Wichtig, damit Icon absolut positioniert werden kann */
+            padding-top: 2rem; /* Fügt Platz für das Icon oben ein */
         }
+        
+        /* --- NEUER ICON STIL --- */
+        .feature-icon {
+            position: absolute;
+            /* NEUE POSITION: Oben links */
+            top: 15px; 
+            left: 15px; 
+            
+            width: 50px; /* Etwas größer gemacht */
+            height: 50px;
+            
+            background-color: #E53935; /* Feuerrot Hintergrund */
+            border: 3px solid #E53935; /* Roter Rand für das Icon */
+            border-radius: 50%; /* Rund */
+            
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 900;
+            font-size: 1.1rem;
+            
+            /* Fügt einen weißen Ring um den roten Kreis hinzu, wie in den Beispielen */
+            outline: 3px solid rgba(255, 255, 255, 0.8);
+            outline-offset: -3px;
+        }
+        /* --- ENDE ICON STIL --- */
+
         .feature-card h4 {
             font-size: 1.25rem;
             font-weight: 700;
             /* Feuerrote Header-Farbe */
             color: #E53935; 
+            /* Schiebt den Text nach rechts, damit er unter dem Icon startet */
             margin-top: 0.5rem;
             margin-bottom: 0.75rem;
+            padding-left: 65px; /* NEU: Fügt Platz für das Icon hinzu */
         }
         .feature-card p {
             font-size: 0.95rem;
@@ -132,30 +164,34 @@
     <!-- 2. TAB CONTENT -->
     <div class="tab-content">
         
-        <!-- === PANEL 1: BASIS-FEATURES (Unverändert) === -->
+        <!-- === PANEL 1: BASIS-FEATURES === -->
         <div id="basics" class="tab-pane active">
             <div class="features-grid">
                 
                 <!-- FEATURE: PROFESSIONELLES TEAM -->
                 <div class="feature-card">
+                    <div class="feature-icon">T</div> 
                     <h4>PROFESSIONELLES TEAM</h4>
                     <p>Unser professionelles Team steht dir zur Verfügung, um bei Problemen beiseite zu stehen und Support zu leisten. Wir haben ein strukturiertes Team, bei dem jedes Teammitglied eine eigene Funktion hat, um stets den Fokus zu bewahren, und die ein sicheres und gutes Spielerlebnis zu bieten.</p>
                 </div>
 
                 <!-- FEATURE: EIGENE SICHERHEITSSYSTEME -->
                 <div class="feature-card">
+                    <div class="feature-icon">S</div> 
                     <h4>EIGENE SICHERHEITSSYSTEME</h4>
                     <p>Wir bieten ein breites Spektrum an vollautomatisierten Sicherheitssystemen um das Spielverhalten zu verbessern. Ob Spieler-Selbsthilfen, Item sowie Charakter-Sicherungen oder Rollback-Schutz, bis über Das Automatische Neustarten der Server bei Serverupdates oder Crashes, ist alles dabei.</p>
                 </div>
                 
                 <!-- FEATURE: HOCHLEISTUNGS ROOTSERVER -->
                 <div class="feature-card">
+                    <div class="feature-icon">R</div> 
                     <h4>HOCHLEISTUNGS ROOTSERVER</h4>
                     <p>Für ein Ruckelfreies Spielerlebnis ohne Verbindungsabbrüche, werden unsere Server ausschließlich auf den stärksten Dedizierten Root Maschinen betrieben. Wir nutzen die besten CPUs, RAM und NVME SSDs.</p>
                 </div>
                 
                 <!-- FEATURE: HAUSEIGENE DEVELOPER -->
                 <div class="feature-card">
+                    <div class="feature-icon">D</div> 
                     <h4>HAUSEIGENE DEVELOPER/MODDER</h4>
                     <p>Eigene Spielinhalte sind unsere Spezialität. Ob User-Interfaces, Special Items, Plugins, Spieler-QoL Hilfen oder gar komplette ASA Karten, wir können wir durch unser erfahrenes Team alles bieten. Wir kreieren neue Features und Systeme für euch, und lösen Probleme selbst!</p>
                 </div>
@@ -163,24 +199,27 @@
             </div>
         </div>
 
-        <!-- === PANEL 2: GAMEPLAY (Neue Kategorie) === -->
+        <!-- === PANEL 2: GAMEPLAY === -->
         <div id="gameplay" class="tab-pane">
             <div class="features-grid">
 
-                <!-- FEATURE: BALANCIERTE SPIELMECHANIKEN (Verschoben von 'Content') -->
+                <!-- FEATURE: BALANCIERTE SPIELMECHANIKEN -->
                 <div class="feature-card">
+                    <div class="feature-icon">B</div> 
                     <h4>BALANCIERTE SPIELMECHANIKEN</h4>
                     <p>Wilder Dino Schaden x2, seid ihr irre? Wieso? Wir behalten die Herausforderung. Ob Bosse + Kreaturen, Freischaltungen oder Craftingkosten, wir haben das interessant und herausfordernd gemacht, was Spaß macht, und nervende Tätigkeiten angenehmer gestaltet.</p>
                 </div>
                 
-                <!-- FEATURE: IOPS ARENAS (Verschoben von 'Content') -->
+                <!-- FEATURE: IOPS ARENAS -->
                 <div class="feature-card">
+                    <div class="feature-icon">A</div> 
                     <h4>IOP ARENAS</h4>
                     <p>Du möchtest dich mit einem RICHTIGEN Boss messen? IOP Arenas bietet gleich ein ganzes Arena Arsenal zu verschiedenen themenbasierten Arenen, inkl. Progress System & Portalraum. Messe dich dort über Stufen von Gamma- Alpha sowie Mythisch+ Bossen, in 80 Kämpfen und schalte neben den Belohnungen, Arena für Arena frei!</p>
                 </div>
 
-                <!-- FEATURE: PROGRESS VANILLA-MOD KONZEPT (von Bild 4 hinzugefügt) -->
+                <!-- FEATURE: PROGRESS VANILLA-MOD KONZEPT -->
                 <div class="feature-card">
+                    <div class="feature-icon">V</div> 
                     <h4>PROGRESS VANILLA-MOD KONZEPT</h4>
                     <p>Lerne unsere Ark-Konzept kennen! Wir verbinden das Vanilla Spielverhalten mit erweiterten Modded Inhalten. Spiele Vanilla und erhalte durch Progressive Systeme wie Quests, Arena oder Boss Kämpfe sowie Erfolgssysteme u.v.m. Zugang zu erweiterten Late-Game Items, Kreaturen & kompletten Breeding Systemen.</p>
                 </div>
@@ -188,18 +227,20 @@
             </div>
         </div>
         
-        <!-- === PANEL 3: CUSTOM CONTENT (Neue Kategorie) === -->
+        <!-- === PANEL 3: CUSTOM CONTENT === -->
         <div id="custom" class="tab-pane">
             <div class="features-grid">
 
-                <!-- FEATURE: TOKEN SHOP UND CUSTOM SHOP INHALTE (Verschoben von 'Content') -->
+                <!-- FEATURE: TOKEN SHOP UND CUSTOM SHOP INHALTE -->
                 <div class="feature-card">
+                    <div class="feature-icon">€</div> 
                     <h4>TOKEN SHOP UND CUSTOM SHOP INHALTE</h4>
                     <p>Verdiene durch Spielzeit, Erfolge, Meilensteine, Challenges & täglichen Voting Tokens, die du im Token Shop ausgeben kannst. Wir bieten hierbei absolute Custom Inhalte, und Highlights. Ob Kreaturen, Items, Potions & Co, hast du auch die Möglichkeit Server Boosts, Farb Events, Karten Ereignisse und mehr auszulösen!</p>
                 </div>
 
-                <!-- FEATURE: CREATURES TLC REPLACEMENT SYSTEM (Verschoben von 'Content') -->
+                <!-- FEATURE: CREATURES TLC REPLACEMENT SYSTEM -->
                 <div class="feature-card">
+                    <div class="feature-icon">K</div> 
                     <h4>KREATUREN TLC REPLACEMENT SYSTEM</h4>
                     <p>Bei uns sind TLC Kreaturen PLUS Varianten möglich. Hierzu haben wir ein eigenes Kreaturen Replacement System geschaffen, dass dir die Vielfalt an seltenen S-Kreaturen verteilt auf den Karten ermöglicht, sowie zusätzlich die beliebten, schönen und anspruchsvollen Paleo Reworks der normalen Kreaturen.</p>
                 </div>
@@ -207,24 +248,27 @@
             </div>
         </div>
         
-        <!-- === PANEL 4: USER QOL (Neue Kategorie) === -->
+        <!-- === PANEL 4: USER QOL === -->
         <div id="qol" class="tab-pane">
             <div class="features-grid">
                 
-                <!-- FEATURE: DIREKTE SPIELER BENEFITS & UIS (Von Bild 4 hinzugefügt) -->
+                <!-- FEATURE: DIREKTE SPIELER BENEFITS & UIS -->
                 <div class="feature-card">
+                    <div class="feature-icon">U</div> 
                     <h4>DIREKTE SPIELER BENEFITS & UIS</h4>
                     <p>Wir bieten dir viele Spielerleichternde Features. Ob Lootbeutel & Leichen hervorragend anzeigen zu lassen, eine Ingame UI für das Regelwerk, Ingame Lost and Found, eine UI für Cluster und Performance Commands, ein Wegweiser Navigationssystem, Quest UI's oder ein Crossplay Ingame Shop UI steht alles bereit.</p>
                 </div>
 
-                <!-- FEATURE: COMMUNITY CENTER EXTENDED (Von Bild 4 hinzugefügt) -->
+                <!-- FEATURE: COMMUNITY CENTER EXTENDED -->
                 <div class="feature-card">
+                    <div class="feature-icon">C</div> 
                     <h4>COMMUNITY CENTER EXTENDED</h4>
                     <p>Dich erwartet eines der größten Highlights die du je in Ark gesehen hast. Die ultimative Event und Marker Karte. Eine aus 100% Eigenentwicklung erstellte ASA Karte. Von Ostereiern, über Events, schöne Orte, bis hin zu einem kompletten Marktsystem mit eigenen Häuser die du anmieten und bewohnen kannst, ist alles dabei!</p>
                 </div>
 
                 <!-- FEATURE: ZUKÜNFTIGE QOL PLATZHALTER -->
                 <div class="feature-card">
+                    <div class="feature-icon">Z</div> 
                     <h4>ZUSÄTZLICHE QOL FUNKTIONEN</h4>
                     <p>Wir arbeiten stetig an der Verbesserung deines Spielerlebnisses. Zukünftige Features könnten automatische Farm-Hilfen, verbesserte Admin-Tools zur Diebstahl-Prävention oder einzigartige neue Interface-Einstellungen umfassen. Dein Feedback ist uns wichtig!</p>
                 </div>
