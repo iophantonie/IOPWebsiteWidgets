@@ -33,26 +33,34 @@
         }
 
         /* --- KEYFRAMES FÜR BAR PULSIEREN (Gold-Grün) --- */
+        /* Fügt pulsierenden Schatten hinzu */
         @-webkit-keyframes outlinePulse {
             0% {
                 border-color: rgba(0, 100, 0, 0.8); /* Dunkelgrün Start */
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4), 0 0 5px rgba(255, 215, 0, 0.2);
             }
             50% {
                 border-color: #FFD700; /* Gold Höhepunkt */
+                /* HINZUGEFÜGT: Starker Gold-Glow */
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6), 0 0 20px rgba(255, 215, 0, 0.8);
             }
             100% {
                 border-color: rgba(0, 100, 0, 0.8);
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4), 0 0 5px rgba(255, 215, 0, 0.2);
             }
         }
         @keyframes outlinePulse {
             0% {
                 border-color: rgba(0, 100, 0, 0.8);
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4), 0 0 5px rgba(255, 215, 0, 0.2);
             }
             50% {
                 border-color: #FFD700;
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6), 0 0 20px rgba(255, 215, 0, 0.8);
             }
             100% {
                 border-color: rgba(0, 100, 0, 0.8);
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4), 0 0 5px rgba(255, 215, 0, 0.2);
             }
         }
         
