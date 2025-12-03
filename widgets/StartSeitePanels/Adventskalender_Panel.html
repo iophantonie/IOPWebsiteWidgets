@@ -32,23 +32,52 @@
             width: 100%;
         }
 
-        /* --- KEYFRAMES FÜR FOKUSSIERTEN FEUER-PULS --- */
-        @keyframes firePulse {
+        /* --- KEYFRAMES FÜR BAR PULSIEREN (Gold-Grün) --- */
+        @-webkit-keyframes outlinePulse {
             0% {
-                /* Start: Basis-Gold mit wenig Schatten */
-                color: #FFD700;
-                text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+                border-color: rgba(0, 100, 0, 0.8); /* Dunkelgrün Start */
             }
             50% {
-                /* Höhepunkt: Starker Rot/Gold-Glow */
-                color: #FFEB3B; /* Intensives Gold */
-                text-shadow: 0 0 15px #FF5733, 0 0 25px #FFD700; /* Orange/Rot-Glow */
+                border-color: #FFD700; /* Gold Höhepunkt */
             }
             100% {
-                /* Zurück zum Start */
-                color: #FFD700;
-                text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+                border-color: rgba(0, 100, 0, 0.8);
             }
+        }
+        @keyframes outlinePulse {
+            0% {
+                border-color: rgba(0, 100, 0, 0.8);
+            }
+            50% {
+                border-color: #FFD700;
+            }
+            100% {
+                border-color: rgba(0, 100, 0, 0.8);
+            }
+        }
+        
+        /* --- KEYFRAMES FÜR FOKUSSIERTEN GRÜNEN PULS --- */
+        @-webkit-keyframes greenPulse {
+            0% { background-color: #006400; box-shadow: 0 0 5px rgba(0, 100, 0, 0.5); }
+            50% { background-color: #008000; box-shadow: 0 0 15px rgba(0, 100, 0, 0.9); }
+            100% { background-color: #006400; box-shadow: 0 0 5px rgba(0, 100, 0, 0.5); }
+        }
+        @keyframes greenPulse {
+            0% { background-color: #006400; box-shadow: 0 0 5px rgba(0, 100, 0, 0.5); }
+            50% { background-color: #008000; box-shadow: 0 0 15px rgba(0, 100, 0, 0.9); }
+            100% { background-color: #006400; box-shadow: 0 0 5px rgba(0, 100, 0, 0.5); }
+        }
+        
+        /* --- KEYFRAMES FÜR FOKUSSIERTEN ZEIT-PULS (Gold/Rot) --- */
+        @-webkit-keyframes firePulse {
+            0% { color: #FFD700; text-shadow: 0 0 4px rgba(255, 215, 0, 0.4); }
+            50% { color: #FFEB3B; text-shadow: 0 0 12px #FF5733, 0 0 20px #FFD700; }
+            100% { color: #FFD700; text-shadow: 0 0 4px rgba(255, 215, 0, 0.4); }
+        }
+        @keyframes firePulse {
+            0% { color: #FFD700; text-shadow: 0 0 4px rgba(255, 215, 0, 0.4); }
+            50% { color: #FFEB3B; text-shadow: 0 0 12px #FF5733, 0 0 20px #FFD700; }
+            100% { color: #FFD700; text-shadow: 0 0 4px rgba(255, 215, 0, 0.4); }
         }
 
         /* Stil für die Haupt-Bar (nimmt die volle Breite ein) */
@@ -58,16 +87,17 @@
             padding: 1rem 1.5rem;
             text-align: center;
             
-            /* WEIHNACHTSGRÜN AKZENT (nur Rand) */
-            border: 3px solid rgba(0, 100, 0, 0.8); 
+            /* BASIS BORDER */
+            border-width: 3px; 
+            border-style: solid;
+            
+            /* NEU: ANWENDUNG DER OUTLINE PULSE ANIMATION */
+            -webkit-animation: outlinePulse 4s infinite ease-in-out;
+            animation: outlinePulse 4s infinite ease-in-out;
             
             width: 100%;
             max-width: 100%;
-            
-            /* Box-Shadow für die Bar (Kein Puls) */
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4), 0 0 5px rgba(0, 100, 0, 0.4);
             transition: all 0.3s ease-in-out; 
-            /* Der Puls ist jetzt auf den Timer beschränkt */
         }
         
         /* Container für die obere Zeile (Timer + Info) */
@@ -87,6 +117,7 @@
             margin-bottom: 0.25rem;
             
             /* ANWENDUNG DES FEUER-PULS AUF DIE ZAHL */
+            -webkit-animation: firePulse 2s infinite ease-in-out;
             animation: firePulse 2s infinite ease-in-out;
             transition: all 0.3s;
         }
@@ -154,7 +185,9 @@
 
         .door.active {
             opacity: 1;
-            background-color: #006400; /* Aktive Tür: Weihnachtsgrün */
+            /* NEU: WENDET GRÜNEN PULS AN */
+            -webkit-animation: greenPulse 3s infinite ease-in-out;
+            animation: greenPulse 3s infinite ease-in-out;
             border: 2px solid #FFD700; /* Goldrand um die aktive Tür */
             transform: scale(1.05);
         }
