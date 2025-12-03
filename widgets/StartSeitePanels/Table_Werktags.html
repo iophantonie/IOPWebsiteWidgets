@@ -13,6 +13,8 @@
             margin: 0;
             /* WICHTIGE ANPASSUNG: 30px padding gibt dem Box-Shadow genug Platz */
             padding: 30px; 
+            display: flex; /* Zentriert das Panel bei Bedarf im iFrame */
+            justify-content: center;
         }
 
         /* Haupt-Stil für das Panel */
@@ -22,6 +24,11 @@
             padding: 1.5rem;
             border: 3px solid #ff8800;
             text-align: left;
+            
+            /* **BREITE:** Nimmt auf Desktops bis zu 750px ein */
+            max-width: 750px;
+            width: 100%;
+
             /* Initialer Schatten und Übergang für den Hover-Effekt */
             box-shadow: 0 0 10px 2px rgba(255, 136, 0, 0.4), 0 4px 15px rgba(0, 0, 0, 0.5);
             transition: box-shadow 0.3s ease-in-out;
@@ -63,7 +70,7 @@
             border-bottom: none;
         }
 
-        /* Einstellungs-Werte */
+        /* Einstellungs-Werte (rechte Spalte) */
         .multiplier {
             text-align: right;
             font-weight: 600;
@@ -72,7 +79,7 @@
 
         /* Fussnoten-Text */
         .footer-text {
-            font-size: 0.875rem; /* Vergrößerte Schriftgröße */
+            font-size: 0.875rem; 
             color: rgba(255, 255, 255, 0.7);
             margin-top: 1rem;
             line-height: 1.6;
@@ -80,16 +87,13 @@
 
         /* Textstile für die erste Spalte (Einstellungen) */
         .setting-name {
-            color: #ffffff; /* Knall-Weiß */
-            font-weight: 700; /* Dick/Fett */
+            color: #ffffff;
+            font-weight: 700;
         }
     </style>
 </head>
 <body>
 
-<!--
-    Der iFrame lädt nur diesen Body-Inhalt. Alle Stile kommen aus dem <style>-Block im Head.
--->
 <div class="rate-block">
     
     <h3 class="rate-title">Werkstags-Raten</h3>
