@@ -87,9 +87,9 @@
                 
                 const data = await response.json();
                 
-                // Wir verwenden presence_count (Anzahl der Online-Mitglieder), da total_members nicht immer verfügbar ist
-                // und presence_count dynamischer ist.
-                const memberCount = data.presence_count || 0; 
+                // NEU: Wir verwenden approximate_member_count für die Gesamtzahl der Mitglieder.
+                // ACHTUNG: Das funktioniert nur, wenn das Server-Widget aktiviert ist UND der Server groß genug ist.
+                const memberCount = data.approximate_member_count || data.presence_count || 0; 
                 
                 // Update mit Präfix
                 memberCountElement.textContent = `+${memberCount}`;
