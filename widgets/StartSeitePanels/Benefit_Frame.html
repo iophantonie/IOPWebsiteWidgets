@@ -25,6 +25,7 @@
             
             /* Initialer Schatten und Übergang */
             box-shadow: 0 0 10px 2px rgba(229, 57, 53, 0.4), 0 4px 15px rgba(0, 0, 0, 0.5);
+            /* Wichtig: Übergang für den Shadow */
             transition: box-shadow 0.3s ease-in-out;
             padding-top: 1.5rem; /* Platz für die Überschrift oben */
         }
@@ -288,9 +289,13 @@
     // JavaScript für die Tab-Umschaltung
     document.addEventListener('DOMContentLoaded', () => {
         const tabButtons = document.querySelectorAll('.tab-button');
-        const tabContents = document.querySelector('.tab-content');
+        const widgetContainer = document.querySelector('.widget-container'); // NEU: Widget Container
         const tabPanes = document.querySelectorAll('.tab-pane');
         let currentActivePane = null;
+        
+        // Konstanten für den Glow-Effekt
+        const GLOW_STRONG = '0 0 35px 8px rgba(229, 57, 53, 0.9)'; // Starker Feuerrot-Glow
+        const GLOW_NORMAL = '0 0 10px 2px rgba(229, 57, 53, 0.4), 0 4px 15px rgba(0, 0, 0, 0.5)'; // Normalzustand
 
         // Funktion zum Wechseln der Tabs
         function switchTab(targetTabId) {
@@ -312,10 +317,16 @@
                 // 3. Altes Panel ausblenden (Opacity auf 0 setzen)
                 currentActivePane.style.opacity = '0';
                 
+                // *** NEU: GLOW STARTEN (Feuer-Effekt) ***
+                widgetContainer.style.boxShadow = GLOW_STRONG;
+
                 // Setzen des display:none, nachdem die Transition abgeschlossen ist (400ms)
                 setTimeout(() => {
                     currentActivePane.style.display = 'none';
 
+                    // *** NEU: GLOW BEENDEN ***
+                    widgetContainer.style.boxShadow = GLOW_NORMAL;
+                    
                     // 4. Neues Panel einblenden
                     targetPane.style.display = 'block';
                     // Timeout (10ms) ist notwendig, um dem Browser Zeit zu geben, display:block zu registrieren,
