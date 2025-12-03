@@ -18,22 +18,36 @@
             justify-content: center;
         }
 
-        /* --- KEYFRAMES FÜR WEIHNACHTS-PULS --- */
-        @keyframes christmasGlow {
+        /* NEU: Stil für die Hauptüberschrift (jetzt IN der Bar) */
+        .calendar-header {
+            font-size: 1.4rem; /* Kleiner gemacht, um in die Bar zu passen */
+            font-weight: 700;
+            /* ZENTRIERT */
+            text-align: center; 
+            color: #FFD700; /* Gold-Titel */
+            margin-bottom: 0.5rem;
+            padding-bottom: 5px;
+            border-bottom: 2px solid rgba(255, 215, 0, 0.4); /* Leichte Trennlinie */
+            text-transform: uppercase;
+            width: 100%;
+        }
+
+        /* --- KEYFRAMES FÜR FOKUSSIERTEN FEUER-PULS --- */
+        @keyframes firePulse {
             0% {
-                /* Start: Dezenter Gold-Glow */
-                box-shadow: 0 0 10px rgba(0, 0, 0, 0.4), 0 0 5px rgba(255, 215, 0, 0.4);
-                border-color: rgba(0, 100, 0, 0.8); /* Dunkelgrün Rand */
+                /* Start: Basis-Gold mit wenig Schatten */
+                color: #FFD700;
+                text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
             }
             50% {
-                /* Höhepunkt: Starker Gold-Glow */
-                box-shadow: 0 0 20px rgba(255, 215, 0, 0.8), 0 0 5px rgba(0, 100, 0, 0.6);
-                border-color: #FFD700; /* Goldener Rand */
+                /* Höhepunkt: Starker Rot/Gold-Glow */
+                color: #FFEB3B; /* Intensives Gold */
+                text-shadow: 0 0 15px #FF5733, 0 0 25px #FFD700; /* Orange/Rot-Glow */
             }
             100% {
                 /* Zurück zum Start */
-                box-shadow: 0 0 10px rgba(0, 0, 0, 0.4), 0 0 5px rgba(255, 215, 0, 0.4);
-                border-color: rgba(0, 100, 0, 0.8);
+                color: #FFD700;
+                text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
             }
         }
 
@@ -44,22 +58,18 @@
             padding: 1rem 1.5rem;
             text-align: center;
             
-            /* WEIHNACHTSGRÜN AKZENT */
+            /* WEIHNACHTSGRÜN AKZENT (nur Rand) */
             border: 3px solid rgba(0, 100, 0, 0.8); 
             
             width: 100%;
             max-width: 100%;
             
-            /* ANIMATION ANWENDEN */
-            animation: christmasGlow 4s infinite ease-in-out;
-            transition: all 0.3s ease-in-out; /* Für den initialen Ladezustand */
+            /* Box-Shadow für die Bar (Kein Puls) */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4), 0 0 5px rgba(0, 100, 0, 0.4);
+            transition: all 0.3s ease-in-out; 
+            /* Der Puls ist jetzt auf den Timer beschränkt */
         }
         
-        /* Hover-Effekt entfernen, da die Animation läuft */
-        .calendar-bar:hover {
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.7); 
-        }
-
         /* Container für die obere Zeile (Timer + Info) */
         .info-row {
             display: flex;
@@ -73,9 +83,12 @@
         .countdown-value {
             font-size: 1.8rem;
             font-weight: 800;
-            color: #FFD700; /* Gold */
             line-height: 1.1;
             margin-bottom: 0.25rem;
+            
+            /* ANWENDUNG DES FEUER-PULS AUF DIE ZAHL */
+            animation: firePulse 2s infinite ease-in-out;
+            transition: all 0.3s;
         }
         
         /* Countdown-Label (Status) */
@@ -170,8 +183,11 @@
     </style>
 </head>
 <body>
-
+    
     <div class="calendar-bar">
+        
+        <!-- NEU: HAUPTÜBERSCHRIFT (jetzt INNERHALB der Bar) -->
+        <h3 class="calendar-header">Infinity of Phoenix - Adventskalender</h3>
         
         <!-- NEU: Haupt-Überschrift (Oben) -->
         <div class="timer-pre-label">NÄCHSTES TÜRCHEN IN:</div>
