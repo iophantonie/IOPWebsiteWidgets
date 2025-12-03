@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statistik: Gegründet</title>
+    <style>
+        /* Wichtig: Der Body des iFrames muss transparent sein. */
+        body {
+            background-color: transparent;
+            font-family: sans-serif;
+            color: #ffffff;
+            margin: 0;
+            padding: 0;
+            /* Extra Padding für den Box-Shadow */
+            padding: 20px; 
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Stil für die einzelne Statistik-Card */
+        .stat-card {
+            background-color: rgba(0, 0, 0, 0.85);
+            border-radius: 12px;
+            padding: 1.5rem 1rem;
+            text-align: center;
+            border-bottom: 3px solid #ff8800;
+            
+            width: 100%;
+            max-width: 250px;
+            
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+            transition: all 0.3s ease-in-out;
+            cursor: default;
+        }
+        
+        /* Hover-Effekt: Leichter Lift und Glow */
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.6), 0 0 15px rgba(255, 136, 0, 0.5); 
+        }
+
+        /* Obere Zahl/Wert */
+        .stat-value {
+            font-size: 2.25rem;
+            font-weight: 800;
+            color: #ff8800;
+            line-height: 1.1;
+            margin-bottom: 0.25rem;
+        }
+
+        /* Untere Beschreibung */
+        .stat-label {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #ffffff;
+            opacity: 0.8;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="stat-card">
+        <div class="stat-value">AUG 2024</div>
+        <div class="stat-label">Gegründet</div>
+    </div>
+
+</body>
+</html>
