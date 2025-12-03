@@ -1,55 +1,133 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wochenend-Raten Widget</title>
+    <style>
+        /* Wichtig: Der Body des iFrames muss transparent sein. */
+        body {
+            background-color: transparent;
+            font-family: sans-serif;
+            color: #ffffff;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Haupt-Stil für das Panel */
+        .rate-block {
+            background-color: rgba(0, 0, 0, 0.7);
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 3px solid #ff8800;
+            text-align: left;
+            /* Initialer Schatten und Übergang für den Hover-Effekt */
+            box-shadow: 0 0 10px 2px rgba(255, 136, 0, 0.4), 0 4px 15px rgba(0, 0, 0, 0.5);
+            transition: box-shadow 0.3s ease-in-out;
+        }
+
+        /* Der REINE CSS HOVER EFFEKT */
+        .rate-block:hover {
+            /* Erhöht den Schatten, um das Leuchten zu erzeugen */
+            box-shadow: 0 0 30px 5px rgba(255, 136, 0, 0.8), 0 4px 15px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Überschrift-Stil */
+        .rate-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            border-bottom: 3px solid #ff8800;
+            display: inline-block;
+            padding-bottom: 0.25rem;
+            color: #ffffff;
+        }
+
+        /* Tabellen- und Zellenstile */
+        .rate-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .rate-table th, .rate-table td {
+            padding: 0.75rem 0;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .rate-table th {
+            font-weight: 700;
+            color: #ff8800;
+            padding-top: 0;
+        }
+        .rate-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Einstellungs-Werte */
+        .multiplier {
+            text-align: right;
+            font-weight: 600;
+            color: #f7f7f7;
+        }
+
+        /* Fussnoten-Text */
+        .footer-text {
+            font-size: 0.875rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: 1rem;
+            line-height: 1.6;
+        }
+
+        /* Textstile für die erste Spalte (Einstellungen) */
+        .setting-name {
+            color: #ffffff;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+
 <!--
-    BLOCK 2: WOCHENEND-RATEN (Optimiert für HTML-Block im Builder)
-    HINWEIS: Fügt dynamischen Hover-Effekt (Leuchten), dickeren Rand und verbesserte Text-Lesbarkeit hinzu.
+    Der iFrame lädt nur diesen Body-Inhalt. Alle Stile kommen aus dem <style>-Block im Head.
 -->
-<div 
-    id="widget-wochenende"
-    style="background-color: rgba(0, 0, 0, 0.7); border-radius: 16px; padding: 1.5rem; border: 3px solid #ff8800; font-family: sans-serif; color: #ffffff; text-align: left; transition: box-shadow 0.3s ease-in-out;"
+<div class="rate-block">
     
-    onmouseover="this.style.boxShadow = '0 0 30px 5px rgba(255, 136, 0, 0.8), 0 4px 15px rgba(0, 0, 0, 0.5)';"
-    onmouseout="this.style.boxShadow = '0 0 10px 2px rgba(255, 136, 0, 0.4), 0 4px 15px rgba(0, 0, 0, 0.5)';"
->
+    <h3 class="rate-title">Wochenend-Raten</h3>
     
-    <h3 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1rem; border-bottom: 3px solid #ff8800; display: inline-block; padding-bottom: 0.25rem; color: #ffffff;">Wochenend-Raten</h3>
-    
-    <table style="width: 100%; border-collapse: collapse;">
+    <table class="rate-table">
         <thead>
             <tr>
-                <th style="padding: 0 0 0.75rem 0; text-align: left; font-weight: 700; color: #ff8800; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">Einstellung</th>
-                <th style="padding: 0 0 0.75rem 0; text-align: right; font-weight: 700; color: #ff8800; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">Multiplikator</th>
+                <th>Einstellung</th>
+                <th class="multiplier">Multiplikator</th>
             </tr>
         </thead>
         <tbody>
             <tr>
-                <!-- Farbe explizit gesetzt und BOLD (700) -->
-                <td style="padding: 0.75rem 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1); color: #ffffff; font-weight: 700;">XP-Rate</td>
-                <td style="padding: 0.75rem 0; text-align: right; font-weight: 600; color: #f7f7f7; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">2.0x</td>
+                <td class="setting-name">XP-Rate</td>
+                <td class="multiplier">2.0x</td>
             </tr>
             <tr>
-                <!-- Farbe explizit gesetzt und BOLD (700) -->
-                <td style="padding: 0.75rem 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1); color: #ffffff; font-weight: 700;">Farmen</td>
-                <td style="padding: 0.75rem 0; text-align: right; font-weight: 600; color: #f7f7f7; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">4.0x</td>
+                <td class="setting-name">Farmen</td>
+                <td class="multiplier">4.0x</td>
             </tr>
             <tr>
-                <!-- Farbe explizit gesetzt und BOLD (700) -->
-                <td style="padding: 0.75rem 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1); color: #ffffff; font-weight: 700;">Zähmung</td>
-                <td style="padding: 0.75rem 0; text-align: right; font-weight: 600; color: #f7f7f7; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">10.0x</td>
+                <td class="setting-name">Zähmung</td>
+                <td class="multiplier">10.0x</td>
             </tr>
             <tr>
-                <!-- Farbe explizit gesetzt und BOLD (700) -->
-                <td style="padding: 0.75rem 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1); color: #ffffff; font-weight: 700;">Brüten</td>
-                <td style="padding: 0.75rem 0; text-align: right; font-weight: 600; color: #f7f7f7; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">20.0x</td>
+                <td class="setting-name">Brüten</td>
+                <td class="multiplier">20.0x</td>
             </tr>
             <tr>
-                <!-- Farbe explizit gesetzt und BOLD (700) -->
-                <td style="padding: 0.75rem 0; border-bottom: none; color: #ffffff; font-weight: 700;">Reifen</td>
-                <td style="padding: 0.75rem 0; text-align: right; font-weight: 600; color: #f7f7f7; border-bottom: none;">20.0x</td>
+                <td class="setting-name" style="border-bottom: none;">Reifen</td>
+                <td class="multiplier" style="border-bottom: none;">20.0x</td>
             </tr>
         </tbody>
     </table>
 
-    <!-- Fußnoten-Text: font-size von 0.75rem auf 0.875rem (kleiner Schritt nach oben) -->
-    <p style="font-size: 0.875rem; color: rgba(255, 255, 255, 0.7); margin-top: 1rem; line-height: 1.6;">
-        Diese Bonus-Raten sind von Freitag 00:00 Uhr bis Montag 00:00 Uhr aktiv. Nutze das Wochenende, um besonders schnelle Fortschritte zu erzielen!
+    <p class="footer-text">
+        Diese Bonus-Raten sind von Freitag 12:30 Uhr bis Montag 00:30 Uhr aktiv. Nutze das Wochenende, um besonders schnelle Fortschritte zu erzielen!
     </p>
 </div>
+
+</body>
+</html>
