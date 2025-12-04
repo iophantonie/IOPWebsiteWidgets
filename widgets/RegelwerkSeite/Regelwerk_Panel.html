@@ -186,13 +186,14 @@
         <!-- QUICKLINK NAVIGATION BAR (Steuert jetzt das Akkordeon) -->
         <div class="quick-nav">
             <div class="quick-nav-links">
-                <a href="#regeln-s1" onclick="handleAccordionClick('regeln-s1')">§1 SERVERREGELN</a>
-                <a href="#regeln-s2" onclick="handleAccordionClick('regeln-s2')">§2 VERHALTENSREGELN</a>
-                <a href="#regeln-s3" onclick="handleAccordionClick('regeln-s3')">§3 BAUREGELN</a>
-                <a href="#regeln-s4" onclick="handleAccordionClick('regeln-s4')">§4 ADMINREGELN</a>
-                <a href="#regeln-s5" onclick="handleAccordionClick('regeln-s5')">§5 ZUCHTREGELN</a>
-                <a href="#regeln-s6" onclick="handleAccordionClick('regeln-s6')">§6 STRIKE SYSTEM</a>
-                <a href="#regeln-s7" onclick="handleAccordionClick('regeln-s7')">§7 MARKTPLATZ REGELN</a>
+                <!-- BEZEICHNUNGEN VERKÜRZT -->
+                <a href="#regeln-s1" onclick="handleAccordionClick('regeln-s1')">§1 SERVER</a>
+                <a href="#regeln-s2" onclick="handleAccordionClick('regeln-s2')">§2 VERHALTEN</a>
+                <a href="#regeln-s3" onclick="handleAccordionClick('regeln-s3')">§3 BAUEN</a>
+                <a href="#regeln-s4" onclick="handleAccordionClick('regeln-s4')">§4 ADMIN</a>
+                <a href="#regeln-s5" onclick="handleAccordionClick('regeln-s5')">§5 ZUCHT</a>
+                <a href="#regeln-s6" onclick="handleAccordionClick('regeln-s6')">§6 STRIKE</a>
+                <a href="#regeln-s7" onclick="handleAccordionClick('regeln-s7')">§7 MARKT</a>
             </div>
         </div>
 
@@ -490,7 +491,6 @@
         // Beim Laden soll der erste Block standardmäßig geöffnet sein
         const firstHeader = document.getElementById('regeln-s1');
         if(firstHeader) {
-            // Öffnet den ersten Block, wenn die Seite lädt
             toggleAccordion(firstHeader);
         }
     });
