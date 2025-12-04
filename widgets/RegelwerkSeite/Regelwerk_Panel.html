@@ -43,16 +43,9 @@
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
         }
         
-        /* Hauptüberschrift */
+        /* Hauptüberschrift (ENTFERNT) */
         .card-header {
-            font-size: 2rem;
-            font-weight: 800;
-            color: var(--color-red);
-            margin-bottom: 1.5rem;
-            text-transform: uppercase;
-            text-align: center;
-            border-bottom: 3px solid var(--color-red);
-            padding-bottom: 10px;
+            display: none; /* Überschrift ausgeblendet */
         }
 
         /* --- Regelwerk Sektionen (Accordion-Style) --- */
@@ -152,7 +145,7 @@
             top: 0; 
             background-color: var(--color-light-dark);
             padding: 10px 0;
-            margin-bottom: 20px;
+            margin-bottom: 0px; /* Reduziert den Abstand nach oben */
             border-bottom: 1px solid var(--color-red);
             z-index: 100;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
@@ -166,58 +159,40 @@
             gap: 5px 10px;
         }
 
-        /* Die eigentlichen Buttons in der Bar */
+        /* Die eigentlichen Buttons in der Bar (GRÖSSE ERHÖHT) */
         .quick-nav-links a {
             color: var(--color-red);
             text-decoration: none;
-            font-weight: 700;
-            padding: 5px 10px;
+            /* DICHTER */
+            font-weight: 800; 
+            padding: 8px 14px; /* Vergrößerter Padding */
             border: 1px solid var(--color-red);
             border-radius: 5px;
             transition: all 0.2s;
-            font-size: 0.9rem;
+            font-size: 1rem; /* Vergrößerte Schrift */
         }
 
         .quick-nav-links a:hover {
             background-color: var(--color-red);
             color: var(--color-text);
         }
-        
-        /* Detaillierter Einstellungsstil */
-        .setting-name {
-            font-weight: 600;
-            padding: 5px 0;
-            border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
-            color: rgba(255, 255, 255, 0.8);
-        }
-        .setting-value {
-            font-weight: 800;
-            color: var(--color-red);
-            text-align: right;
-            padding: 5px 0;
-            border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
-        }
-
-        .settings-list > div:nth-last-child(-n+2) {
-            border-bottom: none;
-        }
     </style>
 </head>
 <body>
 
     <div class="rules-card">
-        <div class="card-header">Offizielles Cluster Regelwerk</div>
+        <!-- HAUPTÜBERSCHRIFT WURDE ENTFERNT -->
         
         <!-- QUICKLINK NAVIGATION BAR (Steuert jetzt das Akkordeon) -->
         <div class="quick-nav">
             <div class="quick-nav-links">
-                <a href="#regeln-s1" onclick="handleAccordionClick('regeln-s1')">§1 Server</a>
-                <a href="#regeln-s2" onclick="handleAccordionClick('regeln-s2')">§2 Verhalten</a>
-                <a href="#regeln-s3" onclick="handleAccordionClick('regeln-s3')">§3 Bauen</a>
-                <a href="#regeln-s4" onclick="handleAccordionClick('regeln-s4')">§4 Admin</a>
-                <a href="#regeln-s5" onclick="handleAccordionClick('regeln-s5')">§5 Zucht</a>
-                <a href="#regeln-s6" onclick="handleAccordionClick('regeln-s6')">§6 Strike</a>
-                <a href="#regeln-s7" onclick="handleAccordionClick('regeln-s7')">§7 Marktplatz</a>
+                <a href="#regeln-s1" onclick="handleAccordionClick('regeln-s1')">§1 SERVERREGELN</a>
+                <a href="#regeln-s2" onclick="handleAccordionClick('regeln-s2')">§2 VERHALTENSREGELN</a>
+                <a href="#regeln-s3" onclick="handleAccordionClick('regeln-s3')">§3 BAUREGELN</a>
+                <a href="#regeln-s4" onclick="handleAccordionClick('regeln-s4')">§4 ADMINREGELN</a>
+                <a href="#regeln-s5" onclick="handleAccordionClick('regeln-s5')">§5 ZUCHTREGELN</a>
+                <a href="#regeln-s6" onclick="handleAccordionClick('regeln-s6')">§6 STRIKE SYSTEM</a>
+                <a href="#regeln-s7" onclick="handleAccordionClick('regeln-s7')">§7 MARKTPLATZ REGELN</a>
             </div>
         </div>
 
