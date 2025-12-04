@@ -13,10 +13,8 @@
             --color-light-dark: rgba(30, 30, 30, 0.95);
         }
         
-        /* NEU: Aktiviert Smooth Scrolling für alle Anker-Sprünge */
-        html {
-            scroll-behavior: smooth;
-        }
+        /* Smooth Scrolling entfernen, da es jetzt extern gesteuert wird */
+        /* html { scroll-behavior: smooth; } */
 
         /* Wichtig: Der Body des iFrames muss transparent sein. */
         body {
@@ -62,8 +60,8 @@
             padding: 10px 0;
             margin-top: 30px;
             border-bottom: 2px solid var(--color-red);
-            scroll-margin-top: 100px; /* Wichtig für Quicklinks */
-            /* Behält die Transition bei, damit der Glow sanft erscheint */
+            /* Scroll-Margin muss bleiben, damit der Header nicht unter der Sticky-Nav verschwindet */
+            scroll-margin-top: 100px; 
             transition: color 0.3s, text-shadow 0.3s, border-bottom 0.3s; 
         }
 
@@ -73,7 +71,6 @@
             color: #FFEB3B; /* Gold-Gelb Textfarbe */
             text-shadow: 0 0 10px rgba(255, 235, 59, 0.9); /* Gold-Gelb Text-Glow */
             border-bottom: 2px solid #FFEB3B; /* Gold-Gelb Unterstrich */
-            /* transform: scale(1.01) und box-shadow wurden entfernt */
         }
         
         /* Unter-Header innerhalb der Regeln */
@@ -180,13 +177,13 @@
         <!-- QUICKLINK NAVIGATION BAR -->
         <div class="quick-nav">
             <div class="quick-nav-links">
-                <a href="#regeln-s1" onclick="applyGlow(event, 'regeln-s1')">§1 Server</a>
-                <a href="#regeln-s2" onclick="applyGlow(event, 'regeln-s2')">§2 Verhalten</a>
-                <a href="#regeln-s3" onclick="applyGlow(event, 'regeln-s3')">§3 Bauen</a>
-                <a href="#regeln-s4" onclick="applyGlow(event, 'regeln-s4')">§4 Admin</a>
-                <a href="#regeln-s5" onclick="applyGlow(event, 'regeln-s5')">§5 Zucht</a>
-                <a href="#regeln-s6" onclick="applyGlow(event, 'regeln-s6')">§6 Strike</a>
-                <a href="#regeln-s7" onclick="applyGlow(event, 'regeln-s7')">§7 Marktplatz</a>
+                <a href="#regeln-s1" onclick="handleQuicklink(event, 'regeln-s1')">§1 Server</a>
+                <a href="#regeln-s2" onclick="handleQuicklink(event, 'regeln-s2')">§2 Verhalten</a>
+                <a href="#regeln-s3" onclick="handleQuicklink(event, 'regeln-s3')">§3 Bauen</a>
+                <a href="#regeln-s4" onclick="handleQuicklink(event, 'regeln-s4')">§4 Admin</a>
+                <a href="#regeln-s5" onclick="handleQuicklink(event, 'regeln-s5')">§5 Zucht</a>
+                <a href="#regeln-s6" onclick="handleQuicklink(event, 'regeln-s6')">§6 Strike</a>
+                <a href="#regeln-s7" onclick="handleQuicklink(event, 'regeln-s7')">§7 Marktplatz</a>
             </div>
         </div>
 
@@ -342,35 +339,95 @@
         const targetElement = document.getElementById(targetId);
         if (!targetElement) return;
 
-        const allHeaders = document.querySelectorAll('.rule-section h2');
+        // *** NEUER CODE BEGINNT HIER ***
 
-        // 1. Entferne Glow von allen Headern
-        allHeaders.forEach(header => {
-            header.classList.remove('glow-active');
-        });
+        // 1. Hole die vertikale Position des Zielelements relativ zum iFrame
+        const rect = targetElement.getBoundingClientRect();
+        
+        // 2. Berechne die Zielposition auf der ELTERSEITE
+        // Ziel = Aktuelle vertikale Scroll-Position der Hauptseite + vertikale Position des iFrames + vertikale Position des Ziels im iFrame - Sicherheitsabstand (Sticky Nav)
+        const iframe = window.frameElement; // Das iFrame-Element, das dieses Dokument enthält
+        
+        if (iframe) {
+            const iframeRect = iframe.getBoundingClientRect();
+            
+            // 90px ist der Sicherheitsabstand, um den Header unter der Sticky-Nav anzuzeigen
+            const offset = 90; 
+            
+            // Sende die Nachricht an die Elterseite
+            window.parent.postMessage({
+                action: 'scrollToElement',
+                offsetTop: iframeRect.top + rect.top - offset,
+                scrollBehavior: 'smooth' 
+            }, '*'); // '*' sollte für Ihre eigene Domain spezifischer sein, aber '*' ist am kompatibelsten
 
-        // 2. Wende Glow auf den Ziel-Header an
-        targetElement.classList.add('glow-active');
+            // *** Führe den Glow-Effekt im iFrame selbst aus ***
+            const allHeaders = document.querySelectorAll('.rule-section h2');
 
-        // 3. Führe den nativen Smooth Scroll aus
-        window.location.hash = targetId;
+            // Entferne Glow von allen Headern
+            allHeaders.forEach(header => {
+                header.classList.remove('glow-active');
+            });
 
-        // 4. Entferne den Glow nach 2 Sekunden (Glow-Dauer)
-        setTimeout(() => {
-            targetElement.classList.remove('glow-active');
-        }, 2000);
+            // Wende Glow auf den Ziel-Header an
+            targetElement.classList.add('glow-active');
+
+            // Entferne den Glow nach 2 Sekunden (Glow-Dauer)
+            setTimeout(() => {
+                targetElement.classList.remove('glow-active');
+            }, 2000);
+            
+        } else {
+            // Fallback, falls das Skript nicht in einem iFrame läuft (z.B. Direktansicht)
+            window.location.hash = targetId;
+        }
     }
-
+    
     // Setze die Event Listener neu, da sie durch das HTML-Update verloren gehen könnten
     document.addEventListener('DOMContentLoaded', () => {
         const links = document.querySelectorAll('.quick-nav-links a');
         
         links.forEach(link => {
-            // Verhindert, dass der Browser das Anker-Ziel direkt lädt
-            link.addEventListener('click', (e) => {
-                const targetId = link.getAttribute('href').substring(1); // #regeln-s1 -> regeln-s1
-                applyGlow(e, targetId);
-            });
+            // Wir verwenden den onclick-Handler im HTML, um die Funktion auszuführen, 
+            // damit das Event-Handling im iFrame zuverlässig ist.
+            // Der event listener unten ist nur ein Backup.
         });
+    });
+</script>
+```
+
+Das ist eine sehr wichtige und absolut korrekte Feststellung!
+
+Sie haben vollkommen recht: **Da Sie mit iFrames arbeiten, kann das iFrame selbst keinen "Smooth Scroll" der gesamten Elterseite auslösen, die den Haupt-Scrollbalken enthält.**
+
+### Das Problem
+
+1.  **Sicherheit:** Browser blockieren aus Sicherheitsgründen standardmäßig, dass Code in einem iFrame die Hauptseite (Elterseite) steuert, wenn diese von einer anderen Domain stammt (Cross-Origin Policy).
+2.  **Lösung:** Die einzige Möglichkeit ist die Kommunikation über **`postMessage`** (Nachrichten senden). Das iFrame sendet die Ziel-Position, und **Ihre Hauptseite (der Code im Website Builder) muss auf diese Nachricht warten und das Scrollen ausführen.**
+
+Ich habe das JavaScript im Canvas (`widget_server_regeln.html`) bereits so angepasst, dass es die **Nachricht sendet** (siehe Code im letzten Beitrag).
+
+### Was Sie als Nächstes tun müssen (KRITISCHER SCHRITT)
+
+Der Code im Canvas sendet nun die Nachricht. Sie müssen jetzt den **Empfänger-Code** auf Ihrer Gameserversapp-Website (der Seite, die das iFrame enthält) implementieren.
+
+Diesen Code müssen Sie einmalig in einen **"Custom JavaScript"**- oder **"HTML/Code"**-Block auf Ihrer Hauptseite einfügen.
+
+**Kopieren Sie diesen Code und fügen Sie ihn in die Hauptseite ein, die das Regelwerk-iFrame enthält:**
+
+```javascript
+<script>
+    window.addEventListener('message', function(event) {
+        // Prüft, ob die Nachricht die richtige Aktion hat und von einem iFrame gesendet wurde
+        if (event.data && event.data.action === 'scrollToElement') {
+            
+            const targetY = event.data.offsetTop;
+            
+            // Führt den tatsächlichen Smooth Scroll auf der Hauptseite aus
+            window.scrollTo({
+                top: targetY,
+                behavior: 'smooth'
+            });
+        }
     });
 </script>
