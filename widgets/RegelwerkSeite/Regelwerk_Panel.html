@@ -36,7 +36,8 @@
             border-radius: 12px;
             padding: 1.5rem;
             width: 100%;
-            max-width: 900px; /* Verbreitert für besseres Lesen des Regelwerks */
+            /* BREITE ERHÖHT: Passt sich besser dem Browser an */
+            max-width: 1200px; 
             border: 3px solid var(--color-red);
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
         }
@@ -53,17 +54,7 @@
             padding-bottom: 10px;
         }
 
-        /* Layout für die Einstellungs-Liste (Kurz-Übersicht) */
-        .settings-list {
-            display: grid;
-            grid-template-columns: 1fr auto; 
-            gap: 5px 15px;
-            text-align: left;
-            margin-bottom: 30px;
-            padding: 15px;
-            background-color: var(--color-light-dark);
-            border-radius: 8px;
-        }
+        /* Layout für die Einstellungs-Liste (Kurz-Übersicht) wurde entfernt */
         
         /* --- Regelwerk Sektionen --- */
         .rule-section h2 {
@@ -190,23 +181,7 @@
             </div>
         </div>
 
-        <!-- KURZÜBERSICHT EINSTELLUNGEN -->
-        <h2 id="einstellungen" style="margin-top: 0; color: var(--color-text); border-bottom: 2px solid rgba(255, 255, 255, 0.2);">Wichtige Servereinstellungen (Kurz-Übersicht)</h2>
-        <div class="settings-list">
-            
-            <div class="setting-name">Max. Wild Dino Level</div>
-            <div class="setting-value">150</div>
-            
-            <div class="setting-name">Max. Player Level</div>
-            <div class="setting-value">150 + Ascension</div>
-
-            <div class="setting-name">Max. Tribe Size</div>
-            <div class="setting-value">4 Spieler</div>
-            
-            <div class="setting-name">Friendly Fire</div>
-            <div class="setting-value">Deaktiviert</div>
-            
-        </div>
+        <!-- KURZÜBERSICHT EINSTELLUNGEN WURDE ENTFERNT -->
 
         <!-- DETAILREGELN ABSCHNITTE -->
         <div class="rule-section">
