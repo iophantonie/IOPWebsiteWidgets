@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Server Regelwerk mit Quicklinks</title>
+    <style>
+        /* Farben und Schriftarten */
+        :root {
+            --color-red: #E53935; /* Feuerrot */
+            --color-dark: rgba(20, 20, 20, 0.95);
+            --color-text: #f7f7f7;
+            --color-light-dark: rgba(30, 30, 30, 0.95);
+        }
+
+        /* Wichtig: Der Body des iFrames muss transparent sein. */
+        body {
+            background-color: transparent;
+            font-family: sans-serif;
+            color: var(--color-text);
+            margin: 0;
+            padding: 0;
+            padding: 20px; 
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Stil für die Haupt-Card (als langer HTML-Block) */
+        .rules-card {
+            background-color: var(--color-dark);
+            border-radius: 12px;
+            padding: 1.5rem;
+            width: 100%;
+            max-width: 900px; /* Verbreitert für besseres Lesen des Regelwerks */
+            border: 3px solid var(--color-red);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+        }
+        
+        /* Hauptüberschrift */
+        .card-header {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--color-red);
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+            text-align: center;
+            border-bottom: 3px solid var(--color-red);
+            padding-bottom: 10px;
+        }
+
+        /* Layout für die Einstellungs-Liste (Kurz-Übersicht) */
+        .settings-list {
+            display: grid;
+            grid-template-columns: 1fr auto; 
+            gap: 5px 15px;
+            text-align: left;
+            margin-bottom: 30px;
+            padding: 15px;
+            background-color: var(--color-light-dark);
+            border-radius: 8px;
+        }
+        
+        /* --- Regelwerk Sektionen --- */
+        .rule-section h2 {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--color-red);
+            padding: 10px 0;
+            margin-top: 30px;
+            border-bottom: 2px solid var(--color-red);
+            scroll-margin-top: 100px; /* Wichtig für Quicklinks */
+        }
+        
+        /* Unter-Header innerhalb der Regeln */
+        .rule-section h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--color-text);
+            margin-top: 20px;
+            margin-bottom: 10px;
+            border-left: 4px solid var(--color-red);
+            padding-left: 10px;
+        }
+
+        .rule-section p {
+            line-height: 1.8;
+            margin-bottom: 20px;
+            color: rgba(255, 255, 255, 0.9);
+            text-align: left;
+        }
+        
+        .rule-section ul {
+            list-style: none; /* Entfernt die Standardpunkte */
+            padding-left: 10px;
+        }
+
+        .rule-section ul li {
+            position: relative;
+            margin-bottom: 15px;
+            padding-left: 20px;
+            line-height: 1.6;
+            text-align: left; /* Stellt sicher, dass die Liste linksbündig ist */
+        }
+
+        .rule-section ul li::before {
+            content: '♦'; /* Feuerroter Diamant-Punkt */
+            position: absolute;
+            left: 0;
+            color: var(--color-red);
+            font-size: 1.2rem;
+            line-height: 1;
+        }
+        
+        /* --- QUICKLINK NAVIGATION --- */
+        .quick-nav {
+            position: sticky; /* Hält die Navigation oben */
+            top: 0; 
+            background-color: var(--color-light-dark);
+            padding: 10px 0;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--color-red);
+            z-index: 100;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+            border-radius: 0 0 8px 8px;
+        }
+        
+        .quick-nav-links {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 5px 10px;
+        }
+
+        .quick-nav-links a {
+            color: var(--color-red);
+            text-decoration: none;
+            font-weight: 700;
+            padding: 5px 10px;
+            border: 1px solid var(--color-red);
+            border-radius: 5px;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+        }
+
+        .quick-nav-links a:hover {
+            background-color: var(--color-red);
+            color: var(--color-text);
+        }
+        
+        /* Detaillierter Einstellungsstil */
+        .setting-name {
+            font-weight: 600;
+            padding: 5px 0;
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.8);
+        }
+        .setting-value {
+            font-weight: 800;
+            color: var(--color-red);
+            text-align: right;
+            padding: 5px 0;
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+        }
+
+        .settings-list > div:nth-last-child(-n+2) {
+            border-bottom: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="rules-card">
+        <div class="card-header">Offizielles Cluster Regelwerk</div>
+        
+        <!-- QUICKLINK NAVIGATION BAR -->
+        <div class="quick-nav">
+            <div class="quick-nav-links">
+                <a href="#regeln-s1">§1 Server</a>
+                <a href="#regeln-s2">§2 Verhalten</a>
+                <a href="#regeln-s3">§3 Bauen</a>
+                <a href="#regeln-s4">§4 Admin</a>
+                <a href="#regeln-s5">§5 Zucht</a>
+                <a href="#regeln-s6">§6 Strike</a>
+                <a href="#regeln-s7">§7 Marktplatz</a>
+            </div>
+        </div>
+
+        <!-- KURZÜBERSICHT EINSTELLUNGEN -->
+        <h2 id="einstellungen" style="margin-top: 0; color: var(--color-text); border-bottom: 2px solid rgba(255, 255, 255, 0.2);">Wichtige Servereinstellungen (Kurz-Übersicht)</h2>
+        <div class="settings-list">
+            
+            <div class="setting-name">Max. Wild Dino Level</div>
+            <div class="setting-value">150</div>
+            
+            <div class="setting-name">Max. Player Level</div>
+            <div class="setting-value">150 + Ascension</div>
+
+            <div class="setting-name">Max. Tribe Size</div>
+            <div class="setting-value">4 Spieler</div>
+            
+            <div class="setting-name">Friendly Fire</div>
+            <div class="setting-value">Deaktiviert</div>
+            
+        </div>
+
+        <!-- DETAILREGELN ABSCHNITTE -->
+        <div class="rule-section">
+            
+            <h2 id="regeln-s1">§1 Serverregeln:</h2>
+            <ul>
+                <li>§1.1 Bei Fragen oder Problemen fragt im Chat, vielleicht kann euch schon mit einer Antwort geholfen werden.</li>
+                <li>§1.2 Jeder Spieler muss dem Discord zugehören, um seinen Strukturenverfall durch Verifizierung auf 30 Tage setzen zu können und um bei Problemen oder Kontaktaufnahme erreichbar zu sein.</li>
+                <li>§1.3 Beleidigungen oder rassistische Bemerkungen (Chat/Voice), Spamen, unhaltbare Anschuldigungen oder persönlich werdende Äußerungen sind zu unterlassen. Konflikte sollen LOKAL oder im DC gelöst werden. Admins können hier als Vermittler dienen.</li>
+                <li>§1.4 Multiaccounting für das Token-Double-Farming oder Edelstein-Farmen mit 2 Accounts, führt zu sofortigem Community-Ausschluss.</li>
+                <li>§1.5 Spielt bitte fair mit euren Mitspielern, behandelt die Mitspieler mit Respekt und seid höflich!</li>
+            </ul>
+
+            <h2 id="regeln-s2">§2 Verhaltensregeln:</h2>
+            <ul>
+                <li>§2.1 Es ist untersagt, Spieler beim Zähmen zu stören.</li>
+                <li>§2.2 Andere Spieler mit Flugdinos aufzuheben und absichtlich fallen zu lassen, zu ertränken oder auf irgendeine Weise zu Tode kommen zu lassen oder zu bestehlen, ist verboten.</li>
+                <li>§2.3 Das Ausnutzen von In-Game-Bugs, um Euch Vorteile zu verschaffen, ist verboten.</li>
+                <li>§2.4 Es ist verboten, in fremden Basen einzudringen, Kisten/Strukturen zu durchsuchen bzw. zu stehlen oder Tiere in diese abzuwerfen. Fragt im Chat/Voice-Chat nach, ob der Besitzer zu Hause ist und euch Zutritt gewährt. (Ausgenommen sind Airdrops, die in jener Base landen).</li>
+                <li>§2.5 Das Looten von Taschen von Stamm-fremden Spielern, Dinos oder Strukturen ist strengstens untersagt! Ausgenommen ist hier natürlich, wenn ihr einem anderen Spieler dabei hilft, seinen Loot vor Verlust zu retten.</li>
+                <li>§2.6 Die Übernahme Stamm-fremder Dinos ist grundsätzlich verboten, außer sie wurden vom Eigentümer direkt für euch freigegeben.</li>
+                <li>§2.7 Das Abstellen von Tieren innerhalb von Dungeons ist zu unterlassen. Tiere, die Wege, Lootboxen etc. blockieren, werden entfernt.</li>
+                <li>§2.8 Wer zuerst kommt, malt zuerst: Das gilt für Lootstrahlen, Wyvernnester und für das Zähmen von Dinos, sowie für die Rare-Spawns und für die Shinys. Bitte sprecht euch ab und beachtet dabei den allgemeinen Umgangston. Im Zweifel kontaktiert bitte einen Admin zur Klärung.</li>
+                <li>§2.9 Das Reservieren von Basespots in jeglicher Form ist strengstens Untersagt und Verboten. Es muss mindestens eine Spawnhütte dort stehen, ein Umzug angemeldet sein via. Ticket oder der Stamm muss dort sichtlich eine erkennbare Base mit Location Flag sowie einem Schild haben.</li>
+                <li>§2.10 Das ineinander stacken von Kreaturen ist strengstens untersagt.</li>
+                <li>§2.11 Die Weitergabe von Strukturen, Rüstungsteilen & Waffen, sowie Sättel und Kreaturen an Spieler, die das erforderliche Level für die Engramme der Sättel, Items & Co noch nicht erreicht haben, ist strengstens untersagt. Tek Strukturen, Rüstungsteile & Waffen sowie Tek Sättel die ein Boss-Engramm erfordern, dürfen ebenfalls nur an Spieler Weitervergeben werden, die diese freigeschalten haben. Spieler die sich diese über eigenen Progress/ Eigenleistung wie Tokens, Quests oder weitere Dinge erspielt haben, sind über den Markt davon ausgenommen. Alibi-Angebote die keine realistischen Preise beinhalten um diese Regelungen zu umgehen, sind zu unterlassen.</li>
+                <li>§2.12 Das bekämpfen der Bosse auf unseren Ark Karten ist in einer Allianz, oder Gruppe problemlos möglich, wenn sich mehrere Spieler oder Stämme zusammenschließen. Voraussetzung ist, dass jeder Teilnehmer einen Beitrag zur Eröffnung der Arena, sowie zum bekämpfen des Bosses leistet, sei es in Form von Trophäen, Artefakten oder Kreaturen.</li>
+            </ul>
+
+            <h2 id="regeln-s3">§3 Bauregeln:</h2>
+            <h3>Generelle Bauregeln:</h3>
+            <ul>
+                <li>§3.1 1x1 Strukturen, Lagerfeuer, Übergangsbasen und Schlafplätze, müssen vom Besitzer nach Benutzung wieder entfernt werden.</li>
+                <li>§3.2 Beim Bau einer Basis muss darauf geachtet werden, dass Spawn-Plätze, Dungeons und Loot-Kisten/Drops weiterhin erreichbar bleiben.</li>
+                <li>§3.3 Zähm-Fallen dürfen nur stehen bleiben, wenn diese auch sehr nah oder direkt in die Spielerbasis integriert wurden. Zähm-Fallen generell müssen sofort nach Benutzung entfernt werden.</li>
+                <li>§3.4 Das Blockieren von großen Ressourcen-Spawn-Plätzen wie Metall, Kristall, Obsidian o.ä., Artefakte, Loot-Kisten, Drops und Explorernotes, sowie Biberdämme durch Strukturen, ist verboten. Bei nicht Einhaltung werden die Strukturen durch einen Admin entfernt. Bei Verstoß oder nicht Folge leisten der Aufforderung, durch einen Admin zur Entfernung besagter Strukturen, folgt die Löschung jener Objekte ungeachtet dessen Wert oder Inhalt, ohne Recht auf Erstattung!</li>
+            </ul>
+            
+            <h3>Bauregeln Hauptbasen:</h3>
+            <ul>
+                <li>§3.5 Die Anzahl der Hauptbasen auf dem Cluster (nicht Server!) wird nun anhand der Stammesmitglieder bemessen, wobei das Minimum bei 2 liegt und pro Mitglied +1 bis maximal 4 Hauptbasen auf dem gesamten Cluster.</li>
+                <li>§3.6 Eine Hauptbasis darf eine Größe von 7x7 Behemoth-Tore nicht überschreiten.</li>
+            </ul>
+            
+            <h3>Bauregeln Wasserbasen:</h3>
+            <ul>
+                <li>§3.7 Auf dem gesamten Cluster ist pro Tribe 1 Wasserbasis erlaubt.</li>
+                <li>§3.8 Eine Wasserbasis darf eine Maximalgröße von 1 Ozeanplattform oder 3x3 Behemoth-Tore nicht überschreiten.</li>
+                <li>§3.9 Eine Wasserbasis darf prinzipiell auch auf einem Server sein, auf der eine Spawnhütte oder eine Hauptbasis steht.</li>
+            </ul>
+            
+            <h3>Bauregeln Spawnhütten:</h3>
+            <ul>
+                <li>§3.10 Spawnhütten dürfen nur auf Servern gebaut werden, auf denen der Stamm sonst keinerlei Strukturen besitzt (Wasserbasis ausgenommen).</li>
+                <li>§3.11 Die Größe ist auf eine Fundamentfläche von 8x8 Fundamenten begrenzt, wobei die Höhe nicht mehr als 6 Wände überschreiten darf.</li>
+                <li>§3.12 Tek-Schilde sind an und in Spawnhütten verboten.</li>
+                <li>§3.13 Kreaturen an oder in Spawnhütten werden ohne Warnung gelöscht.</li>
+                <li>§3.14 Ein Unterbau, um unebenen Untergrund auszugleichen, wird nicht zur Höhe hinzugerechnet. Hierzu dürfen auch Klippen- und Baumplattformen genutzt werden. Diese Plattformen dürfen nicht überbaut werden!</li>
+                <li>§3.15 Ein Stammesturm/Tribe Tower darf auf einer Spawnhütte platziert werden.</li>
+            </ul>
+            
+            <h3>Höhleneingänge:</h3>
+            <ul>
+                <li>§3.16 Jeder Höhleneingang ist im Umkreis von 100m freizuhalten, und nicht zu bebauen.</li>
+            </ul>
+            
+            <h3>Abstand zum Nachbar:</h3>
+            <ul>
+                <li>§3.17 Beim Bau einer Basis muss darauf geachtet werden, dass ein Abstand von 150m zum Nachbar eingehalten wird. Im Recht ist immer der, der zuerst an einem Ort gebaut hat. Allianzen & Absprachen mit seinem Nachbar, machen diese Regel mit beiderseitigem Einverständnis unwirksam.</li>
+            </ul>
+            
+            <h3>Bauregeln - Kennzeichnungen:</h3>
+            <ul>
+                <li>§3.18 Jede Art von Basis (Hauptbasis, Wasserbasis, Spawnhütte) muss mit einem Schild kenntlich gemacht werden, auf dem klar ersichtlich ist, ob es sich um eine Hauptbasis, eine Spawnhütte oder eine Wasserbasis handelt.</li>
+                <li>§3.19 Jede Art von Basis (Hauptbasis, Wasserbasis, Spawnhütte) muss mit einer Location Flag getagged werden, die ihr auf Level 1 erlernen könnt. Hierzu muss die Flagge einfach in der Base aufgestellt werden.</li>
+            </ul>
+            
+            <h3>Bauregeln - Neue Karten:</h3>
+            <ul>
+                <li>§3.20 Mit jeder neuen Karte werden die Basen-Limit-Grenzen bis Öffnung des Travels ausgehebelt. Nach Öffnung des Travels, gilt ein 4-Wochen-Zeitraum, die Basen den Regeln anzupassen (Für diejenigen, die dort bleiben möchten, oder umziehen, damit kein Spieler nach öffnung seine Basis zerstören/verkleinern oder ändern muss.</li>
+            </ul>
+            
+            <h3>Tek Drill/Bohrer für Custom Caves:</h3>
+            <ul>
+                <li>§3.30 Der Tek Drill/ Bohrer darf nur für 1 Cave pro Hauptbasis verwendet werden.</li>
+                <li>§3.31 Der Tek Drill/ Bohrer darf als Zusatz ausschließlich an Hauptbasen verwendet werden.</li>
+                <li>§3.32 Der Tek Drill/ Bohrer darf generell als Spawnbase genutzt werden, allerdings darf nur diese Struktur Platziert werden, und alle weiteren innerhalb der Custom Cave.</li>
+                <li>§3.33 Custom Caves dürfen nur so platziert werden, dass sie weder in Artefakt-Höhlen, noch in Bau-Höhlen Ragen und somit sichtbar sind.</li>
+                <li>§3.34 Custom Caves dürfen nur so platziert werden, dass sie keine anderen Spieler beim Bauen in der nähe, sowie unter einer Basis hindern.</li>
+                <li>§3.35 Custom Caves dürfen nur so platziert werden, dass sie nicht aus Bergen oder über der Oberfläche Sichtbar sind.</li>
+            </ul>
+            
+            <h2 id="regeln-s4">§4 Adminregeln:</h2>
+            <ul>
+                <li>§4.1 Admins ist es erlaubt, Konsolenbefehle zu nutzen, um Spielern zu helfen, Mods oder Inhalte zu testen, Fehler (Bugs) im Spiel zu umgehen, Probleme auszugleichen, wenn jemand durch Bugs etwas verloren hat, oder Events vorzubereiten.</li>
+                <li>§4.2 Admins ist es erlaubt, bei begründetem Verdacht eines groben Regelverstoßes die Tribelogs beschuldigter Spieler zu lesen und die dafür notwendigen Schritte zu bestimmen.</li>
+                <li>§4.3 Admins ist es erlaubt, Strukturen, die nicht dem Regelwerk entsprechen, zu entfernen.</li>
+                <li>§4.4 Admins können ohne Ankündigung Funktionen und Regeln objektiv ändern.</li>
+            </ul>
+
+            <h2 id="regeln-s5">§5 Zuchtregeln:</h2>
+            <ul>
+                <li>§5.0 Kreaturen aus dem Schwarzmarkt, dürfen nicht gehandelt werden.</li>
+                <li>§5.1 Kreaturen mit mehr als 100 Mutationen in einem Stat, dürfen generell nicht mehr verkauft werden.</li>
+                <li>§5.2 Es dürfen keine mutierten Kreaturen unkastriert weitergegeben werden.</li>
+                <li>§5.3 Die Zuchtlinie muss vom Basiswert an nachvollziehbar sein, und nachgewiesen werden können.</li>
+                <li>§5.4 Mutierte Kreaturen, müssen zu angemessenen Preisen verkauft werden.</li>
+                <li>§5.5 Mutierte Kreaturen, dürfen nicht verschenkt werden.</li>
+                <li>§5.6 Kreaturen, die "nur" Farbmutationen haben, fallen aus diesen Regelungen raus.</li>
+                <li>§5.7 Wer Kreaturenverkäufe für bspw. 1 Faser anbietet, um die Regel zu umgehen, verstößt gegen die Zuchtregeln.</li>
+                <li>§5.8 Spezifische bzw. Serverseitige Kreaturenlimitierungen, sind festgelegt und werden ingame angezeigt, somit umgehen wir globale Regelseitige Zuchtregelungen.</li>
+            </ul>
+            <h3>Zuchtallianz-Regeln:</h3>
+            <ul>
+                <li>§5.9 Jeder Stamm darf auf dem Cluster nur Eine Zuchtallianz haben.</li>
+                <li>§5.91 In einer Zuchtallianz sind nicht mehr als 2 Stämme erlaubt.</li>
+                <li>§5.92 Eine Zuchtallianz gilt ab Anmeldung bindend mindestens 3 Monate. Stammes-Zerwürfnisse sind keine Ausnahme.</li>
+                <li>§5.93 Jede Zuchtallianz muss im Zuchtallianz-Register angemeldet sein.</li>
+            </ul>
+
+            <h2 id="regeln-s6">§6 Strike System:</h2>
+            <ul>
+                <li>§6.1 Strikes werden generell nur bei schwerwiegenden Verfehlungen oder Verstößen ausgesprochen. Wir möchten keinen Spieler, der versehentlich einen Fehler macht, oder mal eine Struktur bzw. eine Kreatur irgendwo vergisst, striken. Strikes sind die Worst-Case-Maßnahmen, vorher gibt es meist Verwarnungen. Admins behalten es sich vor, je nach Situation und Umständen, entsprechend zu reagieren, und die passenden Konsequenzen einzuleiten/auszusprechen.</li>
+                <li>§6.2 Bei Regelverstößen, je nach Schwere werden Strikes ausgesprochen, und der Stamm entsprechend markiert.</li>
+                <li>§6.3 Bei 3 Strikes, wird ein temporärer oder dauerhafter Bann veranlasst.</li>
+                <li>§6.4 Alle 6 Monate, werden die Strikes zurückgesetzt, um Spielern die Möglichkeit zu bieten, ihr Spielverhalten zu überdenken und ggfls. anzupassen und aus ihren Fehlern auch zu lernen.</li>
+                <li>§6.5 Sollten diese Sonderregelungen ebenfalls missbraucht werden, darf und wird sofort reagiert und entsprechende Konsequenzen veranlasst und durchgesetzt bzw. je nach Situation der oder die Spieler auch aus der Community ausgeschlossen (temporär sowie dauerhaft).</li>
+            </ul>
+
+            <h2 id="regeln-s7">§7 Marktplatz Regeln - Community Center:</h2>
+            <ul>
+                <li>§7.1 Das dauerhafte Abstellen von Kreaturen auf dem Marktplatz, außerhalb des Markthauses ist strikt verboten.</li>
+                <li>§7.2 Es darf grundsätzlich nur im Markthaus & Gärten, sowie vor Haustüren gebaut werden. Dabei muss ganz klar ersichtlich sein, Dass der Garten, die Nische, der Vorhof eines Hauses o.ä. zum Markthaus gehören. Wir bitten hierbei um Berücksichtigung des mittelalterlichen Fantasy-Baustils, um übertriebene, oder zu verrückte Dekoration weitestgehenst zu vermeiden, und appelieren an die Vernunft der Spieler.</li>
+                <li>§7.3 Häußer dürfen auch privat genutzt werden, es ist aber grundsätzlich Regel, dass ein Teil des Hauses als Markt verwendet werden muss. Die genaue Einteilung obliegt dem Spieler.</li>
+                <li>§7.4 Jedes Markthaus ist ausnahmslos mit einem Zaunfundament, einer Wand/Türrahmen und einer Tür zu beanspruchen, damit klar ersichtlich ist, dass dieses Haus besetzt ist, und wem es gehört.</li>
+                <li>§7.5 Jeder Stamm darf sich maximal 1 Markthaus anmieten/besetzen.</li>
+                <li>§7.6 Jedes Markthaus muss mit einem Scribble-Wandschild, dass ihr dort aus einem normalen Holzschild machen könnt, mit dem Stammes bzw. einem Marktnamen gekennzeichnet werden.</li>
+                <li>§7.7 Beanspruchte Markthäuser, müssen im Discord im Spielermarktregister angemeldet werden. Wir appelieren auch hier an die Community, um frei gewordene Häuser zu melden, damit diese Einträge von uns entfernt werden können!</li>
+            </ul>
+        </div>
+    </div>
+
+</body>
+</html>
