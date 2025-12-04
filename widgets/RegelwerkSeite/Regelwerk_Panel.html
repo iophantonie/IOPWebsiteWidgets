@@ -13,7 +13,10 @@
             --color-light-dark: rgba(30, 30, 30, 0.95);
         }
         
-        /* Smooth Scrolling ist hier nicht nötig, da kein langes Scrollen */
+        /* NEU: Aktiviert Smooth Scrolling für alle Anker-Sprünge */
+        html {
+            scroll-behavior: smooth;
+        }
 
         /* Wichtig: Der Body des iFrames muss transparent sein. */
         body {
@@ -54,44 +57,16 @@
 
         /* --- Regelwerk Sektionen (Accordion-Style) --- */
         .rule-section {
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: none; 
         }
         
+        /* NEU: H2-Header verstecken, da sie nur zur Struktur dienen */
         .rule-section h2 {
-            font-size: 1.6rem;
-            font-weight: 800;
-            color: var(--color-red);
+            display: none; 
+            /* Hält Platzhalter-Logik */
             padding: 15px 0;
             margin: 0;
-            cursor: pointer;
-            border-bottom: 2px solid transparent;
-            transition: color 0.3s, background-color 0.3s;
-            position: relative;
-        }
-
-        .rule-section h2:hover {
-            color: #FFEB3B;
-            background-color: rgba(229, 57, 53, 0.1);
-        }
-        
-        /* NEU: Pfeil/Indikator im Header */
-        .rule-section h2::after {
-            content: '►';
-            position: absolute;
-            right: 15px;
-            color: var(--color-red);
-            transform: rotate(0deg);
-            transition: transform 0.3s;
-        }
-        
-        .rule-section h2.active {
-            color: #FFEB3B;
-            /* Leichter Text-Glow für den aktiven Zustand */
-            text-shadow: 0 0 5px rgba(255, 235, 59, 0.5); 
-        }
-        
-        .rule-section h2.active::after {
-            transform: rotate(90deg); /* Pfeil dreht sich */
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1); 
         }
 
         /* --- ACCORDION INHALT --- */
@@ -99,13 +74,34 @@
             max-height: 0; /* Versteckt den Inhalt anfangs */
             overflow: hidden;
             padding: 0 10px;
+            /* Übergang für das sanfte Ein- und Ausfahren */
             transition: max-height 0.5s ease-in-out, padding 0.5s;
-            /* WICHTIG: Erzeugt den sanften Auftaucheffekt */
         }
         
         .rule-content.active {
             max-height: 5000px; /* Muss größer sein als der längste Inhalt */
             padding: 15px 10px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1); /* Trennlinie zum Content */
+            /* Setzt den Hintergrund der Content-Box */
+            background-color: var(--color-light-dark); 
+        }
+
+        /* NEU: Header des aktiven Inhalts (wird im JS erstellt) */
+        .content-header {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--color-red);
+            padding: 10px 0;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--color-red);
+            transition: color 0.3s, text-shadow 0.3s, border-bottom 0.3s;
+        }
+
+        /* NEU: GLOW ZUSTAND BEIM SPRINGEN */
+        .content-header.glow-active {
+            color: #FFEB3B; /* Gold-Gelb Textfarbe */
+            text-shadow: 0 0 10px rgba(255, 235, 59, 0.9); /* Gold-Gelb Text-Glow */
+            border-bottom: 2px solid #FFEB3B; /* Gold-Gelb Unterstrich */
         }
         
         /* Unter-Header innerhalb der Regeln */
@@ -118,7 +114,8 @@
             border-left: 4px solid var(--color-red);
             padding-left: 10px;
         }
-
+        
+        /* GESTAFFELTER EINBLEND-EFFEKT FÜR LISTENPUNKTE */
         .rule-content ul {
             list-style: none;
             padding-left: 10px;
@@ -129,6 +126,18 @@
             margin-bottom: 15px;
             padding-left: 20px;
             line-height: 1.6;
+            text-align: left;
+            
+            /* Startzustand für die Animation (versteckt und leicht verschoben) */
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+        }
+        
+        /* Zustand nach JS-Eingriff (wird einzeln gesetzt) */
+        .rule-content ul li.show-item {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         .rule-content ul li::before {
@@ -140,15 +149,60 @@
             line-height: 1;
         }
         
-        /* --- QUICKLINK NAVIGATION (Jetzt nur noch Dekoration) --- */
+        /* --- QUICKLINK NAVIGATION --- */
         .quick-nav {
+            position: sticky; /* Hält die Navigation oben */
+            top: 0; 
+            background-color: var(--color-light-dark);
             padding: 10px 0;
             margin-bottom: 20px;
             border-bottom: 1px solid var(--color-red);
+            z-index: 100;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+            border-radius: 0 0 8px 8px;
         }
         
         .quick-nav-links {
-            display: none; /* Quicklinks sind im Akkordeon-Modus nicht mehr nötig */
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 5px 10px;
+        }
+
+        /* Die eigentlichen Buttons in der Bar */
+        .quick-nav-links a {
+            color: var(--color-red);
+            text-decoration: none;
+            font-weight: 700;
+            padding: 5px 10px;
+            border: 1px solid var(--color-red);
+            border-radius: 5px;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+        }
+
+        .quick-nav-links a:hover {
+            background-color: var(--color-red);
+            color: var(--color-text);
+        }
+        
+        /* Detaillierter Einstellungsstil */
+        .setting-name {
+            font-weight: 600;
+            padding: 5px 0;
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.8);
+        }
+        .setting-value {
+            font-weight: 800;
+            color: var(--color-red);
+            text-align: right;
+            padding: 5px 0;
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+        }
+
+        .settings-list > div:nth-last-child(-n+2) {
+            border-bottom: none;
         }
     </style>
 </head>
@@ -157,17 +211,24 @@
     <div class="rules-card">
         <div class="card-header">Offizielles Cluster Regelwerk</div>
         
-        <!-- QUICKLINK NAVIGATION BAR (Bleibt als visuelle Trennung, Links sind aber deaktiviert) -->
+        <!-- QUICKLINK NAVIGATION BAR (Steuert jetzt das Akkordeon) -->
         <div class="quick-nav">
-            <div class="quick-nav-links" style="display: block; text-align: center; color: rgba(255,255,255,0.4); font-size: 0.9em;">
-               Wählen Sie einen Abschnitt, um die Details zu öffnen.
+            <div class="quick-nav-links">
+                <a href="#regeln-s1" onclick="handleAccordionClick('regeln-s1')">§1 Server</a>
+                <a href="#regeln-s2" onclick="handleAccordionClick('regeln-s2')">§2 Verhalten</a>
+                <a href="#regeln-s3" onclick="handleAccordionClick('regeln-s3')">§3 Bauen</a>
+                <a href="#regeln-s4" onclick="handleAccordionClick('regeln-s4')">§4 Admin</a>
+                <a href="#regeln-s5" onclick="handleAccordionClick('regeln-s5')">§5 Zucht</a>
+                <a href="#regeln-s6" onclick="handleAccordionClick('regeln-s6')">§6 Strike</a>
+                <a href="#regeln-s7" onclick="handleAccordionClick('regeln-s7')">§7 Marktplatz</a>
             </div>
         </div>
 
         <!-- DETAILREGELN ABSCHNITTE (Accordion-Elemente) -->
         <div class="rule-section">
             
-            <h2 onclick="toggleAccordion(this)" data-target="content-s1">§1 Serverregeln:</h2>
+            <!-- Die H2 dienen nur noch als Anker und ID-Quelle -->
+            <h2 id="regeln-s1" data-target="content-s1" data-title="§1 Serverregeln"></h2>
             <div id="content-s1" class="rule-content">
                 <ul>
                     <li>§1.1 Bei Fragen oder Problemen fragt im Chat, vielleicht kann euch schon mit einer Antwort geholfen werden.</li>
@@ -178,7 +239,7 @@
                 </ul>
             </div>
 
-            <h2 onclick="toggleAccordion(this)" data-target="content-s2">§2 Verhaltensregeln:</h2>
+            <h2 id="regeln-s2" data-target="content-s2" data-title="§2 Verhaltensregeln"></h2>
             <div id="content-s2" class="rule-content">
                 <ul>
                     <li>§2.1 Es ist untersagt, Spieler beim Zähmen zu stören.</li>
@@ -196,7 +257,7 @@
                 </ul>
             </div>
 
-            <h2 onclick="toggleAccordion(this)" data-target="content-s3">§3 Bauregeln:</h2>
+            <h2 id="regeln-s3" data-target="content-s3" data-title="§3 Bauregeln"></h2>
             <div id="content-s3" class="rule-content">
                 <h3>Generelle Bauregeln:</h3>
                 <ul>
@@ -261,7 +322,7 @@
                 </ul>
             </div>
 
-            <h2 onclick="toggleAccordion(this)" data-target="content-s4">§4 Adminregeln:</h2>
+            <h2 id="regeln-s4" data-target="content-s4" data-title="§4 Adminregeln"></h2>
             <div id="content-s4" class="rule-content">
                 <ul>
                     <li>§4.1 Admins ist es erlaubt, Konsolenbefehle zu nutzen, um Spielern zu helfen, Mods oder Inhalte zu testen, Fehler (Bugs) im Spiel zu umgehen, Probleme auszugleichen, wenn jemand durch Bugs etwas verloren hat, oder Events vorzubereiten.</li>
@@ -271,7 +332,7 @@
                 </ul>
             </div>
 
-            <h2 onclick="toggleAccordion(this)" data-target="content-s5">§5 Zuchtregeln:</h2>
+            <h2 id="regeln-s5" data-target="content-s5" data-title="§5 Zuchtregeln"></h2>
             <div id="content-s5" class="rule-content">
                 <ul>
                     <li>§5.0 Kreaturen aus dem Schwarzmarkt, dürfen nicht gehandelt werden.</li>
@@ -293,7 +354,7 @@
                 </ul>
             </div>
 
-            <h2 onclick="toggleAccordion(this)" data-target="content-s6">§6 Strike System:</h2>
+            <h2 id="regeln-s6" data-target="content-s6" data-title="§6 Strike System"></h2>
             <div id="content-s6" class="rule-content">
                 <ul>
                     <li>§6.1 Strikes werden generell nur bei schwerwiegenden Verfehlungen oder Verstößen ausgesprochen. Wir möchten keinen Spieler, der versehentlich einen Fehler macht, oder mal eine Struktur bzw. eine Kreatur irgendwo vergisst, striken. Strikes sind die Worst-Case-Maßnahmen, vorher gibt es meist Verwarnungen. Admins behalten es sich vor, je nach Situation und Umständen, entsprechend zu reagieren, und die passenden Konsequenzen einzuleiten/auszusprechen.</li>
@@ -304,7 +365,7 @@
                 </ul>
             </div>
 
-            <h2 onclick="toggleAccordion(this)" data-target="content-s7">§7 Marktplatz Regeln - Community Center:</h2>
+            <h2 id="regeln-s7" data-target="content-s7" data-title="§7 Marktplatz Regeln - Community Center"></h2>
             <div id="content-s7" class="rule-content">
                 <ul>
                     <li>§7.1 Das dauerhafte Abstellen von Kreaturen auf dem Marktplatz, außerhalb des Markthauses ist strikt verboten.</li>
@@ -324,16 +385,29 @@
 </html>
 
 <script>
+    const ITEM_DELAY = 100; // Zeitverzögerung in Millisekunden zwischen dem Erscheinen der einzelnen Punkte
+
     // Funktion zum Umschalten des Akkordeons
     function toggleAccordion(headerElement) {
         const targetId = headerElement.getAttribute('data-target');
         const content = document.getElementById(targetId);
-        
+        // Da die Unter-Header in den Content-Divs liegen, müssen wir alle Listenelemente finden
+        const allContentItems = content.querySelectorAll('li'); 
+
         // 1. Alle anderen Akkordeons schließen und Active-Status entfernen
         document.querySelectorAll('.rule-content.active').forEach(item => {
             if (item !== content) {
                 item.classList.remove('active');
-                item.previousElementSibling.classList.remove('active');
+                
+                // Entferne Active von allen H2 Headern, die diesem Content vorangehen
+                const correspondingHeader = item.previousElementSibling;
+                if (correspondingHeader && correspondingHeader.tagName === 'H2') {
+                    correspondingHeader.classList.remove('active');
+                    correspondingHeader.classList.remove('glow-active');
+                }
+                
+                // Setze Animation für alle geschlossenen Elemente zurück
+                item.querySelectorAll('li').forEach(li => li.classList.remove('show-item'));
             }
         });
 
@@ -342,79 +416,101 @@
             // Schließen
             content.classList.remove('active');
             headerElement.classList.remove('active');
-            
-            // Glow entfernen (Glow war hier bereits beim Öffnen aktiv)
             headerElement.classList.remove('glow-active'); 
+            
+            allContentItems.forEach(li => li.classList.remove('show-item'));
+            
         } else {
             // Öffnen
             content.classList.add('active');
             headerElement.classList.add('active');
             
-            // 3. Glow-Effekt anwenden
-            // Der Glow wird beim Klick angewendet und nach 2s entfernt
-            headerElement.classList.add('glow-active');
-            setTimeout(() => {
-                headerElement.classList.remove('glow-active');
-            }, 2000); 
+            // 3. Füge den Content-Header (Titel) hinzu, da er jetzt nicht mehr im HTML ist
+            const title = headerElement.getAttribute('data-title');
+            
+            // Füge Header nur hinzu, wenn er noch nicht existiert (verhindert Duplikate beim Nachladen)
+            if (!content.querySelector('.content-header')) {
+                const contentHeader = document.createElement('h2');
+                contentHeader.className = 'content-header';
+                contentHeader.textContent = title;
+                content.prepend(contentHeader);
+            }
+
+            // 4. Glow-Effekt anwenden
+            const finalHeader = content.querySelector('.content-header');
+            if (finalHeader) {
+                finalHeader.classList.add('glow-active');
+                setTimeout(() => {
+                    finalHeader.classList.remove('glow-active');
+                }, 2000); 
+            }
+            
+            // 5. Starte die gestaffelte Einblendung
+            allContentItems.forEach((li, index) => {
+                setTimeout(() => {
+                    li.classList.add('show-item');
+                }, index * ITEM_DELAY); // Verzögert jedes Element um ITEM_DELAY * Index
+            });
         }
     }
 
-    // Setzt die Event Listener für die Quicklinks (diese sollen jetzt das Akkordeon öffnen)
-    document.addEventListener('DOMContentLoaded', () => {
-        const quickNavLinks = document.querySelectorAll('.quick-nav-links a');
+    // Funktion zum Auslösen des Akkordeons durch die Quicklink-Bar (Globale Funktion)
+    function handleAccordionClick(anchorId) {
         
-        quickNavLinks.forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault(); 
-                
-                // Extrahiere die Regel-ID (z.B. 'regeln-s1')
-                const anchorId = link.getAttribute('href').substring(1); 
-                
-                // Bestimme die Content-ID (z.B. 'content-s1')
-                const contentTargetId = anchorId.replace('regeln', 'content');
-                
-                // Finde den Header-Element (h2)
-                const headerElement = document.querySelector(`h2[data-target="${contentTargetId}"]`);
-                
-                if (headerElement) {
-                    // Simuliere den Klick, um das Akkordeon zu öffnen und den Glow auszulösen
-                    toggleAccordion(headerElement);
-                    
-                    // Führe manuelles Scrollen aus, um sicherzustellen, dass der aktive Header im View ist
-                    // Dies ist die lokale (iFrame-interne) Scroll-Logik
-                    const rulesCard = document.querySelector('.rules-card');
-                    
-                    rulesCard.scrollTop = headerElement.offsetTop - 10; // Scrollt zur Position des Headers
-
-                    // *** WICHTIG: Wenn der iFrame sehr lang ist, muss der Elternteil scrollen ***
-                    const iframe = window.frameElement; 
-                    if (iframe) {
-                        const iframeRect = iframe.getBoundingClientRect();
-                        const headerRect = headerElement.getBoundingClientRect();
-                        const offset = 50; 
-                        
-                        // Sende die Nachricht, um die Hauptseite zum iFrame zu scrollen
-                        window.parent.postMessage({
-                            action: 'scrollToElement',
-                            offsetTop: iframeRect.top + window.scrollY + headerRect.top - offset,
-                            scrollBehavior: 'smooth' 
-                        }, '*');
-                    }
+        const targetHeader = document.getElementById(anchorId); // Holt den H2-Header
+        
+        if (targetHeader && targetHeader.hasAttribute('data-target')) {
+            
+            // Prüft, ob wir auf ein bereits aktives Element klicken
+            const contentId = targetHeader.getAttribute('data-target');
+            const contentElement = document.getElementById(contentId);
+            
+            if (contentElement.classList.contains('active')) {
+                // Wenn es bereits aktiv ist, nur den Glow und Scroll triggern
+                const finalHeader = contentElement.querySelector('.content-header');
+                if (finalHeader) {
+                    document.querySelectorAll('.content-header').forEach(h => h.classList.remove('glow-active'));
+                    finalHeader.classList.add('glow-active');
+                    setTimeout(() => {
+                        finalHeader.classList.remove('glow-active');
+                    }, 2000); 
                 }
-            });
-        });
+            } else {
+                // Wenn es inaktiv ist, die gesamte Akkordeon-Funktion auslösen
+                toggleAccordion(targetHeader);
+            }
 
-        // Setzt alle Header auf den data-target, um sie klickbar zu machen
+            // 2. Scrollen der Hauptseite zur iFrame-Position (postMessage)
+            const iframe = window.frameElement; 
+            if (iframe) {
+                const headerRect = targetHeader.getBoundingClientRect();
+                const offset = 90; // Sicherheitsabstand (Sticky Nav)
+                
+                window.parent.postMessage({
+                    action: 'scrollToElement',
+                    // Scrollt zur Position des Headers (Quicklink Bar)
+                    offsetTop: iframe.offsetTop + window.scrollY + headerRect.top - offset,
+                    scrollBehavior: 'smooth' 
+                }, '*'); 
+            }
+        }
+    }
+
+    // Setzt die Event Listener für die H2-Elemente (Akkordeon-Funktion)
+    document.addEventListener('DOMContentLoaded', () => {
+        
+        // Stellt sicher, dass die H2-Elemente, die als Trigger dienen, einen onclick-Handler haben
         document.querySelectorAll('.rule-section h2').forEach(header => {
-             const id = header.id;
-             if (id) {
-                 header.setAttribute('data-target', id.replace('regeln', 'content'));
+             // Der data-target wird vom HTML-Attribut geholt
+             if (!header.hasAttribute('onclick')) {
+                 header.setAttribute('onclick', `toggleAccordion(this)`);
              }
         });
-
-        // Beim Laden soll der erste Block standardmäßig geöffnet sein (optional)
-        const firstHeader = document.querySelector('.rule-section h2');
+        
+        // Beim Laden soll der erste Block standardmäßig geöffnet sein
+        const firstHeader = document.getElementById('regeln-s1');
         if(firstHeader) {
+            // Öffnet den ersten Block, wenn die Seite lädt
             toggleAccordion(firstHeader);
         }
     });
