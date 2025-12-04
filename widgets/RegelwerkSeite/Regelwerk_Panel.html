@@ -60,13 +60,40 @@
             border-bottom: none; 
         }
         
-        /* NEU: H2-Header verstecken, da sie nur zur Struktur dienen */
+        /* KORRIGIERT: H2-Header sind unsichtbar (dienen nur als Anker und ID-Quelle) */
         .rule-section h2 {
             display: none; 
-            /* Hält Platzhalter-Logik */
-            padding: 15px 0;
-            margin: 0;
-            border-bottom: 2px solid rgba(255, 255, 255, 0.1); 
+        }
+
+        /* NEU: STIL FÜR DEN DYNAMISCHEN HAUPT-REGEL-TITEL */
+        .rule-content h3.dynamic-rule-title {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--color-red);
+            padding: 10px 0;
+            margin-top: 0;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--color-red);
+            transition: color 0.3s, text-shadow 0.3s, border-bottom 0.3s; 
+        }
+
+        /* GLOW ZUSTAND AUF DEM DYNAMISCHEN HAUPT-TITEL */
+        .rule-content h3.dynamic-rule-title.glow-active {
+            color: #FFEB3B; /* Gold-Gelb Textfarbe */
+            text-shadow: 0 0 10px rgba(255, 235, 59, 0.9); /* Gold-Gelb Text-Glow */
+            border-bottom: 2px solid #FFEB3B; /* Gold-Gelb Unterstrich */
+        }
+        
+        /* Unter-Header (z.B. "Generelle Bauregeln") */
+        .rule-content h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--color-text);
+            margin-top: 20px;
+            margin-bottom: 10px;
+            /* KORREKTUR: Roter vertikaler Strich entfernt */
+            border-left: none; 
+            padding-left: 0; 
         }
 
         /* --- ACCORDION INHALT --- */
@@ -74,6 +101,7 @@
             max-height: 0; /* Versteckt den Inhalt anfangs */
             overflow: hidden;
             padding: 0 10px;
+            background-color: var(--color-light-dark); /* Hintergrund für den ausgefahrenen Inhalt */
             /* Übergang für das sanfte Ein- und Ausfahren */
             transition: max-height 0.5s ease-in-out, padding 0.5s;
         }
@@ -81,38 +109,7 @@
         .rule-content.active {
             max-height: 5000px; /* Muss größer sein als der längste Inhalt */
             padding: 15px 10px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1); /* Trennlinie zum Content */
-            /* Setzt den Hintergrund der Content-Box */
-            background-color: var(--color-light-dark); 
-        }
-
-        /* NEU: Header des aktiven Inhalts (wird im JS erstellt) */
-        .content-header {
-            font-size: 1.6rem;
-            font-weight: 800;
-            color: var(--color-red);
-            padding: 10px 0;
-            margin-bottom: 20px;
-            border-bottom: 2px solid var(--color-red);
-            transition: color 0.3s, text-shadow 0.3s, border-bottom 0.3s;
-        }
-
-        /* NEU: GLOW ZUSTAND BEIM SPRINGEN */
-        .content-header.glow-active {
-            color: #FFEB3B; /* Gold-Gelb Textfarbe */
-            text-shadow: 0 0 10px rgba(255, 235, 59, 0.9); /* Gold-Gelb Text-Glow */
-            border-bottom: 2px solid #FFEB3B; /* Gold-Gelb Unterstrich */
-        }
-        
-        /* Unter-Header innerhalb der Regeln */
-        .rule-content h3 {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: var(--color-text);
-            margin-top: 20px;
-            margin-bottom: 10px;
-            border-left: 4px solid var(--color-red);
-            padding-left: 10px;
+            border-top: none; 
         }
         
         /* GESTAFFELTER EINBLEND-EFFEKT FÜR LISTENPUNKTE */
@@ -227,7 +224,7 @@
         <!-- DETAILREGELN ABSCHNITTE (Accordion-Elemente) -->
         <div class="rule-section">
             
-            <!-- Die H2 dienen nur noch als Anker und ID-Quelle -->
+            <!-- Die H2 dienen nur noch als Anker und ID-Quelle (unsichtbar) -->
             <h2 id="regeln-s1" data-target="content-s1" data-title="§1 Serverregeln"></h2>
             <div id="content-s1" class="rule-content">
                 <ul>
@@ -391,8 +388,7 @@
     function toggleAccordion(headerElement) {
         const targetId = headerElement.getAttribute('data-target');
         const content = document.getElementById(targetId);
-        // Da die Unter-Header in den Content-Divs liegen, müssen wir alle Listenelemente finden
-        const allContentItems = content.querySelectorAll('li'); 
+        const allContentItems = content.querySelectorAll('li'); // Alle Listenelemente im Inhalt
 
         // 1. Alle anderen Akkordeons schließen und Active-Status entfernen
         document.querySelectorAll('.rule-content.active').forEach(item => {
@@ -406,6 +402,10 @@
                     correspondingHeader.classList.remove('glow-active');
                 }
                 
+                // Entferne den dynamischen Titel, wenn der Bereich geschlossen wird
+                const dynamicTitle = item.querySelector('.dynamic-rule-title');
+                if (dynamicTitle) dynamicTitle.remove();
+
                 // Setze Animation für alle geschlossenen Elemente zurück
                 item.querySelectorAll('li').forEach(li => li.classList.remove('show-item'));
             }
@@ -418,6 +418,10 @@
             headerElement.classList.remove('active');
             headerElement.classList.remove('glow-active'); 
             
+            // Entferne den dynamischen Header beim Schließen
+            const titleToRemove = content.querySelector('.dynamic-rule-title');
+            if (titleToRemove) titleToRemove.remove();
+
             allContentItems.forEach(li => li.classList.remove('show-item'));
             
         } else {
@@ -425,19 +429,19 @@
             content.classList.add('active');
             headerElement.classList.add('active');
             
-            // 3. Füge den Content-Header (Titel) hinzu, da er jetzt nicht mehr im HTML ist
-            const title = headerElement.getAttribute('data-title');
-            
-            // Füge Header nur hinzu, wenn er noch nicht existiert (verhindert Duplikate beim Nachladen)
-            if (!content.querySelector('.content-header')) {
-                const contentHeader = document.createElement('h2');
-                contentHeader.className = 'content-header';
-                contentHeader.textContent = title;
+            // 3. Füge den Content-Header (Titel) hinzu
+            const titleText = headerElement.getAttribute('data-title');
+            if (titleText) {
+                const contentHeader = document.createElement('h3');
+                contentHeader.className = 'dynamic-rule-title';
+                contentHeader.textContent = titleText;
+                // Füge den neuen Titel ganz oben in den Content-Div ein
                 content.prepend(contentHeader);
             }
 
+
             // 4. Glow-Effekt anwenden
-            const finalHeader = content.querySelector('.content-header');
+            const finalHeader = content.querySelector('.dynamic-rule-title');
             if (finalHeader) {
                 finalHeader.classList.add('glow-active');
                 setTimeout(() => {
@@ -461,26 +465,7 @@
         
         if (targetHeader && targetHeader.hasAttribute('data-target')) {
             
-            // Prüft, ob wir auf ein bereits aktives Element klicken
-            const contentId = targetHeader.getAttribute('data-target');
-            const contentElement = document.getElementById(contentId);
-            
-            if (contentElement.classList.contains('active')) {
-                // Wenn es bereits aktiv ist, nur den Glow und Scroll triggern
-                const finalHeader = contentElement.querySelector('.content-header');
-                if (finalHeader) {
-                    document.querySelectorAll('.content-header').forEach(h => h.classList.remove('glow-active'));
-                    finalHeader.classList.add('glow-active');
-                    setTimeout(() => {
-                        finalHeader.classList.remove('glow-active');
-                    }, 2000); 
-                }
-            } else {
-                // Wenn es inaktiv ist, die gesamte Akkordeon-Funktion auslösen
-                toggleAccordion(targetHeader);
-            }
-
-            // 2. Scrollen der Hauptseite zur iFrame-Position (postMessage)
+            // 1. Scrollen der Hauptseite zur iFrame-Position (postMessage)
             const iframe = window.frameElement; 
             if (iframe) {
                 const headerRect = targetHeader.getBoundingClientRect();
@@ -493,19 +478,39 @@
                     scrollBehavior: 'smooth' 
                 }, '*'); 
             }
+            
+            // 2. Löse die Akkordeon-Funktion aus (wenn es geschlossen ist, wird es geöffnet und die Animation startet)
+            if (!targetHeader.classList.contains('active')) {
+                toggleAccordion(targetHeader);
+            } else {
+                // Wenn es bereits aktiv ist: Animation zurücksetzen und Glow neu starten
+                const contentId = targetHeader.getAttribute('data-target');
+                const contentElement = document.getElementById(contentId);
+                
+                // Animation zurücksetzen und neu starten, um den Effekt zu sehen
+                contentElement.querySelectorAll('li').forEach(li => li.classList.remove('show-item'));
+                contentElement.querySelectorAll('li').forEach((li, index) => {
+                     setTimeout(() => {
+                        li.classList.add('show-item');
+                     }, index * ITEM_DELAY);
+                });
+
+                // Glow manuell triggern
+                const finalHeader = contentElement.querySelector('.dynamic-rule-title');
+                if (finalHeader) {
+                    document.querySelectorAll('.dynamic-rule-title').forEach(h => h.classList.remove('glow-active'));
+                    finalHeader.classList.add('glow-active');
+                    setTimeout(() => {
+                        finalHeader.classList.remove('glow-active');
+                    }, 2000); 
+                }
+            }
+            
         }
     }
 
     // Setzt die Event Listener für die H2-Elemente (Akkordeon-Funktion)
     document.addEventListener('DOMContentLoaded', () => {
-        
-        // Stellt sicher, dass die H2-Elemente, die als Trigger dienen, einen onclick-Handler haben
-        document.querySelectorAll('.rule-section h2').forEach(header => {
-             // Der data-target wird vom HTML-Attribut geholt
-             if (!header.hasAttribute('onclick')) {
-                 header.setAttribute('onclick', `toggleAccordion(this)`);
-             }
-        });
         
         // Beim Laden soll der erste Block standardmäßig geöffnet sein
         const firstHeader = document.getElementById('regeln-s1');
