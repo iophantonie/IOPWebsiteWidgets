@@ -54,8 +54,6 @@
             padding-bottom: 10px;
         }
 
-        /* Layout für die Einstellungs-Liste (Kurz-Übersicht) wurde entfernt */
-        
         /* --- Regelwerk Sektionen --- */
         .rule-section h2 {
             font-size: 1.6rem;
@@ -65,6 +63,17 @@
             margin-top: 30px;
             border-bottom: 2px solid var(--color-red);
             scroll-margin-top: 100px; /* Wichtig für Quicklinks */
+            /* Behält die Transition bei, damit der Glow sanft erscheint */
+            transition: color 0.3s, text-shadow 0.3s, border-bottom 0.3s; 
+        }
+
+        /* NEU: GLOW ZUSTAND BEIM SPRINGEN */
+        .rule-section h2.glow-active {
+            /* GLOW NUR AUF TEXT UND LINIE */
+            color: #FFEB3B; /* Gold-Gelb Textfarbe */
+            text-shadow: 0 0 10px rgba(255, 235, 59, 0.9); /* Gold-Gelb Text-Glow */
+            border-bottom: 2px solid #FFEB3B; /* Gold-Gelb Unterstrich */
+            /* transform: scale(1.01) und box-shadow wurden entfernt */
         }
         
         /* Unter-Header innerhalb der Regeln */
@@ -171,17 +180,15 @@
         <!-- QUICKLINK NAVIGATION BAR -->
         <div class="quick-nav">
             <div class="quick-nav-links">
-                <a href="#regeln-s1">§1 Server</a>
-                <a href="#regeln-s2">§2 Verhalten</a>
-                <a href="#regeln-s3">§3 Bauen</a>
-                <a href="#regeln-s4">§4 Admin</a>
-                <a href="#regeln-s5">§5 Zucht</a>
-                <a href="#regeln-s6">§6 Strike</a>
-                <a href="#regeln-s7">§7 Marktplatz</a>
+                <a href="#regeln-s1" onclick="applyGlow(event, 'regeln-s1')">§1 Server</a>
+                <a href="#regeln-s2" onclick="applyGlow(event, 'regeln-s2')">§2 Verhalten</a>
+                <a href="#regeln-s3" onclick="applyGlow(event, 'regeln-s3')">§3 Bauen</a>
+                <a href="#regeln-s4" onclick="applyGlow(event, 'regeln-s4')">§4 Admin</a>
+                <a href="#regeln-s5" onclick="applyGlow(event, 'regeln-s5')">§5 Zucht</a>
+                <a href="#regeln-s6" onclick="applyGlow(event, 'regeln-s6')">§6 Strike</a>
+                <a href="#regeln-s7" onclick="applyGlow(event, 'regeln-s7')">§7 Marktplatz</a>
             </div>
         </div>
-
-        <!-- KURZÜBERSICHT EINSTELLUNGEN WURDE ENTFERNT -->
 
         <!-- DETAILREGELN ABSCHNITTE -->
         <div class="rule-section">
@@ -326,3 +333,44 @@
 
 </body>
 </html>
+
+<script>
+    function applyGlow(event, targetId) {
+        // Verzögert das Standard-Scrollen, um Zeit für den Glow zu geben.
+        event.preventDefault(); 
+        
+        const targetElement = document.getElementById(targetId);
+        if (!targetElement) return;
+
+        const allHeaders = document.querySelectorAll('.rule-section h2');
+
+        // 1. Entferne Glow von allen Headern
+        allHeaders.forEach(header => {
+            header.classList.remove('glow-active');
+        });
+
+        // 2. Wende Glow auf den Ziel-Header an
+        targetElement.classList.add('glow-active');
+
+        // 3. Führe den nativen Smooth Scroll aus
+        window.location.hash = targetId;
+
+        // 4. Entferne den Glow nach 2 Sekunden (Glow-Dauer)
+        setTimeout(() => {
+            targetElement.classList.remove('glow-active');
+        }, 2000);
+    }
+
+    // Setze die Event Listener neu, da sie durch das HTML-Update verloren gehen könnten
+    document.addEventListener('DOMContentLoaded', () => {
+        const links = document.querySelectorAll('.quick-nav-links a');
+        
+        links.forEach(link => {
+            // Verhindert, dass der Browser das Anker-Ziel direkt lädt
+            link.addEventListener('click', (e) => {
+                const targetId = link.getAttribute('href').substring(1); // #regeln-s1 -> regeln-s1
+                applyGlow(e, targetId);
+            });
+        });
+    });
+</script>
