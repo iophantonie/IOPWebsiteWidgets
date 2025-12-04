@@ -13,8 +13,10 @@
             --color-light-dark: rgba(30, 30, 30, 0.95);
         }
         
-        /* Smooth Scrolling entfernen, da es jetzt extern gesteuert wird */
-        /* html { scroll-behavior: smooth; } */
+        /* NEU: Aktiviert Smooth Scrolling für alle Anker-Sprünge */
+        html {
+            scroll-behavior: smooth;
+        }
 
         /* Wichtig: Der Body des iFrames muss transparent sein. */
         body {
@@ -24,6 +26,7 @@
             margin: 0;
             padding: 0;
             padding: 20px; 
+            /* WIEDER HERGESTELLT: Zentrierung für die Vorschau */
             display: flex;
             justify-content: center;
         }
@@ -38,6 +41,7 @@
             max-width: 1200px; 
             border: 3px solid var(--color-red);
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+            /* margin: 0 auto entfernt, da flex im body es übernimmt */
         }
         
         /* Hauptüberschrift */
@@ -392,42 +396,5 @@
             // damit das Event-Handling im iFrame zuverlässig ist.
             // Der event listener unten ist nur ein Backup.
         });
-    });
-</script>
-```
-
-Das ist eine sehr wichtige und absolut korrekte Feststellung!
-
-Sie haben vollkommen recht: **Da Sie mit iFrames arbeiten, kann das iFrame selbst keinen "Smooth Scroll" der gesamten Elterseite auslösen, die den Haupt-Scrollbalken enthält.**
-
-### Das Problem
-
-1.  **Sicherheit:** Browser blockieren aus Sicherheitsgründen standardmäßig, dass Code in einem iFrame die Hauptseite (Elterseite) steuert, wenn diese von einer anderen Domain stammt (Cross-Origin Policy).
-2.  **Lösung:** Die einzige Möglichkeit ist die Kommunikation über **`postMessage`** (Nachrichten senden). Das iFrame sendet die Ziel-Position, und **Ihre Hauptseite (der Code im Website Builder) muss auf diese Nachricht warten und das Scrollen ausführen.**
-
-Ich habe das JavaScript im Canvas (`widget_server_regeln.html`) bereits so angepasst, dass es die **Nachricht sendet** (siehe Code im letzten Beitrag).
-
-### Was Sie als Nächstes tun müssen (KRITISCHER SCHRITT)
-
-Der Code im Canvas sendet nun die Nachricht. Sie müssen jetzt den **Empfänger-Code** auf Ihrer Gameserversapp-Website (der Seite, die das iFrame enthält) implementieren.
-
-Diesen Code müssen Sie einmalig in einen **"Custom JavaScript"**- oder **"HTML/Code"**-Block auf Ihrer Hauptseite einfügen.
-
-**Kopieren Sie diesen Code und fügen Sie ihn in die Hauptseite ein, die das Regelwerk-iFrame enthält:**
-
-```javascript
-<script>
-    window.addEventListener('message', function(event) {
-        // Prüft, ob die Nachricht die richtige Aktion hat und von einem iFrame gesendet wurde
-        if (event.data && event.data.action === 'scrollToElement') {
-            
-            const targetY = event.data.offsetTop;
-            
-            // Führt den tatsächlichen Smooth Scroll auf der Hauptseite aus
-            window.scrollTo({
-                top: targetY,
-                behavior: 'smooth'
-            });
-        }
     });
 </script>
