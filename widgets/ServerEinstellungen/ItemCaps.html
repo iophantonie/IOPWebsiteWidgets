@@ -36,10 +36,11 @@
             font-family: var(--font-main);
             color: var(--color-text);
             margin: 0;
-            padding: 20px; 
+            padding: 0; /* KORRIGIERT: Padding entfernt, um horizontalen Scroll zu vermeiden */
             display: flex;
             justify-content: center;
             width: 100%; 
+            box-sizing: border-box;
         }
 
         /* Haupt-Card Container */
@@ -55,6 +56,7 @@
             border: 3px solid var(--color-red);
             transition: box-shadow 0.3s;
             box-sizing: border-box;
+            margin: 20px; /* Fügt den externen Abstand wieder hinzu */
         }
 
         /* Hover-Effekt: Rot-Glow beim Hover */
@@ -67,8 +69,8 @@
         .main-header {
             font-size: 2rem;
             font-weight: 800;
-            color: var(--color-accent-header);
-            font-family: var(--font-header);
+            color: var(--color-accent-header); /* Rot */
+            font-family: var(--font-header); /* Acme Schrift */
             margin-bottom: 0.5rem;
             text-transform: uppercase;
             border-bottom: 2px solid var(--color-accent-header);
