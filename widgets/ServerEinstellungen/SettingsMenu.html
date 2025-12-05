@@ -106,7 +106,19 @@
             box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.3);
             
             /* Anpassung, um Header-Platz zu schaffen */
-            margin-top: 80px; 
+            margin-top: 0; 
+        }
+        
+        /* NEU: Stil für die Trenn-Header im Menü */
+        .nav-group-separator {
+            font-family: var(--font-header);
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--color-red);
+            text-transform: uppercase;
+            margin: 10px 0 5px 0;
+            padding: 5px 15px;
+            border-bottom: 1px dashed var(--color-red);
         }
 
         .accordion-header {
@@ -149,7 +161,7 @@
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
             
             /* Anpassung für gestapeltes Layout */
-            margin-top: 80px; 
+            margin-top: 0; 
         }
 
         .accordion-content {
@@ -223,7 +235,7 @@
             text-align: right;
         }
         .multiplier-col {
-             color: var(--color-rate-accent); /* Orange für Multiplier */
+             color: var(--color-rate-accent); /* Rot für Multiplier */
         }
         
         /* Spezifische Dino Level Farben (FIX: Typ und Level in korrekter Farbe) */
@@ -290,10 +302,14 @@
         <!-- Linke Navigationsleiste -->
         <div class="left-nav">
             
+            <!-- SERVER EINSTELLUNGEN HEADER -->
+            <div class="nav-group-separator">Server Einstellungen</div>
+
             <!-- Die Header-IDs werden direkt in der Funktion verwendet -->
             <div id="nav-rates" class="accordion-header" onclick="toggleAccordion('content-rates', 'nav-rates')">
                 Server Raten
             </div>
+            
             <div id="nav-dino-level" class="accordion-header" onclick="toggleAccordion('content-dino-level', 'nav-dino-level')">
                 Dino Level Limits
             </div>
