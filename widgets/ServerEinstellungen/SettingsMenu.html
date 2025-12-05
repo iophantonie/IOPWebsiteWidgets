@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Server Einstellungen Akkordeon</title>
+    <link href="https://fonts.googleapis.com/css2?family=Acme:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Farben und Schriftarten */
+        :root {
+            --color-red: #E53935; /* Feuerrot */
+            --color-dark: rgba(20, 20, 20, 0.95);
+            --color-text: #f7f7f7;
+            --color-light-dark: rgba(30, 30, 30, 0.95);
+            --color-gold: #FFEB3B;
+            
+            /* Akzente */
+            --color-accent-header: var(--color-red); 
+            --color-cap: #D32F2F; 
+            --color-gray-outline: #AAAAAA;
+            
+            /* DINO FARBEN (Final nach Kundenwunsch) */
+            --color-tek: #5DADE2;           /* Blau: Tek Dinos */
+            --color-wyvern-red: #FF4444;    /* Rot: Wyvern */
+            --color-rockdrake: #9B59B6;     /* Lila: Rock Drakes */
+            --color-crystal-yellow: #F7DC6F; /* Gelblich: Crystal Wyvern */
+
+            /* RÜSTUNGSFARBEN */
+            --color-swat: #5D6D7E; 
+            --color-flak: #AAB7B8; 
+            --color-chitin: #A569BD; 
+            --color-fur: #F4D03F; 
+            --color-ghillie: #58D68D;
+            
+            --font-main: sans-serif;
+            --font-header: 'Acme', var(--font-main);
+        }
+
+        /* Wichtig: Der Body des iFrames muss transparent sein. */
+        body {
+            background-color: transparent;
+            font-family: var(--font-main); /* Standard-Text */
+            color: var(--color-text);
+            margin: 0;
+            /* KORRIGIERT: Padding auf 20px gesetzt, um die Card nicht direkt am Rand kleben zu lassen */
+            padding: 20px; 
+            display: flex;
+            justify-content: center;
+            width: 100%; 
+            box-sizing: border-box;
+            overflow-x: hidden; /* Sicherstellen, dass kein horizontales Scrollen erzwungen wird */
+        }
+
+        /* Haupt-Card Container (Übernimmt 1600px Breite vom Mod-Widget) */
+        .settings-card-main {
+            background-color: var(--color-dark);
+            border-radius: 12px;
+            padding: 1.5rem;
+            width: 100%;
+            max-width: 1600px; 
+            border: 3px solid var(--color-red);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+            
+            /* NEU: Flex-Container für Navigation links und Content rechts */
+            display: flex;
+            gap: 20px;
+            min-height: 500px; /* Mindesthöhe für das Layout */
+            box-sizing: border-box;
+        }
+        
+        /* HAUPTÜBERSCHRIFT (Wie in den anderen Widgets) */
+        .main-widget-header {
+            /* Passt Header an, damit er über die linke Navigationsspalte geht */
+            position: absolute;
+            top: 20px; /* Gleicher Abstand wie Body-Padding */
+            left: 20px;
+            right: 20px;
+            
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--color-accent-header);
+            font-family: var(--font-header);
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+            text-align: center;
+            border-bottom: 3px solid var(--color-accent-header);
+            padding-bottom: 10px;
+        }
+
+        /* --- LINKES NAVIGATIONS-MENÜ --- */
+        .left-nav {
+            flex: 0 0 250px; /* Feste Breite für die Navigation */
+            background-color: var(--color-light-dark);
+            border-radius: 8px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.3);
+            
+            /* Anpassung, um Header-Platz zu schaffen */
+            margin-top: 80px; 
+        }
+
+        .accordion-header {
+            /* Wird zum Button */
+            background-color: transparent;
+            padding: 10px 15px;
+            font-size: 1rem;
+            font-weight: 800;
+            color: var(--color-text);
+            font-family: var(--font-header);
+            cursor: pointer;
+            border-left: 3px solid transparent; /* Akzentlinie links */
+            transition: all 0.2s;
+            text-align: left;
+        }
+
+        .accordion-header:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+        
+        /* Zustand für aktiven Button */
+        .accordion-header.active {
+             background-color: rgba(40, 40, 40, 0.95);
+             border-left-color: var(--color-gold); 
+             color: var(--color-gold); 
+             text-shadow: 0 0 5px rgba(255, 235, 59, 0.5); /* Leichter Glow */
+        }
+        
+        /* Pfeil/Indikator entfernt, da es eine vertikale Liste ist */
+        .arrow {
+            display: none;
+        }
+
+        /* --- RECHTER INHALTSBEREICH --- */
+        .right-content-area {
+            flex-grow: 1; /* Nimmt den restlichen Platz ein */
+            background-color: var(--color-light-dark);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            
+            /* Anpassung, um Header-Platz zu schaffen */
+            margin-top: 80px; 
+        }
+
+        .accordion-content {
+            /* Content ist standardmäßig nicht ausgeblendet, sondern wird dynamisch geladen */
+            display: none;
+            padding: 0;
+            background-color: transparent;
+        }
+        
+        .accordion-content.active {
+            display: block;
+        }
+
+        /* --- INHALTSSTILE (Für die Tabellen) --- */
+        .table-container {
+            padding: 10px 0;
+        }
+        
+        .section-header-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--color-text);
+            font-family: var(--font-header);
+            margin-top: 1.5rem;
+            margin-bottom: 0.8rem;
+            padding-left: 5px;
+            border-left: 3px solid var(--color-red);
+        }
+
+        .description {
+            font-size: 1rem;
+            color: var(--color-text);
+            margin-bottom: 1rem;
+            opacity: 0.8;
+            line-height: 1.4;
+        }
+
+        /* TABELLEN-STIL */
+        .caps-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .caps-table th, .caps-table td {
+            padding: 12px 10px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+        }
+        .caps-table th {
+            background-color: rgba(255, 255, 255, 0.05); 
+            font-size: 0.9rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--color-text);
+            border-bottom: 2px solid var(--color-accent-header);
+        }
+        .caps-table td { font-size: 1rem; color: var(--color-text); }
+        .caps-table tr:hover { background-color: rgba(255, 255, 255, 0.05); }
+
+        /* Detail-Spalten */
+        .type-col { width: 70%; }
+        .max-level-col, .max-value-col {
+            width: 30%;
+            font-weight: 600;
+            text-align: right;
+        }
+        
+        /* Spezifische Dino Level Farben (Hier werden die Dino-Typen eingefärbt) */
+        .standard-row .item-col { color: var(--color-text); } 
+        .tek-row .item-col { color: var(--color-tek); } 
+        .wyvern-row .item-col { color: var(--color-wyvern-red); } 
+        .rockdrake-row .item-col { color: var(--color-rockdrake); }
+        .crystal-row .item-col { color: var(--color-crystal-yellow); }
+
+        /* Spezifische Rüstungsfarben (Hier werden die Rüstungs-Typen eingefärbt) */
+        .tek-row .item-col.armor-type { color: var(--color-tek); }
+        .swat-row .item-col.armor-type { color: var(--color-swat); }
+        .flak-row .item-col.armor-type { color: var(--color-flak); }
+        .chitin-row .item-col.armor-type { color: var(--color-chitin); }
+        .fur-row .item-col.armor-type { color: var(--color-fur); }
+        .ghillie-row .item-col.armor-type { color: var(--color-ghillie); }
+
+        /* Max Level / Max Value Spalten (Rot beibehalten) */
+        .max-level-col { color: var(--color-red); }
+        .max-value-col { color: var(--color-cap); }
+    </style>
+</head>
+<body>
+
+    <div class="settings-card-main">
+        
+        <!-- HAUPTÜBERSCHRIFT ABSOLUT POSITIONIERT -->
+        <div class="main-widget-header">Server Einstellungen & Balancen</div>
+
+        <!-- Linke Navigationsleiste -->
+        <div class="left-nav">
+            
+            <!-- Die Header-IDs werden direkt in der Funktion verwendet -->
+            <div id="nav-dino-level" class="accordion-header" onclick="toggleAccordion('content-dino-level', 'nav-dino-level')">
+                Dino Level Limits
+            </div>
+            <div id="nav-item-caps" class="accordion-header" onclick="toggleAccordion('content-item-caps', 'nav-item-caps')">
+                Item & Crafting Caps
+            </div>
+            <div id="nav-rates" class="accordion-header" onclick="toggleAccordion('content-rates', 'nav-rates')">
+                XP, Farmen & Zähmung Raten
+            </div>
+        </div>
+        
+        <!-- Rechter Inhaltsbereich -->
+        <div class="right-content-area">
+            
+            <!-- AKKORDEON FÜR DINO LEVEL -->
+            <div id="content-dino-level" class="accordion-content">
+                <div class="table-container">
+                    <div class="section-header-title">Dino Level</div>
+                    <div class="description">
+                        Wir haben die maximalen Dino-Level für verschiedene Kreaturtypen angepasst:
+                    </div>
+                    <table class="caps-table">
+                        <thead>
+                            <tr>
+                                <th class="type-col">Dino Typ</th>
+                                <th class="max-level-col">Max Level</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="standard-row">
+                                <td class="item-col">Standard Dinos</td>
+                                <td class="max-level-col">150</td>
+                            </tr>
+                            <tr class="tek-row">
+                                <td class="item-col">Tek Dinos</td>
+                                <td class="max-level-col">180</td>
+                            </tr>
+                            <tr class="wyvern-row">
+                                <td class="item-col">Wyvern</td>
+                                <td class="max-level-col">190</td>
+                            </tr>
+                            <tr class="rockdrake-row">
+                                <td class="item-col">Rock Drakes</td>
+                                <td class="max-level-col">190</td>
+                            </tr>
+                            <tr class="crystal-row">
+                                <td class="item-col">Crystal Wyvern</td>
+                                <td class="max-level-col">225</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- AKKORDEON FÜR ITEM CAPS -->
+            <div id="content-item-caps" class="accordion-content">
+                <div class="table-container">
+                    
+                    <!-- RÜSTUNGS-CAPS SEKTION -->
+                    <div class="section-header-title">Rüstungs Caps</div>
+                    <div class="description">
+                        Rüstungen und Baupläne sind auf einen maximalen Rüstungswert begrenzt. Dieser variiert je nach Rüstungsart:
+                    </div>
+            
+                    <table class="caps-table">
+                        <thead>
+                            <tr>
+                                <th class="item-col">Rüstungstyp</th>
+                                <th class="max-value-col">Max Rüstungswert</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="tek-row">
+                                <td class="item-col armor-type">Tek-Rüstung</td>
+                                <td class="max-value-col">1125</td>
+                            </tr>
+                            <tr class="swat-row">
+                                <td class="item-col armor-type">SWAT-Rüstung</td>
+                                <td class="max-value-col">920</td>
+                            </tr>
+                            <tr class="flak-row">
+                                <td class="item-col armor-type">Flak-Rüstung</td>
+                                <td class="max-value-col">800</td>
+                            </tr>
+                            <tr class="chitin-row">
+                                <td class="item-col armor-type">Chitin-Rüstung</td>
+                                <td class="max-value-col">400</td>
+                            </tr>
+                            <tr class="fur-row">
+                                <td class="item-col armor-type">Pelz Rüstung</td>
+                                <td class="max-value-col">320</td>
+                            </tr>
+                            <tr class="ghillie-row">
+                                <td class="item-col armor-type">Ghilli Rüstung</td>
+                                <td class="max-value-col">256</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <!-- WAFFEN-CAPS SEKTION -->
+                    <div class="section-header-title">Waffen & Werkzeuge Damage Cap</div>
+                    <div class="description">
+                        Alle Waffen und Werkzeugbaupläne sind auf einen Schadenswert von maximal 400 % Schaden begrenzt.
+                    </div>
+                    <table class="caps-table">
+                        <thead>
+                            <tr>
+                                <th class="item-col">Item Typ</th>
+                                <th class="max-value-col">Max Schaden</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="weapon-row">
+                                <td class="item-col">Waffen (Nahkampf & Fernkampf)</td>
+                                <td class="max-value-col">400 %</td>
+                            </tr>
+                            <tr class="tool-row">
+                                <td class="item-col">Werkzeuge (Äxte, Spitzhacken etc.)</td>
+                                <td class="max-value-col">400 %</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <!-- SÄTTEL-CAPS SEKTION -->
+                    <div class="section-header-title">Sättel Rüstungs Cap</div>
+                    <div class="description">
+                        Alle Sättel im Spiel sind auf diesen maximalen Rüstungswert begrenzt.
+                    </div>
+                    <table class="caps-table">
+                        <thead>
+                            <tr>
+                                <th class="item-col">Sattel Typ</th>
+                                <th class="max-value-col">Max Rüstungswert</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="saddle-row">
+                                <td class="item-col">Alle Sättel</td>
+                                <td class="max-value-col">200.0</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        
+            <!-- PLATZHALTER AKKORDEON FÜR KÜNFTIGE RATEN -->
+            <div id="content-rates" class="accordion-content">
+                <div class="table-container">
+                    <div class="section-header-title">Work-in-Progress</div>
+                    <div class="description">
+                        Hier werden bald die Multiplikatoren und Raten für XP, Farmen und Zähmen angezeigt.
+                    </div>
+                </div>
+            </div>
+
+        </div> <!-- Ende Rechter Content Area -->
+
+    </div>
+
+    <script>
+        // Funktion zum Umschalten des Akkordeons
+        function toggleAccordion(contentId, headerId) {
+            const content = document.getElementById(contentId);
+            const header = document.getElementById(headerId); // Header-Element direkt über ID holen
+            const allHeaders = document.querySelectorAll('.left-nav .accordion-header');
+            const allContent = document.querySelectorAll('.right-content-area .accordion-content');
+            
+            if (!header || !content) {
+                console.error('Element nicht gefunden:', headerId, contentId);
+                return; 
+            }
+
+            const isActive = header.classList.contains('active');
+
+            // 1. Alle Header und Inhalte deaktivieren
+            allHeaders.forEach(h => h.classList.remove('active'));
+            allContent.forEach(c => c.classList.remove('active'));
+
+            // 2. Ziel-Akkordeon umschalten
+            if (!isActive) {
+                // Öffnen
+                content.classList.add('active');
+                header.classList.add('active');
+            }
+        }
+        
+        // Initialisierung: Stellt sicher, dass das erste Element beim Laden aktiv ist
+        document.addEventListener('DOMContentLoaded', () => {
+            const firstHeaderId = 'nav-dino-level';
+            const firstContentId = 'content-dino-level';
+            const firstHeader = document.getElementById(firstHeaderId);
+            
+            // Führt toggleAccordion nur aus, wenn der Header existiert (um den aktiven Zustand zu setzen)
+            if (firstHeader) {
+                // Manuelles Setzen des ersten Zustands
+                document.getElementById(firstContentId).classList.add('active');
+                firstHeader.classList.add('active');
+            }
+        });
+    </script>
+</body>
+</html>
