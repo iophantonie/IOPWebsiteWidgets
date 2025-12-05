@@ -36,6 +36,8 @@
             padding: 20px; 
             display: flex;
             justify-content: center;
+            /* Sorgt dafür, dass der Body die volle Breite des Containers nutzt */
+            width: 100%; 
         }
 
         /* Haupt-Card Container */
@@ -44,11 +46,12 @@
             border-radius: 12px;
             padding: 1.5rem;
             width: 100%;
-            max-width: 600px;
+            /* KORRIGIERT: Entfernt max-width, um die volle Breite zu ermöglichen */
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
             /* Feuerrote Außenlinie */
             border: 3px solid var(--color-red);
             transition: box-shadow 0.3s;
+            box-sizing: border-box;
         }
 
         /* Hover-Effekt: Rot-Glow beim Hover (wie Mod-Liste) */
@@ -106,7 +109,7 @@
         }
         
         .level-table th:nth-child(2) {
-             /* Multiplikator-Spalte rechtsbündig (für die Zahlen) */
+             /* Max Level Spalte rechtsbündig */
             text-align: right;
             padding-right: 10px;
         }
@@ -117,7 +120,7 @@
         }
         
         .level-table td:nth-child(2) {
-             /* Multiplikator-Wert rechtsbündig */
+             /* Max Level Wert rechtsbündig */
             text-align: right;
         }
 
