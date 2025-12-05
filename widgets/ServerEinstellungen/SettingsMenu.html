@@ -199,7 +199,7 @@
             color: var(--color-text);
             border-bottom: 2px solid var(--color-accent-header);
         }
-        .caps-table td { font-size: 1rem; color: var(--color-text); }
+        .caps-table td { font-size: 1rem; }
         .caps-table tr:hover { background-color: rgba(255, 255, 255, 0.05); }
 
         /* Detail-Spalten */
@@ -211,11 +211,12 @@
         }
         
         /* Spezifische Dino Level Farben (Hier werden die Dino-Typen eingefärbt) */
-        .standard-row .item-col { color: var(--color-text); } 
-        .tek-row .item-col { color: var(--color-tek); } 
-        .wyvern-row .item-col { color: var(--color-wyvern-red); } 
-        .rockdrake-row .item-col { color: var(--color-rockdrake); }
-        .crystal-row .item-col { color: var(--color-crystal-yellow); }
+        /* Zelle (item-col) und Max Level Spalte (max-level-col) erhalten beide die Farbe */
+        .standard-row .item-col, .standard-row .max-level-col { color: var(--color-text); } 
+        .tek-row .item-col, .tek-row .max-level-col { color: var(--color-tek); } 
+        .wyvern-row .item-col, .wyvern-row .max-level-col { color: var(--color-wyvern-red); } 
+        .rockdrake-row .item-col, .rockdrake-row .max-level-col { color: var(--color-rockdrake); }
+        .crystal-row .item-col, .crystal-row .max-level-col { color: var(--color-crystal-yellow); }
 
         /* Spezifische Rüstungsfarben (Hier werden die Rüstungs-Typen eingefärbt) */
         .tek-row .item-col.armor-type { color: var(--color-tek); }
@@ -225,8 +226,7 @@
         .fur-row .item-col.armor-type { color: var(--color-fur); }
         .ghillie-row .item-col.armor-type { color: var(--color-ghillie); }
 
-        /* Max Level / Max Value Spalten (Rot beibehalten) */
-        .max-level-col { color: var(--color-red); }
+        /* Max Value Spalten (Rot beibehalten) */
         .max-value-col { color: var(--color-cap); }
     </style>
 </head>
@@ -241,19 +241,29 @@
         <div class="left-nav">
             
             <!-- Die Header-IDs werden direkt in der Funktion verwendet -->
+            <div id="nav-rates" class="accordion-header" onclick="toggleAccordion('content-rates', 'nav-rates')">
+                Server Raten
+            </div>
             <div id="nav-dino-level" class="accordion-header" onclick="toggleAccordion('content-dino-level', 'nav-dino-level')">
                 Dino Level Limits
             </div>
             <div id="nav-item-caps" class="accordion-header" onclick="toggleAccordion('content-item-caps', 'nav-item-caps')">
                 Item & Crafting Caps
             </div>
-            <div id="nav-rates" class="accordion-header" onclick="toggleAccordion('content-rates', 'nav-rates')">
-                XP, Farmen & Zähmung Raten
-            </div>
         </div>
         
         <!-- Rechter Inhaltsbereich -->
         <div class="right-content-area">
+            
+            <!-- PLATZHALTER AKKORDEON FÜR KÜNFTIGE RATEN -->
+            <div id="content-rates" class="accordion-content">
+                <div class="table-container">
+                    <div class="section-header-title">Work-in-Progress</div>
+                    <div class="description">
+                        Hier werden bald die Multiplikatoren und Raten für XP, Farmen und Zähmen angezeigt.
+                    </div>
+                </div>
+            </div>
             
             <!-- AKKORDEON FÜR DINO LEVEL -->
             <div id="content-dino-level" class="accordion-content">
