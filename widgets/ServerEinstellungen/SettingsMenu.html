@@ -33,7 +33,7 @@
             --color-ghillie: #58D68D;
 
             /* RATEN FARBEN */
-            --color-rate-header: #FF8800; /* Orange für Raten-Header */
+            --color-rate-accent: var(--color-red); /* Akzentlinie jetzt Rot */
             
             --font-main: sans-serif;
             --font-header: 'Acme', var(--font-main);
@@ -212,7 +212,7 @@
             color: var(--color-text);
             border-bottom: 2px solid var(--color-accent-header);
         }
-        .caps-table td { font-size: 1rem; color: var(--color-text); }
+        .caps-table td { font-size: 1rem; }
         .caps-table tr:hover { background-color: rgba(255, 255, 255, 0.05); }
 
         /* Detail-Spalten */
@@ -222,9 +222,19 @@
             font-weight: 600;
             text-align: right;
         }
-        .multiplier-col {
-             color: var(--color-rate-header); /* Orange für Multiplier */
+        
+        /* Spezifische Farben für Raten-Sektion */
+        .rates-table-block .section-header-title {
+            color: var(--color-text) !important; /* Text soll weiß sein */
+            border-left-color: var(--color-rate-accent) !important;
         }
+        .rates-table-block .caps-table th {
+            color: var(--color-text) !important; /* Header Text soll weiß sein */
+        }
+        .rates-table-block .multiplier-col {
+             color: var(--color-rate-accent) !important; /* Multiplier Rot/Orange (Akzent) */
+        }
+
         
         /* Spezifische Dino Level Farben (FIX: Typ und Level in korrekter Farbe) */
         .standard-row .item-col, .standard-row .max-level-col { color: var(--color-text) !important; } 
@@ -314,12 +324,12 @@
                     </div>
 
                     <div class="rates-table-block">
-                        <div class="section-header-title" style="border-left-color: var(--color-rate-header); color: var(--color-rate-header); margin-top: 0.5rem;">Werktags-Raten</div>
+                        <div class="section-header-title" style="border-left-color: var(--color-rate-accent); color: var(--color-text); margin-top: 0.5rem;">Werktags-Raten</div>
                         <table class="caps-table">
                             <thead>
                                 <tr>
-                                    <th class="type-col" style="color: var(--color-rate-header);">Einstellung</th>
-                                    <th class="multiplier-col" style="color: var(--color-rate-header);">Multiplikator</th>
+                                    <th class="type-col" style="color: var(--color-text);">Einstellung</th>
+                                    <th class="multiplier-col" style="color: var(--color-rate-accent);">Multiplikator</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -336,12 +346,12 @@
                     </div>
 
                     <div class="rates-table-block">
-                        <div class="section-header-title" style="border-left-color: var(--color-rate-header); color: var(--color-rate-header); margin-top: 0.5rem;">Wochenend-Raten</div>
+                        <div class="section-header-title" style="border-left-color: var(--color-rate-accent); color: var(--color-text); margin-top: 0.5rem;">Wochenend-Raten</div>
                         <table class="caps-table">
                             <thead>
                                 <tr>
-                                    <th class="type-col" style="color: var(--color-rate-header);">Einstellung</th>
-                                    <th class="multiplier-col" style="color: var(--color-rate-header);">Multiplikator</th>
+                                    <th class="type-col" style="color: var(--color-text);">Einstellung</th>
+                                    <th class="multiplier-col" style="color: var(--color-rate-accent);">Multiplikator</th>
                                 </tr>
                             </thead>
                             <tbody>
