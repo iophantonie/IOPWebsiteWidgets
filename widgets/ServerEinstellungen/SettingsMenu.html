@@ -212,7 +212,7 @@
             color: var(--color-text);
             border-bottom: 2px solid var(--color-accent-header);
         }
-        .caps-table td { font-size: 1rem; }
+        .caps-table td { font-size: 1rem; color: var(--color-text); }
         .caps-table tr:hover { background-color: rgba(255, 255, 255, 0.05); }
 
         /* Detail-Spalten */
@@ -222,19 +222,9 @@
             font-weight: 600;
             text-align: right;
         }
-        
-        /* Spezifische Farben für Raten-Sektion */
-        .rates-table-block .section-header-title {
-            color: var(--color-text) !important; /* Text soll weiß sein */
-            border-left-color: var(--color-rate-accent) !important;
+        .multiplier-col {
+             color: var(--color-rate-accent); /* Orange für Multiplier */
         }
-        .rates-table-block .caps-table th {
-            color: var(--color-text) !important; /* Header Text soll weiß sein */
-        }
-        .rates-table-block .multiplier-col {
-             color: var(--color-rate-accent) !important; /* Multiplier Rot/Orange (Akzent) */
-        }
-
         
         /* Spezifische Dino Level Farben (FIX: Typ und Level in korrekter Farbe) */
         .standard-row .item-col, .standard-row .max-level-col { color: var(--color-text) !important; } 
@@ -294,7 +284,7 @@
         
         <!-- HAUPTÜBERSCHRIFT ABSOLUT POSITIONIERT -->
         <div class="main-widget-header-wrapper">
-             <div class="main-widget-header">Server Einstellungen & Balancen</div>
+             <div class="main-widget-header">Server Einstellungen & Balancing</div>
         </div>
 
         <!-- Linke Navigationsleiste -->
