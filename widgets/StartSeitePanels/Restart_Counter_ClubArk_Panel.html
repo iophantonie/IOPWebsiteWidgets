@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Server Restart Bar Widget (01:00)</title>
+    <style>
+        /* Farben und Schriftarten */
+        :root {
+            --color-red: #E53935; /* Feuerrot */
+            --color-dark: rgba(20, 20, 20, 0.95);
+            --color-text: #f7f7f7;
+            --font-header: 'Acme', sans-serif;
+            --font-main: sans-serif;
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Acme&display=swap');
+
+        /* Wichtig: Der Body des iFrames muss transparent sein. */
+        body {
+            background-color: transparent;
+            font-family: var(--font-main);
+            color: var(--color-text);
+            margin: 0;
+            padding: 0;
+            /* Extra Padding für den Box-Shadow (nur links/rechts für die Bar) */
+            padding: 10px 20px; 
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Stil für die Haupt-Bar (nimmt die volle Breite ein) */
+        .restart-bar {
+            background-color: var(--color-dark); /* Dunkler Hintergrund */
+            border-radius: 8px;
+            padding: 1rem 1.5rem;
+            text-align: center;
+            /* FEUERROT AKZENT */
+            border: 3px solid var(--color-red); 
+            
+            width: 100%;
+            max-width: 100%;
+            
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+            transition: all 0.3s ease-in-out;
+            box-sizing: border-box;
+        }
+        
+        /* Hover-Effekt (optional, aber beibehalten) */
+        .restart-bar:hover {
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.6), 
+                        /* FEUERROT GLOW */
+                        0 0 15px rgba(229, 57, 53, 0.7); 
+        }
+
+        /* Container für die obere Zeile (Timer + Info) */
+        .info-row {
+            display: flex;
+            justify-content: center;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 10px 20px;
+        }
+
+        /* Countdown-Wert */
+        .countdown-value {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--color-red); /* Feuerrot */
+            font-family: var(--font-header);
+            line-height: 1.1;
+        }
+        
+        /* Stil für den aktiven Neustart */
+        .active-restart {
+            color: #388E3C !important; /* Grün */
+            font-size: 1.8rem;
+        }
+
+        /* Feste Beschriftung */
+        .timer-pre-label {
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--color-text);
+            opacity: 0.9;
+            text-transform: uppercase;
+        }
+
+        /* Countdown-Label (Status) */
+        .countdown-label {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--color-text);
+            opacity: 0.7;
+            text-transform: uppercase;
+            margin-top: 5px;
+        }
+        
+    </style>
+</head>
+<body>
+
+    <div class="restart-bar">
+        
+        <div class="info-row">
+            
+            <!-- Linke Seite: Feste Beschriftung -->
+            <div class="timer-pre-label">NÄCHSTER NEUSTART IN:</div>
+            
+            <!-- Mitte: Der Countdown-Wert -->
+            <div id="countdown-timer" class="countdown-value">--:--:--</div>
+
+        </div>
+
+        <!-- Die Beschreibung (zeigt den nächsten Neustart an) -->
+        <div id="countdown-info" class="countdown-label"></div>
+        
+    </div>
+
+    <script>
+        const timerElement = document.getElementById('countdown-timer');
+        const infoElement = document.getElementById('countdown-info');
+
+        // Die tatsächlichen Neustartzeiten in Minuten (01:00 = 60, 13:00 = 780)
+        const restartTargetMinutes = [
+            1 * 60,   // 01:00 Uhr
+            13 * 60   // 13:00 Uhr
+        ];
+        
+        const RESTART_WINDOW_MINUTES = 30; // 30 Minuten Vorlauf für den Countdown
+        const RESTART_DURATION_MINUTES = 10; // Neustart dauert 10 Minuten (z.B. 01:00 bis 01:10)
+        
+        function updateCountdown() {
+            const now = new Date();
+            const todayMinutes = now.getHours() * 60 + now.getMinutes();
+            const nowSeconds = now.getSeconds();
+            const totalNowSeconds = todayMinutes * 60 + nowSeconds;
+
+            let nextRestartTargetSeconds = null;
+            let nextRestartTimeStr = "";
+            let minTimeDiff = Infinity;
+            
+            const fullDaySeconds = 24 * 60 * 60;
+
+            // 1. Finde den nächsten tatsächlichen Neustart-Zielpunkt (Start der 10-Minuten-Phase)
+            for (let i = 0; i < restartTargetMinutes.length; i++) {
+                let targetSeconds = restartTargetMinutes[i] * 60;
+                
+                // Füge 24 Stunden hinzu, wenn die Zeit heute schon vergangen ist
+                if (targetSeconds < totalNowSeconds) {
+                    targetSeconds += fullDaySeconds;
+                }
+
+                const diff = targetSeconds - totalNowSeconds;
+                
+                if (diff > 0 && diff < minTimeDiff) {
+                    minTimeDiff = diff;
+                    nextRestartTargetSeconds = targetSeconds;
+                    
+                    const targetHours = Math.floor(targetSeconds / 3600) % 24;
+                    const targetMins = Math.floor((targetSeconds % 3600) / 60);
+                    nextRestartTimeStr = `${targetHours.toString().padStart(2, '0')}:${targetMins.toString().padStart(2, '0')} Uhr`;
+                }
+            }
+
+            // Fallback für den seltenen Fall, dass die Suche fehlschlägt (sollte nicht passieren)
+            if (nextRestartTargetSeconds === null) {
+                nextRestartTargetSeconds = restartTargetMinutes[0] * 60 + fullDaySeconds;
+                nextRestartTimeStr = "01:00 Uhr";
+            }
+            
+            // 2. --- PRÜFUNG DES AKTIVEN NEUSTARTS (01:00 bis 01:10) ---
+            
+            let isRestartActive = false;
+            // Prüfe alle Ziele für heute und morgen
+            const allTargetMinutes = restartTargetMinutes.concat(restartTargetMinutes.map(m => m + 24 * 60));
+
+            for (let i = 0; i < allTargetMinutes.length; i++) {
+                const restartStartSeconds = allTargetMinutes[i] * 60;
+                const restartEndSeconds = restartStartSeconds + (RESTART_DURATION_MINUTES * 60);
+
+                if (totalNowSeconds >= restartStartSeconds && totalNowSeconds < restartEndSeconds) {
+                    isRestartActive = true;
+                    break;
+                }
+            }
+            
+            // 3. --- LOGIK UND ANZEIGE ---
+            
+            if (isRestartActive) {
+                // Neustart ist AKTIV
+                timerElement.textContent = 'SERVER NEUSTART LÄUFT';
+                timerElement.classList.add('active-restart');
+                infoElement.textContent = `BITTE KURZ WARTEN (CA. ${RESTART_DURATION_MINUTES} MINUTEN)`;
+                return;
+            } else {
+                timerElement.classList.remove('active-restart');
+            }
+
+            // Zeit bis zum nächsten Neustart-Ziel (in Sekunden)
+            let secondsUntilTarget = nextRestartTargetSeconds - totalNowSeconds;
+            
+            const secondsInWindow = RESTART_WINDOW_MINUTES * 60;
+
+            if (secondsUntilTarget <= secondsInWindow && secondsUntilTarget > 0) {
+                // Countdown ist aktiv (weniger als 30 Minuten bis zum Neustart)
+                
+                const totalSeconds = Math.max(0, secondsUntilTarget);
+                const minutes = Math.floor(totalSeconds / 60);
+                const seconds = totalSeconds % 60;
+                
+                infoElement.textContent = `NUR NOCH BIS: ${nextRestartTimeStr}`;
+                const formattedTime = [0, minutes, seconds]
+                    .map(t => t.toString().padStart(2, '0'))
+                    .join(':');
+
+                timerElement.textContent = formattedTime;
+                
+            } else {
+                // Countdown ist inaktiv (mehr als 30 Minuten entfernt)
+                
+                const secondsUntilCountdownStart = secondsUntilTarget - secondsInWindow;
+
+                const hoursLeft = Math.floor(secondsUntilCountdownStart / 3600);
+                const minutesLeft = Math.floor((secondsUntilCountdownStart % 3600) / 60);
+                const secondsLeft = secondsUntilCountdownStart % 60;
+                
+                const formattedTimeUntilStart = [hoursLeft, minutesLeft, secondsLeft]
+                    .map(t => t.toString().padStart(2, '0'))
+                    .join(':');
+
+                timerElement.textContent = formattedTimeUntilStart;
+                infoElement.textContent = `NÄCHSTER NEUSTART: ${nextRestartTimeStr} (COUNTDOWN STARTET 30 MIN VORHER)`;
+            }
+        }
+
+        // Starte den Countdown und aktualisiere jede Sekunde
+        updateCountdown();
+        setInterval(updateCountdown, 1000); 
+
+    </script>
+</body>
+</html>
