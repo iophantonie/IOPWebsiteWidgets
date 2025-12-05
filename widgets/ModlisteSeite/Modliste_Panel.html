@@ -17,6 +17,7 @@
             --color-gold: #FFD700; /* Reines Gold (für Premium Akzent) */
             --color-dark-gold: #CC9900; /* Dunkles Gold (Für Freemium Akzent) */
             --color-orange: #FF8800; /* Orange (Für Schwarzmarkt Akzent) */
+            --color-gray-outline: #AAAAAA; /* NEU: Helles Grau für Outline */
             --font-main: sans-serif;
             --font-header: 'Acme', var(--font-main);
         }
@@ -181,10 +182,10 @@
         
         /* NEU: Link Button Style */
         .link-button {
-            /* KORRIGIERT: Schwarz mit Weißer Outline/Text */
+            /* KORRIGIERT: Grau Outline, Schwarzer Hintergrund */
             background-color: var(--color-dark); 
             color: var(--color-text);
-            border: 1px solid var(--color-text); 
+            border: 1px solid var(--color-gray-outline); /* Graue Outline */
             padding: 5px 10px;
             border-radius: 4px;
             text-decoration: none;
@@ -197,7 +198,7 @@
         }
         
         .link-button:hover {
-            background-color: var(--color-text);
+            background-color: var(--color-gray-outline);
             color: var(--color-dark);
         }
         
@@ -207,13 +208,11 @@
             height: 14px;
             margin-left: 5px;
             stroke-width: 3;
-            /* Sorgt dafür, dass das Icon im Default-Zustand weiß ist */
             color: var(--color-text);
         }
         
         .link-button:hover svg {
-             /* Sorgt dafür, dass das Icon im Hover-Zustand schwarz ist */
-            color: var(--color-dark);
+             color: var(--color-dark);
         }
         
         /* --- SPEZIELLE MOD-KATEGORIEN --- */
@@ -322,7 +321,7 @@
                 </div>
             </div>
             
-            <!-- NEU: MOD GRUPPE: PALEO OVERHAULS - IOP REPLACEMENT SYSTEM (Frei Zähmbar) -->
+            <!-- MOD GRUPPE: PALEO OVERHAULS - IOP REPLACEMENT SYSTEM (Frei Zähmbar) -->
             <div class="mod-group-header">
                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-full h-full"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
                 PALEO OVERHAULS - IOP REPLACEMENT SYSTEM (FREI ZÄHMBAR)
@@ -513,7 +512,7 @@
                         <div class="mod-id-section">
                             <span class="mod-id-display" id="id-c12">1097188</span>
                             <div class="mod-buttons">
-                                <a href="https://www.curseforge.com/ark-survival-ascended/mods/custom-creations-dracoteuthis" target="_blank" class="link-button">Link<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14l11-11"/></svg></a>
+                                <a href="https://www.curseforge.com/ark-survival-ascended/mods/custom-creations-dracoteuthis" target="_blank" class="link-button">Curseforge Link<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14l11-11"/></svg></a>
                                 <button class="copy-button" onclick="copyToClipboard('id-c12', this)">ID kopieren</button>
                             </div>
                         </div>
@@ -523,7 +522,7 @@
                         <div class="mod-id-section">
                             <span class="mod-id-display" id="id-c13">1201667</span>
                             <div class="mod-buttons">
-                                <a href="https://www.curseforge.com/ark-survival-ascended/mods/isle-of-myths-drakara" target="_blank" class="link-button">Link<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14l11-11"/></svg></a>
+                                <a href="https://www.curseforge.com/ark-survival-ascended/mods/isle-of-myths-drakara" target="_blank" class="link-button">Curseforge Link<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14l11-11"/></svg></a>
                                 <button class="copy-button" onclick="copyToClipboard('id-c13', this)">ID kopieren</button>
                             </div>
                         </div>
@@ -533,7 +532,7 @@
                         <div class="mod-id-section">
                             <span class="mod-id-display" id="id-c14">928824</span>
                             <div class="mod-buttons">
-                                <a href="https://www.curseforge.com/ark-survival-ascended/mods/moros-indomitable-duo" target="_blank" class="link-button">Link<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14l11-11"/></svg></a>
+                                <a href="https://www.curseforge.com/ark-survival-ascended/mods/moros-indomitable-duo" target="_blank" class="link-button">Curseforge Link<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14l11-11"/></svg></a>
                                 <button class="copy-button" onclick="copyToClipboard('id-c14', this)">ID kopieren</button>
                             </div>
                         </div>
@@ -619,7 +618,7 @@
                 </div>
             </div>
             
-            <div class="mod-card freemium-mod">
+            <div class="mod-card">
                 <h3>POKER TABLE</h3>
                 <p class="mod-description">Fügt einen funktionierenden Poker-Tisch für Ingame-Events hinzu.</p>
                 <div class="mod-id-section">
@@ -764,7 +763,7 @@
                 <div class="mod-id-section">
                     <span class="mod-id-display" id="id-mod-22">985370</span>
                     <div class="mod-buttons">
-                        <a href="https://www.curseforge.com/ark-survival-ascended/mods/lethal-quests-ascended-ui" target="_blank" class="link-button">Curseforge Link<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14l11-11"/></svg></a>
+                        <a href="https://www.curseforge.com/ark-survival-ascended/mods/lethal-quests-ascended-ui" target="_blank" class="link-button">Link<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14l11-11"/></svg></a>
                         <button class="copy-button" onclick="copyToClipboard('id-mod-22', this)">ID kopieren</button>
                     </div>
                 </div>
@@ -776,7 +775,7 @@
                 <div class="mod-id-section">
                     <span class="mod-id-display" id="id-mod-23">928650</span>
                     <div class="mod-buttons">
-                        <a href="https://www.curseforge.com/ark-survival-ascended/mods/gaia-potions" target="_blank" class="link-button">Curseforge Link<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14l11-11"/></svg></a>
+                        <a href="https://www.curseforge.com/ark-survival-ascended/mods/gaia-potions" target="_blank" class="link-button">Link<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14l11-11"/></svg></a>
                         <button class="copy-button" onclick="copyToClipboard('id-mod-23', this)">ID kopieren</button>
                     </div>
                 </div>
