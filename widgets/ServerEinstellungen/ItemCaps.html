@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Item Caps Einstellungen</title>
+    <link href="https://fonts.googleapis.com/css2?family=Acme&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Farben und Schriftarten */
+        :root {
+            --color-red: #E53935; /* Feuerrot */
+            --color-dark: rgba(20, 20, 20, 0.95);
+            --color-text: #f7f7f7;
+            --color-light-dark: rgba(30, 30, 30, 0.95);
+            
+            /* Akzente */
+            --color-accent-header: var(--color-red); 
+            --color-cap: #D32F2F; /* Dunkles Rot für Cap-Werte */
+            
+            /* Item Farben zur Unterscheidung */
+            --color-tek: #5DADE2;
+            --color-swat: #5D6D7E; 
+            --color-flak: #AAB7B8; 
+            --color-chitin: #A569BD; 
+            --color-fur: #F4D03F; 
+            --color-ghillie: #58D68D;
+            
+            --font-main: sans-serif;
+            --font-header: 'Acme', var(--font-main);
+        }
+
+        /* Wichtig: Der Body des iFrames muss transparent sein. */
+        body {
+            background-color: transparent;
+            font-family: var(--font-main);
+            color: var(--color-text);
+            margin: 0;
+            padding: 20px; 
+            display: flex;
+            justify-content: center;
+            width: 100%; 
+        }
+
+        /* Haupt-Card Container */
+        .settings-card {
+            background-color: var(--color-dark); /* Dunkel wie Haupt-Widgets */
+            border-radius: 12px;
+            padding: 1.5rem;
+            width: 100%;
+            max-width: 1600px; /* Volle Breite */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+            border: 3px solid var(--color-red);
+            transition: box-shadow 0.3s;
+            box-sizing: border-box;
+        }
+
+        /* Hover-Effekt: Rot-Glow beim Hover */
+        .settings-card:hover {
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.6), 
+                        0 0 15px rgba(229, 57, 53, 0.7); 
+        }
+
+        /* Haupt-Header Stil */
+        .main-header {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--color-accent-header);
+            font-family: var(--font-header);
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            border-bottom: 2px solid var(--color-accent-header);
+            padding-bottom: 5px;
+        }
+
+        /* Unter-Header für Sektionen (Rüstung, Waffen, Sättel) */
+        .section-header {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--color-text);
+            font-family: var(--font-header);
+            margin-top: 1.5rem;
+            margin-bottom: 0.8rem;
+            padding-left: 5px;
+            border-left: 3px solid var(--color-red);
+        }
+
+        /* Beschreibungstext */
+        .description {
+            font-size: 1rem;
+            color: var(--color-text);
+            margin-bottom: 1.5rem;
+            opacity: 0.8;
+            line-height: 1.4;
+        }
+
+        /* TABELLEN-STIL */
+        .caps-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .caps-table th, .caps-table td {
+            padding: 12px 10px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+        }
+        
+        .caps-table th {
+            background-color: rgba(255, 255, 255, 0.05); 
+            font-size: 0.9rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--color-text);
+            border-bottom: 2px solid var(--color-accent-header);
+        }
+        
+        .caps-table td {
+            font-size: 1rem;
+            color: var(--color-text);
+        }
+        
+        /* Max Value Spalte */
+        .max-value-col {
+            text-align: right;
+            font-weight: 600;
+            color: var(--color-cap); /* Cap-Werte in Dunkelrot */
+            width: 30%;
+        }
+
+        /* Hervorhebung der Zeilen beim Hover */
+        .caps-table tr:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+        
+        /* Spezifische Rüstungsfarben */
+        .tek-row .item-col { color: var(--color-tek); }
+        .swat-row .item-col { color: var(--color-swat); }
+        .flak-row .item-col { color: var(--color-flak); }
+        .chitin-row .item-col { color: var(--color-chitin); }
+        .fur-row .item-col { color: var(--color-fur); }
+        .ghillie-row .item-col { color: var(--color-ghillie); }
+        .saddle-row .item-col { color: var(--color-wyvern); }
+        .weapon-row .item-col, .tool-row .item-col { color: var(--color-red); } /* Rot für Waffen/Werkzeuge */
+
+    </style>
+</head>
+<body>
+
+    <div class="settings-card">
+        
+        <div class="main-header">Item Balance Obergrenzen (Caps)</div>
+        
+        <!-- RÜSTUNGS-CAPS SEKTION -->
+        <div class="section-header">Rüstungs Caps</div>
+        <div class="description">
+            Rüstungen und Baupläne sind auf einen maximalen Rüstungswert begrenzt. Dieser variiert je nach Rüstungsart:
+        </div>
+
+        <table class="caps-table">
+            <thead>
+                <tr>
+                    <th class="item-col">Rüstungstyp</th>
+                    <th class="max-value-col">Max Rüstungswert</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="tek-row">
+                    <td class="item-col">Tek-Rüstung</td>
+                    <td class="max-value-col">1125</td>
+                </tr>
+                <tr class="swat-row">
+                    <td class="item-col">SWAT-Rüstung</td>
+                    <td class="max-value-col">920</td>
+                </tr>
+                <tr class="flak-row">
+                    <td class="item-col">Flak-Rüstung</td>
+                    <td class="max-value-col">800</td>
+                </tr>
+                <tr class="chitin-row">
+                    <td class="item-col">Chitin-Rüstung</td>
+                    <td class="max-value-col">400</td>
+                </tr>
+                <tr class="fur-row">
+                    <td class="item-col">Pelz Rüstung</td>
+                    <td class="max-value-col">320</td>
+                </tr>
+                <tr class="ghillie-row">
+                    <td class="item-col">Ghilli Rüstung</td>
+                    <td class="max-value-col">256</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <!-- WAFFEN-CAPS SEKTION -->
+        <div class="section-header">Waffen & Werkzeuge Damage Cap</div>
+        <div class="description">
+            Alle Waffen und Werkzeugbaupläne sind auf einen Schadenswert von maximal 400 % Schaden begrenzt.
+        </div>
+        <table class="caps-table">
+            <thead>
+                <tr>
+                    <th class="item-col">Item Typ</th>
+                    <th class="max-value-col">Max Schaden</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- NEU: Separierte Waffen und Werkzeuge -->
+                <tr class="weapon-row">
+                    <td class="item-col">Waffen (Nahkampf & Fernkampf)</td>
+                    <td class="max-value-col">400 %</td>
+                </tr>
+                <tr class="tool-row">
+                    <td class="item-col">Werkzeuge (Äxte, Spitzhacken etc.)</td>
+                    <td class="max-value-col">400 %</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <!-- SÄTTEL-CAPS SEKTION -->
+        <div class="section-header">Sättel Rüstungs Cap</div>
+        <div class="description">
+            Alle Sättel im Spiel sind auf diesen maximalen Rüstungswert begrenzt.
+        </div>
+        <table class="caps-table">
+            <thead>
+                <tr>
+                    <th class="item-col">Sattel Typ</th>
+                    <th class="max-value-col">Max Rüstungswert</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="saddle-row">
+                    <td class="item-col">Alle Sättel</td>
+                    <td class="max-value-col">200.0</td>
+                </tr>
+            </tbody>
+        </table>
+
+    </div>
+
+</body>
+</html>
