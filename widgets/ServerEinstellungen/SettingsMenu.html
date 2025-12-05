@@ -17,10 +17,9 @@
             
             /* Akzente */
             --color-accent-header: var(--color-red); 
-            --color-cap: #D32F2F; 
-            --color-gray-outline: #AAAAAA;
+            --color-cap: #D32F2F; /* Dunkles Rot für Item Caps */
             
-            /* DINO FARBEN (Final nach Kundenwunsch) */
+            /* DINO FARBEN */
             --color-tek: #5DADE2;           /* Blau: Tek Dinos */
             --color-wyvern-red: #FF4444;    /* Rot: Wyvern */
             --color-rockdrake: #9B59B6;     /* Lila: Rock Drakes */
@@ -32,6 +31,9 @@
             --color-chitin: #A569BD; 
             --color-fur: #F4D03F; 
             --color-ghillie: #58D68D;
+
+            /* RATEN FARBEN */
+            --color-rate-header: #FF8800; /* Orange für Raten-Header */
             
             --font-main: sans-serif;
             --font-header: 'Acme', var(--font-main);
@@ -62,30 +64,34 @@
             border: 3px solid var(--color-red);
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
             
+            /* Positionierung des Headers */
+            position: relative;
+            
             /* NEU: Flex-Container für Navigation links und Content rechts */
             display: flex;
             gap: 20px;
-            min-height: 500px; /* Mindesthöhe für das Layout */
+            padding-top: 100px; /* Platz für den fixen Header */
             box-sizing: border-box;
         }
         
-        /* HAUPTÜBERSCHRIFT (Wie in den anderen Widgets) */
-        .main-widget-header {
-            /* Passt Header an, damit er über die linke Navigationsspalte geht */
+        /* HAUPTÜBERSCHRIFT (Absolut positioniert, um über die gesamte Breite zu gehen) */
+        .main-widget-header-wrapper {
             position: absolute;
-            top: 20px; /* Gleicher Abstand wie Body-Padding */
+            top: 20px; 
             left: 20px;
             right: 20px;
-            
+            z-index: 10;
+        }
+        .main-widget-header {
             font-size: 2rem;
             font-weight: 800;
             color: var(--color-accent-header);
             font-family: var(--font-header);
-            margin-bottom: 1.5rem;
             text-transform: uppercase;
             text-align: center;
             border-bottom: 3px solid var(--color-accent-header);
             padding-bottom: 10px;
+            margin: 0;
         }
 
         /* --- LINKES NAVIGATIONS-MENÜ --- */
@@ -136,18 +142,17 @@
 
         /* --- RECHTER INHALTSBEREICH --- */
         .right-content-area {
-            flex-grow: 1; /* Nimmt den restlichen Platz ein */
+            flex-grow: 1; 
             background-color: var(--color-light-dark);
             border-radius: 8px;
             padding: 20px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
             
-            /* Anpassung, um Header-Platz zu schaffen */
+            /* Anpassung für gestapeltes Layout */
             margin-top: 80px; 
         }
 
         .accordion-content {
-            /* Content ist standardmäßig nicht ausgeblendet, sondern wird dynamisch geladen */
             display: none;
             padding: 0;
             background-color: transparent;
@@ -160,6 +165,14 @@
         /* --- INHALTSSTILE (Für die Tabellen) --- */
         .table-container {
             padding: 10px 0;
+            display: flex; 
+            gap: 20px;
+            flex-wrap: wrap; /* Wichtig für mobiles Layout */
+        }
+        
+        .rates-table-block {
+            flex: 1 1 45%; /* Lässt Platz für 2 Spalten auf Desktop */
+            min-width: 300px;
         }
         
         .section-header-title {
@@ -199,35 +212,70 @@
             color: var(--color-text);
             border-bottom: 2px solid var(--color-accent-header);
         }
-        .caps-table td { font-size: 1rem; }
+        .caps-table td { font-size: 1rem; color: var(--color-text); }
         .caps-table tr:hover { background-color: rgba(255, 255, 255, 0.05); }
 
         /* Detail-Spalten */
         .type-col { width: 70%; }
-        .max-level-col, .max-value-col {
+        .max-level-col, .max-value-col, .multiplier-col {
             width: 30%;
             font-weight: 600;
             text-align: right;
         }
+        .multiplier-col {
+             color: var(--color-rate-header); /* Orange für Multiplier */
+        }
         
-        /* Spezifische Dino Level Farben (Hier werden die Dino-Typen eingefärbt) */
-        /* Zelle (item-col) und Max Level Spalte (max-level-col) erhalten beide die Farbe */
-        .standard-row .item-col, .standard-row .max-level-col { color: var(--color-text); } 
-        .tek-row .item-col, .tek-row .max-level-col { color: var(--color-tek); } 
-        .wyvern-row .item-col, .wyvern-row .max-level-col { color: var(--color-wyvern-red); } 
-        .rockdrake-row .item-col, .rockdrake-row .max-level-col { color: var(--color-rockdrake); }
-        .crystal-row .item-col, .crystal-row .max-level-col { color: var(--color-crystal-yellow); }
+        /* Spezifische Dino Level Farben (FIX: Typ und Level in korrekter Farbe) */
+        .standard-row .item-col, .standard-row .max-level-col { color: var(--color-text) !important; } 
+        .tek-row .item-col, .tek-row .max-level-col { color: var(--color-tek) !important; } 
+        .wyvern-row .item-col, .wyvern-row .max-level-col { color: var(--color-wyvern-red) !important; } 
+        .rockdrake-row .item-col, .rockdrake-row .max-level-col { color: var(--color-rockdrake) !important; }
+        .crystal-row .item-col, .crystal-row .max-level-col { color: var(--color-crystal-yellow) !important; }
 
-        /* Spezifische Rüstungsfarben (Hier werden die Rüstungs-Typen eingefärbt) */
-        .tek-row .item-col.armor-type { color: var(--color-tek); }
-        .swat-row .item-col.armor-type { color: var(--color-swat); }
-        .flak-row .item-col.armor-type { color: var(--color-flak); }
-        .chitin-row .item-col.armor-type { color: var(--color-chitin); }
-        .fur-row .item-col.armor-type { color: var(--color-fur); }
-        .ghillie-row .item-col.armor-type { color: var(--color-ghillie); }
+        /* Spezifische Rüstungsfarben */
+        .tek-row .item-col.armor-type { color: var(--color-tek) !important; }
+        .swat-row .item-col.armor-type { color: var(--color-swat) !important; }
+        .flak-row .item-col.armor-type { color: var(--color-flak) !important; }
+        .chitin-row .item-col.armor-type { color: var(--color-chitin) !important; }
+        .fur-row .item-col.armor-type { color: var(--color-fur) !important; }
+        .ghillie-row .item-col.armor-type { color: var(--color-ghillie) !important; }
 
-        /* Max Value Spalten (Rot beibehalten) */
-        .max-value-col { color: var(--color-cap); }
+        /* Max Value Spalten (Rot/Dunkelrot beibehalten) */
+        .max-value-col { color: var(--color-cap) !important; }
+
+        /* RESPONSIVE LAYOUT FÜR MOBILE */
+        @media (max-width: 768px) {
+            .settings-card-main {
+                flex-direction: column;
+                gap: 10px;
+                padding: 1rem;
+            }
+            .left-nav, .right-content-area {
+                margin-top: 0;
+            }
+            .left-nav {
+                flex: 1 1 auto;
+                order: -1; /* Menü über den Content verschieben */
+                padding: 5px;
+            }
+            .right-content-area {
+                flex: 1 1 auto;
+                padding: 10px;
+            }
+            .main-widget-header-wrapper {
+                position: static;
+                padding: 0;
+                margin-bottom: 10px;
+            }
+            .main-widget-header {
+                padding-bottom: 5px;
+            }
+            .table-container {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -235,7 +283,9 @@
     <div class="settings-card-main">
         
         <!-- HAUPTÜBERSCHRIFT ABSOLUT POSITIONIERT -->
-        <div class="main-widget-header">Server Einstellungen & Balancen</div>
+        <div class="main-widget-header-wrapper">
+             <div class="main-widget-header">Server Einstellungen & Balancen</div>
+        </div>
 
         <!-- Linke Navigationsleiste -->
         <div class="left-nav">
@@ -255,12 +305,56 @@
         <!-- Rechter Inhaltsbereich -->
         <div class="right-content-area">
             
-            <!-- PLATZHALTER AKKORDEON FÜR KÜNFTIGE RATEN -->
+            <!-- AKKORDEON FÜR SERVER RATEN -->
             <div id="content-rates" class="accordion-content">
                 <div class="table-container">
-                    <div class="section-header-title">Work-in-Progress</div>
+                    <div class="section-header-title">Server Raten</div>
                     <div class="description">
-                        Hier werden bald die Multiplikatoren und Raten für XP, Farmen und Zähmen angezeigt.
+                        Unsere Server-Einstellungen bieten optimierte Raten für ein ausbalanciertes und unterhaltsames Spielerlebnis. Am Wochenende profitierst du von besonderen Bonus-Raten!
+                    </div>
+
+                    <div class="rates-table-block">
+                        <div class="section-header-title" style="border-left-color: var(--color-rate-header); color: var(--color-rate-header); margin-top: 0.5rem;">Werktags-Raten</div>
+                        <table class="caps-table">
+                            <thead>
+                                <tr>
+                                    <th class="type-col" style="color: var(--color-rate-header);">Einstellung</th>
+                                    <th class="multiplier-col" style="color: var(--color-rate-header);">Multiplikator</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td class="item-col">XP-Rate</td><td class="multiplier-col">1.0x</td></tr>
+                                <tr><td class="item-col">Farmen</td><td class="multiplier-col">1.5x</td></tr>
+                                <tr><td class="item-col">Zähmung</td><td class="multiplier-col">2.0x</td></tr>
+                                <tr><td class="item-col">Brüten</td><td class="multiplier-col">5.0x</td></tr>
+                                <tr><td class="item-col">Reifen</td><td class="multiplier-col">5.0x</td></tr>
+                            </tbody>
+                        </table>
+                        <div class="description" style="margin-top: 15px; border-left: none;">
+                            Diese Raten sind von Montag 00:00 Uhr bis Freitag 00:00 Uhr aktiv. Ideal für Spieler, die unter der Woche konstant Fortschritte erzielen möchten.
+                        </div>
+                    </div>
+
+                    <div class="rates-table-block">
+                        <div class="section-header-title" style="border-left-color: var(--color-rate-header); color: var(--color-rate-header); margin-top: 0.5rem;">Wochenend-Raten</div>
+                        <table class="caps-table">
+                            <thead>
+                                <tr>
+                                    <th class="type-col" style="color: var(--color-rate-header);">Einstellung</th>
+                                    <th class="multiplier-col" style="color: var(--color-rate-header);">Multiplikator</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td class="item-col">XP-Rate</td><td class="multiplier-col">2.0x</td></tr>
+                                <tr><td class="item-col">Farmen</td><td class="multiplier-col">3.0x</td></tr>
+                                <tr><td class="item-col">Zähmung</td><td class="multiplier-col">4.0x</td></tr>
+                                <tr><td class="item-col">Brüten</td><td class="multiplier-col">10.0x</td></tr>
+                                <tr><td class="item-col">Reifen</td><td class="multiplier-col">10.0x</td></tr>
+                            </tbody>
+                        </table>
+                        <div class="description" style="margin-top: 15px; border-left: none;">
+                            Diese Bonus-Raten sind von Freitag 00:00 Uhr bis Montag 00:00 Uhr aktiv. Nutze das Wochenende, um besonders schnelle Fortschritte zu erzielen!
+                        </div>
                     </div>
                 </div>
             </div>
@@ -395,16 +489,6 @@
                     </table>
                 </div>
             </div>
-        
-            <!-- PLATZHALTER AKKORDEON FÜR KÜNFTIGE RATEN -->
-            <div id="content-rates" class="accordion-content">
-                <div class="table-container">
-                    <div class="section-header-title">Work-in-Progress</div>
-                    <div class="description">
-                        Hier werden bald die Multiplikatoren und Raten für XP, Farmen und Zähmen angezeigt.
-                    </div>
-                </div>
-            </div>
 
         </div> <!-- Ende Rechter Content Area -->
 
@@ -439,8 +523,8 @@
         
         // Initialisierung: Stellt sicher, dass das erste Element beim Laden aktiv ist
         document.addEventListener('DOMContentLoaded', () => {
-            const firstHeaderId = 'nav-dino-level';
-            const firstContentId = 'content-dino-level';
+            const firstHeaderId = 'nav-rates'; // Startet jetzt mit den Raten
+            const firstContentId = 'content-rates';
             const firstHeader = document.getElementById(firstHeaderId);
             
             // Führt toggleAccordion nur aus, wenn der Header existiert (um den aktiven Zustand zu setzen)
