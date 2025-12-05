@@ -33,12 +33,12 @@
             font-family: var(--font-main);
             color: var(--color-text);
             margin: 0;
+            /* KORRIGIERT: Padding auf 20px gesetzt, damit die Card nicht direkt am Rand klebt */
             padding: 20px; 
             display: flex;
             justify-content: center;
-            /* Sorgt dafür, dass der Body die volle Breite des Containers nutzt */
-            width: 100%;
-            max-width: 100%;
+            /* width: 100%; wird durch den Container übernommen */
+            box-sizing: border-box;
         }
 
         /* Haupt-Card Container */
@@ -47,13 +47,15 @@
             border-radius: 12px;
             padding: 1.5rem;
             width: 100%;
-            /* KORRIGIERT: Max-Breite auf 1600px gesetzt, um das Verhalten des Mod-List-Containers zu übernehmen */
-            max-width: 1600px;
+            /* KORRIGIERT: Max-Breite auf 1600px gesetzt */
+            max-width: 1600px; 
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
             /* Feuerrote Außenlinie */
             border: 3px solid var(--color-red);
             transition: box-shadow 0.3s;
             box-sizing: border-box;
+            /* KORRIGIERT: Margin entfernt, da der Body das Padding übernimmt */
+            margin: 0; 
         }
 
         /* Hover-Effekt: Rot-Glow beim Hover (wie Mod-Liste) */
@@ -70,6 +72,8 @@
             font-family: var(--font-header); /* Acme Schrift */
             margin-bottom: 0.5rem;
             text-transform: uppercase;
+            border-bottom: 2px solid var(--color-accent-header);
+            padding-bottom: 5px;
         }
 
         /* Beschreibungstext */
