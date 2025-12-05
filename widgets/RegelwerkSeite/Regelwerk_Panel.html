@@ -43,6 +43,18 @@
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
         }
         
+        /* NEU: Stil für die Haupt-Überschrift des Widgets */
+        .main-widget-header {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--color-red);
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+            text-align: center;
+            border-bottom: 3px solid var(--color-red);
+            padding-bottom: 10px;
+        }
+
         /* Hauptüberschrift (ENTFERNT) */
         .card-header {
             display: none; /* Überschrift ausgeblendet */
@@ -181,7 +193,8 @@
 <body>
 
     <div class="rules-card">
-        <!-- HAUPTÜBERSCHRIFT WURDE ENTFERNT -->
+        <!-- NEU: HAUPTÜBERSCHRIFT -->
+        <div class="main-widget-header">Infinity of Phoenix - Regelwerk</div>
         
         <!-- QUICKLINK NAVIGATION BAR (Steuert jetzt das Akkordeon) -->
         <div class="quick-nav">
@@ -467,7 +480,7 @@
                 contentElement.querySelectorAll('li').forEach(li => li.classList.remove('show-item'));
                 contentElement.querySelectorAll('li').forEach((li, index) => {
                      setTimeout(() => {
-                        li.classList.add('show-item');
+                         li.classList.add('show-item');
                      }, index * ITEM_DELAY);
                 });
 
