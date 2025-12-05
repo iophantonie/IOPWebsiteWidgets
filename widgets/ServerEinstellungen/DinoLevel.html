@@ -1,1 +1,194 @@
-test
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dino Level Einstellungen</title>
+    <link href="https://fonts.googleapis.com/css2?family=Acme&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Farben und Schriftarten */
+        :root {
+            --color-red: #E53935; /* Feuerrot */
+            --color-dark: rgba(20, 20, 20, 0.95);
+            --color-text: #f7f7f7;
+            --color-light-dark: rgba(30, 30, 30, 0.95);
+            
+            /* Akzente (Bleiben Rot/Orange/Custom) */
+            --color-accent-header: var(--color-red); 
+            --color-accent-row: var(--color-red); 
+            
+            /* Dino Farben (Bleiben Custom) */
+            --color-tek: #5DADE2; /* Hellblau für Tek */
+            --color-wyvern: #F7DC6F; /* Gelb für Wyvern */
+            --color-crystal: #A3E4D7; /* Cyan für Crystal Wyvern */
+            
+            --font-main: sans-serif;
+            --font-header: 'Acme', var(--font-main);
+        }
+
+        /* Wichtig: Der Body des iFrames muss transparent sein. */
+        body {
+            background-color: transparent;
+            font-family: var(--font-main);
+            color: var(--color-text);
+            margin: 0;
+            padding: 20px; 
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Haupt-Card Container */
+        .settings-card {
+            background-color: var(--color-dark); /* Dunkel wie Haupt-Widgets */
+            border-radius: 12px;
+            padding: 1.5rem;
+            width: 100%;
+            max-width: 600px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+            /* Feuerrote Außenlinie */
+            border: 3px solid var(--color-red);
+            transition: box-shadow 0.3s;
+        }
+
+        /* Hover-Effekt: Rot-Glow beim Hover (wie Mod-Liste) */
+        .settings-card:hover {
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.6), 
+                        0 0 15px rgba(229, 57, 53, 0.7); 
+        }
+
+        /* Haupt-Header Stil */
+        .main-header {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--color-accent-header); /* Rot */
+            font-family: var(--font-header); /* Acme Schrift */
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+        }
+
+        /* Beschreibungstext */
+        .description {
+            font-size: 1rem;
+            color: var(--color-text);
+            margin-bottom: 1.5rem;
+            opacity: 0.8;
+        }
+
+        /* TABELLEN-STIL */
+        .level-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .level-table th, .level-table td {
+            padding: 12px 10px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+        }
+        
+        .level-table th:first-child, .level-table td:first-child {
+            padding-left: 0;
+        }
+        .level-table th:last-child, .level-table td:last-child {
+            padding-right: 0;
+        }
+
+
+        .level-table th {
+            background-color: rgba(255, 255, 255, 0.05); 
+            font-size: 0.9rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--color-text);
+            border-bottom: 2px solid var(--color-accent-header); /* Rote Linie unter dem Header */
+        }
+        
+        .level-table th:nth-child(2) {
+             /* Multiplikator-Spalte rechtsbündig (für die Zahlen) */
+            text-align: right;
+            padding-right: 10px;
+        }
+
+        .level-table td {
+            font-size: 1rem;
+            color: var(--color-text);
+        }
+        
+        .level-table td:nth-child(2) {
+             /* Multiplikator-Wert rechtsbündig */
+            text-align: right;
+        }
+
+
+        /* Spaltenbreiten anpassen */
+        .level-table .type-col {
+            width: 70%;
+        }
+        .level-table .max-col {
+            width: 30%;
+            font-weight: 600;
+            color: var(--color-secondary); /* Max Level in Rot */
+        }
+        
+        /* Hervorhebung der Zeilen beim Hover */
+        .level-table tr:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+        
+        /* Spezielle Formatierung für Dino-Typen (bleibt custom) */
+        .tek-row .type-col {
+            color: var(--color-tek); /* Hellblau für Tek */
+        }
+        .wyvern-row .type-col {
+            color: var(--color-wyvern); /* Gelb für Wyvern */
+        }
+        .crystal-row .type-col {
+            color: var(--color-crystal); /* Cyan für Crystal Wyvern */
+        }
+        .standard-row .type-col {
+            color: var(--color-text);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="settings-card">
+        
+        <div class="main-header">Dino Level</div>
+        <div class="description">
+            Wir haben die maximalen Dino-Level für verschiedene Kreaturtypen angepasst:
+        </div>
+
+        <table class="level-table">
+            <thead>
+                <tr>
+                    <th class="type-col">Dino Typ</th>
+                    <th class="max-col">Max Level</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="standard-row">
+                    <td class="type-col">Standard Dinos</td>
+                    <td class="max-col">150</td>
+                </tr>
+                <tr class="tek-row">
+                    <td class="type-col">Tek Dinos</td>
+                    <td class="max-col">180</td>
+                </tr>
+                <tr class="wyvern-row">
+                    <td class="type-col">Wyvern / Rock Drake Eier</td>
+                    <td class="max-col">190</td>
+                </tr>
+                <tr class="crystal-row">
+                    <td class="type-col">Crystal Wyvern</td>
+                    <td class="max-col">225</td>
+                </tr>
+            </tbody>
+        </table>
+
+    </div>
+
+</body>
+</html>
