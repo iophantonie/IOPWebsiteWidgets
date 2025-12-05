@@ -108,8 +108,25 @@
             transition: transform 0.2s, box-shadow 0.2s;
             position: relative;
             padding-top: 15px;
+            overflow: hidden; 
+            
+            /* Background Image Setup entfernt, da es Cross-Origin-Fehler verursacht */
+            background-image: none !important;
         }
         
+        /* Overlay für Lesbarkeit entfernt, da kein Hintergrundbild mehr vorhanden ist */
+        .mod-card::before {
+            content: '';
+            display: none;
+        }
+        
+        /* Inhalte müssen über dem Overlay liegen */
+        .mod-card * {
+            position: relative;
+            z-index: 2; 
+        }
+
+
         .mod-card:hover {
             transform: translateY(-3px);
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5), 0 0 10px rgba(229, 57, 53, 0.5);
@@ -117,12 +134,7 @@
 
         /* NEU: Icon Container */
         .mod-icon {
-            position: absolute;
-            top: 10px;
-            right: 15px;
-            width: 30px;
-            height: 30px;
-            color: var(--color-red);
+            display: none; 
         }
         
         .mod-card h3 {
@@ -220,7 +232,7 @@
         .premium-mod {
             border-color: var(--color-gold);
         }
-        .premium-mod h3, .premium-mod .mod-icon {
+        .premium-mod h3 {
              color: var(--color-gold);
         }
         
@@ -228,7 +240,7 @@
         .blackmarket-mod {
             border-left-color: var(--color-orange);
         }
-        .blackmarket-mod h3, .blackmarket-mod .mod-icon {
+        .blackmarket-mod h3 {
             color: var(--color-orange);
         }
         .blackmarket-mod .copy-button {
@@ -242,7 +254,7 @@
         .freemium-mod {
             border-left-color: var(--color-dark-gold);
         }
-        .freemium-mod h3, .freemium-mod .mod-icon {
+        .freemium-mod h3 {
             color: var(--color-dark-gold);
         }
         .freemium-mod .copy-button {
@@ -269,12 +281,12 @@
             
             <!-- MOD GRUPPE: MOD MAPS -->
             <div class="mod-group-header">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-full h-full"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path></svg>
                 Mod Maps
             </div>
             
             <div class="mod-card">
-                <h3>Svartalfheim Premium [Crossplay]</h3>
+                <h3>SVARTALFHEIM PREMIUM [CROSSPLAY]</h3>
                 <p class="mod-description">Eine große, fantastische Karte mit einzigartigen Landschaften und Herausforderungen.</p>
                 <div class="mod-id-section">
                     <span class="mod-id-display" id="id-map-1">962796</span>
@@ -287,7 +299,7 @@
             
             <!-- MOD GRUPPE: OVERHAUL MODS -->
             <div class="mod-group-header">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-full h-full"><path d="M12 2v20m-5-6l5 5 5-5M7 10l5-5 5 5"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20m-5-6l5 5 5-5M7 10l5-5 5 5"/></svg>
                 Overhaul Mods
             </div>
             
@@ -322,17 +334,17 @@
             
             <!-- MOD GRUPPE: MOD-KREATUREN (HAUPTGRUPPE) -->
             <div class="mod-group-header">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-full h-full"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
                 Mod Kreaturen
             </div>
             
             <!-- UNTERSEKTION: PALEO OVERHAULS -->
-            <div class="mod-card" style="grid-column: 1 / -1;">
+            <div class="mod-card" style="grid-column: 1 / -1; border-left: 5px solid var(--color-red);">
                  <h3 class="mod-sub-header">PALEO OVERHAULS - IOP REPLACEMENT SYSTEM (FREI ZÄHMBAR):</h3>
                 <div class="mod-grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 10px;">
                     
                     <div class="mod-card" style="border-left: none; padding: 10px;">
-                        <h3>PALEO ARK ASCENSION (CROSSPLAY!)</h3>
+                        <h3>Paleo ARK Ascension (CROSSPLAY!)</h3>
                         <p class="mod-description">Die Hauptmod für das Paleo-Erlebnis. Bietet neue Kreaturen und Gameplay-Elemente.</p>
                         <div class="mod-id-section">
                             <span class="mod-id-display" id="id-paleo-1">986540</span>
@@ -344,7 +356,7 @@
                     </div>
                     
                     <div class="mod-card" style="border-left: none; padding: 10px;">
-                        <h3>PALEO ARK - EVOLUTION | APEX PREDATORS</h3>
+                        <h3>Paleo ARK - Evolution | Apex Predators</h3>
                         <p class="mod-description">Fügt stärkere Apex-Kreaturen und anspruchsvollere Herausforderungen hinzu.</p>
                         <div class="mod-id-section">
                             <span class="mod-id-display" id="id-paleo-2">970540</span>
@@ -411,7 +423,7 @@
                     </div>
 
                     <div class="mod-card" style="border-left: none; padding: 10px;">
-                        <h3>S- Dino Variants - Fantastic Tames</h3>
+                        <h3>S-Dino Variants - Fantastic Tames</h3>
                         <p class="mod-description">Fügt die beliebten S-Dinos in speziellen, zähmbaren Varianten hinzu.</p>
                         <div class="mod-id-section">
                             <span class="mod-id-display" id="id-c15">1177331</span>
@@ -543,7 +555,7 @@
             
             <!-- MOD GRUPPE: COMMUNITY CENTER -->
             <div class="mod-group-header">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-full h-full"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87m-4-2.45a4 4 0 0 1 0-3.46"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87m-4-2.45a4 4 0 0 1 0-3.46"/></svg>
                 COMMUNITY CENTER
             </div>
             
@@ -589,7 +601,7 @@
                 <div class="mod-id-section">
                     <span class="mod-id-display" id="id-mod-28">929838</span>
                     <div class="mod-buttons">
-                        <a href="https://www.curseforge.com/ark-survival-ascended/mods/scribbles-better-signs" target="_blank" class="link-button">Curseforge Link<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14l11-11"/></svg></a>
+                        <a href="https://www.curseforge.com/ark-survival-ascended/mods/scribbles-better-signs" target="_blank" class="link-button">Link<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14l11-11"/></svg></a>
                         <button class="copy-button" onclick="copyToClipboard('id-mod-28', this)">ID kopieren</button>
                     </div>
                 </div>
@@ -601,7 +613,7 @@
                 <div class="mod-id-section">
                     <span class="mod-id-display" id="id-mod-29">1009997</span>
                     <div class="mod-buttons">
-                        <a href="https://www.curseforge.com/ark-survival-ascended/mods/thors-hammer-mjolnir" target="_blank" class="link-button">Curseforge Link<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14l11-11"/></svg></a>
+                        <a href="https://www.curseforge.com/ark-survival-ascended/mods/thors-hammer-mjolnir" target="_blank" class="link-button">Link<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14l11-11"/></svg></a>
                         <button class="copy-button" onclick="copyToClipboard('id-mod-29', this)">ID kopieren</button>
                     </div>
                 </div>
@@ -633,7 +645,10 @@
 
 
             <!-- MOD GRUPPE: BAU UND DEKO MODS -->
-            <div class="mod-group-header">BAU UND DEKO MODS</div>
+            <div class="mod-group-header">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 6l-6.5 6.5-3.5 1-2-2 1-3.5 6.5-6.5zm-5 5l2 2m-2-2l-2 2"/></svg>
+                BAU UND DEKO MODS
+            </div>
             
             <div class="mod-card freemium-mod">
                 <h3>CASTLES, KEEPS, AND FORTS - CKF (FREEMIUM)</h3>
@@ -720,7 +735,10 @@
             </div>
 
             <!-- MOD GRUPPE: QOL + UNTERSTÜTZUNG -->
-            <div class="mod-group-header">QOL + UNTERSTÜTZUNG</div>
+            <div class="mod-group-header">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4m0-4h.01"/></svg>
+                QOL + UNTERSTÜTZUNG
+            </div>
 
             <div class="mod-card">
                 <h3>INFINITY OF PHOENIX - SYSTEM CONTROL</h3>
@@ -764,32 +782,8 @@
                 <div class="mod-id-section">
                     <span class="mod-id-display" id="id-mod-22">985370</span>
                     <div class="mod-buttons">
-                        <a href="https://www.curseforge.com/ark-survival-ascended/mods/lethal-quests-ascended-ui" target="_blank" class="link-button">Curseforge Link<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14l11-11"/></svg></a>
+                        <a href="https://www.curseforge.com/ark-survival-ascended/mods/lethal-quests-ascended-ui" target="_blank" class="link-button">Link<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14l11-11"/></svg></a>
                         <button class="copy-button" onclick="copyToClipboard('id-mod-22', this)">ID kopieren</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="mod-card">
-                <h3>POTIONS | GAIA STUDIOS</h3>
-                <p class="mod-description">Erweitert die Verfügbarkeit und Vielfalt von hilfreichen Tränken.</p>
-                <div class="mod-id-section">
-                    <span class="mod-id-display" id="id-mod-23">928650</span>
-                    <div class="mod-buttons">
-                        <a href="https://www.curseforge.com/ark-survival-ascended/mods/gaia-potions" target="_blank" class="link-button">Curseforge Link<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14l11-11"/></svg></a>
-                        <button class="copy-button" onclick="copyToClipboard('id-mod-23', this)">ID kopieren</button>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="mod-card">
-                <h3>PELAYORI'S CRYO STORAGE (CROSSPLAY!)</h3>
-                <p class="mod-description">QoL: Ermöglicht das Speichern von Dinos in Cryo-Pods.</p>
-                <div class="mod-id-section">
-                    <span class="mod-id-display" id="id-mod-24">928793</span>
-                    <div class="mod-buttons">
-                        <a href="https://www.curseforge.com/ark-survival-ascended/mods/cryopods" target="_blank" class="link-button">Curseforge Link<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14l11-11"/></svg></a>
-                        <button class="copy-button" onclick="copyToClipboard('id-mod-24', this)">ID kopieren</button>
                     </div>
                 </div>
             </div>
@@ -800,14 +794,11 @@
                 <div class="mod-id-section">
                     <span class="mod-id-display" id="id-mod-31">932205</span>
                     <div class="mod-buttons">
-                        <a href="https://www.curseforge.com/ark-survival-ascended/mods/where-are-the-bodies-corpse-finder" target="_blank" class="link-button">Curseforge Link<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14l11-11"/></svg></a>
+                        <a href="https://www.curseforge.com/ark-survival-ascended/mods/where-are-the-bodies-corpse-finder" target="_blank" class="link-button">Link<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14l11-11"/></svg></a>
                         <button class="copy-button" onclick="copyToClipboard('id-mod-31', this)">ID kopieren</button>
                     </div>
                 </div>
             </div>
-
-                        <!-- Extinction & Astraeos Only (Drops) -->
-            <div class="mod-group-header">Extinction & Astraeos Only (Drops)</div>
 
             <div class="mod-card">
                 <h3>BETTER HORDE MODE [QOL, OPEN SOURCE]</h3>
@@ -815,12 +806,12 @@
                 <div class="mod-id-section">
                     <span class="mod-id-display" id="id-mod-32">1163881</span>
                     <div class="mod-buttons">
-                        <a href="https://www.curseforge.com/ark-survival-ascended/mods/better-horde-mode-qol-open-source" target="_blank" class="link-button">Curseforge Link<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14l11-11"/></svg></a>
+                        <a href="https://www.curseforge.com/ark-survival-ascended/mods/better-horde-mode-qol-open-source" target="_blank" class="link-button">Link<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14l11-11"/></svg></a>
                         <button class="copy-button" onclick="copyToClipboard('id-mod-32', this)">ID kopieren</button>
                     </div>
                 </div>
             </div>
-
+            
         </div>
     </div>
 
