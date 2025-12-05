@@ -108,21 +108,48 @@
             transition: transform 0.2s, box-shadow 0.2s;
             position: relative;
             padding-top: 15px;
+            overflow: hidden; /* Wichtig für das Hintergrundbild */
+            
+            /* Background Image Setup */
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
         }
         
+        /* Overlay für Lesbarkeit */
+        .mod-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            /* Standard-Overlay (dunkler) */
+            background: rgba(0, 0, 0, 0.4); 
+            z-index: 1;
+            transition: background 0.3s;
+        }
+        
+        .mod-card:hover::before {
+            /* Overlay wird beim Hover leicht aufgehellt, um das Bild besser zu sehen */
+            background: rgba(0, 0, 0, 0.2); 
+        }
+
+        /* Inhalte müssen über dem Overlay liegen */
+        .mod-card * {
+            position: relative;
+            z-index: 2; 
+        }
+
+
         .mod-card:hover {
             transform: translateY(-3px);
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5), 0 0 10px rgba(229, 57, 53, 0.5);
         }
 
-        /* NEU: Icon Container */
+        /* Icon Container entfernt, da nur in Headern */
         .mod-icon {
-            position: absolute;
-            top: 10px;
-            right: 15px;
-            width: 30px;
-            height: 30px;
-            color: var(--color-red);
+            display: none; 
         }
         
         .mod-card h3 {
@@ -220,7 +247,7 @@
         .premium-mod {
             border-color: var(--color-gold);
         }
-        .premium-mod h3, .premium-mod .mod-icon {
+        .premium-mod h3 {
              color: var(--color-gold);
         }
         
@@ -228,7 +255,7 @@
         .blackmarket-mod {
             border-left-color: var(--color-orange);
         }
-        .blackmarket-mod h3, .blackmarket-mod .mod-icon {
+        .blackmarket-mod h3 {
             color: var(--color-orange);
         }
         .blackmarket-mod .copy-button {
@@ -242,7 +269,7 @@
         .freemium-mod {
             border-left-color: var(--color-dark-gold);
         }
-        .freemium-mod h3, .freemium-mod .mod-icon {
+        .freemium-mod h3 {
             color: var(--color-dark-gold);
         }
         .freemium-mod .copy-button {
@@ -256,6 +283,22 @@
         .mod-grid.creature-sub-grid .mod-card {
             min-height: 120px;
         }
+        
+        /* Spezifische Hintergründe (Beispiel) */
+        .bg-draconis {
+            background-image: url('https://media.forgecdn.net/avatars/704/859/638107936171801556.png'); 
+        }
+        .bg-svartalfheim {
+            background-image: url('https://media.forgecdn.net/avatars/710/372/638128503814890693.png'); 
+        }
+        .bg-primalchaos {
+             background-image: url('https://media.forgecdn.net/avatars/714/563/638137356262484084.png');
+        }
+        .bg-primalnemesis {
+             background-image: url('https://media.forgecdn.net/avatars/747/55/638178125010636881.png');
+        }
+        /* HINWEIS: Bitte ersetzen Sie die URLs oder verwenden Sie eigene hochgeladene Bilder! */
+
 
     </style>
 </head>
@@ -273,7 +316,7 @@
                 MOD MAPS
             </div>
             
-            <div class="mod-card">
+            <div class="mod-card bg-svartalfheim">
                 <h3>SVARTALFHEIM</h3>
                 <p class="mod-description">Eine große, fantastische Karte mit einzigartigen Landschaften und Herausforderungen.</p>
                 <div class="mod-id-section">
@@ -292,7 +335,7 @@
             </div>
             
             <!-- Mod 1 - PRIMAL CHAOS (Standard Mod) -->
-            <div class="mod-card">
+            <div class="mod-card bg-primalchaos">
                 <h3>PRIMAL CHAOS</h3>
                 <p class="mod-description">Die Basis des Overhaul-Erlebnisses. Fügt neue Bosse, Mechaniken und erweiterte Kreaturen-Varianten hinzu.</p>
                 <div class="mod-id-section">
@@ -305,7 +348,7 @@
             </div>
             
             <!-- KORRIGIERT: Mod 2 - PRIMAL NEMESIS (Premium Mod) -->
-            <div class="mod-card premium-mod">
+            <div class="mod-card premium-mod bg-primalnemesis">
                 <div class="mod-icon" style="color: var(--color-gold);">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-full h-full"><path d="M17 19H7A2 2 0 0 1 5 17V7a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2z"/><path d="M9 1v4m6-4v4M3 9h18M9 13h6m-6 4h6"/></svg>
                 </div>
@@ -327,7 +370,7 @@
             </div>
             
             <!-- UNTERSEKTION: PALEO OVERHAULS -->
-            <div class="mod-card" style="grid-column: 1 / -1;">
+            <div class="mod-card" style="grid-column: 1 / -1; border-left: 5px solid var(--color-red);">
                  <h3 class="mod-sub-header">PALEO OVERHAULS - IOP REPLACEMENT SYSTEM (FREI ZÄHMBAR):</h3>
                 <div class="mod-grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 10px;">
                     
@@ -766,42 +809,6 @@
                     <div class="mod-buttons">
                         <a href="https://www.curseforge.com/ark-survival-ascended/mods/lethal-quests-ascended-ui" target="_blank" class="link-button">Link<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14l11-11"/></svg></a>
                         <button class="copy-button" onclick="copyToClipboard('id-mod-22', this)">ID kopieren</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="mod-card">
-                <h3>POTIONS | GAIA STUDIOS</h3>
-                <p class="mod-description">Erweitert die Verfügbarkeit und Vielfalt von hilfreichen Tränken.</p>
-                <div class="mod-id-section">
-                    <span class="mod-id-display" id="id-mod-23">928650</span>
-                    <div class="mod-buttons">
-                        <a href="https://www.curseforge.com/ark-survival-ascended/mods/gaia-potions" target="_blank" class="link-button">Link<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14l11-11"/></svg></a>
-                        <button class="copy-button" onclick="copyToClipboard('id-mod-23', this)">ID kopieren</button>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="mod-card">
-                <h3>PELAYORI'S CRYO STORAGE (CROSSPLAY!)</h3>
-                <p class="mod-description">QoL: Ermöglicht das Speichern von Dinos in Cryo-Pods.</p>
-                <div class="mod-id-section">
-                    <span class="mod-id-display" id="id-mod-24">928793</span>
-                    <div class="mod-buttons">
-                        <a href="https://www.curseforge.com/ark-survival-ascended/mods/cryopods" target="_blank" class="link-button">Link<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14l11-11"/></svg></a>
-                        <button class="copy-button" onclick="copyToClipboard('id-mod-24', this)">ID kopieren</button>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="mod-card">
-                <h3>REMOVE GLOBAL ENEMY FOUNDATION PREVENTION DISTANCE</h3>
-                <p class="mod-description">Entfernt die globale Blockierungsdistanz für Basisfundamente von Feinden (QoL).</p>
-                <div class="mod-id-section">
-                    <span class="mod-id-display" id="id-mod-30">1149580</span>
-                    <div class="mod-buttons">
-                        <a href="https://www.curseforge.com/ark-survival-ascended/mods/remove-global-enemy-foundation-prevention-distance" target="_blank" class="link-button">Link<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14l11-11"/></svg></a>
-                        <button class="copy-button" onclick="copyToClipboard('id-mod-30', this)">ID kopieren</button>
                     </div>
                 </div>
             </div>
