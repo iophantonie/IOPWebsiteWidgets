@@ -54,24 +54,25 @@
             overflow-x: hidden; /* Sicherstellen, dass kein horizontales Scrollen erzwungen wird */
         }
 
-        /* Haupt-Card Container (Übernimmt 1600px Breite vom Mod-Widget) */
+        /* Haupt-Card Container (Basis für das Grid-Layout) */
         .settings-card-main {
             background-color: var(--color-dark);
             border-radius: 12px;
-            padding: 1.5rem;
-            width: 100%;
-            max-width: 1600px; 
             border: 3px solid var(--color-red);
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
             
-            /* Positionierung des Headers */
-            position: relative;
+            width: 100%;
+            max-width: 1600px;
             
-            /* NEU: Flex-Container für Navigation links und Content rechts */
-            display: flex;
+            /* Das Grid-Layout mit 3 Reihen */
+            display: grid;
+            grid-template-rows: auto 1fr; /* Header-Zeile (auto) und Content-Zeile (1fr) */
+            grid-template-columns: 1fr;
             gap: 20px;
-            padding-top: 100px; /* Platz für den fixen Header */
+            padding: 1.5rem;
+            padding-top: 80px; /* Platz für den Header im Grid-Flow */
             box-sizing: border-box;
+            position: relative;
         }
         
         /* HAUPTÜBERSCHRIFT (Absolut positioniert, um über die gesamte Breite zu gehen) */
@@ -94,6 +95,15 @@
             margin: 0;
         }
 
+        /* --- HAUPT-CONTENT-BEREICH (Enthält Nav und Content) --- */
+        .main-content-grid {
+            display: flex; /* Flex für die 2 Spalten: Nav links, Content rechts */
+            gap: 20px;
+            grid-row: 2; /* In der zweiten Zeile des Haupt-Grids */
+            min-height: 500px;
+        }
+
+
         /* --- LINKES NAVIGATIONS-MENÜ --- */
         .left-nav {
             flex: 0 0 250px; /* Feste Breite für die Navigation */
@@ -104,9 +114,7 @@
             flex-direction: column;
             gap: 5px;
             box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.3);
-            
-            /* Anpassung, um Header-Platz zu schaffen */
-            margin-top: 0; 
+            min-height: 100%;
         }
         
         /* NEU: Stil für die Trenn-Header im Menü */
@@ -122,7 +130,6 @@
         }
 
         .accordion-header {
-            /* Wird zum Button */
             background-color: transparent;
             padding: 10px 15px;
             font-size: 1rem;
@@ -159,9 +166,6 @@
             border-radius: 8px;
             padding: 20px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-            
-            /* Anpassung für gestapeltes Layout */
-            margin-top: 0; 
         }
 
         .accordion-content {
@@ -262,6 +266,10 @@
                 flex-direction: column;
                 gap: 10px;
                 padding: 1rem;
+                padding-top: 60px;
+            }
+            .main-content-grid {
+                 flex-direction: column;
             }
             .left-nav, .right-content-area {
                 margin-top: 0;
@@ -299,214 +307,297 @@
              <div class="main-widget-header">Server Einstellungen & Balancing</div>
         </div>
 
-        <!-- Linke Navigationsleiste -->
-        <div class="left-nav">
+        <div class="main-content-grid">
             
-            <!-- SERVER EINSTELLUNGEN HEADER -->
-            <div class="nav-group-separator">Server Einstellungen</div>
+            <!-- Linke Navigationsleiste -->
+            <div class="left-nav">
+                
+                <!-- SERVER EINSTELLUNGEN HEADER -->
+                <div class="nav-group-separator">Server Einstellungen</div>
 
-            <!-- Die Header-IDs werden direkt in der Funktion verwendet -->
-            <div id="nav-rates" class="accordion-header" onclick="toggleAccordion('content-rates', 'nav-rates')">
-                Server Raten
+                <!-- SERVER EINSTELLUNGEN MENÜPUNKTE -->
+                <div id="nav-rates" class="accordion-header" onclick="toggleAccordion('content-rates', 'nav-rates')">
+                    Server Raten
+                </div>
+                <div id="nav-dino-level" class="accordion-header" onclick="toggleAccordion('content-dino-level', 'nav-dino-level')">
+                    Dino Level Limits
+                </div>
+                <div id="nav-item-caps" class="accordion-header" onclick="toggleAccordion('content-item-caps', 'nav-item-caps')">
+                    Item & Crafting Caps
+                </div>
+                <div id="nav-limits" class="accordion-header" onclick="toggleAccordion('content-limits', 'nav-limits')">
+                    Strukturen & Dino Limits
+                </div>
+                <div id="nav-gesperrt" class="accordion-header" onclick="toggleAccordion('content-gesperrt', 'nav-gesperrt')">
+                    Gesperrte Strukturen & Dinos
+                </div>
+                <div id="nav-restarts" class="accordion-header" onclick="toggleAccordion('content-restarts', 'nav-restarts')">
+                    Server Neustarts
+                </div>
+                <div id="nav-player-stats" class="accordion-header" onclick="toggleAccordion('content-player-stats', 'nav-player-stats')">
+                    Spieler/Dino Stat Einstellungen
+                </div>
+                <div id="nav-travel" class="accordion-header" onclick="toggleAccordion('content-travel', 'nav-travel')">
+                    Travel Einstellungen
+                </div>
+                <div id="nav-decay" class="accordion-header" onclick="toggleAccordion('content-decay', 'nav-decay')">
+                    Decay Einstellungen
+                </div>
+                
+                <!-- MOD EINSTELLUNGEN HEADER -->
+                <div class="nav-group-separator">Mod Einstellungen</div>
+                
+                <div id="nav-cs" class="accordion-header" onclick="toggleAccordion('content-cs', 'nav-cs')">
+                    CS Einstellungen
+                </div>
+                <div id="nav-pcs" class="accordion-header" onclick="toggleAccordion('content-pcs', 'nav-pcs')">
+                    PCS Einstellungen
+                </div>
             </div>
             
-            <div id="nav-dino-level" class="accordion-header" onclick="toggleAccordion('content-dino-level', 'nav-dino-level')">
-                Dino Level Limits
-            </div>
-            <div id="nav-item-caps" class="accordion-header" onclick="toggleAccordion('content-item-caps', 'nav-item-caps')">
-                Item & Crafting Caps
-            </div>
+            <!-- Rechter Inhaltsbereich -->
+            <div class="right-content-area">
+                
+                <!-- AKKORDEON FÜR SERVER RATEN -->
+                <div id="content-rates" class="accordion-content">
+                    <div class="table-container">
+                        <div class="section-header-title">Server Raten</div>
+                        <div class="description">
+                            Unsere Server-Einstellungen bieten optimierte Raten für ein ausbalanciertes und unterhaltsames Spielerlebnis. Am Wochenende profitierst du von besonderen Bonus-Raten!
+                        </div>
+
+                        <div class="rates-table-block">
+                            <div class="section-header-title" style="border-left-color: var(--color-rate-accent); color: var(--color-text); margin-top: 0.5rem;">Werktags-Raten</div>
+                            <table class="caps-table">
+                                <thead>
+                                    <tr>
+                                        <th class="type-col" style="color: var(--color-text);">Einstellung</th>
+                                        <th class="multiplier-col" style="color: var(--color-rate-accent);">Multiplikator</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td class="item-col">XP-Rate</td><td class="multiplier-col">1.0x</td></tr>
+                                    <tr><td class="item-col">Farmen</td><td class="multiplier-col">1.5x</td></tr>
+                                    <tr><td class="item-col">Zähmung</td><td class="multiplier-col">2.0x</td></tr>
+                                    <tr><td class="item-col">Brüten</td><td class="multiplier-col">5.0x</td></tr>
+                                    <tr><td class="item-col">Reifen</td><td class="multiplier-col">5.0x</td></tr>
+                                </tbody>
+                            </table>
+                            <div class="description" style="margin-top: 15px; border-left: none;">
+                                Diese Raten sind von Montag 00:00 Uhr bis Freitag 00:00 Uhr aktiv. Ideal für Spieler, die unter der Woche konstant Fortschritte erzielen möchten.
+                            </div>
+                        </div>
+
+                        <div class="rates-table-block">
+                            <div class="section-header-title" style="border-left-color: var(--color-rate-accent); color: var(--color-text); margin-top: 0.5rem;">Wochenend-Raten</div>
+                            <table class="caps-table">
+                                <thead>
+                                    <tr>
+                                        <th class="type-col" style="color: var(--color-text);">Einstellung</th>
+                                        <th class="multiplier-col" style="color: var(--color-rate-accent);">Multiplikator</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td class="item-col">XP-Rate</td><td class="multiplier-col">2.0x</td></tr>
+                                    <tr><td class="item-col">Farmen</td><td class="multiplier-col">3.0x</td></tr>
+                                    <tr><td class="item-col">Zähmung</td><td class="multiplier-col">4.0x</td></tr>
+                                    <tr><td class="item-col">Brüten</td><td class="multiplier-col">10.0x</td></tr>
+                                    <tr><td class="item-col">Reifen</td><td class="multiplier-col">10.0x</td></tr>
+                                </tbody>
+                            </table>
+                            <div class="description" style="margin-top: 15px; border-left: none;">
+                                Diese Bonus-Raten sind von Freitag 00:00 Uhr bis Montag 00:00 Uhr aktiv. Nutze das Wochenende, um besonders schnelle Fortschritte zu erzielen!
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- AKKORDEON FÜR DINO LEVEL -->
+                <div id="content-dino-level" class="accordion-content">
+                    <div class="table-container">
+                        <div class="section-header-title">Dino Level</div>
+                        <div class="description">
+                            Wir haben die maximalen Dino-Level für verschiedene Kreaturtypen angepasst:
+                        </div>
+                        <table class="caps-table">
+                            <thead>
+                                <tr>
+                                    <th class="type-col">Dino Typ</th>
+                                    <th class="max-level-col">Max Level</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="standard-row">
+                                    <td class="item-col">Standard Dinos</td>
+                                    <td class="max-level-col">150</td>
+                                </tr>
+                                <tr class="tek-row">
+                                    <td class="item-col">Tek Dinos</td>
+                                    <td class="max-level-col">180</td>
+                                </tr>
+                                <tr class="wyvern-row">
+                                    <td class="item-col">Wyvern</td>
+                                    <td class="max-level-col">190</td>
+                                </tr>
+                                <tr class="rockdrake-row">
+                                    <td class="item-col">Rock Drakes</td>
+                                    <td class="max-level-col">190</td>
+                                </tr>
+                                <tr class="crystal-row">
+                                    <td class="item-col">Crystal Wyvern</td>
+                                    <td class="max-level-col">225</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- AKKORDEON FÜR ITEM CAPS -->
+                <div id="content-item-caps" class="accordion-content">
+                    <div class="table-container">
+                        
+                        <!-- RÜSTUNGS-CAPS SEKTION -->
+                        <div class="section-header-title">Rüstungs Caps</div>
+                        <div class="description">
+                            Rüstungen und Baupläne sind auf einen maximalen Rüstungswert begrenzt. Dieser variiert je nach Rüstungsart:
+                        </div>
+                
+                        <table class="caps-table">
+                            <thead>
+                                <tr>
+                                    <th class="item-col">Rüstungstyp</th>
+                                    <th class="max-value-col">Max Rüstungswert</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="tek-row">
+                                    <td class="item-col armor-type">Tek-Rüstung</td>
+                                    <td class="max-value-col">1125</td>
+                                </tr>
+                                <tr class="swat-row">
+                                    <td class="item-col armor-type">SWAT-Rüstung</td>
+                                    <td class="max-value-col">920</td>
+                                </tr>
+                                <tr class="flak-row">
+                                    <td class="item-col armor-type">Flak-Rüstung</td>
+                                    <td class="max-value-col">800</td>
+                                </tr>
+                                <tr class="chitin-row">
+                                    <td class="item-col armor-type">Chitin-Rüstung</td>
+                                    <td class="max-value-col">400</td>
+                                </tr>
+                                <tr class="fur-row">
+                                    <td class="item-col armor-type">Pelz Rüstung</td>
+                                    <td class="max-value-col">320</td>
+                                </tr>
+                                <tr class="ghillie-row">
+                                    <td class="item-col armor-type">Ghilli Rüstung</td>
+                                    <td class="max-value-col">256</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        
+                        <!-- WAFFEN-CAPS SEKTION -->
+                        <div class="section-header-title">Waffen & Werkzeuge Damage Cap</div>
+                        <div class="description">
+                            Alle Waffen und Werkzeugbaupläne sind auf einen Schadenswert von maximal 400 % Schaden begrenzt.
+                        </div>
+                        <table class="caps-table">
+                            <thead>
+                                <tr>
+                                    <th class="item-col">Item Typ</th>
+                                    <th class="max-value-col">Max Schaden</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="weapon-row">
+                                    <td class="item-col">Waffen (Nahkampf & Fernkampf)</td>
+                                    <td class="max-value-col">400 %</td>
+                                </tr>
+                                <tr class="tool-row">
+                                    <td class="item-col">Werkzeuge (Äxte, Spitzhacken etc.)</td>
+                                    <td class="max-value-col">400 %</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        
+                        <!-- SÄTTEL-CAPS SEKTION -->
+                        <div class="section-header-title">Sättel Rüstungs Cap</div>
+                        <div class="description">
+                            Alle Sättel im Spiel sind auf diesen maximalen Rüstungswert begrenzt.
+                        </div>
+                        <table class="caps-table">
+                            <thead>
+                                <tr>
+                                    <th class="item-col">Sattel Typ</th>
+                                    <th class="max-value-col">Max Rüstungswert</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="saddle-row">
+                                    <td class="item-col">Alle Sättel</td>
+                                    <td class="max-value-col">200.0</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- LEERE/PLATZHALTER SEKTIONEN -->
+                <div id="content-limits" class="accordion-content">
+                    <div class="table-container">
+                        <div class="section-header-title">Strukturen & Dino Limits</div>
+                        <div class="description">Inhalte für Limits folgen hier.</div>
+                    </div>
+                </div>
+                <div id="content-gesperrt" class="accordion-content">
+                    <div class="table-container">
+                        <div class="section-header-title">Gesperrte Strukturen & Dinos</div>
+                        <div class="description">Inhalte für Gesperrte Strukturen/Dinos folgen hier.</div>
+                    </div>
+                </div>
+                <div id="content-restarts" class="accordion-content">
+                    <div class="table-container">
+                        <div class="section-header-title">Server Neustarts</div>
+                        <div class="description">Inhalte für Server Neustarts folgen hier.</div>
+                    </div>
+                </div>
+                <div id="content-player-stats" class="accordion-content">
+                    <div class="table-container">
+                        <div class="section-header-title">Spieler/Dino Stat Einstellungen</div>
+                        <div class="description">Inhalte für Spieler/Dino Stat Einstellungen folgen hier.</div>
+                    </div>
+                </div>
+                <div id="content-travel" class="accordion-content">
+                    <div class="table-container">
+                        <div class="section-header-title">Travel Einstellungen</div>
+                        <div class="description">Inhalte für Travel Einstellungen folgen hier.</div>
+                    </div>
+                </div>
+                <div id="content-decay" class="accordion-content">
+                    <div class="table-container">
+                        <div class="section-header-title">Decay Einstellungen</div>
+                        <div class="description">Inhalte für Decay Einstellungen folgen hier.</div>
+                    </div>
+                </div>
+                
+                <div id="content-cs" class="accordion-content">
+                    <div class="table-container">
+                        <div class="section-header-title">CS Einstellungen</div>
+                        <div class="description">Inhalte für CS Einstellungen folgen hier.</div>
+                    </div>
+                </div>
+                <div id="content-pcs" class="accordion-content">
+                    <div class="table-container">
+                        <div class="section-header-title">PCS Einstellungen</div>
+                        <div class="description">Inhalte für PCS Einstellungen folgen hier.</div>
+                    </div>
+                </div>
+
+
+            </div> <!-- Ende Rechter Content Area -->
+
         </div>
-        
-        <!-- Rechter Inhaltsbereich -->
-        <div class="right-content-area">
-            
-            <!-- AKKORDEON FÜR SERVER RATEN -->
-            <div id="content-rates" class="accordion-content">
-                <div class="table-container">
-                    <div class="section-header-title">Server Raten</div>
-                    <div class="description">
-                        Unsere Server-Einstellungen bieten optimierte Raten für ein ausbalanciertes und unterhaltsames Spielerlebnis. Am Wochenende profitierst du von besonderen Bonus-Raten!
-                    </div>
-
-                    <div class="rates-table-block">
-                        <div class="section-header-title" style="border-left-color: var(--color-rate-accent); color: var(--color-text); margin-top: 0.5rem;">Werktags-Raten</div>
-                        <table class="caps-table">
-                            <thead>
-                                <tr>
-                                    <th class="type-col" style="color: var(--color-text);">Einstellung</th>
-                                    <th class="multiplier-col" style="color: var(--color-rate-accent);">Multiplikator</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr><td class="item-col">XP-Rate</td><td class="multiplier-col">1.0x</td></tr>
-                                <tr><td class="item-col">Farmen</td><td class="multiplier-col">1.5x</td></tr>
-                                <tr><td class="item-col">Zähmung</td><td class="multiplier-col">2.0x</td></tr>
-                                <tr><td class="item-col">Brüten</td><td class="multiplier-col">5.0x</td></tr>
-                                <tr><td class="item-col">Reifen</td><td class="multiplier-col">5.0x</td></tr>
-                            </tbody>
-                        </table>
-                        <div class="description" style="margin-top: 15px; border-left: none;">
-                            Diese Raten sind von Montag 00:00 Uhr bis Freitag 00:00 Uhr aktiv. Ideal für Spieler, die unter der Woche konstant Fortschritte erzielen möchten.
-                        </div>
-                    </div>
-
-                    <div class="rates-table-block">
-                        <div class="section-header-title" style="border-left-color: var(--color-rate-accent); color: var(--color-text); margin-top: 0.5rem;">Wochenend-Raten</div>
-                        <table class="caps-table">
-                            <thead>
-                                <tr>
-                                    <th class="type-col" style="color: var(--color-text);">Einstellung</th>
-                                    <th class="multiplier-col" style="color: var(--color-rate-accent);">Multiplikator</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr><td class="item-col">XP-Rate</td><td class="multiplier-col">2.0x</td></tr>
-                                <tr><td class="item-col">Farmen</td><td class="multiplier-col">3.0x</td></tr>
-                                <tr><td class="item-col">Zähmung</td><td class="multiplier-col">4.0x</td></tr>
-                                <tr><td class="item-col">Brüten</td><td class="multiplier-col">10.0x</td></tr>
-                                <tr><td class="item-col">Reifen</td><td class="multiplier-col">10.0x</td></tr>
-                            </tbody>
-                        </table>
-                        <div class="description" style="margin-top: 15px; border-left: none;">
-                            Diese Bonus-Raten sind von Freitag 00:00 Uhr bis Montag 00:00 Uhr aktiv. Nutze das Wochenende, um besonders schnelle Fortschritte zu erzielen!
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- AKKORDEON FÜR DINO LEVEL -->
-            <div id="content-dino-level" class="accordion-content">
-                <div class="table-container">
-                    <div class="section-header-title">Dino Level</div>
-                    <div class="description">
-                        Wir haben die maximalen Dino-Level für verschiedene Kreaturtypen angepasst:
-                    </div>
-                    <table class="caps-table">
-                        <thead>
-                            <tr>
-                                <th class="type-col">Dino Typ</th>
-                                <th class="max-level-col">Max Level</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr class="standard-row">
-                                <td class="item-col">Standard Dinos</td>
-                                <td class="max-level-col">150</td>
-                            </tr>
-                            <tr class="tek-row">
-                                <td class="item-col">Tek Dinos</td>
-                                <td class="max-level-col">180</td>
-                            </tr>
-                            <tr class="wyvern-row">
-                                <td class="item-col">Wyvern</td>
-                                <td class="max-level-col">190</td>
-                            </tr>
-                            <tr class="rockdrake-row">
-                                <td class="item-col">Rock Drakes</td>
-                                <td class="max-level-col">190</td>
-                            </tr>
-                            <tr class="crystal-row">
-                                <td class="item-col">Crystal Wyvern</td>
-                                <td class="max-level-col">225</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            
-            <!-- AKKORDEON FÜR ITEM CAPS -->
-            <div id="content-item-caps" class="accordion-content">
-                <div class="table-container">
-                    
-                    <!-- RÜSTUNGS-CAPS SEKTION -->
-                    <div class="section-header-title">Rüstungs Caps</div>
-                    <div class="description">
-                        Rüstungen und Baupläne sind auf einen maximalen Rüstungswert begrenzt. Dieser variiert je nach Rüstungsart:
-                    </div>
-            
-                    <table class="caps-table">
-                        <thead>
-                            <tr>
-                                <th class="item-col">Rüstungstyp</th>
-                                <th class="max-value-col">Max Rüstungswert</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr class="tek-row">
-                                <td class="item-col armor-type">Tek-Rüstung</td>
-                                <td class="max-value-col">1125</td>
-                            </tr>
-                            <tr class="swat-row">
-                                <td class="item-col armor-type">SWAT-Rüstung</td>
-                                <td class="max-value-col">920</td>
-                            </tr>
-                            <tr class="flak-row">
-                                <td class="item-col armor-type">Flak-Rüstung</td>
-                                <td class="max-value-col">800</td>
-                            </tr>
-                            <tr class="chitin-row">
-                                <td class="item-col armor-type">Chitin-Rüstung</td>
-                                <td class="max-value-col">400</td>
-                            </tr>
-                            <tr class="fur-row">
-                                <td class="item-col armor-type">Pelz Rüstung</td>
-                                <td class="max-value-col">320</td>
-                            </tr>
-                            <tr class="ghillie-row">
-                                <td class="item-col armor-type">Ghilli Rüstung</td>
-                                <td class="max-value-col">256</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    
-                    <!-- WAFFEN-CAPS SEKTION -->
-                    <div class="section-header-title">Waffen & Werkzeuge Damage Cap</div>
-                    <div class="description">
-                        Alle Waffen und Werkzeugbaupläne sind auf einen Schadenswert von maximal 400 % Schaden begrenzt.
-                    </div>
-                    <table class="caps-table">
-                        <thead>
-                            <tr>
-                                <th class="item-col">Item Typ</th>
-                                <th class="max-value-col">Max Schaden</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr class="weapon-row">
-                                <td class="item-col">Waffen (Nahkampf & Fernkampf)</td>
-                                <td class="max-value-col">400 %</td>
-                            </tr>
-                            <tr class="tool-row">
-                                <td class="item-col">Werkzeuge (Äxte, Spitzhacken etc.)</td>
-                                <td class="max-value-col">400 %</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    
-                    <!-- SÄTTEL-CAPS SEKTION -->
-                    <div class="section-header-title">Sättel Rüstungs Cap</div>
-                    <div class="description">
-                        Alle Sättel im Spiel sind auf diesen maximalen Rüstungswert begrenzt.
-                    </div>
-                    <table class="caps-table">
-                        <thead>
-                            <tr>
-                                <th class="item-col">Sattel Typ</th>
-                                <th class="max-value-col">Max Rüstungswert</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr class="saddle-row">
-                                <td class="item-col">Alle Sättel</td>
-                                <td class="max-value-col">200.0</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-        </div> <!-- Ende Rechter Content Area -->
 
     </div>
 
@@ -539,8 +630,8 @@
         
         // Initialisierung: Stellt sicher, dass das erste Element beim Laden aktiv ist
         document.addEventListener('DOMContentLoaded', () => {
-            const firstHeaderId = 'nav-rates'; // Startet jetzt mit den Raten
-            const firstContentId = 'content-rates';
+            const firstHeaderId = 'nav-dino-level'; // Startet mit den Dino Level Limits
+            const firstContentId = 'content-dino-level';
             const firstHeader = document.getElementById(firstHeaderId);
             
             // Führt toggleAccordion nur aus, wenn der Header existiert (um den aktiven Zustand zu setzen)
