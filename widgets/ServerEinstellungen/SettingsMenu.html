@@ -64,7 +64,7 @@
             max-width: 1600px;
             
             display: grid;
-            grid-template-rows: auto 1fr;
+            grid-template-rows: auto 1fr; /* Header-Zeile (auto) und Content-Zeile (1fr) */
             grid-template-columns: 1fr;
             gap: 20px;
             padding: 1.5rem;
@@ -191,6 +191,8 @@
             max-height: 0;
             overflow: hidden;
             transition: max-height 0.5s ease-in-out;
+            
+            width: 100%;
         }
         .local-accordion-content.active {
             max-height: 5000px; /* Hoch genug für die lange Tabelle */
@@ -200,6 +202,7 @@
         .local-arrow {
             transition: transform 0.3s;
             transform: rotate(0deg);
+            font-size: 0.8em;
         }
         .local-accordion-header.active .local-arrow {
             transform: rotate(90deg);
@@ -287,37 +290,6 @@
 
         /* Max Value Spalten (Rot/Dunkelrot beibehalten) */
         .max-value-col { color: var(--color-cap) !important; }
-        
-        /* Zusätzlicher Stil für die Prog Lvl Tabelle */
-        .prog-lvl-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        .prog-lvl-table td {
-            padding: 8px 10px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        .prog-lvl-table th {
-            padding: 10px;
-            background-color: rgba(255, 255, 255, 0.08); 
-            text-align: center;
-        }
-        .prog-lvl-table .lvl-col {
-            width: 30%;
-            font-weight: 700;
-            text-align: center;
-            color: var(--color-gold);
-        }
-        .prog-lvl-table .decay-col {
-            width: 35%;
-            text-align: center;
-            color: var(--color-red);
-        }
-        .prog-lvl-table .limit-col {
-            width: 35%;
-            text-align: center;
-            color: var(--color-text);
-        }
 
         /* RESPONSIVE LAYOUT FÜR MOBILE */
         @media (max-width: 768px) {
@@ -771,7 +743,7 @@
                             <span class="sub-section-title">Allgemein gilt:</span>
                             <ul>
                                 <li>Täglich wird um **01:00 Uhr MEZ** eine automatische Entfernung von **Wildbauten** durchgeführt, um die Serverleistung und Spawn-Punkte zu sichern, sowie die Server zusätzlich sauber zu halten.</li>
-                                <li>Der Spieler mit dem höchsten Verfallswert (Decay) gibt den Decay-Timer für den Stamm vor.</li>
+                                <li>Der Spieler mit dem höchsten Verfallswert (Decay) gibt den Verfallstimer für den Stamm vor.</li>
                                 <li>Alle Strukturen-Arten haben denselben Verfallstimer.</li>
                             </ul>
                         </div>
