@@ -70,7 +70,7 @@
             grid-template-columns: 1fr;
             gap: 20px;
             padding: 1.5rem;
-            padding-top: 80px; /* Platz für den Header im Grid-Flow */
+            padding-top: 80px; /* Platz für den fixen Header im Grid-Flow */
             box-sizing: border-box;
             position: relative;
         }
@@ -154,11 +154,6 @@
              text-shadow: 0 0 5px rgba(255, 235, 59, 0.5); /* Leichter Glow */
         }
         
-        /* Pfeil/Indikator entfernt, da es eine vertikale Liste ist */
-        .arrow {
-            display: none;
-        }
-
         /* --- RECHTER INHALTSBEREICH --- */
         .right-content-area {
             flex-grow: 1; 
@@ -177,6 +172,28 @@
         .accordion-content.active {
             display: block;
         }
+
+        /* --- CONTENT ANIMATION (NEU) --- */
+        @keyframes pulse-glow {
+            0% { box-shadow: 0 0 0 0 rgba(255, 235, 59, 0.7); }
+            50% { box-shadow: 0 0 15px rgba(255, 235, 59, 0.5); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 235, 59, 0); }
+        }
+        
+        .accordion-header.pulse {
+            animation: pulse-glow 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animated-content {
+            opacity: 0;
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+
 
         /* --- INHALTSSTILE (Für die Tabellen) --- */
         .table-container {
@@ -297,6 +314,47 @@
             }
         }
     </style>
+    <script>
+        // Funktion zum Umschalten des Akkordeons
+        function toggleAccordion(contentId, headerId) {
+            const content = document.getElementById(contentId);
+            const header = document.getElementById(headerId); // Header-Element direkt über ID holen
+            const allHeaders = document.querySelectorAll('.left-nav .accordion-header');
+            const allContent = document.querySelectorAll('.right-content-area .accordion-content');
+            
+            if (!header || !content) {
+                console.error('Element nicht gefunden:', headerId, contentId);
+                return; 
+            }
+
+            const isActive = header.classList.contains('active');
+
+            // 1. Alle Header und Inhalte deaktivieren
+            allHeaders.forEach(h => h.classList.remove('active'));
+            allContent.forEach(c => c.classList.remove('active'));
+
+            // 2. Ziel-Akkordeon umschalten
+            if (!isActive) {
+                // Öffnen
+                content.classList.add('active');
+                header.classList.add('active');
+            }
+        }
+        
+        // Initialisierung: Stellt sicher, dass das erste Element beim Laden aktiv ist
+        document.addEventListener('DOMContentLoaded', () => {
+            const firstHeaderId = 'nav-decay'; // Startet alphabetisch mit dem ersten Element
+            const firstContentId = 'content-decay';
+            const firstHeader = document.getElementById(firstHeaderId);
+            
+            // Führt toggleAccordion nur aus, wenn der Header existiert (um den aktiven Zustand zu setzen)
+            if (firstHeader) {
+                // Manuelles Setzen des ersten Zustands
+                document.getElementById(firstContentId).classList.add('active');
+                firstHeader.classList.add('active');
+            }
+        });
+    </script>
 </head>
 <body>
 
@@ -315,33 +373,33 @@
                 <!-- SERVER EINSTELLUNGEN HEADER -->
                 <div class="nav-group-separator">Server Einstellungen</div>
 
-                <!-- SERVER EINSTELLUNGEN MENÜPUNKTE -->
-                <div id="nav-rates" class="accordion-header" onclick="toggleAccordion('content-rates', 'nav-rates')">
-                    Server Raten
+                <!-- SERVER EINSTELLUNGEN MENÜPUNKTE (Alphabetisch sortiert) -->
+                <div id="nav-decay" class="accordion-header" onclick="toggleAccordion('content-decay', 'nav-decay')">
+                    Decay Einstellungen
                 </div>
                 <div id="nav-dino-level" class="accordion-header" onclick="toggleAccordion('content-dino-level', 'nav-dino-level')">
                     Dino Level Limits
                 </div>
-                <div id="nav-item-caps" class="accordion-header" onclick="toggleAccordion('content-item-caps', 'nav-item-caps')">
-                    Item & Crafting Caps
-                </div>
-                <div id="nav-limits" class="accordion-header" onclick="toggleAccordion('content-limits', 'nav-limits')">
-                    Strukturen & Dino Limits
-                </div>
                 <div id="nav-gesperrt" class="accordion-header" onclick="toggleAccordion('content-gesperrt', 'nav-gesperrt')">
                     Gesperrte Strukturen & Dinos
                 </div>
-                <div id="nav-restarts" class="accordion-header" onclick="toggleAccordion('content-restarts', 'nav-restarts')">
-                    Server Neustarts
+                <div id="nav-item-caps" class="accordion-header" onclick="toggleAccordion('content-item-caps', 'nav-item-caps')">
+                    Item & Crafting Caps
                 </div>
                 <div id="nav-player-stats" class="accordion-header" onclick="toggleAccordion('content-player-stats', 'nav-player-stats')">
                     Spieler/Dino Stat Einstellungen
                 </div>
+                <div id="nav-rates" class="accordion-header" onclick="toggleAccordion('content-rates', 'nav-rates')">
+                    Server Raten
+                </div>
+                <div id="nav-restarts" class="accordion-header" onclick="toggleAccordion('content-restarts', 'nav-restarts')">
+                    Server Neustarts
+                </div>
+                <div id="nav-limits" class="accordion-header" onclick="toggleAccordion('content-limits', 'nav-limits')">
+                    Strukturen & Dino Limits
+                </div>
                 <div id="nav-travel" class="accordion-header" onclick="toggleAccordion('content-travel', 'nav-travel')">
                     Travel Einstellungen
-                </div>
-                <div id="nav-decay" class="accordion-header" onclick="toggleAccordion('content-decay', 'nav-decay')">
-                    Decay Einstellungen
                 </div>
                 
                 <!-- MOD EINSTELLUNGEN HEADER -->
@@ -409,6 +467,29 @@
                                 Diese Bonus-Raten sind von Freitag 00:00 Uhr bis Montag 00:00 Uhr aktiv. Nutze das Wochenende, um besonders schnelle Fortschritte zu erzielen!
                             </div>
                         </div>
+                        
+                        <!-- NEUE SEKTION: WILD DINO SCHADEN -->
+                        <div class="rates-table-block" style="flex: 1 1 100%;">
+                            <div class="section-header-title" style="border-left-color: var(--color-accent-header); color: var(--color-accent-header); margin-top: 1.5rem;">Wild Dino Schaden</div>
+                            <table class="caps-table">
+                                <thead>
+                                    <tr>
+                                        <th class="type-col">Einstellung</th>
+                                        <th class="multiplier-col">Wert</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="item-col">Wild Dino Schaden</td>
+                                        <td class="multiplier-col" style="color: var(--color-red);">x2.0</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div class="description" style="margin-top: 15px; border-left: none;">
+                                Aus Balancing-Gründen machen wilde Dinos den Spielern doppelten Schaden.
+                            </div>
+                        </div>
+
                     </div>
                 </div>
                 
@@ -630,8 +711,8 @@
         
         // Initialisierung: Stellt sicher, dass das erste Element beim Laden aktiv ist
         document.addEventListener('DOMContentLoaded', () => {
-            const firstHeaderId = 'nav-dino-level'; // Startet mit den Dino Level Limits
-            const firstContentId = 'content-dino-level';
+            const firstHeaderId = 'nav-decay'; // Startet alphabetisch mit dem ersten Element
+            const firstContentId = 'content-decay';
             const firstHeader = document.getElementById(firstHeaderId);
             
             // Führt toggleAccordion nur aus, wenn der Header existiert (um den aktiven Zustand zu setzen)
