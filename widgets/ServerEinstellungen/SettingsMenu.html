@@ -63,25 +63,21 @@
             width: 100%;
             max-width: 1600px;
             
+            /* Grid für die gesamte Box: Header oben, Content darunter */
             display: grid;
-            grid-template-rows: auto 1fr; /* Header-Zeile (auto) und Content-Zeile (1fr) */
+            grid-template-rows: auto 1fr;
             grid-template-columns: 1fr;
             gap: 20px;
             padding: 1.5rem;
-            padding-top: 80px; 
+            
             box-sizing: border-box;
             position: relative;
         }
         
-        /* HAUPTÜBERSCHRIFT (Absolut positioniert, um über die gesamte Breite zu gehen) */
-        .main-widget-header-wrapper {
-            position: absolute;
-            top: 20px; 
-            left: 20px;
-            right: 20px;
-            z-index: 10;
-        }
+        /* HAUPTÜBERSCHRIFT */
         .main-widget-header {
+            grid-row: 1;
+            grid-column: 1;
             font-size: 2rem;
             font-weight: 800;
             color: var(--color-accent-header);
@@ -90,15 +86,16 @@
             text-align: center;
             border-bottom: 3px solid var(--color-accent-header);
             padding-bottom: 10px;
-            margin: 0;
+            margin-bottom: 0;
         }
 
         /* --- HAUPT-CONTENT-BEREICH (Enthält Nav und Content) --- */
         .main-content-grid {
+            grid-row: 2;
             display: flex; /* Flex für die 2 Spalten: Nav links, Content rechts */
             gap: 20px;
-            grid-row: 2;
             min-height: 500px;
+            width: 100%;
         }
 
 
@@ -169,7 +166,22 @@
         
         .accordion-content.active {
             display: block;
+            /* Stellt sicher, dass das Content-Div nicht standardmäßig die Animation erbt */
+            animation: none;
         }
+
+        /* --- CONTENT ANIMATION (NEU) --- */
+        @keyframes fadeInMove {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animated-content {
+            opacity: 0;
+            /* Die Animation wird nur einmalig beim Hinzufügen der Klasse gestartet */
+            animation: fadeInMove 0.4s ease-out forwards;
+        }
+
 
         /* --- LOKALES AKKORDEON STIL (Decay Tabelle) --- */
         .local-accordion-header {
@@ -345,13 +357,23 @@
 
             // 1. Alle Header und Inhalte deaktivieren
             allHeaders.forEach(h => h.classList.remove('active'));
-            allContent.forEach(c => c.classList.remove('active'));
+            allContent.forEach(c => {
+                c.classList.remove('active');
+                // Entferne die Animationsklasse beim Deaktivieren
+                c.querySelectorAll('.animated-content').forEach(item => item.classList.remove('animated-content'));
+            });
 
             // 2. Ziel-Akkordeon umschalten
             if (!isActive) {
                 // Öffnen
                 content.classList.add('active');
                 header.classList.add('active');
+                
+                // Füge Animationsklasse zu Content-Kindelementen hinzu
+                content.querySelectorAll('.section-header-title, .description, .caps-table, .local-accordion-header').forEach((item, index) => {
+                    item.style.animationDelay = `${index * 50}ms`; // Gestaffeltes Einblenden
+                    item.classList.add('animated-content');
+                });
             }
         }
         
@@ -564,7 +586,6 @@
                 <div id="content-item-caps" class="accordion-content">
                     <div class="table-container">
                         
-                        <!-- RÜSTUNGS-CAPS SEKTION -->
                         <div class="section-header-title">Rüstungs Caps</div>
                         <div class="description">
                             Rüstungen und Baupläne sind auf einen maximalen Rüstungswert begrenzt. Dieser variiert je nach Rüstungsart:
@@ -685,6 +706,8 @@
                 <div id="content-decay" class="accordion-content active">
                     <div class="table-container">
                         <div class="section-header-title">Decay Einstellungen</div>
+                        
+                        <!-- TEXTPLATZIERUNG HIER KORRIGIERT -->
                         <div class="description">
                              Die Verfallstimer basieren auf dem progressiven Level System (Prog Lvl) und variieren je nach Spielerlevel.
                         </div>
@@ -802,13 +825,23 @@
 
             // 1. Alle Header und Inhalte deaktivieren
             allHeaders.forEach(h => h.classList.remove('active'));
-            allContent.forEach(c => c.classList.remove('active'));
+            allContent.forEach(c => {
+                c.classList.remove('active');
+                // Entferne die Animationsklasse beim Deaktivieren
+                c.querySelectorAll('.animated-content').forEach(item => item.classList.remove('animated-content'));
+            });
 
             // 2. Ziel-Akkordeon umschalten
             if (!isActive) {
                 // Öffnen
                 content.classList.add('active');
                 header.classList.add('active');
+                
+                // Füge Animationsklasse zu Content-Kindelementen hinzu
+                content.querySelectorAll('.section-header-title, .description, .caps-table, .local-accordion-header').forEach((item, index) => {
+                    item.style.animationDelay = `${index * 50}ms`; // Gestaffeltes Einblenden
+                    item.classList.add('animated-content');
+                });
             }
         }
         
@@ -836,6 +869,12 @@
                 // Manuelles Setzen des ersten Zustands
                 document.getElementById(firstContentId).classList.add('active');
                 firstHeader.classList.add('active');
+                
+                // Füge Animationsklasse zu Content-Kindelementen der Startsektion hinzu
+                document.getElementById(firstContentId).querySelectorAll('.section-header-title, .description, .caps-table, .local-accordion-header').forEach((item, index) => {
+                    item.style.animationDelay = `${index * 50}ms`; 
+                    item.classList.add('animated-content');
+                });
             }
         });
     </script>
