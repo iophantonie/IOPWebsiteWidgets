@@ -23,7 +23,7 @@
             --color-tek: #5DADE2;           /* Blau: Tek Dinos */
             --color-wyvern-red: #FF4444;    /* Rot: Wyvern */
             --color-rockdrake: #9B59B6;     /* Lila: Rock Drakes */
-            --color-crystal-yellow: #F7DC6F; /* Gelblich: Crystal Wyvern */
+            --color-crystal-yellow: #F7DC6F; /* Gelblich: Crystal Wyvern/Oliv */
 
             /* RÜSTUNGSFARBEN */
             --color-swat: #5D6D7E; 
@@ -33,7 +33,7 @@
             --color-ghillie: #58D68D;
 
             /* RATEN FARBEN */
-            --color-rate-accent: var(--color-red); /* Akzentlinie jetzt Rot */
+            --color-rate-accent: var(--color-red); 
             
             --font-main: sans-serif;
             --font-header: 'Acme', var(--font-main);
@@ -42,7 +42,7 @@
         /* Wichtig: Der Body des iFrames muss transparent sein. */
         body {
             background-color: transparent;
-            font-family: var(--font-main); /* Standard-Text */
+            font-family: var(--font-main);
             color: var(--color-text);
             margin: 0;
             padding: 20px; 
@@ -50,10 +50,10 @@
             justify-content: center;
             width: 100%; 
             box-sizing: border-box;
-            overflow-x: hidden; /* Sicherstellen, dass kein horizontales Scrollen erzwungen wird */
+            overflow-x: hidden;
         }
 
-        /* Haupt-Card Container (Basis für das Grid-Layout) */
+        /* Haupt-Card Container */
         .settings-card-main {
             background-color: var(--color-dark);
             border-radius: 12px;
@@ -63,21 +63,16 @@
             width: 100%;
             max-width: 1600px;
             
-            /* Grid für die gesamte Box: Header oben, Content darunter */
+            /* Grid-Layout: Header oben fix, Content unten flexibel */
             display: grid;
             grid-template-rows: auto 1fr;
-            grid-template-columns: 1fr;
-            gap: 20px;
+            grid-template-columns: 100%;
             padding: 1.5rem;
-            
             box-sizing: border-box;
-            position: relative;
         }
         
         /* HAUPTÜBERSCHRIFT */
         .main-widget-header {
-            grid-row: 1;
-            grid-column: 1;
             font-size: 2rem;
             font-weight: 800;
             color: var(--color-accent-header);
@@ -86,22 +81,20 @@
             text-align: center;
             border-bottom: 3px solid var(--color-accent-header);
             padding-bottom: 10px;
-            margin-bottom: 0;
+            margin: 0 0 20px 0; /* Abstand nach unten */
         }
 
-        /* --- HAUPT-CONTENT-BEREICH (Enthält Nav und Content) --- */
+        /* --- HAUPT-CONTENT-BEREICH (Split Layout) --- */
         .main-content-grid {
-            grid-row: 2;
-            display: flex; /* Flex für die 2 Spalten: Nav links, Content rechts */
+            display: flex; 
             gap: 20px;
-            min-height: 500px;
+            min-height: 600px;
             width: 100%;
         }
 
-
         /* --- LINKES NAVIGATIONS-MENÜ --- */
         .left-nav {
-            flex: 0 0 250px; /* Feste Breite für die Navigation */
+            flex: 0 0 260px; 
             background-color: var(--color-light-dark);
             border-radius: 8px;
             padding: 10px;
@@ -109,32 +102,35 @@
             flex-direction: column;
             gap: 5px;
             box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.3);
-            min-height: 100%;
+            height: fit-content; /* Passt sich dem Inhalt an */
         }
         
-        /* NEU: Stil für die Trenn-Header im Menü */
+        /* Trenn-Header im Menü */
         .nav-group-separator {
             font-family: var(--font-header);
-            font-size: 0.9rem;
+            font-size: 1rem;
             font-weight: 700;
             color: var(--color-red);
             text-transform: uppercase;
-            margin: 10px 0 5px 0;
+            margin: 15px 0 5px 0;
             padding: 5px 15px;
             border-bottom: 1px dashed var(--color-red);
+            letter-spacing: 1px;
         }
+        .nav-group-separator:first-child { margin-top: 0; }
 
         .accordion-header {
             background-color: transparent;
-            padding: 10px 15px;
+            padding: 12px 15px;
             font-size: 1rem;
             font-weight: 800;
             color: var(--color-text);
             font-family: var(--font-header);
             cursor: pointer;
-            border-left: 3px solid transparent; /* Akzentlinie links */
+            border-left: 4px solid transparent; 
             transition: all 0.2s;
             text-align: left;
+            border-radius: 0 4px 4px 0;
         }
 
         .accordion-header:hover {
@@ -146,736 +142,440 @@
              background-color: rgba(40, 40, 40, 0.95);
              border-left-color: var(--color-gold); 
              color: var(--color-gold); 
-             text-shadow: 0 0 5px rgba(255, 235, 59, 0.5); /* Leichter Glow */
+             text-shadow: 0 0 8px rgba(255, 235, 59, 0.6); 
         }
-        
+
         /* --- RECHTER INHALTSBEREICH --- */
         .right-content-area {
             flex-grow: 1; 
             background-color: var(--color-light-dark);
             border-radius: 8px;
-            padding: 20px;
+            padding: 25px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            position: relative;
         }
 
         .accordion-content {
             display: none;
-            padding: 0;
-            background-color: transparent;
+            width: 100%;
         }
         
         .accordion-content.active {
             display: block;
-            /* Stellt sicher, dass das Content-Div nicht standardmäßig die Animation erbt */
-            animation: none;
         }
 
-        /* --- CONTENT ANIMATION (NEU) --- */
+        /* --- ANIMATIONEN --- */
         @keyframes fadeInMove {
-            from { opacity: 0; transform: translateY(10px); }
+            from { opacity: 0; transform: translateY(15px); }
             to { opacity: 1; transform: translateY(0); }
         }
-
+        
         .animated-content {
             opacity: 0;
-            /* Die Animation wird nur einmalig beim Hinzufügen der Klasse gestartet */
-            animation: fadeInMove 0.4s ease-out forwards;
+            animation: fadeInMove 0.5s ease-out forwards;
         }
 
-
-        /* --- LOKALES AKKORDEON STIL (Decay Tabelle) --- */
-        .local-accordion-header {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: var(--color-gold);
-            cursor: pointer;
-            padding: 10px 0;
-            margin: 10px 0;
-            border-bottom: 1px dashed rgba(255, 255, 255, 0.2);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .local-accordion-header:hover {
-            color: var(--color-text);
-        }
-        .local-accordion-content {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.5s ease-in-out;
-            
-            width: 100%;
-        }
-        .local-accordion-content.active {
-            max-height: 5000px; /* Hoch genug für die lange Tabelle */
-        }
-        
-        /* Pfeil für lokales Akkordeon */
-        .local-arrow {
-            transition: transform 0.3s;
-            transform: rotate(0deg);
-            font-size: 0.8em;
-        }
-        .local-accordion-header.active .local-arrow {
-            transform: rotate(90deg);
-        }
-
-
-        /* --- INHALTSSTILE (Für die Tabellen) --- */
-        .table-container {
-            padding: 10px 0;
-            display: flex; 
-            gap: 20px;
-            flex-wrap: wrap; /* Wichtig für mobiles Layout */
-        }
-        
-        .rates-table-block {
-            flex: 1 1 45%; /* Lässt Platz für 2 Spalten auf Desktop */
-            min-width: 300px;
-        }
-        
+        /* --- INHALTSSTILE --- */
         .section-header-title {
-            font-size: 1.5rem;
+            font-size: 1.8rem;
             font-weight: 700;
             color: var(--color-text);
             font-family: var(--font-header);
-            margin-top: 1.5rem;
-            margin-bottom: 0.8rem;
-            padding-left: 5px;
-            border-left: 3px solid var(--color-red);
+            margin-bottom: 1rem;
+            padding-left: 10px;
+            border-left: 5px solid var(--color-red);
+            text-transform: uppercase;
+        }
+        
+        /* Kleinerer Unter-Header (z.B. für Wildbau Regeln) */
+        .sub-section-title {
+            display: block;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--color-text); /* Weiß und Fett */
+            margin-top: 20px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            font-family: var(--font-header);
         }
 
         .description {
             font-size: 1rem;
-            color: var(--color-text);
-            margin-bottom: 1rem;
-            opacity: 0.8;
-            line-height: 1.4;
+            color: rgba(255, 255, 255, 0.85);
+            margin-bottom: 1.5rem;
+            line-height: 1.5;
+        }
+        
+        .description ul, .description ol {
+            margin-top: 5px;
+            padding-left: 25px;
+        }
+        .description li {
+            margin-bottom: 5px;
         }
 
         /* TABELLEN-STIL */
+        .table-container {
+            width: 100%;
+        }
+        
+        /* Flex-Container für Raten-Tabellen nebeneinander */
+        .rates-flex-wrapper {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        .rates-table-block {
+            flex: 1 1 400px; /* Mindestbreite, wächst */
+        }
+
         .caps-table {
             width: 100%;
             border-collapse: collapse;
+            background-color: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 20px;
         }
         .caps-table th, .caps-table td {
-            padding: 12px 10px;
+            padding: 12px 15px;
             text-align: left;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
         .caps-table th {
-            background-color: rgba(255, 255, 255, 0.05); 
-            font-size: 0.9rem;
+            background-color: rgba(255, 255, 255, 0.08); 
+            font-size: 0.95rem;
             font-weight: 700;
             text-transform: uppercase;
             color: var(--color-text);
             border-bottom: 2px solid var(--color-accent-header);
         }
-        .caps-table td { font-size: 1rem; color: var(--color-text); }
+        .caps-table td { 
+            font-size: 1rem; 
+            color: var(--color-text); 
+            font-weight: 500;
+        }
         .caps-table tr:hover { background-color: rgba(255, 255, 255, 0.05); }
 
-        /* Detail-Spalten */
-        .type-col { width: 70%; }
-        .max-level-col, .max-value-col, .multiplier-col {
-            width: 30%;
-            font-weight: 600;
-            text-align: right;
+        /* Spezifische Spaltenstile */
+        .max-value-col, .multiplier-col {
+            text-align: right !important;
+            font-weight: 700;
         }
-        .multiplier-col {
-             color: var(--color-rate-accent); /* Rot für Multiplier */
-        }
+        .multiplier-col { color: var(--color-rate-accent); }
+        .max-value-col { color: var(--color-cap); }
+
+        /* FARBEN FÜR DINO LEVEL & TYPEN */
+        /* Wichtig: !important stellt sicher, dass die Farbe angewendet wird */
+        .tek-row .item-col, .tek-row .max-value-col { color: var(--color-tek) !important; }
+        .wyvern-row .item-col, .wyvern-row .max-value-col { color: var(--color-wyvern-red) !important; }
+        .rockdrake-row .item-col, .rockdrake-row .max-value-col { color: var(--color-rockdrake) !important; }
+        .crystal-row .item-col, .crystal-row .max-value-col { color: var(--color-crystal-yellow) !important; }
+        /* Standard bleibt weiß */
         
-        /* Spezifische Dino Level Farben (FIX: Typ und Level in korrekter Farbe) */
-        .standard-row .item-col, .standard-row .max-level-col { color: var(--color-text) !important; } 
-        .tek-row .item-col, .tek-row .max-level-col { color: var(--color-tek) !important; } 
-        .wyvern-row .item-col, .wyvern-row .max-level-col { color: var(--color-wyvern-red) !important; } 
-        .rockdrake-row .item-col, .rockdrake-row .max-level-col { color: var(--color-rockdrake) !important; }
-        .crystal-row .item-col, .crystal-row .max-level-col { color: var(--color-crystal-yellow) !important; }
+        /* Farben für Rüstungen */
+        .swat-row .item-col { color: var(--color-swat) !important; }
+        .flak-row .item-col { color: var(--color-flak) !important; }
+        .chitin-row .item-col { color: var(--color-chitin) !important; }
+        .fur-row .item-col { color: var(--color-fur) !important; }
+        .ghillie-row .item-col { color: var(--color-ghillie) !important; }
 
-        /* Spezifische Rüstungsfarben */
-        .tek-row .item-col.armor-type { color: var(--color-tek) !important; }
-        .swat-row .item-col.armor-type { color: var(--color-swat) !important; }
-        .flak-row .item-col.armor-type { color: var(--color-flak) !important; }
-        .chitin-row .item-col.armor-type { color: var(--color-chitin) !important; }
-        .fur-row .item-col.armor-type { color: var(--color-fur) !important; }
-        .ghillie-row .item-col.armor-type { color: var(--color-ghillie) !important; }
+        /* Lokales Akkordeon (Prog Lvl) */
+        .local-accordion-header {
+            background-color: rgba(255, 215, 0, 0.1);
+            color: var(--color-gold);
+            padding: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+        .local-accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-out;
+        }
+        .local-accordion-content.active {
+            max-height: 2000px; /* Genug Platz für die Tabelle */
+        }
+        .local-arrow { transition: transform 0.3s; }
+        .local-accordion-header.active .local-arrow { transform: rotate(90deg); }
 
-        /* Max Value Spalten (Rot/Dunkelrot beibehalten) */
-        .max-value-col { color: var(--color-cap) !important; }
-
-        /* RESPONSIVE LAYOUT FÜR MOBILE */
-        @media (max-width: 768px) {
-            .settings-card-main {
-                flex-direction: column;
-                gap: 10px;
-                padding: 1rem;
-                padding-top: 60px;
-            }
-            .main-content-grid {
-                 flex-direction: column;
-            }
-            .left-nav, .right-content-area {
-                margin-top: 0;
-            }
-            .left-nav {
-                flex: 1 1 auto;
-                order: -1; /* Menü über den Content verschieben */
-                padding: 5px;
-            }
-            .right-content-area {
-                flex: 1 1 auto;
-                padding: 10px;
-            }
-            .main-widget-header-wrapper {
-                position: static;
-                padding: 0;
-                margin-bottom: 10px;
-            }
-            .main-widget-header {
-                padding-bottom: 5px;
-            }
-            .table-container {
-                flex-direction: column;
-                gap: 15px;
-            }
+        /* Responsive */
+        @media (max-width: 850px) {
+            .main-content-grid { flex-direction: column; }
+            .left-nav { flex: 1; width: 100%; order: -1; }
         }
     </style>
-    <script>
-        // Funktion zum Umschalten des Haupt-Akkordeons
-        function toggleAccordion(contentId, headerId) {
-            const content = document.getElementById(contentId);
-            const header = document.getElementById(headerId); // Header-Element direkt über ID holen
-            const allHeaders = document.querySelectorAll('.left-nav .accordion-header');
-            const allContent = document.querySelectorAll('.right-content-area .accordion-content');
-            
-            if (!header || !content) {
-                console.error('Element nicht gefunden:', headerId, contentId);
-                return; 
-            }
-
-            const isActive = header.classList.contains('active');
-
-            // 1. Alle Header und Inhalte deaktivieren
-            allHeaders.forEach(h => h.classList.remove('active'));
-            allContent.forEach(c => {
-                c.classList.remove('active');
-                // Entferne die Animationsklasse beim Deaktivieren
-                c.querySelectorAll('.animated-content').forEach(item => item.classList.remove('animated-content'));
-            });
-
-            // 2. Ziel-Akkordeon umschalten
-            if (!isActive) {
-                // Öffnen
-                content.classList.add('active');
-                header.classList.add('active');
-                
-                // Füge Animationsklasse zu Content-Kindelementen hinzu
-                content.querySelectorAll('.section-header-title, .description, .caps-table, .local-accordion-header').forEach((item, index) => {
-                    item.style.animationDelay = `${index * 50}ms`; // Gestaffeltes Einblenden
-                    item.classList.add('animated-content');
-                });
-            }
-        }
-        
-        // NEU: Funktion zum Umschalten des lokalen Akkordeons
-        function toggleLocalAccordion(header) {
-            const content = header.nextElementSibling;
-            
-            if (content.classList.contains('active')) {
-                content.classList.remove('active');
-                header.classList.remove('active');
-            } else {
-                content.classList.add('active');
-                header.classList.add('active');
-            }
-        }
-        
-        // Initialisierung: Stellt sicher, dass das erste Element beim Laden aktiv ist
-        document.addEventListener('DOMContentLoaded', () => {
-            const firstHeaderId = 'nav-decay'; // Startet alphabetisch mit dem ersten Element
-            const firstContentId = 'content-decay';
-            const firstHeader = document.getElementById(firstHeaderId);
-            
-            // Führt toggleAccordion nur aus, wenn der Header existiert (um den aktiven Zustand zu setzen)
-            if (firstHeader) {
-                // Manuelles Setzen des ersten Zustands
-                document.getElementById(firstContentId).classList.add('active');
-                firstHeader.classList.add('active');
-            }
-        });
-    </script>
 </head>
 <body>
 
     <div class="settings-card-main">
         
-        <!-- HAUPTÜBERSCHRIFT ABSOLUT POSITIONIERT -->
-        <div class="main-widget-header-wrapper">
-             <div class="main-widget-header">Server Einstellungen & Balancing</div>
-        </div>
+        <div class="main-widget-header">Server Einstellungen & Balancing</div>
 
         <div class="main-content-grid">
             
-            <!-- Linke Navigationsleiste -->
+            <!-- ====== LINKE NAVIGATION ====== -->
             <div class="left-nav">
                 
-                <!-- SERVER EINSTELLUNGEN HEADER -->
+                <!-- GRUPPE: SERVER EINSTELLUNGEN -->
                 <div class="nav-group-separator">Server Einstellungen</div>
 
-                <!-- SERVER EINSTELLUNGEN MENÜPUNKTE (Alphabetisch sortiert) -->
-                <div id="nav-decay" class="accordion-header" onclick="toggleAccordion('content-decay', 'nav-decay')">
-                    Decay Einstellungen
-                </div>
-                <div id="nav-dino-level" class="accordion-header" onclick="toggleAccordion('content-dino-level', 'nav-dino-level')">
-                    Dino Level Limits
-                </div>
-                <div id="nav-gesperrt" class="accordion-header" onclick="toggleAccordion('content-gesperrt', 'nav-gesperrt')">
-                    Gesperrte Strukturen & Dinos
-                </div>
-                <div id="nav-item-caps" class="accordion-header" onclick="toggleAccordion('content-item-caps', 'nav-item-caps')">
-                    Item & Crafting Caps
-                </div>
-                <div id="nav-player-stats" class="accordion-header" onclick="toggleAccordion('content-player-stats', 'nav-player-stats')">
-                    Spieler/Dino Stat Einstellungen
-                </div>
-                <div id="nav-rates" class="accordion-header" onclick="toggleAccordion('content-rates', 'nav-rates')">
-                    Server Raten
-                </div>
-                <div id="nav-restarts" class="accordion-header" onclick="toggleAccordion('content-restarts', 'nav-restarts')">
-                    Server Neustarts
-                </div>
-                <div id="nav-limits" class="accordion-header" onclick="toggleAccordion('content-limits', 'nav-limits')">
-                    Strukturen & Dino Limits
-                </div>
-                <div id="nav-travel" class="accordion-header" onclick="toggleAccordion('content-travel', 'nav-travel')">
-                    Travel Einstellungen
-                </div>
+                <div id="nav-decay" class="accordion-header" onclick="switchTab('decay')">Decay Einstellungen</div>
+                <div id="nav-dino-level" class="accordion-header" onclick="switchTab('dino-level')">Dino Level Limits</div>
+                <div id="nav-gesperrt" class="accordion-header" onclick="switchTab('gesperrt')">Gesperrte Strukturen & Dinos</div>
+                <div id="nav-item-caps" class="accordion-header" onclick="switchTab('item-caps')">Item & Crafting Caps</div>
+                <div id="nav-limits" class="accordion-header" onclick="switchTab('limits')">Strukturen & Dino Limits</div>
+                <div id="nav-player-stats" class="accordion-header" onclick="switchTab('player-stats')">Spieler/Dino Stat Einstellungen</div>
+                <div id="nav-rates" class="accordion-header" onclick="switchTab('rates')">Server Raten</div>
+                <div id="nav-restarts" class="accordion-header" onclick="switchTab('restarts')">Server Neustarts</div>
+                <div id="nav-travel" class="accordion-header" onclick="switchTab('travel')">Travel Einstellungen</div>
                 
-                <!-- MOD EINSTELLUNGEN HEADER -->
+                <!-- GRUPPE: MOD EINSTELLUNGEN -->
                 <div class="nav-group-separator">Mod Einstellungen</div>
                 
-                <div id="nav-cs" class="accordion-header" onclick="toggleAccordion('content-cs', 'nav-cs')">
-                    CS Einstellungen
-                </div>
-                <div id="nav-pcs" class="accordion-header" onclick="toggleAccordion('content-pcs', 'nav-pcs')">
-                    PCS Einstellungen
-                </div>
+                <div id="nav-cs" class="accordion-header" onclick="switchTab('cs')">CS Einstellungen</div>
+                <div id="nav-pcs" class="accordion-header" onclick="switchTab('pcs')">PCS Einstellungen</div>
             </div>
             
-            <!-- Rechter Inhaltsbereich -->
+            <!-- ====== RECHTER INHALT ====== -->
             <div class="right-content-area">
                 
-                <!-- AKKORDEON FÜR SERVER RATEN -->
-                <div id="content-rates" class="accordion-content">
-                    <div class="table-container">
-                        <div class="section-header-title">Server Raten</div>
-                        <div class="description">
-                            Unsere Server-Einstellungen bieten optimierte Raten für ein ausbalanciertes und unterhaltsames Spielerlebnis. Am Wochenende profitierst du von besonderen Bonus-Raten!
-                        </div>
-
-                        <div class="rates-table-block">
-                            <div class="section-header-title" style="border-left-color: var(--color-rate-accent); color: var(--color-text); margin-top: 0.5rem;">Werktags-Raten</div>
-                            <table class="caps-table">
-                                <thead>
-                                    <tr>
-                                        <th class="type-col" style="color: var(--color-text);">Einstellung</th>
-                                        <th class="multiplier-col" style="color: var(--color-rate-accent);">Multiplikator</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr><td class="item-col">XP-Rate</td><td class="multiplier-col">1.0x</td></tr>
-                                    <tr><td class="item-col">Farmen</td><td class="multiplier-col">1.5x</td></tr>
-                                    <tr><td class="item-col">Zähmung</td><td class="multiplier-col">2.0x</td></tr>
-                                    <tr><td class="item-col">Brüten</td><td class="multiplier-col">5.0x</td></tr>
-                                    <tr><td class="item-col">Reifen</td><td class="multiplier-col">5.0x</td></tr>
-                                </tbody>
-                            </table>
-                            <div class="description" style="margin-top: 15px; border-left: none;">
-                                Diese Raten sind von Montag 00:00 Uhr bis Freitag 00:00 Uhr aktiv. Ideal für Spieler, die unter der Woche konstant Fortschritte erzielen möchten.
-                            </div>
-                        </div>
-
-                        <div class="rates-table-block">
-                            <div class="section-header-title" style="border-left-color: var(--color-rate-accent); color: var(--color-text); margin-top: 0.5rem;">Wochenend-Raten</div>
-                            <table class="caps-table">
-                                <thead>
-                                    <tr>
-                                        <th class="type-col" style="color: var(--color-text);">Einstellung</th>
-                                        <th class="multiplier-col" style="color: var(--color-rate-accent);">Multiplikator</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr><td class="item-col">XP-Rate</td><td class="multiplier-col">2.0x</td></tr>
-                                    <tr><td class="item-col">Farmen</td><td class="multiplier-col">3.0x</td></tr>
-                                    <tr><td class="item-col">Zähmung</td><td class="multiplier-col">4.0x</td></tr>
-                                    <tr><td class="item-col">Brüten</td><td class="multiplier-col">10.0x</td></tr>
-                                    <tr><td class="item-col">Reifen</td><td class="multiplier-col">10.0x</td></tr>
-                                </tbody>
-                            </table>
-                            <div class="description" style="margin-top: 15px; border-left: none;">
-                                Diese Bonus-Raten sind von Freitag 00:00 Uhr bis Montag 00:00 Uhr aktiv. Nutze das Wochenende, um besonders schnelle Fortschritte zu erzielen!
-                            </div>
-                        </div>
-                        
-                        <!-- NEUE SEKTION: WILD DINO SCHADEN -->
-                        <div class="rates-table-block" style="flex: 1 1 100%;">
-                            <div class="section-header-title" style="border-left-color: var(--color-accent-header); color: var(--color-accent-header); margin-top: 1.5rem;">Wild Dino Schaden</div>
-                            <table class="caps-table">
-                                <thead>
-                                    <tr>
-                                        <th class="type-col">Einstellung</th>
-                                        <th class="multiplier-col">Wert</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td class="item-col">Wild Dino Schaden</td>
-                                        <td class="multiplier-col" style="color: var(--color-red);">x2.0</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <div class="description" style="margin-top: 15px; border-left: none;">
-                                Aus Balancing-Gründen machen wilde Dinos den Spielern doppelten Schaden.
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-                
-                <!-- AKKORDEON FÜR DINO LEVEL -->
-                <div id="content-dino-level" class="accordion-content">
-                    <div class="table-container">
-                        <div class="section-header-title">Dino Level</div>
-                        <div class="description">
-                            Wir haben die maximalen Dino-Level für verschiedene Kreaturtypen angepasst:
-                        </div>
-                        <table class="caps-table">
-                            <thead>
-                                <tr>
-                                    <th class="type-col">Dino Typ</th>
-                                    <th class="max-level-col">Max Level</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr class="standard-row">
-                                    <td class="item-col">Standard Dinos</td>
-                                    <td class="max-level-col">150</td>
-                                </tr>
-                                <tr class="tek-row">
-                                    <td class="item-col">Tek Dinos</td>
-                                    <td class="max-level-col">180</td>
-                                </tr>
-                                <tr class="wyvern-row">
-                                    <td class="item-col">Wyvern</td>
-                                    <td class="max-level-col">190</td>
-                                </tr>
-                                <tr class="rockdrake-row">
-                                    <td class="item-col">Rock Drakes</td>
-                                    <td class="max-level-col">190</td>
-                                </tr>
-                                <tr class="crystal-row">
-                                    <td class="item-col">Crystal Wyvern</td>
-                                    <td class="max-level-col">225</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                
-                <!-- AKKORDEON FÜR ITEM CAPS -->
-                <div id="content-item-caps" class="accordion-content">
-                    <div class="table-container">
-                        
-                        <div class="section-header-title">Rüstungs Caps</div>
-                        <div class="description">
-                            Rüstungen und Baupläne sind auf einen maximalen Rüstungswert begrenzt. Dieser variiert je nach Rüstungsart:
-                        </div>
-                
-                        <table class="caps-table">
-                            <thead>
-                                <tr>
-                                    <th class="item-col">Rüstungstyp</th>
-                                    <th class="max-value-col">Max Rüstungswert</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr class="tek-row">
-                                    <td class="item-col armor-type">Tek-Rüstung</td>
-                                    <td class="max-value-col">1125</td>
-                                </tr>
-                                <tr class="swat-row">
-                                    <td class="item-col armor-type">SWAT-Rüstung</td>
-                                    <td class="max-value-col">920</td>
-                                </tr>
-                                <tr class="flak-row">
-                                    <td class="item-col armor-type">Flak-Rüstung</td>
-                                    <td class="max-value-col">800</td>
-                                </tr>
-                                <tr class="chitin-row">
-                                    <td class="item-col armor-type">Chitin-Rüstung</td>
-                                    <td class="max-value-col">400</td>
-                                </tr>
-                                <tr class="fur-row">
-                                    <td class="item-col armor-type">Pelz Rüstung</td>
-                                    <td class="max-value-col">320</td>
-                                </tr>
-                                <tr class="ghillie-row">
-                                    <td class="item-col armor-type">Ghilli Rüstung</td>
-                                    <td class="max-value-col">256</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        
-                        <!-- WAFFEN-CAPS SEKTION -->
-                        <div class="section-header-title">Waffen & Werkzeuge Damage Cap</div>
-                        <div class="description">
-                            Alle Waffen und Werkzeugbaupläne sind auf einen Schadenswert von maximal 400 % Schaden begrenzt.
-                        </div>
-                        <table class="caps-table">
-                            <thead>
-                                <tr>
-                                    <th class="item-col">Item Typ</th>
-                                    <th class="max-value-col">Max Schaden</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr class="weapon-row">
-                                    <td class="item-col">Waffen (Nahkampf & Fernkampf)</td>
-                                    <td class="max-value-col">400 %</td>
-                                </tr>
-                                <tr class="tool-row">
-                                    <td class="item-col">Werkzeuge (Äxte, Spitzhacken etc.)</td>
-                                    <td class="max-value-col">400 %</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        
-                        <!-- SÄTTEL-CAPS SEKTION -->
-                        <div class="section-header-title">Sättel Rüstungs Cap</div>
-                        <div class="description">
-                            Alle Sättel im Spiel sind auf diesen maximalen Rüstungswert begrenzt.
-                        </div>
-                        <table class="caps-table">
-                            <thead>
-                                <tr>
-                                    <th class="item-col">Sattel Typ</th>
-                                    <th class="max-value-col">Max Rüstungswert</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr class="saddle-row">
-                                    <td class="item-col">Alle Sättel</td>
-                                    <td class="max-value-col">200.0</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- LEERE/PLATZHALTER SEKTIONEN -->
-                <div id="content-limits" class="accordion-content">
-                    <div class="table-container">
-                        <div class="section-header-title">Strukturen & Dino Limits</div>
-                        <div class="description">Inhalte für Limits folgen hier.</div>
-                    </div>
-                </div>
-                <div id="content-gesperrt" class="accordion-content">
-                    <div class="table-container">
-                        <div class="section-header-title">Gesperrte Strukturen & Dinos</div>
-                        <div class="description">Inhalte für Gesperrte Strukturen/Dinos folgen hier.</div>
-                    </div>
-                </div>
-                <div id="content-restarts" class="accordion-content">
-                    <div class="table-container">
-                        <div class="section-header-title">Server Neustarts</div>
-                        <div class="description">Inhalte für Server Neustarts folgen hier.</div>
-                    </div>
-                </div>
-                <div id="content-player-stats" class="accordion-content">
-                    <div class="table-container">
-                        <div class="section-header-title">Spieler/Dino Stat Einstellungen</div>
-                        <div class="description">Inhalte für Spieler/Dino Stat Einstellungen folgen hier.</div>
-                    </div>
-                </div>
-                <div id="content-travel" class="accordion-content">
-                    <div class="table-container">
-                        <div class="section-header-title">Travel Einstellungen</div>
-                        <div class="description">Inhalte für Travel Einstellungen folgen hier.</div>
-                    </div>
-                </div>
-                <div id="content-decay" class="accordion-content active">
-                    <div class="table-container">
-                        <div class="section-header-title">Decay Einstellungen</div>
-                        
-                        <!-- TEXTPLATZIERUNG HIER KORRIGIERT -->
-                        <div class="description">
-                             Die Verfallstimer basieren auf dem progressiven Level System (Prog Lvl) und variieren je nach Spielerlevel.
-                        </div>
-                        
-                        <div class="local-accordion-header" onclick="toggleLocalAccordion(this)">
-                            Prog Lvl Decay-Limits 
+                <!-- 1. DECAY EINSTELLUNGEN -->
+                <div id="content-decay" class="accordion-content">
+                    <div class="section-header-title">Decay Einstellungen</div>
+                    
+                    <div class="description">
+                        Die Verfallstimer basieren auf dem progressiven Level System (Prog Lvl) und variieren je nach Spielerlevel.
+                        <br><br>
+                        <!-- Lokales Akkordeon für die lange Tabelle -->
+                        <div class="local-accordion-header" onclick="toggleLocal(this)">
+                            <span>Prog Lvl Decay-Limits anzeigen</span>
                             <span class="local-arrow">▶</span>
                         </div>
                         <div class="local-accordion-content">
-                            <table class="prog-lvl-table" style="width: 100%;">
+                             <table class="caps-table" style="margin-top: 10px;">
                                 <thead>
-                                    <tr>
-                                        <th class="lvl-col">Spieler Level</th>
-                                        <th class="decay-col">Decay Zeit</th>
-                                        <th class="limit-col">Struktur Limit</th>
-                                    </tr>
+                                    <tr><th>Level Bereich</th><th style="text-align:right;">Decay Zeit</th></tr>
                                 </thead>
                                 <tbody>
-                                    <tr><td class="lvl-col">Level 1</td><td class="decay-col">5 Tage</td><td class="limit-col">100</td></tr>
-                                    <tr><td class="lvl-col">Level 10</td><td class="decay-col">7 Tage</td><td class="limit-col">150</td></tr>
-                                    <tr><td class="lvl-col">Level 20</td><td class="decay-col">10 Tage</td><td class="limit-col">200</td></tr>
-                                    <tr><td class="lvl-col">Level 30</td><td class="decay-col">12 Tage</td><td class="limit-col">250</td></tr>
-                                    <tr><td class="lvl-col">Level 40</td><td class="decay-col">14 Tage</td><td class="limit-col">500</td></tr>
-                                    <tr><td class="lvl-col">Level 50</td><td class="decay-col">16 Tage</td><td class="limit-col">750</td></tr>
-                                    <tr><td class="lvl-col">Level 60</td><td class="decay-col">18 Tage</td><td class="limit-col">1000</td></tr>
-                                    <tr><td class="lvl-col">Level 70</td><td class="decay-col">21 Tage</td><td class="limit-col">2500</td></tr>
-                                    <tr><td class="lvl-col">Level 80</td><td class="decay-col">25 Tage</td><td class="limit-col">4000</td></tr>
-                                    <tr><td class="lvl-col">Level 90</td><td class="decay-col">27 Tage</td><td class="limit-col">5000</td></tr>
-                                    <tr><td class="lvl-col">Level 100</td><td class="decay-col">30 Tage</td><td class="limit-col">8000</td></tr>
-                                    <tr><td class="lvl-col">Level 105</td><td class="decay-col">31 Tage</td><td class="limit-col">8050</td></tr>
-                                    <tr><td class="lvl-col">Level 110</td><td class="decay-col">32 Tage</td><td class="limit-col">8100</td></tr>
-                                    <tr><td class="lvl-col">Level 115</td><td class="decay-col">33 Tage</td><td class="limit-col">8150</td></tr>
-                                    <tr><td class="lvl-col">Level 120</td><td class="decay-col">34 Tage</td><td class="limit-col">8200</td></tr>
-                                    <tr><td class="lvl-col">Level 125</td><td class="decay-col">35 Tage</td><td class="limit-col">8250</td></tr>
-                                    <tr><td class="lvl-col">Level 130</td><td class="decay-col">36 Tage</td><td class="limit-col">8300</td></tr>
-                                    <tr><td class="lvl-col">Level 135</td><td class="decay-col">37 Tage</td><td class="limit-col">8350</td></tr>
-                                    <tr><td class="lvl-col">Level 140</td><td class="decay-col">38 Tage</td><td class="limit-col">8400</td></tr>
-                                    <tr><td class="lvl-col">Level 145</td><td class="decay-col">39 Tage</td><td class="limit-col">8450</td></tr>
-                                    <tr><td class="lvl-col">Level 150</td><td class="decay-col">40 Tage</td><td class="limit-col">8500</td></tr>
-                                    <tr><td class="lvl-col">Level 155</td><td class="decay-col">41 Tage</td><td class="limit-col">8550</td></tr>
-                                    <tr><td class="lvl-col">Level 160</td><td class="decay-col">42 Tage</td><td class="limit-col">8600</td></tr>
-                                    <tr><td class="lvl-col">Level 165</td><td class="decay-col">43 Tage</td><td class="limit-col">8650</td></tr>
-                                    <tr><td class="lvl-col">Level 170</td><td class="decay-col">44 Tage</td><td class="limit-col">8700</td></tr>
-                                    <tr><td class="lvl-col">Level 175</td><td class="decay-col">45 Tage</td><td class="limit-col">8750</td></tr>
-                                    <tr><td class="lvl-col">Level 180</td><td class="decay-col">46 Tage</td><td class="limit-col">8800</td></tr>
-                                    <tr><td class="lvl-col">Level 185</td><td class="decay-col">47 Tage</td><td class="limit-col">8850</td></tr>
-                                    <tr><td class="lvl-col">Level 190</td><td class="decay-col">48 Tage</td><td class="limit-col">8900</td></tr>
-                                    <tr><td class="lvl-col">Level 195</td><td class="decay-col">49 Tage</td><td class="limit-col">8950</td></tr>
-                                    <tr><td class="lvl-col">Level 200</td><td class="decay-col">50 Tage</td><td class="limit-col">9000</td></tr>
+                                    <tr><td>Level 1 - 9</td><td class="max-value-col">5 Tage</td></tr>
+                                    <tr><td>Level 10 - 19</td><td class="max-value-col">7 Tage</td></tr>
+                                    <tr><td>Level 20 - 29</td><td class="max-value-col">10 Tage</td></tr>
+                                    <tr><td>Level 30 - 39</td><td class="max-value-col">12 Tage</td></tr>
+                                    <tr><td>Level 40 - 49</td><td class="max-value-col">14 Tage</td></tr>
+                                    <tr><td>Level 50 - 59</td><td class="max-value-col">16 Tage</td></tr>
+                                    <tr><td>Level 60 - 69</td><td class="max-value-col">18 Tage</td></tr>
+                                    <tr><td>Level 70 - 79</td><td class="max-value-col">21 Tage</td></tr>
+                                    <tr><td>Level 80 - 89</td><td class="max-value-col">25 Tage</td></tr>
+                                    <tr><td>Level 90 - 99</td><td class="max-value-col">27 Tage</td></tr>
+                                    <tr><td>Level 100 - 104</td><td class="max-value-col">30 Tage</td></tr>
+                                    <tr><td>Ab Level 105+</td><td class="max-value-col">Steigt bis 50 Tage</td></tr>
                                 </tbody>
                             </table>
                         </div>
+                    </div>
+                    
+                    <div class="section-header-title">Regeln für den Wildbau-Verfall</div>
+                    
+                    <div class="description">
+                        <span class="sub-section-title">Allgemein gilt:</span>
+                        <ul>
+                            <li>Täglich wird um <strong>01:00 Uhr</strong> eine automatische Entfernung von Wildbauten durchgeführt, um die Serverleistung und Spawn-Punkte zu sichern, sowie die Server zusätzlich sauber zu halten.</li>
+                            <li>Der Spieler mit dem höchsten Verfallswert (Decay) gibt den Verfallstimer für den Stamm vor.</li>
+                            <li>Alle Strukturen-Arten haben denselben Verfallstimer.</li>
+                        </ul>
                         
-                        <div class="section-header-title" style="margin-top: 2rem;">Regeln für den Wildbau-Verfall</div>
-                        <div class="description">
-                            <span class="sub-section-title">Allgemein gilt:</span>
-                            <ul>
-                                <li>Täglich wird um 01:00 Uhr MEZ eine automatische Entfernung von Wildbauten durchgeführt, um die Serverleistung und Spawn-Punkte zu sichern, sowie die Server zusätzlich sauber zu halten.</li>
-                                <li>Der Spieler mit dem höchsten Verfallswert (Decay) gibt den Verfallstimer für den Stamm vor.</li>
-                                <li>Alle Strukturen-Arten haben denselben Verfallstimer.</li>
-                            </ul>
-                        </div>
-                        <div class="description">
-                            <span class="sub-section-title">Voraussetzungen für Wildbauten:</span>
-                            <ul>
-                                <li>Spezifische Strukturen, die eine Mindestmenge von 8 Strukturen in einem Radius von 10 Fundamenten nicht erreicht haben.</li>
-                            </ul>
-                        </div>
-                        <div class="description">
-                            <span class="sub-section-title">Wildbauten Strukturen-Arten:</span>
-                            <ol>
-                                <li>Metallbarrikaden</li>
-                                <li>Holzbarrikaden</li>
-                                <li>Schlafsäcke</li>
-                                <li>Lagerfeuer</li>
-                            </ol>
-                        </div>
-                    </div>
-                </div>
-                
-                <div id="content-cs" class="accordion-content">
-                    <div class="table-container">
-                        <div class="section-header-title">CS Einstellungen</div>
-                        <div class="description">Inhalte für CS Einstellungen folgen hier.</div>
-                    </div>
-                </div>
-                <div id="content-pcs" class="accordion-content">
-                    <div class="table-container">
-                        <div class="section-header-title">PCS Einstellungen</div>
-                        <div class="description">Inhalte für PCS Einstellungen folgen hier.</div>
+                        <span class="sub-section-title">Voraussetzungen für Wildbauten:</span>
+                        <ul>
+                            <li>Spezifische Strukturen, die eine Mindestmenge von 8 Strukturen in einem Radius von 10 Fundamenten nicht erreicht haben.</li>
+                        </ul>
+                        
+                        <span class="sub-section-title">Wildbauten Strukturen-Arten:</span>
+                        <ol>
+                            <li>Metallbarrikaden</li>
+                            <li>Holzbarrikaden</li>
+                            <li>Schlafsäcke</li>
+                            <li>Lagerfeuer</li>
+                        </ol>
                     </div>
                 </div>
 
+                <!-- 2. SERVER RATEN -->
+                <div id="content-rates" class="accordion-content">
+                    <div class="section-header-title">Server Raten</div>
+                    <div class="description">
+                        Unsere Server-Einstellungen bieten optimierte Raten für ein ausbalanciertes Spielerlebnis.
+                    </div>
+                    
+                    <div class="rates-flex-wrapper">
+                        <!-- Werktags -->
+                        <div class="rates-table-block">
+                            <div class="sub-section-title" style="color: var(--color-rate-accent); border-bottom: 1px solid var(--color-rate-accent); padding-bottom: 5px;">Werktags-Raten</div>
+                            <table class="caps-table">
+                                <tr><td>XP-Rate</td><td class="multiplier-col">1.0x</td></tr>
+                                <tr><td>Farmen</td><td class="multiplier-col">1.5x</td></tr>
+                                <tr><td>Zähmung</td><td class="multiplier-col">2.0x</td></tr>
+                                <tr><td>Brüten</td><td class="multiplier-col">5.0x</td></tr>
+                                <tr><td>Reifen</td><td class="multiplier-col">5.0x</td></tr>
+                            </table>
+                            <div style="font-size: 0.9rem; opacity: 0.8;">Montag 00:00 - Freitag 00:00 Uhr</div>
+                        </div>
+                        
+                        <!-- Wochenende -->
+                        <div class="rates-table-block">
+                             <div class="sub-section-title" style="color: var(--color-rate-accent); border-bottom: 1px solid var(--color-rate-accent); padding-bottom: 5px;">Wochenend-Raten</div>
+                            <table class="caps-table">
+                                <tr><td>XP-Rate</td><td class="multiplier-col">2.0x</td></tr>
+                                <tr><td>Farmen</td><td class="multiplier-col">3.0x</td></tr>
+                                <tr><td>Zähmung</td><td class="multiplier-col">4.0x</td></tr>
+                                <tr><td>Brüten</td><td class="multiplier-col">10.0x</td></tr>
+                                <tr><td>Reifen</td><td class="multiplier-col">10.0x</td></tr>
+                            </table>
+                            <div style="font-size: 0.9rem; opacity: 0.8;">Freitag 00:00 - Montag 00:00 Uhr</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Wild Dino Schaden -->
+                     <div class="rates-table-block" style="margin-top: 20px;">
+                         <div class="sub-section-title">Balancing Info</div>
+                        <table class="caps-table">
+                            <tr>
+                                <td>Wild Dino Schaden</td>
+                                <td class="multiplier-col" style="color: var(--color-red);">x2.0</td>
+                            </tr>
+                        </table>
+                        <div class="description">Aus Balancing-Gründen machen wilde Dinos den Spielern doppelten Schaden.</div>
+                     </div>
+                </div>
 
-            </div> <!-- Ende Rechter Content Area -->
+                <!-- 3. DINO LEVEL LIMITS -->
+                <div id="content-dino-level" class="accordion-content">
+                    <div class="section-header-title">Dino Level Limits</div>
+                    <div class="description">Maximale Dino-Level für verschiedene Kreaturtypen:</div>
+                    <table class="caps-table">
+                        <thead>
+                            <tr><th>Dino Typ</th><th style="text-align:right;">Max Level</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr class="standard-row"><td class="item-col">Standard Dinos</td><td class="max-value-col">150</td></tr>
+                            <tr class="tek-row"><td class="item-col">Tek Dinos</td><td class="max-value-col">180</td></tr>
+                            <tr class="wyvern-row"><td class="item-col">Wyvern</td><td class="max-value-col">190</td></tr>
+                            <tr class="rockdrake-row"><td class="item-col">Rock Drakes</td><td class="max-value-col">190</td></tr>
+                            <tr class="crystal-row"><td class="item-col">Crystal Wyvern</td><td class="max-value-col">225</td></tr>
+                        </tbody>
+                    </table>
+                </div>
 
+                <!-- 4. ITEM CAPS -->
+                <div id="content-item-caps" class="accordion-content">
+                    <div class="section-header-title">Item & Crafting Caps</div>
+                    
+                    <div class="sub-section-title">Rüstungs Caps</div>
+                    <table class="caps-table">
+                        <thead><tr><th>Rüstungstyp</th><th style="text-align:right;">Max Wert</th></tr></thead>
+                        <tbody>
+                            <tr class="tek-row"><td class="item-col">Tek-Rüstung</td><td class="max-value-col">1125</td></tr>
+                            <tr class="swat-row"><td class="item-col">SWAT-Rüstung</td><td class="max-value-col">920</td></tr>
+                            <tr class="flak-row"><td class="item-col">Flak-Rüstung</td><td class="max-value-col">800</td></tr>
+                            <tr class="chitin-row"><td class="item-col">Chitin-Rüstung</td><td class="max-value-col">400</td></tr>
+                            <tr class="fur-row"><td class="item-col">Pelz Rüstung</td><td class="max-value-col">320</td></tr>
+                            <tr class="ghillie-row"><td class="item-col">Ghilli Rüstung</td><td class="max-value-col">256</td></tr>
+                        </tbody>
+                    </table>
+
+                    <div class="sub-section-title" style="margin-top: 20px;">Waffen & Werkzeuge Cap</div>
+                    <div class="description">Maximaler Schadenswert:</div>
+                    <table class="caps-table">
+                        <tbody>
+                            <tr><td style="color:var(--color-red);">Waffen (Nah/Fern)</td><td class="max-value-col">400 %</td></tr>
+                            <tr><td style="color:var(--color-red);">Werkzeuge</td><td class="max-value-col">400 %</td></tr>
+                        </tbody>
+                    </table>
+
+                    <div class="sub-section-title" style="margin-top: 20px;">Sättel Cap</div>
+                    <table class="caps-table">
+                        <tbody>
+                            <tr class="crystal-row"><td class="item-col">Alle Sättel</td><td class="max-value-col">200.0</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- 5. SERVER NEUSTARTS -->
+                <div id="content-restarts" class="accordion-content">
+                    <div class="section-header-title">Server Neustarts</div>
+                    <div class="description">
+                        Automatische Neustarts alle 12 Stunden. Countdown startet 30 Min vorher.
+                    </div>
+                    <table class="caps-table">
+                        <thead>
+                            <tr><th>Server / Cluster</th><th style="text-align:center;">Uhrzeit (MEZ)</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td colspan="2" style="background: rgba(229,57,53,0.15); color:var(--color-red); font-weight:700;">IOP OFFICIAL CLUSTER</td></tr>
+                            <tr><td>The Island, Center, Scorched, Aberration, Extinction, Ragnarok, Valguero, Astraeos, Svartalfheim, Community Center</td><td class="max-value-col" style="color:var(--color-gold); text-align:center !important;">00:00 & 12:00</td></tr>
+                            <tr><td>Club Ark</td><td class="max-value-col" style="color:var(--color-gold); text-align:center !important;">01:00 & 13:00</td></tr>
+                            
+                            <tr><td colspan="2" style="background: rgba(229,57,53,0.15); color:var(--color-red); font-weight:700;">ANDERE CLUSTER</td></tr>
+                            <tr><td>Primal Nemesis / Primal Chaos</td><td class="max-value-col" style="color:var(--color-gold); text-align:center !important;">00:00 & 12:00</td></tr>
+                            <tr><td>Minecraft / Palworld</td><td class="max-value-col" style="color:var(--color-gold); text-align:center !important;">01:00 & 13:00</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- PLATZHALTER ANDERE MENÜPUNKTE -->
+                <div id="content-gesperrt" class="accordion-content"><div class="section-header-title">Gesperrte Strukturen & Dinos</div><div class="description">Inhalt folgt.</div></div>
+                <div id="content-limits" class="accordion-content"><div class="section-header-title">Strukturen & Dino Limits</div><div class="description">Inhalt folgt.</div></div>
+                <div id="content-player-stats" class="accordion-content"><div class="section-header-title">Spieler Stats</div><div class="description">Inhalt folgt.</div></div>
+                <div id="content-travel" class="accordion-content"><div class="section-header-title">Travel Einstellungen</div><div class="description">Inhalt folgt.</div></div>
+                <div id="content-cs" class="accordion-content"><div class="section-header-title">CS Einstellungen</div><div class="description">Inhalt folgt.</div></div>
+                <div id="content-pcs" class="accordion-content"><div class="section-header-title">PCS Einstellungen</div><div class="description">Inhalt folgt.</div></div>
+
+            </div>
         </div>
-
     </div>
 
     <script>
-        // Funktion zum Umschalten des Haupt-Akkordeons
-        function toggleAccordion(contentId, headerId) {
-            const content = document.getElementById(contentId);
-            const header = document.getElementById(headerId); // Header-Element direkt über ID holen
-            const allHeaders = document.querySelectorAll('.left-nav .accordion-header');
-            const allContent = document.querySelectorAll('.right-content-area .accordion-content');
-            
-            if (!header || !content) {
-                console.error('Element nicht gefunden:', headerId, contentId);
-                return; 
-            }
+        function switchTab(tabId) {
+            // 1. Alle Header deaktivieren
+            document.querySelectorAll('.accordion-header').forEach(el => el.classList.remove('active'));
+            // 2. Alle Inhalte ausblenden
+            document.querySelectorAll('.accordion-content').forEach(el => el.classList.remove('active'));
 
-            const isActive = header.classList.contains('active');
+            // 3. Gewählten Tab aktivieren
+            const header = document.getElementById('nav-' + tabId);
+            const content = document.getElementById('content-' + tabId);
 
-            // 1. Alle Header und Inhalte deaktivieren
-            allHeaders.forEach(h => h.classList.remove('active'));
-            allContent.forEach(c => {
-                c.classList.remove('active');
-                // Entferne die Animationsklasse beim Deaktivieren
-                c.querySelectorAll('.animated-content').forEach(item => item.classList.remove('animated-content'));
-            });
-
-            // 2. Ziel-Akkordeon umschalten
-            if (!isActive) {
-                // Öffnen
-                content.classList.add('active');
+            if(header && content) {
                 header.classList.add('active');
+                content.classList.add('active');
                 
-                // Füge Animationsklasse zu Content-Kindelementen hinzu
-                content.querySelectorAll('.section-header-title, .description, .caps-table, .local-accordion-header').forEach((item, index) => {
-                    item.style.animationDelay = `${index * 50}ms`; // Gestaffeltes Einblenden
-                    item.classList.add('animated-content');
+                // Animation für Content-Elemente
+                const animatables = content.querySelectorAll('.section-header-title, .description, .caps-table, .rates-flex-wrapper');
+                animatables.forEach((el, index) => {
+                    el.classList.remove('animated-content');
+                    void el.offsetWidth; // Trigger Reflow
+                    el.style.animationDelay = (index * 50) + 'ms';
+                    el.classList.add('animated-content');
                 });
             }
         }
-        
-        // NEU: Funktion zum Umschalten des lokalen Akkordeons
-        function toggleLocalAccordion(header) {
+
+        function toggleLocal(header) {
             const content = header.nextElementSibling;
-            
-            if (content.classList.contains('active')) {
-                content.classList.remove('active');
-                header.classList.remove('active');
-            } else {
-                content.classList.add('active');
-                header.classList.add('active');
-            }
+            header.classList.toggle('active');
+            content.classList.toggle('active');
         }
-        
-        // Initialisierung: Stellt sicher, dass das erste Element beim Laden aktiv ist
+
+        // Init: Starte mit Server Raten
         document.addEventListener('DOMContentLoaded', () => {
-            const firstHeaderId = 'nav-decay'; // Startet alphabetisch mit dem ersten Element
-            const firstContentId = 'content-decay';
-            const firstHeader = document.getElementById(firstHeaderId);
-            
-            // Führt toggleAccordion nur aus, wenn der Header existiert (um den aktiven Zustand zu setzen)
-            if (firstHeader) {
-                // Manuelles Setzen des ersten Zustands
-                document.getElementById(firstContentId).classList.add('active');
-                firstHeader.classList.add('active');
-                
-                // Füge Animationsklasse zu Content-Kindelementen der Startsektion hinzu
-                document.getElementById(firstContentId).querySelectorAll('.section-header-title, .description, .caps-table, .local-accordion-header').forEach((item, index) => {
-                    item.style.animationDelay = `${index * 50}ms`; 
-                    item.classList.add('animated-content');
-                });
-            }
+            switchTab('rates');
         });
     </script>
 </body>
