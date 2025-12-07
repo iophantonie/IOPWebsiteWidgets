@@ -16,18 +16,14 @@
 
         /* Äußerer Container für den Box-Shadow */
         .widget-container {
-            /* BREITE ERHÖHT: von 1400px auf 1600px */
             max-width: 1600px;
-            margin: 30px auto; /* 30px padding für Box-Shadow und Zentrierung */
-            background-color: rgba(0, 0, 0, 0.7);
+            margin: 30px auto; 
+            background-color: rgba(0, 0, 0, 0.85); /* Etwas dunkler für besseren Kontrast */
             border-radius: 16px;
             border: 3px solid #E53935; /* Feuerrot */
-            
-            /* Initialer Schatten und Übergang */
             box-shadow: 0 0 10px 2px rgba(229, 57, 53, 0.4), 0 4px 15px rgba(0, 0, 0, 0.5);
-            /* Wichtig: Übergang für den Shadow */
             transition: box-shadow 0.3s ease-in-out;
-            padding-top: 1.5rem; /* Platz für die Überschrift oben */
+            padding-top: 1.5rem; 
         }
         
         /* Überschrift Stil */
@@ -35,13 +31,12 @@
             font-size: 2rem;
             font-weight: 800;
             text-align: center;
-            color: #E53935; /* Feuerrot */
+            color: #E53935; 
             margin-bottom: 1.5rem;
             padding: 0 1.5rem;
             text-transform: uppercase;
         }
         
-        /* Hover-Effekt: Leuchtender Rand */
         .widget-container:hover {
             box-shadow: 0 0 30px 5px rgba(229, 57, 53, 0.8), 0 4px 15px rgba(0, 0, 0, 0.5);
         }
@@ -51,8 +46,7 @@
             display: flex;
             padding: 0 1rem;
             border-bottom: 2px solid rgba(229, 57, 53, 0.3);
-            flex-wrap: wrap; /* Wichtig für Mobile */
-            /* Zieht die Navigation an die Überschrift heran */
+            flex-wrap: wrap; 
             margin-top: 0; 
         }
         .tab-button {
@@ -72,9 +66,8 @@
         }
         .tab-button.active {
             opacity: 1;
-            /* Aktiver Feuerrot-Unterstrich */
             border-bottom: 4px solid #E53935;
-            margin-bottom: -2px; /* Zieht den Button auf die Linie */
+            margin-bottom: -2px; 
         }
         
         /* --- Tab-Inhalt --- */
@@ -82,7 +75,6 @@
             padding: 1.5rem;
         }
         .tab-pane {
-            /* NEU: Aktiviert den Übergang für die Panels */
             opacity: 0;
             transition: opacity 0.4s ease-in-out;
             display: none;
@@ -96,58 +88,56 @@
         .features-grid {
             display: grid;
             gap: 1.5rem;
-            /* 2 Spalten auf Desktop, 1 auf Mobile */
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); /* Etwas breiter für viel Text */
         }
         .feature-card {
-            background-color: rgba(20, 20, 20, 0.5);
+            background-color: rgba(30, 30, 30, 0.6);
             padding: 1.5rem;
             border-radius: 8px;
-            position: relative; /* Wichtig, damit Icon absolut positioniert werden kann */
-            padding-top: 2rem; /* Fügt Platz für das Icon oben ein */
+            position: relative; 
+            padding-top: 2rem; 
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: transform 0.2s;
+        }
+        .feature-card:hover {
+            transform: translateY(-2px);
+            background-color: rgba(40, 40, 40, 0.8);
         }
         
         /* --- NEUER ICON STIL --- */
         .feature-icon {
             position: absolute;
-            /* NEUE POSITION: Oben links */
             top: 15px; 
             left: 15px; 
-            
-            width: 50px; /* Etwas größer gemacht */
+            width: 50px; 
             height: 50px;
-            
-            background-color: #E53935; /* Feuerrot Hintergrund */
-            border: 3px solid #E53935; /* Roter Rand für das Icon */
-            border-radius: 50%; /* Rund */
-            
+            background-color: #E53935; 
+            border: 3px solid #E53935; 
+            border-radius: 50%; 
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
             font-weight: 900;
-            font-size: 1.1rem;
-            
-            /* Fügt einen weißen Ring um den roten Kreis hinzu, wie in den Beispielen */
+            font-size: 1.2rem;
             outline: 3px solid rgba(255, 255, 255, 0.8);
             outline-offset: -3px;
+            z-index: 2;
         }
-        /* --- ENDE ICON STIL --- */
 
         .feature-card h4 {
             font-size: 1.25rem;
             font-weight: 700;
-            /* Feuerrote Header-Farbe */
             color: #E53935; 
-            /* Schiebt den Text nach rechts, damit er unter dem Icon startet */
             margin-top: 0.5rem;
             margin-bottom: 0.75rem;
-            padding-left: 65px; /* NEU: Fügt Platz für das Icon hinzu */
+            padding-left: 65px; 
+            text-transform: uppercase;
         }
         .feature-card p {
             font-size: 0.95rem;
-            color: rgba(255, 255, 255, 0.8);
-            line-height: 1.4;
+            color: rgba(255, 255, 255, 0.85);
+            line-height: 1.5;
         }
 
     </style>
@@ -156,80 +146,90 @@
 
 <div class="widget-container">
     
-    <!-- NEU: HAUPTÜBERSCHRIFT auf die kürzere Form angepasst -->
-    <h2 class="widget-header">Dich erwarten folgende Cluster Benefits:</h2>
+    <h2 class="widget-header">Warum Infinity of Phoenix?</h2>
 
-    <!-- 1. TAB NAVIGATION (4 TABS) -->
+    <!-- 1. TAB NAVIGATION -->
     <div class="tab-nav">
-        <button class="tab-button active" data-tab="basics">BASIS-FEATURES</button>
-        <button class="tab-button" data-tab="gameplay">GAMEPLAY</button>
+        <button class="tab-button active" data-tab="basics">BASIS & TECHNIK</button>
+        <button class="tab-button" data-tab="gameplay">GAMEPLAY & PROGRESS</button>
         <button class="tab-button" data-tab="custom">CUSTOM CONTENT</button>
-        <button class="tab-button" data-tab="qol">USER QOL</button>
+        <button class="tab-button" data-tab="qol">QUALITY OF LIFE</button>
     </div>
 
     <!-- 2. TAB CONTENT -->
     <div class="tab-content">
         
-        <!-- === PANEL 1: BASIS-FEATURES === -->
+        <!-- === PANEL 1: BASIS & TECHNIK === -->
         <div id="basics" class="tab-pane active">
             <div class="features-grid">
                 
-                <!-- FEATURE: PROFESSIONELLES TEAM -->
                 <div class="feature-card">
-                    <div class="feature-icon">T</div> 
-                    <h4>PROFESSIONELLES TEAM</h4>
-                    <p>Unser professionelles Team steht dir zur Verfügung, um bei Problemen beiseite zu stehen und Support zu leisten. Wir haben ein strukturiertes Team, bei dem jedes Teammitglied eine eigene Funktion hat, um stets den Fokus zu bewahren, und die ein sicheres und gutes Spielerlebnis zu bieten.</p>
+                    <div class="feature-icon">🚀</div> 
+                    <h4>HIGH-END PERFORMANCE</h4>
+                    <p>Keine Kompromisse: Wir nutzen die besten Hochleistungs-Rootserver mit Top-CPUs und NVME SSDs für ein ruckelfreies Erlebnis, auch bei 150+ Spielern. Inklusive DDoS-Schutz und hoher Uptime.</p>
                 </div>
 
-                <!-- FEATURE: EIGENE SICHERHEITSSYSTEME -->
                 <div class="feature-card">
-                    <div class="feature-icon">S</div> 
-                    <h4>EIGENE SICHERHEITSSYSTEME</h4>
-                    <p>Wir bieten ein breites Spektrum an vollautomatisierten Sicherheitssystemen um das Spielverhalten zu verbessern. Ob Spieler-Selbsthilfen, Item sowie Charakter-Sicherungen oder Rollback-Schutz, bis über Das Automatische Neustarten der Server bei Serverupdates oder Crashes, ist alles dabei.</p>
+                    <div class="feature-icon">🛡️</div> 
+                    <h4>SICHERHEIT & SYSTEME</h4>
+                    <p>Vollautomatisierte Sicherheit: Automatische Restarts bei Crashes, Charakter- & Item-Verlust-Sicherung sowie ein effektiver Rollback-Schutz. Das "Tribeforce-System" synchronisiert Stämme clusterweit.</p>
                 </div>
                 
-                <!-- FEATURE: HOCHLEISTUNGS ROOTSERVER -->
                 <div class="feature-card">
-                    <div class="feature-icon">R</div> 
-                    <h4>HOCHLEISTUNGS ROOTSERVER</h4>
-                    <p>Für ein Ruckelfreies Spielerlebnis ohne Verbindungsabbrüche, werden unsere Server ausschließlich auf den stärksten Dedizierten Root Maschinen betrieben. Wir nutzen die besten CPUs, RAM und NVME SSDs.</p>
-                </div>
-                
-                <!-- FEATURE: HAUSEIGENE DEVELOPER -->
-                <div class="feature-card">
-                    <div class="feature-icon">D</div> 
-                    <h4>HAUSEIGENE DEVELOPER/MODDER</h4>
-                    <p>Eigene Spielinhalte sind unsere Spezialität. Ob User-Interfaces, Special Items, Plugins, Spieler-QoL Hilfen oder gar komplette ASA Karten, wir können wir durch unser erfahrenes Team alles bieten. Wir kreieren neue Features und Systeme für euch, und lösen Probleme selbst!</p>
+                    <div class="feature-icon">👥</div> 
+                    <h4>KOMPETENTES TEAM</h4>
+                    <p>Ein strukturiertes Team aus hauseigenen Developern, Moddern und Supportern steht dir zur Seite. Wir lösen Probleme selbst, erstellen eigene Maps/Mods und bieten direkten Support.</p>
                 </div>
 
-                <!-- FEATURE: LEBENDIGE COMMUNITY -->
                 <div class="feature-card">
-                    <div class="feature-icon">C</div> 
-                    <h4>LEBENDIGE COMMUNITY</h4>
-                    <p>Hier ist immer was los! Stürz dich in unsere zahlreichen Events und Wettbewerbe. Unser Server lebt von seinen Spielern: Eine starke Truppe, die Anfänger unterstützt und Veteranen neue Herausforderungen bietet. Mach mit und misch dich ein!</p>
+                    <div class="feature-icon">💬</div> 
+                    <h4>VERNETZTE WELT</h4>
+                    <p>2-Wege Crosschat (Ingame <-> Discord), synchronisierter Decay über alle Karten, Tribe-Log direkt im Discord und auf der Website sowie Multi-Charakter-Schutz.</p>
                 </div>
                 
+                <div class="feature-card">
+                    <div class="feature-icon">⛔</div> 
+                    <h4>NO WIPE & ANTI-GRIEF</h4>
+                    <p>Wir wipen nicht! Deine Bauten bleiben bestehen (abgesehen von Saison-Karten). Unser Anti-Griefing-System schützt vor Diebstahl, Trolling und nervigen Aktionen im PvE.</p>
+                </div>
+
             </div>
         </div>
 
-        <!-- === PANEL 2: GAMEPLAY === -->
+        <!-- === PANEL 2: GAMEPLAY & PROGRESS === -->
         <div id="gameplay" class="tab-pane">
             <div class="features-grid">
 
-                <!-- FEATURE: BALANCIERTE SPIELMECHANIKEN -->
                 <div class="feature-card">
-                    <div class="feature-icon">B</div> 
-                    <h4>BALANCIERTE SPIELMECHANIKEN</h4>
-                    <p>Wilder Dino Schaden x2, seid ihr irre? Wieso? Wir behalten die Herausforderung. Ob Bosse + Kreaturen, Freischaltungen oder Craftingkosten, wir haben das interessant und herausfordernd gemacht, was Spaß macht, und nervende Tätigkeiten angenehmer gestaltet.</p>
+                    <div class="feature-icon">⚖️</div> 
+                    <h4>BALANCED VANILLA+</h4>
+                    <p>Ein komplett eigenes Konzept: Nahe am Vanilla-Stil, aber mit progressivem Zugang zu Mod-Inhalten. Herausfordernd, aber fair gebalanced. Wilde Dinos machen doppelten Schaden für den Extra-Kick!</p>
                 </div>
                 
-                <!-- FEATURE: PROGRESS VANILLA-MOD KONZEPT -->
                 <div class="feature-card">
-                    <div class="feature-icon">V</div> 
-                    <h4>PROGRESS VANILLA-MOD KONZEPT</h4>
-                    <p>Lerne unsere Ark-Konzept kennen! Wir verbinden das Vanilla Spielverhalten mit erweiterten Modded Inhalten. Spiele Vanilla und erhalte durch Progressive Systeme wie Quests, Arena oder Boss Kämpfe sowie Erfolgssysteme u.v.m. Zugang zu erweiterten Late-Game Items, Kreaturen & kompletten Breeding Systemen.</p>
+                    <div class="feature-icon">🧬</div> 
+                    <h4>MASTER BREEDING</h4>
+                    <p>12 Stunden globaler Breeding-Timer (6h am Wochenende), verbesserter Propagator, der ASA-Gene berücksichtigt, und automatische Breeding-Settings (Auto-Unfollow etc.).</p>
                 </div>
-                
+
+                <div class="feature-card">
+                    <div class="feature-icon">🦕</div> 
+                    <h4>PALEO & TLC SYSTEM</h4>
+                    <p>Unser "Replacement System" ermöglicht TLC- und Paleo-Varianten neben den Vanilla-Dinos. Dazu gibt es seltene S-Kreaturen, Shinys und Cluster-weit spawnende Level 150 Rares & Legendaries.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">📈</div> 
+                    <h4>PROGRESSIVE SYSTEME</h4>
+                    <p>Einzigartiges "Prog Level System": Dein Decay-Timer und Struktur-Limit wächst mit deinem Level (bis zu 50 Tage Decay!). Erschließe dir Vorteile durch Spielzeit und Erfolge.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">📅</div> 
+                    <h4>EVENTS & RATEN</h4>
+                    <p>Automatische Wochenend-Raten (x2), Sonntag-Perks, stündliche Cluster-Games und manuell triggerbare Kartenereignisse (z.B. Hitzewelle, Regen) via Shop.</p>
+                </div>
+
             </div>
         </div>
         
@@ -237,81 +237,71 @@
         <div id="custom" class="tab-pane">
             <div class="features-grid">
 
-                <!-- FEATURE: TOKEN SHOP UND CUSTOM SHOP INHALTE -->
                 <div class="feature-card">
-                    <div class="feature-icon">€</div> 
-                    <h4>TOKEN SHOP UND CUSTOM SHOP INHALTE</h4>
-                    <p>Verdiene durch Spielzeit, Erfolge, Meilensteine, Challenges & täglichen Voting Tokens, die du im Token Shop ausgeben kannst. Wir bieten hierbei absolute Custom Inhalte, und Highlights. Ob Kreaturen, Items, Potions & Co, hast du auch die Möglichkeit Server Boosts, Farb Events, Karten Ereignisse und mehr auszulösen!</p>
+                    <div class="feature-icon">🏰</div> 
+                    <h4>COMMUNITY CENTER EXTENDED</h4>
+                    <p>Eine 100% eigens entwickelte ASA-Karte als ultimativer Hub: Marktplatz mit mietbaren Häusern, Event-Arenen, Eastereggs und wunderschönen Orten zum Erkunden.</p>
                 </div>
-                
-                <!-- FEATURE: IOPS ARENAS -->
+
                 <div class="feature-card">
-                    <div class="feature-icon">A</div> 
+                    <div class="feature-icon">⚔️</div> 
                     <h4>IOP ARENAS</h4>
-                    <p>Du möchtest dich mit einem RICHTIGEN Boss messen? IOP Arenas bietet gleich ein ganzes Arena Arsenal zu verschiedenen themenbasierten Arenen, inkl. Progress System & Portalraum. Messe dich dort über Stufen von Gamma- Alpha sowie Mythisch+ Bossen, in 80 Kämpfen und schalte neben den Belohnungen, Arena für Arena frei!</p>
+                    <p>Das Endgame für Kämpfer: 10 themenbasierte Arenen, 80 Kämpfe von Gamma bis Mythisch+, ein eigenes Progress-System und ein Portalraum. (Coming Soon)</p>
                 </div>
 
-                <!-- FEATURE: IOP LIVE MAPS (KARTOGRAPHIE) -->
                 <div class="feature-card">
-                    <div class="feature-icon">A</div> 
-                    <h4>IOP LIVE MAPS (KARTOGRAPHIE)</h4>
-                    <p>Du hast es satt keinen Base Spot zu finden? Das ist kein Problem, in unserer Kartographie findest du Live Maps, bei denen du nachsehen kannst Wer, Wo oder Ob dort wo du gerne bauen möchtest eine Base steht, sowie wo sich alle Spieler gerade aufhalten, um dir Bspw. eine Reise zur Wyvernschlucht zu sparen wenn diese gerade gelootet wird.</p>
-                </div>
-
-                 <!-- FEATURE: IOP CLUSTER EXPLORER -->
-                <div class="feature-card">
-                    <div class="feature-icon">A</div> 
-                    <h4>IOP CLUSTER EXPLORER</h4>
-                    <p>Wir haben eine komplette Ark Wiki selbst gemacht, und auf unser Cluster zugeschnitten. Du kannst dort alle Spawngebiete der Kreaturen und Karten einsehen, sowie Ressourcen-Vorkommen, Obelisken, Caves, und Öffentliche Orte u.v.m!</p>
+                    <div class="feature-icon">💰</div> 
+                    <h4>TOKEN & SHOP SYSTEM</h4>
+                    <p>Verdiene Tokens durch Spielzeit, Votes und Achievements. Kaufe damit im Crossplay-Shop Skins, Items, Dinos oder aktiviere Server-Boosts. Eigene Währung mit Gold & Edelsteinen.</p>
                 </div>
                 
-                <!-- FEATURE: CREATURES TLC REPLACEMENT SYSTEM -->
                 <div class="feature-card">
-                    <div class="feature-icon">K</div> 
-                    <h4>KREATUREN TLC REPLACEMENT SYSTEM</h4>
-                    <p>Bei uns sind TLC Kreaturen PLUS Varianten möglich. Hierzu haben wir ein eigenes Kreaturen Replacement System geschaffen, dass dir die schönen und anspruchsvollen Paleo Reworks der Ark Kreaturen ermöglicht, ohne dass die Vanilla Varianten oder Mod Varianten wie bspw. die S-Kreaturen vollständig ersetzt werden. Du findest also alle Varianten PLUS TLCs.</p>
+                    <div class="feature-icon">⚡</div> 
+                    <h4>CUSTOM ITEMS & MAGIE</h4>
+                    <p>Exklusive Inhalte wie Mjölnirs Segen (Heilung), Zaubertränke, Crafting-Potions, ein Tribe-Cave Tower oder das "Offhand Spyglass", das wie das Tek-Fernglas funktioniert, aber die Hände frei lässt.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🎲</div> 
+                    <h4>CASINO & QUESTE</h4>
+                    <p>Versuche dein Glück im eigenen Ingame-Casino oder absolviere Quests über unser eigenes Quest-Buch, um Belohnungen und Edelsteine zu erhalten.</p>
                 </div>
 
             </div>
         </div>
         
-        <!-- === PANEL 4: USER QOL === -->
+        <!-- === PANEL 4: QUALITY OF LIFE (QOL) === -->
         <div id="qol" class="tab-pane">
             <div class="features-grid">
                 
-                <!-- FEATURE: DIREKTE SPIELER BENEFITS & UIS -->
                 <div class="feature-card">
-                    <div class="feature-icon">U</div> 
-                    <h4>DIREKTE SPIELER BENEFITS & UIS</h4>
-                    <p>Wir bieten dir viele Spielerleichternde Features. Ob Lootbeutel & Leichen hervorragend anzeigen zu lassen, eine Ingame UI für das Regelwerk, Ingame Lost and Found, eine UI für Cluster und Performance Commands, ein Wegweiser Navigationssystem, Quest UI's oder ein Crossplay Ingame Shop UI steht alles bereit.</p>
+                    <div class="feature-icon">🖥️</div> 
+                    <h4>IOP PLAYER UI</h4>
+                    <p>Ein mächtiges Ingame-Interface: Regelwerk, Lost & Found, Performance-Commands (Nebel/Wolken aus), Wegweiser-System zu Caves, Live-Server-Raten und vieles mehr auf Knopfdruck.</p>
                 </div>
 
-                <!-- FEATURE: VERBESSERTES BREEDING SYSTEM (BALANCED) -->
                 <div class="feature-card">
-                    <div class="feature-icon">V</div> 
-                    <h4>VERBESSERTES ZUCHT SYSTEM (BALANCED)</h4>
-                    <p>Wir bieten dir die Möglichkeit, gemütlicher und angenehmer zu Züchten. Wir haben hierzu einen eigenen Propagator gemacht, der die Gene der ASA Kreaturen berücksichtigt, und gut gebalanced ist. Ebenfalls hast du die Möglichkeit für Kreaturen die du außerhalb Züchten möchtest ein Cryo Terminal zu nutzen dass die Babys direkt für dich einpackt, sowie unsere Schrumpf Pistole, mit der du Tiere die in der Base herumstehen verkleinern kannst.</p>
+                    <div class="feature-icon">✈️</div> 
+                    <h4>CUSTOM TRANSFER</h4>
+                    <p>Sicheres Reisen ohne Vanilla-Bugs. Rüstung wird automatisch gespeichert und wieder angelegt. Schultertiere werden automatisch in Kryo-Kapseln gesichert ("Pet Retter").</p>
                 </div>
 
-                <!-- FEATURE: VERBESSERTES TEK SPYGLASS -->
                 <div class="feature-card">
-                    <div class="feature-icon">V</div> 
-                    <h4>VERBESSERTES TEK SPYGLASS</h4>
-                    <p>Wir haben das Vanilla Tek Fernglas etwas verbessert, und ein Offhand Spyglass gemacht. Mit diesem ist es dir möglich alle Features des Tek Fernglases auch zu nutzen, wenn du eine Waffe/ Werkzeug oder ein Item in der Hand hältst.</p>
+                    <div class="feature-icon">🗺️</div> 
+                    <h4>LIVE MAPS & EXPLORER</h4>
+                    <p>Eigene Cluster-Wiki und Live-Karten zeigen dir Spielerpositionen, freie Bauplätze, Ressourcen und Drop-Meldungen (z.B. für Extinction/Astraeos) in Echtzeit an.</p>
                 </div>
 
-                <!-- FEATURE: COMMUNITY CENTER EXTENDED -->
                 <div class="feature-card">
-                    <div class="feature-icon">C</div> 
-                    <h4>COMMUNITY CENTER EXTENDED</h4>
-                    <p>Dich erwartet eines der größten Highlights die du je in Ark gesehen hast. Die ultimative Event und Marker Karte. Eine aus 100% Eigenentwicklung erstellte ASA Karte. Von Ostereiern, über Events, schöne Orte, bis hin zu einem kompletten Marktsystem mit eigenen Häuser die du anmieten und bewohnen kannst, ist alles dabei!</p>
+                    <div class="feature-icon">🎒</div> 
+                    <h4>INVENTAR & SUCHE</h4>
+                    <p>Dead Body Finder und Lootbeutel-Suche via Radialmenü. "Visual Storage" zeigt Icons auf Kisten. Nie wieder Items verlieren!</p>
                 </div>
 
-                <!-- FEATURE: ZUKÜNFTIGE QOL PLATZHALTER -->
                 <div class="feature-card">
-                    <div class="feature-icon">Z</div> 
-                    <h4>ZUSÄTZLICHE QOL FUNKTIONEN</h4>
-                    <p>Wir arbeiten stetig an der Verbesserung deines Spielerlebnisses. Zukünftige Features könnten automatische Farm-Hilfen, verbesserte Admin-Tools zur Diebstahl-Prävention oder einzigartige neue Interface-Einstellungen umfassen. Dein Feedback ist uns wichtig!</p>
+                    <div class="feature-icon">🛠️</div> 
+                    <h4>SMARTE HELFER</h4>
+                    <p>Engrams Reloaded (Lerne alles auf Knopfdruck), Biberdamm-Secure (kein Holz-Spam mehr), Solo-Farm-Integration und verbesserte Strukturen-Limits Anzeige.</p>
                 </div>
                 
             </div>
@@ -324,18 +314,15 @@
     // JavaScript für die Tab-Umschaltung
     document.addEventListener('DOMContentLoaded', () => {
         const tabButtons = document.querySelectorAll('.tab-button');
-        const widgetContainer = document.querySelector('.widget-container'); // NEU: Widget Container
-        const tabPanes = document.querySelectorAll('.tab-pane');
-        let currentActivePane = null;
+        const widgetContainer = document.querySelector('.widget-container'); 
         
-        // Konstanten für den Glow-Effekt
-        const GLOW_STRONG = '0 0 35px 8px rgba(229, 57, 53, 0.9)'; // Starker Feuerrot-Glow
-        const GLOW_NORMAL = '0 0 10px 2px rgba(229, 57, 53, 0.4), 0 4px 15px rgba(0, 0, 0, 0.5)'; // Normalzustand
+        const GLOW_STRONG = '0 0 35px 8px rgba(229, 57, 53, 0.9)'; 
+        const GLOW_NORMAL = '0 0 10px 2px rgba(229, 57, 53, 0.4), 0 4px 15px rgba(0, 0, 0, 0.5)'; 
 
-        // Funktion zum Wechseln der Tabs
         function switchTab(targetTabId) {
             
             const targetPane = document.getElementById(targetTabId);
+            const currentActivePane = document.querySelector('.tab-pane.active'); // Findet das aktuell sichtbare Panel
             
             // 1. Alle Buttons deaktivieren
             tabButtons.forEach(button => button.classList.remove('active'));
@@ -346,44 +333,39 @@
                 activeButton.classList.add('active');
             }
 
-            // Wenn bereits ein Panel aktiv ist, faden wir es aus
+            // Wenn bereits ein Panel aktiv ist und es nicht das Ziel ist
             if (currentActivePane && currentActivePane !== targetPane) {
                 
-                // 3. Altes Panel ausblenden (Opacity auf 0 setzen)
+                // Fade Out
                 currentActivePane.style.opacity = '0';
                 
-                // *** NEU: GLOW STARTEN (Feuer-Effekt) ***
+                // Glow Effekt
                 widgetContainer.style.boxShadow = GLOW_STRONG;
 
-                // Setzen des display:none, nachdem die Transition abgeschlossen ist (400ms)
                 setTimeout(() => {
-                    currentActivePane.style.display = 'none';
+                    currentActivePane.classList.remove('active'); // Entfernt display:block via Klasse
+                    currentActivePane.style.display = 'none'; // Zur Sicherheit
 
-                    // *** NEU: GLOW BEENDEN ***
                     widgetContainer.style.boxShadow = GLOW_NORMAL;
                     
-                    // 4. Neues Panel einblenden
+                    // Fade In neues Panel
                     targetPane.style.display = 'block';
-                    // Timeout (10ms) ist notwendig, um dem Browser Zeit zu geben, display:block zu registrieren,
-                    // bevor opacity:1 gesetzt wird, damit die Transition funktioniert.
+                    targetPane.classList.add('active');
+                    
+                    // Kleiner Timeout für die Opacity Transition
                     setTimeout(() => {
                         targetPane.style.opacity = '1';
-                        currentActivePane = targetPane; // Aktives Panel aktualisieren
                     }, 10);
-                }, 400); // Wartet 400ms (entspricht der CSS Transition Zeit)
+                }, 400); 
                 
             } else if (!currentActivePane) {
-                // Initialer Start ohne Fade
+                // Initialer Start
+                targetPane.classList.add('active');
                 targetPane.style.display = 'block';
                 targetPane.style.opacity = '1';
-                currentActivePane = targetPane;
-            } else {
-                // Wenn das gleiche Panel geklickt wird, nichts tun
-                return;
             }
         }
 
-        // Event Listener zu den Buttons hinzufügen
         tabButtons.forEach(button => {
             button.addEventListener('click', () => {
                 const targetTabId = button.getAttribute('data-tab');
@@ -391,7 +373,7 @@
             });
         });
 
-        // Beim Laden den ersten Tab (BASIS-FEATURES) aktivieren
+        // Start-Tab
         switchTab('basics');
     });
 </script>
