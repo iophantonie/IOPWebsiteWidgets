@@ -1,0 +1,1120 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IOP Cluster Widget</title>
+    <!-- Tailwind für Basis-Styling -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    
+    <style>
+        /* --- CSS STYLES --- */
+        
+        /* RESET & BASE */
+        * { box-sizing: border-box; }
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden; /* WICHTIG: Kein Scrollen der Seite */
+            background-color: #0f1115; /* Dunkler Hintergrund als Default */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #e2e8f0;
+        }
+
+        /* APP SHELL GRID - Das Layout */
+        .app-container {
+            display: grid;
+            grid-template-columns: 320px 1fr; /* Sidebar Breite fix, Rest Karte */
+            height: 100vh;
+            width: 100vw;
+            background-color: #0f1115;
+        }
+
+        /* SIDEBAR STYLES */
+        .sidebar {
+            background: #1a1d24;
+            border-right: 1px solid #333;
+            display: flex;
+            flex-direction: column;
+            z-index: 20;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.5);
+            height: 100%;
+        }
+
+        .sidebar-header {
+            padding: 15px;
+            background: #14161b;
+            border-bottom: 1px solid #333;
+        }
+
+        .sidebar-tabs {
+            display: flex;
+            background: #252830;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            background: transparent;
+            border: none;
+            color: #888;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+        }
+
+        .tab-btn:hover { color: #fff; background: #2d313a; }
+        .tab-btn.active {
+            color: #fbbf24; /* Amber */
+            border-bottom: 2px solid #fbbf24;
+            background: #2d313a;
+        }
+
+        .sidebar-content {
+            flex: 1;
+            overflow-y: auto; /* Nur hier wird gescrollt */
+            padding: 15px;
+            position: relative;
+        }
+
+        /* Tab Logic */
+        .tab-pane { display: none; }
+        .tab-pane.active { display: block; animation: fadeIn 0.3s; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* MAP AREA - NEU: Flexbox für automatische Zentrierung */
+        .map-area {
+            position: relative;
+            background: #000;
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+            display: flex; /* Flexbox aktiviert */
+            justify-content: center; /* Horizontal zentrieren */
+            align-items: center; /* Vertikal zentrieren */
+        }
+
+        /* Canvas Stack ist jetzt relativ zum Flex-Container */
+        #canvas-stack {
+            position: relative; 
+            /* Keine absolute Positionierung (top/left) mehr nötig durch Flexbox */
+            box-shadow: 0 0 50px rgba(0,0,0,0.5); /* Hübscher Schatten um die Map */
+        }
+
+        canvas {
+            position: absolute;
+            top: 0; left: 0;
+            pointer-events: none; /* Klicks gehen durch */
+        }
+
+        #click-canvas {
+            pointer-events: auto; /* Nur dieser Canvas fängt Maus-Events */
+            cursor: grab;
+        }
+
+        /* HUD ELEMENTS */
+        .hud-top-right {
+            position: absolute; top: 20px; right: 20px; z-index: 10;
+        }
+        .hud-bottom-right {
+            position: absolute; bottom: 20px; right: 20px; z-index: 10; display: flex; gap: 5px;
+        }
+
+        .hud-box {
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            padding: 8px 12px;
+            border-radius: 4px;
+            border: 1px solid #444;
+            font-family: monospace;
+            font-size: 14px;
+            color: #fbbf24;
+        }
+
+        .hud-btn {
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            border: 1px solid #444;
+            width: 36px; height: 36px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .hud-btn:hover { background: #fbbf24; color: black; border-color: #fbbf24; }
+
+        /* DETAIL PANEL (SLIDE IN) */
+        .detail-panel {
+            position: absolute;
+            top: 0; right: 0; bottom: 0;
+            width: 350px;
+            background: rgba(20, 24, 30, 0.95);
+            backdrop-filter: blur(10px);
+            border-left: 1px solid #fbbf24;
+            transform: translateX(100%);
+            transition: transform 0.3s ease-in-out;
+            z-index: 30;
+            box-shadow: -5px 0 20px rgba(0,0,0,0.5);
+        }
+
+        .detail-panel.open {
+            transform: translateX(0);
+        }
+
+        /* LIST STYLES */
+        .creature-item {
+            padding: 8px;
+            cursor: pointer;
+            border-radius: 4px;
+            margin-bottom: 2px;
+            transition: background 0.2s;
+        }
+        .creature-item:hover { background: #2d313a; }
+        .creature-item.active { background: rgba(251, 191, 36, 0.1); border-left: 3px solid #fbbf24; }
+
+        /* Custom Scrollbar */
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #1a1d24; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #666; }
+
+        /* TOGGLE SWITCHES */
+        .switch { position: relative; display: inline-block; width: 40px; height: 20px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #444; transition: .4s; }
+        .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 2px; bottom: 2px; background-color: white; transition: .4s; }
+        input:checked + .slider { background-color: #fbbf24; }
+        input:checked + .slider:before { transform: translateX(20px); }
+        .slider.round { border-radius: 34px; }
+        .slider.round:before { border-radius: 50%; }
+        .toggle-wrapper { display: flex; align-items: center; margin-bottom: 10px; }
+
+        /* LOADING & TITLES */
+        .section-title { font-size: 0.8rem; text-transform: uppercase; color: #6b7280; font-weight: bold; margin-bottom: 10px; letter-spacing: 0.05em; }
+        
+        .loading-overlay {
+            position: absolute; top:0; left:0; right:0; bottom:0;
+            background: #0f1115; z-index: 50;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+        }
+        .spinner { border: 4px solid #333; border-top: 4px solid #fbbf24; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom: 10px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        .map-switcher ul {
+            position: absolute;
+            background: #2d313a;
+            border: 1px solid #444;
+            border-radius: 4px;
+            width: 200px;
+            z-index: 100;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            max-height: 300px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Haupt-Container (App Shell) -->
+    <div class="app-container">
+
+        <!-- LINKE SIDEBAR (Steuerung) -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h1 id="map-name" class="text-xl font-bold text-amber-500">IOP Cluster</h1>
+                <!-- Map Switcher (Mini) -->
+                <div class="map-switcher mt-1 relative">
+                    <button id="map-select-btn" class="text-xs text-gray-400 hover:text-white flex items-center">Karte wechseln <span class="ml-1">▼</span></button>
+                    <ul id="map-list" class="hidden custom-scrollbar">
+                        <!-- Wird per JS gefüllt -->
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Navigation Tabs -->
+            <nav class="sidebar-tabs">
+                <button class="tab-btn active" data-target="tab-creatures">Dinos</button>
+                <button class="tab-btn" data-target="tab-resources">Res.</button>
+                <button class="tab-btn" data-target="tab-pois">Orte</button>
+                <button class="tab-btn" data-target="tab-settings">⚙</button>
+            </nav>
+
+            <!-- Scrollbarer Inhalt der Sidebar -->
+            <div class="sidebar-content custom-scrollbar">
+                
+                <!-- TAB: KREATUREN -->
+                <div id="tab-creatures" class="tab-pane active">
+                    <div class="search-wrapper mb-2">
+                        <input type="text" id="creature-search" placeholder="Suche Dino..." class="w-full bg-gray-800 text-white p-2 rounded border border-gray-600 focus:border-amber-500 outline-none placeholder-gray-500 text-sm">
+                    </div>
+                    <!-- Liste -->
+                    <div id="creature-list" class="list-group">
+                        <p class="text-xs text-gray-500 text-center mt-4">Lade Kreaturen...</p>
+                    </div>
+                    <div id="region-info" class="mt-4 p-2 bg-gray-900 rounded hidden text-sm text-gray-300 border border-gray-700">
+                        <!-- Spawn Infos -->
+                    </div>
+                </div>
+
+                <!-- TAB: RESSOURCEN -->
+                <div id="tab-resources" class="tab-pane">
+                    <div class="flex items-center mb-4 pb-2 border-b border-gray-700">
+                        <input type="checkbox" id="select-all-resources" class="mr-2 h-4 w-4 bg-gray-800 border-gray-600 rounded text-amber-500 focus:ring-0">
+                        <label for="select-all-resources" class="text-sm text-gray-300 font-medium">Alle auswählen</label>
+                    </div>
+                    <div id="resource-controls" class="space-y-2">
+                        <p class="text-xs text-gray-500">Lade Ressourcen...</p>
+                    </div>
+                </div>
+
+                <!-- TAB: ORTE (POIS & HÖHLEN) -->
+                <div id="tab-pois" class="tab-pane">
+                    <h3 class="section-title">Wichtige Orte</h3>
+                    <div class="toggle-wrapper">
+                        <label class="switch">
+                            <input type="checkbox" id="spots-toggle">
+                            <span class="slider round"></span>
+                        </label>
+                        <span class="ml-2 text-white text-sm">Public Spots</span>
+                    </div>
+                    
+                    <h3 class="section-title mt-6">Höhlen</h3>
+                    <div class="toggle-wrapper">
+                        <label class="switch">
+                            <input type="checkbox" id="cave-spots-toggle">
+                            <span class="slider round"></span>
+                        </label>
+                        <span class="ml-2 text-white text-sm">Höhlen anzeigen</span>
+                    </div>
+
+                    <h3 class="section-title mt-6">Obelisken</h3>
+                    <div id="obelisk-controls" class="space-y-1"></div>
+                </div>
+
+                <!-- TAB: EINSTELLUNGEN & LEGENDE -->
+                <div id="tab-settings" class="tab-pane">
+                    <h3 class="section-title">Legende</h3>
+                    <div id="legend" class="mb-4 text-sm space-y-1"></div>
+                    
+                    <h3 class="section-title mt-6">Spieler Spawns</h3>
+                    <div class="toggle-wrapper">
+                        <label class="switch">
+                            <input type="checkbox" id="toggle-all-player-spawns">
+                            <span class="slider round"></span>
+                        </label>
+                        <span class="ml-2 text-white text-sm">Anzeigen</span>
+                    </div>
+                    
+                    <h3 class="section-title mt-6">Explorer Notizen</h3>
+                    <div class="toggle-wrapper">
+                        <label class="switch">
+                            <input type="checkbox" id="toggle-all-notes">
+                            <span class="slider round"></span>
+                        </label>
+                        <span class="ml-2 text-white text-sm">Anzeigen</span>
+                    </div>
+
+                    <div class="mt-8 pt-4 border-t border-gray-700 text-xs text-gray-500 text-center">
+                        IOP Map Widget v2.0<br>Infinity of Phoenix
+                    </div>
+                </div>
+
+            </div>
+        </aside>
+
+        <!-- HAUPTBEREICH (Karte) -->
+        <main class="map-area">
+            
+            <!-- HUD: Koordinaten & Zoom (Floating) -->
+            <div class="hud-top-right">
+                <div id="coords-display" class="hud-box">
+                    <span id="lat-display">Lat: 00.00</span> | 
+                    <span id="lon-display">Lon: 00.00</span>
+                </div>
+            </div>
+
+            <div class="hud-bottom-right">
+                <button id="zoom-in" class="hud-btn" title="Zoom In">+</button>
+                <button id="zoom-out" class="hud-btn" title="Zoom Out">-</button>
+            </div>
+
+            <!-- Canvas Container (Stapelt alle Canvases übereinander) -->
+            <div id="canvas-stack">
+                <img id="map-image" style="display:none;"> 
+                <canvas id="map-canvas"></canvas>
+                <canvas id="region-canvas"></canvas>
+                <canvas id="spawn-canvas"></canvas>
+                <canvas id="resource-canvas"></canvas>
+                <canvas id="player-spawn-canvas"></canvas>
+                <canvas id="obelisk-canvas"></canvas>
+                <canvas id="spots-canvas"></canvas>
+                <canvas id="cave-spots-canvas"></canvas>
+                <canvas id="notes-canvas"></canvas>
+                <canvas id="click-canvas"></canvas> <!-- Oberste Ebene für Interaktion -->
+            </div>
+            
+            <div id="loading-indicator" class="loading-overlay">
+                <div class="spinner"></div>
+                <span id="loading-text" class="text-amber-500 font-bold mt-2">Initialisiere App...</span>
+            </div>
+        </main>
+
+        <!-- RECHTES DETAIL PANEL (Slide-In) -->
+        <div id="detail-panel" class="detail-panel">
+            <button id="close-detail" class="absolute top-2 right-2 text-gray-400 hover:text-white z-10 p-2 bg-black/20 rounded-full">✕</button>
+            <div id="detail-content" class="h-full overflow-y-auto p-6 custom-scrollbar">
+                <!-- Hier kommen Details rein wenn man auf Marker klickt -->
+                <div class="flex flex-col items-center justify-center h-full text-gray-500">
+                    <p>Wähle einen Marker auf der Karte aus.</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tooltip -->
+        <div id="map-tooltip" class="hidden absolute bg-black/90 border border-amber-500/50 p-2 rounded pointer-events-none z-50 text-xs text-white shadow-lg backdrop-filter backdrop-blur-sm">
+            <div id="tooltip-content"></div>
+        </div>
+
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // --- CONFIGURATION & GLOBAL VARIABLES ---
+        let allCreatureData = {};
+        let allResourceData = {};
+        let allPublicSpotsData = {};
+        let allCaveSpotsData = {};
+        let allInfoBadgeData = {};
+        let allObeliskData = {};
+        let allRegionData = {};
+        let allPlayerSpawnData = {};
+        let allExplorerNotesData = [];
+        let mapConfigs = {};
+        let currentMapConfig = {};
+
+        // Status Variables
+        let highlightedSpotId = null;
+        let hoveredSpotId = null;
+        let highlightedCaveSpotId = null;
+        let hoveredCaveSpotId = null;
+        let highlightedObeliskId = null;
+        let hoveredObeliskId = null;
+        let highlightedZone = null;
+        let selectedCreatureValue = null;
+
+        // Assets & Icons
+        let obeliskIcons = {};
+        let spotIcons = {};
+        let caveSpotIcons = {};
+        let resourceIcons = {};
+        let regionImages = {};
+        let noteIcon = null;
+
+        // Translations & Configs
+        let resourceTranslations = {};
+        let creatureTranslations = {};
+        let infoBadgeTranslations = {};
+        let alphaVariantConfigs = {};
+        let globalItemDatabase = {};
+        let spawnZoneBlocklistData = {};
+        let spawnSharingConfig = {};
+        let spawnRarityConfig = {};
+        let difficultyConfig = {
+            "Leicht": { "borderColor": "#22c55e", "bgColor": "rgba(34, 197, 94, 0.2)", "textColor": "#4ade80" },
+            "Mittel": { "borderColor": "#eab308", "bgColor": "rgba(234, 179, 8, 0.2)", "textColor": "#facc15" },
+            "Schwer": { "borderColor": "#ef4444", "bgColor": "rgba(239, 68, 68, 0.2)", "textColor": "#fca5a5" },
+            "Extrem": { "borderColor": "#a21caf", "bgColor": "rgba(162, 28, 175, 0.2)", "textColor": "#e879f9" }
+        };
+
+        // Animation Frames
+        let pulseAnimationId = null;
+        let notePulseAnimationId = null;
+        let highlightPulseAnimationId = null;
+
+        // Map Navigation State
+        let scale = 1;
+        let panOffset = { x: 0, y: 0 };
+        let isPanning = false;
+        let panStart = { x: 0, y: 0 };
+        const maxScale = 8;
+        const minScale = 1;
+
+        // Constants
+        const MAP_LAT_MIN = 0; const MAP_LAT_MAX = 100;
+        const MAP_LON_MIN = 0; const MAP_LON_MAX = 100;
+        const MAP_LAT_RANGE = 100; const MAP_LON_RANGE = 100;
+        const SPOT_LAT_MIN = 0; const SPOT_LAT_MAX = 100;
+        const SPOT_LON_MIN = 0; const SPOT_LON_MAX = 100;
+        const SPOT_LAT_RANGE = 100; const SPOT_LON_RANGE = 100;
+
+        const resourceConfig = {
+            'Metal': { color: '#b87333' }, 'Crystal': { color: '#ADD8E6' },
+            'Obsidian': { color: '#333333' }, 'Oil': { color: '#663399' },
+            'Rich Metal': { color: '#DAA520' }, 'Silica Pearls': { color: '#F5F5DC' }
+        };
+
+        const obeliskConfig = {
+            'Grüner Obelisk': { color: '#22c55e' },
+            'Blauer Obelisk': { color: '#3b82f6' },
+            'Roter Obelisk': { color: '#ef4444' }
+        };
+
+        let mapCanvas, mapCtx, spawnCanvas, spawnCtx, resourceCanvas, resourceCtx, 
+            spotsCanvas, spotsCtx, clickCanvas, clickCtx, obeliskCanvas, obeliskCtx, 
+            caveSpotsCanvas, caveSpotsCtx, regionCanvas, regionCtx, 
+            playerSpawnCanvas, playerSpawnCtx, notesCanvas, notesCtx;
+
+        let mapImage, tooltipElement, tooltipContentElement;
+        let currentMapKey = 'TheIsland'; 
+
+        // --- UTILITY FUNCTIONS ---
+
+        function getIconUrl(itemName) {
+            const trimmedItem = itemName.trim();
+            const dbEntry = globalItemDatabase[trimmedItem];
+            if (dbEntry && dbEntry.iconUrl) return dbEntry.iconUrl;
+            return 'https://placehold.co/32x32/333/FFF?text=?';
+        }
+
+        async function fetchData(url) {
+            if (!url) return null;
+            try {
+                const response = await fetch(url);
+                if (!response.ok) return null;
+                let text = await response.text();
+                const cleanedText = text.replace(/^\uFEFF/, '').replace(/\u00A0/g, ' ');
+                return JSON.parse(cleanedText);
+            } catch (e) {
+                console.error("Fetch Error:", e);
+                return null;
+            }
+        }
+
+        // --- UI POPULATION ---
+
+        function populateMapList() {
+            const list = document.getElementById('map-list');
+            list.innerHTML = '';
+            for (const key in mapConfigs) {
+                const map = mapConfigs[key];
+                if (map.activated) {
+                    const li = document.createElement('li');
+                    li.className = 'px-4 py-2 hover:bg-gray-600 cursor-pointer text-sm text-gray-300 transition-colors border-b border-gray-700 last:border-0';
+                    li.textContent = map.displayName;
+                    li.onclick = () => {
+                        loadMapData(key);
+                        document.getElementById('map-list').classList.add('hidden');
+                    };
+                    list.appendChild(li);
+                }
+            }
+        }
+
+        function populateCreatureList(searchTerm = "") {
+            const listContainer = document.getElementById('creature-list');
+            listContainer.innerHTML = '';
+            
+            const creatureNames = Object.keys(allCreatureData);
+            const translatedNames = creatureNames.map(name => ({
+                english: name,
+                german: creatureTranslations[name.trim()] || name.trim()
+            }));
+
+            const filtered = translatedNames
+                .filter(c => c.german.toLowerCase().includes(searchTerm.toLowerCase()))
+                .sort((a, b) => a.german.localeCompare(b.german));
+
+            if(filtered.length === 0) {
+                listContainer.innerHTML = '<p class="text-xs text-gray-500 text-center mt-2">Keine Dinos gefunden.</p>';
+                return;
+            }
+
+            filtered.forEach(c => {
+                const div = document.createElement('div');
+                div.className = `creature-item ${selectedCreatureValue === c.english ? 'active' : ''}`;
+                
+                const iconUrl = getIconUrl(c.english);
+                div.innerHTML = `
+                    <div class="flex items-center">
+                        <img src="${iconUrl}" class="w-6 h-6 mr-3 object-contain" onerror="this.src='https://placehold.co/20?text=?'">
+                        <span class="text-sm font-medium text-gray-300">${c.german}</span>
+                    </div>
+                `;
+                
+                div.onclick = () => {
+                    selectedCreatureValue = c.english;
+                    document.querySelectorAll('.creature-item').forEach(el => el.classList.remove('active'));
+                    div.classList.add('active');
+                    drawSpawns();
+                };
+                listContainer.appendChild(div);
+            });
+        }
+
+        function populateResourceControls() {
+            const container = document.getElementById('resource-controls');
+            container.innerHTML = '';
+            if (!allResourceData) return;
+
+            const sortedResources = Object.keys(allResourceData).sort();
+
+            sortedResources.forEach(res => {
+                const label = document.createElement('label');
+                label.className = 'flex items-center text-gray-300 cursor-pointer hover:bg-gray-800 p-2 rounded transition-colors';
+                
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.name = res;
+                checkbox.className = 'mr-3 h-4 w-4 bg-gray-700 border-gray-500 rounded text-amber-500 focus:ring-0';
+                checkbox.onchange = () => drawResources();
+
+                const name = resourceTranslations[res] || res;
+                const iconUrl = getIconUrl(res);
+                
+                const img = document.createElement('img');
+                img.src = iconUrl;
+                img.className = "w-5 h-5 mr-2 object-contain";
+                
+                label.append(checkbox, img, document.createTextNode(name));
+                container.appendChild(label);
+            });
+        }
+
+        function populateObeliskControls() {
+            const container = document.getElementById('obelisk-controls');
+            container.innerHTML = '';
+            if (!allObeliskData.obelisks) return;
+
+            allObeliskData.obelisks.forEach(ob => {
+                const div = document.createElement('label');
+                div.className = 'flex items-center text-gray-300 cursor-pointer hover:bg-gray-800 p-2 rounded';
+                const cb = document.createElement('input');
+                cb.type = 'checkbox';
+                cb.name = ob.name;
+                cb.className = 'mr-3 h-4 w-4 bg-gray-700 border-gray-500 rounded text-amber-500 focus:ring-0';
+                cb.onchange = () => drawObelisks();
+                
+                const colorDot = document.createElement('span');
+                colorDot.className = 'w-3 h-3 rounded-full mr-2 inline-block';
+                colorDot.style.backgroundColor = obeliskConfig[ob.name]?.color || '#fff';
+                colorDot.style.boxShadow = `0 0 5px ${obeliskConfig[ob.name]?.color || '#fff'}`;
+                
+                div.append(cb, colorDot, document.createTextNode(ob.name));
+                container.appendChild(div);
+            });
+        }
+
+        // --- DRAWING LOGIC ---
+
+        function redrawAll() {
+            requestAnimationFrame(() => {
+                [mapCtx, spawnCtx, resourceCtx, spotsCtx, clickCtx, obeliskCtx, caveSpotsCtx, regionCtx, playerSpawnCtx, notesCtx].forEach(ctx => {
+                     if(ctx) ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                });
+
+                // Wenn Bild nicht geladen, zeichne Fehlertext
+                if(mapImage.complete && mapImage.naturalWidth > 0) {
+                    drawMapImage();
+                } else {
+                    mapCtx.fillStyle = '#111';
+                    mapCtx.fillRect(0,0,mapCanvas.width, mapCanvas.height);
+                    mapCtx.fillStyle = '#ef4444';
+                    mapCtx.font = '20px sans-serif';
+                    mapCtx.textAlign = 'center';
+                    mapCtx.fillText('Bildfehler: Karte konnte nicht geladen werden', mapCanvas.width/2, mapCanvas.height/2);
+                }
+
+                drawSpawns(); 
+                drawResources();
+                drawObelisks();
+                if(document.getElementById('spots-toggle').checked) drawPublicSpots();
+                if(document.getElementById('cave-spots-toggle').checked) drawCaveSpots();
+            });
+        }
+
+        function drawMapImage() {
+            if(!mapCtx || !mapImage.complete) return;
+            mapCtx.save();
+            mapCtx.translate(panOffset.x, panOffset.y);
+            mapCtx.scale(scale, scale);
+            mapCtx.drawImage(mapImage, 0, 0, mapCanvas.width, mapCanvas.height);
+            mapCtx.restore();
+        }
+
+        function drawSpawns() {
+            if (!selectedCreatureValue) return;
+            const areas = allCreatureData[selectedCreatureValue];
+            if (!areas) return;
+
+            spawnCtx.save();
+            spawnCtx.translate(panOffset.x, panOffset.y);
+            spawnCtx.scale(scale, scale);
+
+            const width = spawnCanvas.width;
+            const height = spawnCanvas.height;
+
+            areas.forEach(area => {
+                const x = ((area.min.lon - MAP_LON_MIN) / MAP_LON_RANGE) * width;
+                const y = ((area.min.lat - MAP_LAT_MIN) / MAP_LAT_RANGE) * height;
+                const w = ((area.max.lon - area.min.lon) / MAP_LON_RANGE) * width;
+                const h = ((area.max.lat - area.min.lat) / MAP_LAT_RANGE) * height;
+
+                spawnCtx.fillStyle = 'rgba(251, 191, 36, 0.4)'; // Amber transparent
+                spawnCtx.fillRect(x, y, w, h);
+                spawnCtx.strokeStyle = 'rgba(251, 191, 36, 0.8)';
+                spawnCtx.lineWidth = 1/scale;
+                spawnCtx.strokeRect(x, y, w, h);
+            });
+            spawnCtx.restore();
+        }
+
+        function drawResources() {
+            const checkboxes = document.querySelectorAll('#resource-controls input[type="checkbox"]:checked');
+            if (checkboxes.length === 0) return;
+            
+            const width = resourceCanvas.width;
+            const height = resourceCanvas.height;
+
+            resourceCtx.save();
+            resourceCtx.translate(panOffset.x, panOffset.y);
+            resourceCtx.scale(scale, scale);
+
+            checkboxes.forEach(cb => {
+                const resName = cb.name;
+                if(allResourceData[resName]) {
+                    const icon = resourceIcons[resName]; // Preloading logic missing in simplified version, assuming placeholder or simple dots
+                    allResourceData[resName].forEach(node => {
+                        const x = ((node.lon - MAP_LON_MIN) / MAP_LON_RANGE) * width;
+                        const y = ((node.lat - MAP_LAT_MIN) / MAP_LAT_RANGE) * height;
+                        const radius = 3 / scale;
+                        
+                        resourceCtx.beginPath();
+                        resourceCtx.arc(x, y, radius, 0, Math.PI*2);
+                        resourceCtx.fillStyle = resourceConfig[resName]?.color || '#fff';
+                        resourceCtx.fill();
+                    });
+                }
+            });
+            resourceCtx.restore();
+        }
+
+        function drawObelisks() {
+            const checkboxes = document.querySelectorAll('#obelisk-controls input[type="checkbox"]:checked');
+            if(checkboxes.length === 0) return;
+             const width = obeliskCanvas.width;
+            const height = obeliskCanvas.height;
+
+            obeliskCtx.save();
+            obeliskCtx.translate(panOffset.x, panOffset.y);
+            obeliskCtx.scale(scale, scale);
+
+            checkboxes.forEach(cb => {
+                const obName = cb.name;
+                const ob = allObeliskData.obelisks.find(o => o.name === obName);
+                if(ob) {
+                    const x = ((ob.lon - MAP_LON_MIN) / MAP_LON_RANGE) * width;
+                    const y = ((ob.lat - MAP_LAT_MIN) / MAP_LAT_RANGE) * height;
+                    const radius = 8 / scale;
+
+                    obeliskCtx.beginPath();
+                    obeliskCtx.arc(x, y, radius, 0, Math.PI*2);
+                    obeliskCtx.fillStyle = obeliskConfig[obName]?.color || '#fff';
+                    obeliskCtx.shadowBlur = 10;
+                    obeliskCtx.shadowColor = obeliskCtx.fillStyle;
+                    obeliskCtx.fill();
+                }
+            });
+            obeliskCtx.restore();
+        }
+
+        function drawPublicSpots() {
+           if(!allPublicSpotsData.publicSpots) return;
+           const width = spotsCanvas.width;
+           const height = spotsCanvas.height;
+           
+           spotsCtx.save();
+           spotsCtx.translate(panOffset.x, panOffset.y);
+           spotsCtx.scale(scale, scale);
+           
+           allPublicSpotsData.publicSpots.forEach(spot => {
+                const x = ((spot.lon - SPOT_LON_MIN) / SPOT_LON_RANGE) * width;
+                const y = ((spot.lat - SPOT_LAT_MIN) / SPOT_LAT_RANGE) * height;
+                
+                // Draw Pin
+                spotsCtx.beginPath();
+                spotsCtx.moveTo(x, y);
+                spotsCtx.lineTo(x - 5/scale, y - 15/scale);
+                spotsCtx.quadraticCurveTo(x, y - 25/scale, x + 5/scale, y - 15/scale);
+                spotsCtx.closePath();
+                spotsCtx.fillStyle = '#f59e0b'; // Amber
+                spotsCtx.fill();
+                spotsCtx.strokeStyle = '#000';
+                spotsCtx.lineWidth = 1/scale;
+                spotsCtx.stroke();
+           });
+           spotsCtx.restore();
+        }
+
+        function drawCaveSpots() {
+           if(!allCaveSpotsData.caveSpots) return;
+           const width = caveSpotsCanvas.width;
+           const height = caveSpotsCanvas.height;
+           
+           caveSpotsCtx.save();
+           caveSpotsCtx.translate(panOffset.x, panOffset.y);
+           caveSpotsCtx.scale(scale, scale);
+           
+           allCaveSpotsData.caveSpots.forEach(spot => {
+                const x = ((spot.lon - SPOT_LON_MIN) / SPOT_LON_RANGE) * width;
+                const y = ((spot.lat - SPOT_LAT_MIN) / SPOT_LAT_RANGE) * height;
+                
+                caveSpotsCtx.beginPath();
+                caveSpotsCtx.arc(x, y, 6/scale, 0, Math.PI*2);
+                caveSpotsCtx.fillStyle = '#a855f7'; // Purple
+                caveSpotsCtx.fill();
+                caveSpotsCtx.strokeStyle = '#fff';
+                caveSpotsCtx.lineWidth = 1/scale;
+                caveSpotsCtx.stroke();
+           });
+           caveSpotsCtx.restore();
+        }
+
+        // --- INTERACTION ---
+
+        function setupInteraction() {
+            clickCanvas.addEventListener('mousedown', (e) => {
+                isPanning = true;
+                panStart = { x: e.clientX - panOffset.x, y: e.clientY - panOffset.y };
+                clickCanvas.style.cursor = 'grabbing';
+            });
+
+            window.addEventListener('mouseup', () => {
+                isPanning = false;
+                clickCanvas.style.cursor = 'grab';
+            });
+
+            clickCanvas.addEventListener('mousemove', (e) => {
+                const rect = clickCanvas.getBoundingClientRect();
+                const mouseX = e.clientX - rect.left;
+                const mouseY = e.clientY - rect.top;
+                
+                const mapX = (mouseX - panOffset.x) / scale;
+                const mapY = (mouseY - panOffset.y) / scale;
+                
+                const lon = (mapX / mapCanvas.width) * 100;
+                const lat = (mapY / mapCanvas.height) * 100;
+                
+                document.getElementById('lat-display').innerHTML = `Lat: <span class="text-white font-bold">${Math.max(0, Math.min(100, lat)).toFixed(2)}</span>`;
+                document.getElementById('lon-display').innerHTML = `Lon: <span class="text-white font-bold">${Math.max(0, Math.min(100, lon)).toFixed(2)}</span>`;
+
+                if (isPanning) {
+                    panOffset.x = e.clientX - panStart.x;
+                    panOffset.y = e.clientY - panStart.y;
+                    
+                    // Boundary check simplified
+                    // const minX = clickCanvas.width * (1 - scale);
+                    // panOffset.x = Math.min(0, Math.max(minX, panOffset.x));
+                    // panOffset.y = Math.min(0, Math.max(clickCanvas.height * (1 - scale), panOffset.y));
+                    
+                    redrawAll();
+                }
+            });
+
+            clickCanvas.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                const rect = clickCanvas.getBoundingClientRect();
+                const mouseX = e.clientX - rect.left;
+                const mouseY = e.clientY - rect.top;
+
+                const zoom = e.deltaY < 0 ? 1.1 : 0.9;
+                const newScale = Math.min(maxScale, Math.max(minScale, scale * zoom));
+                
+                const worldX = (mouseX - panOffset.x) / scale;
+                const worldY = (mouseY - panOffset.y) / scale;
+                
+                panOffset.x = mouseX - worldX * newScale;
+                panOffset.y = mouseY - worldY * newScale;
+                scale = newScale;
+                
+                redrawAll();
+            });
+
+            clickCanvas.addEventListener('click', (e) => {
+                if(isPanning) return;
+                const rect = clickCanvas.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                // Inverse transform to get map coords
+                const mapX = (x - panOffset.x) / scale;
+                const mapY = (y - panOffset.y) / scale;
+                
+                // Convert to Game Coords
+                const width = mapCanvas.width;
+                const height = mapCanvas.height;
+                
+                // Check Public Spots
+                if(document.getElementById('spots-toggle').checked && allPublicSpotsData.publicSpots) {
+                    const hit = allPublicSpotsData.publicSpots.find(spot => {
+                        const sx = ((spot.lon - SPOT_LON_MIN) / SPOT_LON_RANGE) * width;
+                        const sy = ((spot.lat - SPOT_LAT_MIN) / SPOT_LAT_RANGE) * height;
+                        const dist = Math.sqrt(Math.pow(mapX - sx, 2) + Math.pow(mapY - sy, 2));
+                        return dist < 20/scale; // Hitbox
+                    });
+                    
+                    if(hit) {
+                        openDetailPanel(hit);
+                        return;
+                    }
+                }
+                
+                // Check Caves
+                 if(document.getElementById('cave-spots-toggle').checked && allCaveSpotsData.caveSpots) {
+                    const hit = allCaveSpotsData.caveSpots.find(spot => {
+                        const sx = ((spot.lon - SPOT_LON_MIN) / SPOT_LON_RANGE) * width;
+                        const sy = ((spot.lat - SPOT_LAT_MIN) / SPOT_LAT_RANGE) * height;
+                        const dist = Math.sqrt(Math.pow(mapX - sx, 2) + Math.pow(mapY - sy, 2));
+                        return dist < 20/scale;
+                    });
+                    
+                    if(hit) {
+                        openDetailPanel(hit);
+                        return;
+                    }
+                }
+            });
+        }
+
+        function setupTabs() {
+            const buttons = document.querySelectorAll('.tab-btn');
+            buttons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                    document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+                    btn.classList.add('active');
+                    document.getElementById(btn.dataset.target).classList.add('active');
+                });
+            });
+        }
+
+        function openDetailPanel(data) {
+            const panel = document.getElementById('detail-panel');
+            const content = document.getElementById('detail-content');
+            
+            let html = `<h2 class="text-3xl text-amber-500 font-bold mb-2">${data.name}</h2>`;
+            html += `<div class="text-sm text-gray-400 mb-4">Lat: ${data.lat.toFixed(1)} / Lon: ${data.lon.toFixed(1)}</div>`;
+            
+            if(data.images && data.images.length) {
+                html += `<div class="relative w-full h-48 mb-4 rounded overflow-hidden border border-gray-700">
+                            <img src="${data.images[0]}" class="w-full h-full object-cover">
+                         </div>`;
+            }
+            
+            if(data.description || data.shortDescription) {
+                html += `<div class="bg-gray-800 p-3 rounded border-l-2 border-amber-500 text-gray-300 text-sm leading-relaxed">
+                            ${data.description || data.shortDescription}
+                         </div>`;
+            }
+            
+            if(data.artifacts) {
+                html += `<h3 class="mt-4 font-bold text-gray-300">Artefakte</h3><div class="flex gap-2 mt-2">`;
+                data.artifacts.forEach(a => {
+                   html += `<span class="px-2 py-1 bg-gray-700 rounded text-xs text-amber-300 border border-gray-600">${a.name}</span>`; 
+                });
+                html += `</div>`;
+            }
+
+            content.innerHTML = html;
+            panel.classList.add('open');
+        }
+
+        document.getElementById('close-detail').addEventListener('click', () => {
+            document.getElementById('detail-panel').classList.remove('open');
+        });
+
+
+        // --- INITIALIZATION ---
+
+        async function loadMapData(mapKey) {
+            const indicator = document.getElementById('loading-indicator');
+            const loadingText = document.getElementById('loading-text');
+            indicator.style.display = 'flex';
+            
+            // Safe config access
+            const config = mapConfigs[mapKey];
+            if (!config) {
+                loadingText.textContent = `Fehler: Konfiguration für Karte '${mapKey}' nicht gefunden.`;
+                loadingText.classList.add('text-red-500');
+                return;
+            }
+
+            loadingText.textContent = `Lade ${config.displayName}...`;
+            loadingText.classList.remove('text-red-500');
+            
+            currentMapKey = mapKey;
+            document.getElementById('map-name').textContent = config.displayName;
+            selectedCreatureValue = null;
+            scale = 1; panOffset = {x:0, y:0};
+            
+            // Image Loading with explicit handling
+            const imageLoadPromise = new Promise((resolve, reject) => {
+                mapImage.onload = () => resolve();
+                mapImage.onerror = () => reject(`Kartenbild konnte nicht geladen werden: ${config.mapImageUrl}`);
+                
+                // Force reset src to ensure trigger if same URL
+                mapImage.src = ''; 
+                if (config.mapImageUrl) {
+                    mapImage.src = config.mapImageUrl;
+                } else {
+                    reject("Map Image URL is missing in config.");
+                }
+            });
+
+            try {
+                // Fetch Data and Image
+                const results = await Promise.allSettled([
+                    fetchData(config.creatureDataUrl),
+                    fetchData(config.resourceDataUrl),
+                    fetchData(config.publicSpotsDataUrl),
+                    fetchData(config.obeliskDataUrl),
+                    fetchData(config.caveSpotsDataUrl),
+                    imageLoadPromise
+                ]);
+
+                // Extract results (Promise.allSettled returns objects)
+                // We use allSettled so one failed JSON doesn't kill the map
+                const creatureData = results[0].status === 'fulfilled' ? results[0].value : null;
+                const resourceData = results[1].status === 'fulfilled' ? results[1].value : null;
+                const spotsData = results[2].status === 'fulfilled' ? results[2].value : null;
+                const obeliskData = results[3].status === 'fulfilled' ? results[3].value : null;
+                const caveData = results[4].status === 'fulfilled' ? results[4].value : null;
+                const imageStatus = results[5].status;
+
+                if (imageStatus === 'rejected') {
+                    throw new Error(results[5].reason);
+                }
+
+                // Assign Data
+                if(creatureData) allCreatureData = creatureData.dinoSpawns || {}; 
+                if(resourceData) allResourceData = resourceData.resources || {};
+                if(spotsData) allPublicSpotsData = spotsData || { publicSpots: [] };
+                if(obeliskData) allObeliskData = obeliskData || { obelisks: [] };
+                if(caveData) allCaveSpotsData = caveData || { caveSpots: [] };
+
+                populateCreatureList();
+                populateResourceControls();
+                populateObeliskControls();
+
+                // Einfach nur das Canvas-Resize aufrufen ohne Argumente - Flexbox erledigt den Rest
+                handleResize();
+                indicator.style.display = 'none';
+                redrawAll();
+                
+            } catch (err) {
+                console.error(err);
+                loadingText.textContent = `Fehler: ${err.message || "Daten konnten nicht geladen werden."}`;
+                loadingText.classList.add('text-red-500');
+            }
+        }
+
+        // VEREINFACHTE RESIZE FUNKTION
+        // Keine manuellen top/left Berechnungen mehr nötig dank CSS Flexbox
+        function handleResize() {
+            const container = document.querySelector('.map-area');
+            const size = Math.min(container.clientWidth, container.clientHeight);
+            
+            const canvases = document.querySelectorAll('canvas');
+            canvases.forEach(cvs => {
+                cvs.width = size;
+                cvs.height = size;
+                cvs.style.width = size + 'px';
+                cvs.style.height = size + 'px';
+                
+                // Top/Left wird von CSS Flexbox geregelt - wir müssen nichts tun!
+                // Zur Sicherheit setzen wir sie zurück
+                cvs.style.left = 'auto';
+                cvs.style.top = 'auto';
+            });
+            
+            // Auch den Stack Container anpassen
+            const stack = document.getElementById('canvas-stack');
+            stack.style.width = size + 'px';
+            stack.style.height = size + 'px';
+            
+            redrawAll();
+        }
+
+        window.addEventListener('resize', handleResize);
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            mapCanvas = document.getElementById('map-canvas'); mapCtx = mapCanvas.getContext('2d');
+            spawnCanvas = document.getElementById('spawn-canvas'); spawnCtx = spawnCanvas.getContext('2d');
+            clickCanvas = document.getElementById('click-canvas'); clickCtx = clickCanvas.getContext('2d');
+            resourceCanvas = document.getElementById('resource-canvas'); resourceCtx = resourceCanvas.getContext('2d');
+            spotsCanvas = document.getElementById('spots-canvas'); spotsCtx = spotsCanvas.getContext('2d');
+            obeliskCanvas = document.getElementById('obelisk-canvas'); obeliskCtx = obeliskCanvas.getContext('2d');
+            caveSpotsCanvas = document.getElementById('cave-spots-canvas'); caveSpotsCtx = caveSpotsCanvas.getContext('2d');
+
+            // Dummy context init for safe array looping in redraw
+            regionCanvas = document.getElementById('region-canvas'); regionCtx = regionCanvas.getContext('2d');
+            playerSpawnCanvas = document.getElementById('player-spawn-canvas'); playerSpawnCtx = playerSpawnCanvas.getContext('2d');
+            notesCanvas = document.getElementById('notes-canvas'); notesCtx = notesCanvas.getContext('2d');
+
+            mapImage = document.getElementById('map-image');
+            tooltipElement = document.getElementById('map-tooltip');
+            tooltipContentElement = document.getElementById('tooltip-content');
+
+            setupInteraction();
+            setupTabs();
+            
+            document.getElementById('map-select-btn').onclick = (e) => {
+                e.stopPropagation();
+                document.getElementById('map-list').classList.toggle('hidden');
+            }
+
+            document.getElementById('creature-search').addEventListener('input', (e) => {
+                populateCreatureList(e.target.value);
+            });
+
+            document.getElementById('spots-toggle').addEventListener('change', redrawAll);
+            document.getElementById('cave-spots-toggle').addEventListener('change', redrawAll);
+            document.getElementById('select-all-resources').addEventListener('change', (e) => {
+                document.querySelectorAll('#resource-controls input').forEach(cb => cb.checked = e.target.checked);
+                redrawAll();
+            });
+
+            document.getElementById('zoom-in').onclick = () => { scale = Math.min(maxScale, scale * 1.2); redrawAll(); };
+            document.getElementById('zoom-out').onclick = () => { scale = Math.max(minScale, scale / 1.2); redrawAll(); };
+
+            // Initial Config Load
+            const configUrl = 'https://raw.githubusercontent.com/iophantonie/iophantonie-IOP_Custom_Map_Explorer.github.io/main/MapConfigs/MapConfigs.jsn'; 
+            const dbUrl = 'https://raw.githubusercontent.com/iophantonie/iophantonie-IOP_Custom_Map_Explorer.github.io/refs/heads/main/Icon_Datenbank/Icondb.jsn';
+            const transUrl = 'https://raw.githubusercontent.com/iophantonie/iophantonie-IOP_Custom_Map_Explorer.github.io/main/Translation_Datenbank/translationdb.jsn';
+            
+            try {
+                const [configs, itemDb, transDb] = await Promise.all([fetchData(configUrl), fetchData(dbUrl), fetchData(transUrl)]);
+                
+                if(configs) mapConfigs = configs;
+                if(itemDb) globalItemDatabase = {...itemDb.Items, ...itemDb.Kreaturen};
+                if(transDb) {
+                    resourceTranslations = transDb.Ressourcen || {};
+                    creatureTranslations = transDb.Kreaturen || {};
+                }
+
+                populateMapList();
+                loadMapData('TheIsland'); 
+            } catch(e) {
+                console.error("Critical Init Error:", e);
+                document.getElementById('loading-text').innerText = "Fehler beim Laden der Konfiguration.";
+            }
+        });
+    </script>
+</body>
+</html>
