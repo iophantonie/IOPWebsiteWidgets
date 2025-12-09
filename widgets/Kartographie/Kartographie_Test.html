@@ -25,7 +25,7 @@
             font-family: var(--font-main);
             color: var(--color-text);
             margin: 0;
-            padding: 20px; /* Etwas Abstand zum Rand */
+            padding: 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -35,23 +35,6 @@
             overflow: hidden; 
         }
 
-        /* NEU: Großer Haupt-Header über dem Widget */
-        .main-page-header {
-            font-size: 3rem;
-            font-weight: 800;
-            color: var(--color-red);
-            font-family: var(--font-header);
-            text-transform: uppercase;
-            text-align: center;
-            margin-bottom: 20px;
-            text-shadow: 0 0 20px rgba(229, 57, 53, 0.4);
-            border-bottom: 3px solid var(--color-red);
-            padding-bottom: 10px;
-            width: 100%;
-            max-width: 1600px;
-            flex-shrink: 0; /* Verhindert das Schrumpfen */
-        }
-
         /* Hauptcontainer des Widgets */
         .map-widget-container {
             background-color: var(--color-dark);
@@ -59,17 +42,40 @@
             border: 3px solid var(--color-red);
             box-shadow: 0 4px 30px rgba(0, 0, 0, 0.8);
             width: 100%;
-            max-width: 1800px; /* Noch breiter für Fullscreen-Feeling */
-            
-            /* HÖHE: Füllt den restlichen Platz */
+            max-width: 1800px;
             flex-grow: 1; 
-            min-height: 600px; /* Mindesthöhe damit es nicht zu klein wird */
+            min-height: 600px;
             margin-bottom: 20px;
-            
             display: flex;
-            flex-direction: row; 
+            flex-direction: column;
             overflow: hidden;
             position: relative;
+        }
+
+        /* Integrierter Header */
+        .main-page-header {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--color-red);
+            font-family: var(--font-header);
+            text-transform: uppercase;
+            text-align: center;
+            padding: 15px 0;
+            margin: 0;
+            text-shadow: 0 0 20px rgba(229, 57, 53, 0.4);
+            border-bottom: 3px solid var(--color-red);
+            background-color: rgba(0, 0, 0, 0.2);
+            width: 100%;
+            flex-shrink: 0;
+        }
+
+        /* Wrapper für Sidebar und Content */
+        .map-body-wrapper {
+            display: flex;
+            flex-direction: row;
+            flex-grow: 1;
+            width: 100%;
+            overflow: hidden; 
         }
 
         /* --- Linke Sidebar --- */
@@ -85,15 +91,9 @@
             scrollbar-color: var(--color-red) transparent;
         }
 
-        .map-sidebar::-webkit-scrollbar {
-            width: 6px;
-        }
-        .map-sidebar::-webkit-scrollbar-thumb {
-            background-color: var(--color-red);
-            border-radius: 3px;
-        }
+        .map-sidebar::-webkit-scrollbar { width: 6px; }
+        .map-sidebar::-webkit-scrollbar-thumb { background-color: var(--color-red); border-radius: 3px; }
 
-        /* Sidebar Header (Intern) */
         .sidebar-header {
             padding: 20px;
             text-align: center;
@@ -117,7 +117,6 @@
             margin-top: 5px;
         }
 
-        /* Gruppen-Header */
         .group-header {
             padding: 15px 20px 5px 20px;
             font-size: 0.9rem;
@@ -131,7 +130,6 @@
         }
         .group-header:first-child { margin-top: 0; }
 
-        /* Map Buttons */
         .map-btn {
             background: transparent;
             border: none;
@@ -161,7 +159,6 @@
             font-weight: 600;
         }
         
-        /* Kleiner Indikator Punkt */
         .status-dot {
             height: 8px;
             width: 8px;
@@ -170,14 +167,25 @@
             box-shadow: 0 0 5px #4CAF50;
         }
 
-        /* --- Rechter Content Bereich (Iframe) --- */
-        .iframe-wrapper {
+        /* --- Rechter Content Bereich (Scrollbar) --- */
+        .content-area {
             flex-grow: 1;
-            position: relative;
+            overflow-y: auto;
             background-color: #121212;
             display: flex;
-            justify-content: center;
-            align-items: center;
+            flex-direction: column;
+            scrollbar-width: thin;
+            scrollbar-color: var(--color-red) #121212;
+        }
+
+        /* Iframe Container */
+        .iframe-container {
+            width: 100%;
+            height: 800px; /* Feste Höhe für die Map */
+            position: relative;
+            background-color: #000;
+            border-bottom: 3px solid var(--color-red);
+            flex-shrink: 0;
         }
 
         iframe {
@@ -187,9 +195,79 @@
             display: block;
         }
 
+        /* POI Sektion */
+        .poi-section {
+            padding: 30px;
+            background-color: var(--color-light-dark);
+        }
+
+        .poi-header {
+            font-family: var(--font-header);
+            font-size: 1.8rem;
+            color: var(--color-text);
+            margin-bottom: 20px;
+            border-left: 5px solid var(--color-red);
+            padding-left: 15px;
+            text-transform: uppercase;
+        }
+
+        .poi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .poi-card {
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.2s;
+        }
+
+        .poi-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--color-red);
+        }
+
+        .poi-image {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-bottom: 2px solid var(--color-red);
+        }
+
+        .poi-info {
+            padding: 15px;
+        }
+
+        .poi-title {
+            font-family: var(--font-header);
+            font-size: 1.2rem;
+            color: var(--color-gold);
+            margin-bottom: 5px;
+        }
+
+        .poi-coords {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: bold;
+        }
+        
+        .poi-type {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            color: var(--color-red);
+            margin-bottom: 5px;
+            display: block;
+        }
+
         /* Lade-Animation */
         .loader {
             position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             width: 50px;
             height: 50px;
             border: 5px solid rgba(255, 255, 255, 0.1);
@@ -201,136 +279,167 @@
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
         }
 
         /* --- Responsive Design --- */
         @media (max-width: 900px) {
-            .map-widget-container {
-                flex-direction: column;
-            }
-            .map-sidebar {
-                width: 100%;
-                height: 200px; 
-                border-right: none;
-                border-bottom: 3px solid var(--color-red);
-            }
-            .sidebar-header {
-                padding: 10px;
-            }
-            .sidebar-title {
-                font-size: 1.2rem;
-            }
-            .main-page-header {
-                font-size: 2rem;
-            }
+            .map-body-wrapper { flex-direction: column; }
+            .map-sidebar { width: 100%; height: 200px; border-right: none; border-bottom: 3px solid var(--color-red); }
+            .iframe-container { height: 400px; }
+            .main-page-header { font-size: 2rem; }
         }
     </style>
 </head>
 <body>
 
-    <!-- NEU: Großer Header über dem Widget -->
-    <div class="main-page-header">Kartographie</div>
-
     <div class="map-widget-container">
-        
-        <!-- Sidebar Navigation -->
-        <div class="map-sidebar">
-            <div class="sidebar-header">
-                <h2 class="sidebar-title">Live Map Explorer</h2>
-                <div class="sidebar-subtitle">Wähle eine Karte</div>
+        <div class="main-page-header">Kartographie</div>
+
+        <div class="map-body-wrapper">
+            <!-- Sidebar Navigation -->
+            <div class="map-sidebar" id="mapSidebar">
+                <!-- Wird per JS gefüllt -->
             </div>
 
-            <!-- Gruppe 1: Official Cluster -->
-            <div class="group-header">IOP Official Cluster</div>
-            <button class="map-btn active" onclick="loadMap(this, 'https://arkmap.axi92.at/f1df34b8-fb4e-4411-8f10-d16502d5534a')">
-                The Island <span class="status-dot"></span>
-            </button>
-            <button class="map-btn" onclick="loadMap(this, 'https://arkmap.axi92.at/5205c82b-ddc6-465c-a43e-2a1cfc395fad')">
-                The Center <span class="status-dot"></span>
-            </button>
-            <button class="map-btn" onclick="loadMap(this, 'https://arkmap.axi92.at/126c63dd-17c2-4770-8b86-b1c13121e445')">
-                Scorched Earth <span class="status-dot"></span>
-            </button>
-            <button class="map-btn" onclick="loadMap(this, 'https://arkmap.axi92.at/cb9a2f61-1171-42d4-a7a3-8996f2e61640')">
-                Aberration <span class="status-dot"></span>
-            </button>
-            <button class="map-btn" onclick="loadMap(this, 'https://arkmap.axi92.at/f9384885-6f6e-45ac-ae2f-027f87cb0122')">
-                Extinction <span class="status-dot"></span>
-            </button>
-            <button class="map-btn" onclick="loadMap(this, 'https://arkmap.axi92.at/1e1c1f9a-283d-4e23-9505-0abe717cd2ff')">
-                Ragnarok <span class="status-dot"></span>
-            </button>
-            <button class="map-btn" onclick="loadMap(this, 'https://arkmap.axi92.at/0d77d17e-34f7-4dfe-b849-2e4bc174cd6e')">
-                Valguero <span class="status-dot"></span>
-            </button>
-            <button class="map-btn" onclick="loadMap(this, 'https://arkmap.axi92.at/6b719b3d-f04c-47f5-beb6-a5a0b1260e7c')">
-                Astraeos <span class="status-dot"></span>
-            </button>
-            <button class="map-btn" onclick="loadMap(this, 'https://arkmap.axi92.at/581b1a31-d430-415e-97c5-be02d713d369')">
-                Svartalfheim <span class="status-dot"></span>
-            </button>
-            <button class="map-btn" onclick="loadMap(this, 'https://arkmap.axi92.at/85b59c62-b7bd-42d9-a976-7dd5e682b37b')">
-                Lost Colony <span class="status-dot"></span>
-            </button>
+            <!-- Rechter Content Bereich -->
+            <div class="content-area">
+                <!-- Live Map -->
+                <div class="iframe-container">
+                    <div id="loader" class="loader"></div>
+                    <iframe id="mapFrame" src="" allowfullscreen></iframe>
+                </div>
 
-            <!-- Gruppe 2: Season Server -->
-            <div class="group-header">Season Server</div>
-            <button class="map-btn" onclick="loadMap(this, 'https://arkmap.axi92.at/1f471511-0845-400b-a547-8b2053784c20')">
-                IOP Adventures <span class="status-dot"></span>
-            </button>
-
-            <!-- Gruppe 3: Overhaul's -->
-            <div class="group-header">Overhaul's</div>
-            <button class="map-btn" onclick="loadMap(this, 'https://arkmap.axi92.at/1c2177f1-635c-478d-bbee-08359416beef')">
-                Primal Nemesis <span class="status-dot"></span>
-            </button>
-            <button class="map-btn" onclick="loadMap(this, 'https://arkmap.axi92.at/ada947db-fa4c-48ec-9477-185808943b8f')">
-                Primal Chaos <span class="status-dot"></span>
-            </button>
-
+                <!-- Points of Interest -->
+                <div class="poi-section" id="poiSection" style="display: none;">
+                    <div class="poi-header">Wichtige Orte & Höhlen</div>
+                    <div class="poi-grid" id="poiGrid">
+                        <!-- Wird per JS gefüllt -->
+                    </div>
+                </div>
+            </div>
         </div>
-
-        <!-- Iframe Display -->
-        <div class="iframe-wrapper">
-            <div id="loader" class="loader"></div>
-            <iframe id="mapFrame" src="" allowfullscreen></iframe>
-        </div>
-
     </div>
 
     <script>
-        function loadMap(button, url) {
-            // 1. Aktiven Status umschalten
-            const buttons = document.querySelectorAll('.map-btn');
-            buttons.forEach(btn => btn.classList.remove('active'));
-            
-            button.classList.add('active');
+        // DATENBANK DER KARTEN UND POIS
+        const mapData = {
+            "official": [
+                {
+                    name: "The Island",
+                    url: "https://arkmap.axi92.at/f1df34b8-fb4e-4411-8f10-d16502d5534a",
+                    pois: [
+                        { title: "Öffentliche Harzfarm", type: "Teleporter", coords: "Lat: 61 / Lon: 49.5", img: "https://i.postimg.cc/xTv4jhTV/Bild-2024-05-16-133412340.png" },
+                        { title: "Grüner Obelisk", type: "Teleporter", coords: "Lat: 59.5 / Lon: 77.5", img: "https://i.postimg.cc/QxRFgPjn/Bild-2024-05-16-130443256.png" },
+                        { title: "Roter Obelisk", type: "Teleporter", coords: "Lat: 85.5 / Lon: 13", img: "https://i.postimg.cc/hvzhbVvV/Bild-2024-05-16-133733722.png" },
+                        { title: "Blauer Obelisk", type: "Teleporter", coords: "Lat: 22 / Lon: 21", img: "https://i.postimg.cc/DzCbFvbp/Bild-2024-05-16-132500159.png" },
+                        { title: "Lava Cave", type: "Artefakt: Gewaltigen/Massive", coords: "Lat: 74 / Lon: 92", img: "https://i.postimg.cc/Fsfddxfy/Bild-2024-06-30-171335914.png" },
+                        { title: "Lower South Cave", type: "Artefakt: Jägers/Hunter", coords: "Lat: 85 / Lon: 54", img: "https://i.postimg.cc/1tWM08Mp/Bild-2024-06-30-171919385.png" },
+                        { title: "Swamp Cave", type: "Artefakt: Immunen/Immune", coords: "Lat: 65 / Lon: 35", img: "https://i.postimg.cc/cHG4DrS6/Bild-2024-06-30-175803492.png" },
+                        { title: "Snow Cave", type: "Artefakt: Stärke/Strong", coords: "Lat: 26 / Lon: 29", img: "https://i.postimg.cc/MKQKV7RV/Bild-2024-06-30-181533870.png" },
+                        { title: "North West Cave", type: "Artefakt: Himmelsherren/Skylord", coords: "Lat: 14 / Lon: 14", img: "https://i.postimg.cc/zfCjdz2p/Bild-2024-06-30-190654637.png" },
+                        { title: "North East Cave", type: "Artefakt: Fressers/Devourer", coords: "Lat: 9 / Lon: 91", img: "https://i.postimg.cc/SQnHQ8nM/Bild-2024-06-30-185632249.png" },
+                        { title: "Upper South Cave", type: "Artefakt: Rudels/Pack", coords: "Lat: 71 / Lon: 57", img: "https://i.postimg.cc/brjVqq3F/Bild-2024-06-30-193806399.png" },
+                        { title: "Caverns of Lost Hope", type: "Artefakt: List/Devious", coords: "Lat: 45 / Lon: 98", img: "https://i.postimg.cc/hv9qbSC9/Bild-2024-06-30-194923321.png" },
+                        { title: "Caverns of Lost Faith", type: "Artefakt: Brute", coords: "Lat: 53 / Lon: 3", img: "https://i.postimg.cc/4yrQZGZF/Bild-2024-06-30-195311581.png" },
+                        { title: "Central Cave", type: "Artefakt: Schlauen/Clever", coords: "Lat: 40.5 / Lon: 46", img: "https://i.postimg.cc/Y9xK2yW6/Bild-2024-07-01-204126849.png" },
+                        { title: "Tek Cave", type: "Boss Arena", coords: "Lat: 42 / Lon: 37", img: "https://i.postimg.cc/Sxrsxcw4/Bild-2024-06-30-184412268.png" }
+                    ]
+                },
+                { name: "The Center", url: "https://arkmap.axi92.at/5205c82b-ddc6-465c-a43e-2a1cfc395fad", pois: [] },
+                { name: "Scorched Earth", url: "https://arkmap.axi92.at/126c63dd-17c2-4770-8b86-b1c13121e445", pois: [] },
+                { name: "Aberration", url: "https://arkmap.axi92.at/cb9a2f61-1171-42d4-a7a3-8996f2e61640", pois: [] },
+                { name: "Extinction", url: "https://arkmap.axi92.at/f9384885-6f6e-45ac-ae2f-027f87cb0122", pois: [] },
+                { name: "Ragnarok", url: "https://arkmap.axi92.at/1e1c1f9a-283d-4e23-9505-0abe717cd2ff", pois: [] },
+                { name: "Valguero", url: "https://arkmap.axi92.at/0d77d17e-34f7-4dfe-b849-2e4bc174cd6e", pois: [] },
+                { name: "Astraeos", url: "https://arkmap.axi92.at/6b719b3d-f04c-47f5-beb6-a5a0b1260e7c", pois: [] },
+                { name: "Svartalfheim", url: "https://arkmap.axi92.at/581b1a31-d430-415e-97c5-be02d713d369", pois: [] },
+                { name: "Lost Colony", url: "https://arkmap.axi92.at/85b59c62-b7bd-42d9-a976-7dd5e682b37b", pois: [] }
+            ],
+            "season": [
+                { name: "IOP Adventures", url: "https://arkmap.axi92.at/1f471511-0845-400b-a547-8b2053784c20", pois: [] }
+            ],
+            "overhaul": [
+                { name: "Primal Nemesis", url: "https://arkmap.axi92.at/1c2177f1-635c-478d-bbee-08359416beef", pois: [] },
+                { name: "Primal Chaos", url: "https://arkmap.axi92.at/ada947db-fa4c-48ec-9477-185808943b8f", pois: [] }
+            ]
+        };
 
-            // 2. Iframe laden
+        // RENDER SIDEBAR
+        function renderSidebar() {
+            const sidebar = document.getElementById('mapSidebar');
+            let html = `
+                <div class="sidebar-header">
+                    <h2 class="sidebar-title">Live Map Explorer</h2>
+                    <div class="sidebar-subtitle">Wähle eine Karte</div>
+                </div>`;
+
+            // Helper function for buttons
+            const createButtons = (groupKey, title) => {
+                html += `<div class="group-header">${title}</div>`;
+                mapData[groupKey].forEach((map, index) => {
+                    // ID generieren um später darauf zuzugreifen
+                    const id = `map-${groupKey}-${index}`;
+                    html += `
+                    <button id="${id}" class="map-btn" onclick="selectMap('${groupKey}', ${index}, this)">
+                        ${map.name} <span class="status-dot"></span>
+                    </button>`;
+                });
+            };
+
+            createButtons("official", "IOP Official Cluster");
+            createButtons("season", "Season Server");
+            createButtons("overhaul", "Overhaul's");
+
+            sidebar.innerHTML = html;
+        }
+
+        // SELECT MAP LOGIC
+        function selectMap(groupKey, index, buttonElement) {
+            // Active Class setzen
+            document.querySelectorAll('.map-btn').forEach(btn => btn.classList.remove('active'));
+            buttonElement.classList.add('active');
+
+            const map = mapData[groupKey][index];
             const iframe = document.getElementById('mapFrame');
             const loader = document.getElementById('loader');
+            const poiSection = document.getElementById('poiSection');
+            const poiGrid = document.getElementById('poiGrid');
 
-            if (url) {
-                loader.style.display = 'block'; 
-                iframe.src = url;
+            // Map Laden
+            loader.style.display = 'block';
+            iframe.src = map.url;
+            iframe.onload = function() {
+                loader.style.display = 'none';
+            };
 
-                iframe.onload = function() {
-                    loader.style.display = 'none'; 
-                };
+            // POIs rendern
+            if (map.pois && map.pois.length > 0) {
+                poiSection.style.display = 'block';
+                poiGrid.innerHTML = map.pois.map(poi => `
+                    <div class="poi-card">
+                        <img src="${poi.img}" class="poi-image" alt="${poi.title}">
+                        <div class="poi-info">
+                            <span class="poi-type">${poi.type}</span>
+                            <div class="poi-title">${poi.title}</div>
+                            <div class="poi-coords">${poi.coords}</div>
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                poiSection.style.display = 'none';
+                poiGrid.innerHTML = '';
             }
         }
 
-        // Initialisierung: Lade die erste Karte beim Start
+        // INIT
         document.addEventListener('DOMContentLoaded', () => {
-            const activeButton = document.querySelector('.map-btn.active');
-            if (activeButton) {
-                // Hier URL hartcodieren oder aus dem Attribut ziehen, 
-                // um sicherzustellen, dass beim Neuladen die richtige Map kommt.
-                // Da onclick im HTML ist, nehmen wir hier einfach die Island URL als Default:
-                const initialUrl = 'https://arkmap.axi92.at/f1df34b8-fb4e-4411-8f10-d16502d5534a';
-                loadMap(activeButton, initialUrl);
+            renderSidebar();
+            // Starte mit The Island (Official, Index 0)
+            const firstButton = document.getElementById('map-official-0');
+            if (firstButton) {
+                selectMap('official', 0, firstButton);
             }
         });
     </script>
