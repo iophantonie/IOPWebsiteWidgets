@@ -25,28 +25,60 @@
             font-family: var(--font-main);
             color: var(--color-text);
             margin: 0;
-            padding: 0;
+            padding: 20px; /* Etwas Abstand zum Rand */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             width: 100%;
             height: 100vh;
             box-sizing: border-box;
             overflow: hidden; 
-            display: flex;
-            justify-content: center;
-            align-items: center;
         }
 
-        /* Hauptcontainer */
+        /* Hauptcontainer des Widgets */
         .map-widget-container {
             background-color: var(--color-dark);
             border-radius: 12px;
             border: 3px solid var(--color-red);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
-            width: 98%;
-            height: 95%; 
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.8);
+            width: 100%;
+            max-width: 1800px; /* Noch breiter für Fullscreen-Feeling */
+            
+            /* HÖHE: Füllt den restlichen Platz */
+            flex-grow: 1; 
+            min-height: 600px; /* Mindesthöhe damit es nicht zu klein wird */
+            margin-bottom: 20px;
+            
             display: flex;
-            flex-direction: row; /* Horizontal layout */
+            flex-direction: column; /* Jetzt vertikal gestapelt für Header + Content */
             overflow: hidden;
             position: relative;
+        }
+
+        /* NEU: Integrierter Header */
+        .main-page-header {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--color-red);
+            font-family: var(--font-header);
+            text-transform: uppercase;
+            text-align: center;
+            padding: 15px 0;
+            margin: 0;
+            text-shadow: 0 0 20px rgba(229, 57, 53, 0.4);
+            border-bottom: 3px solid var(--color-red);
+            background-color: rgba(0, 0, 0, 0.2); /* Leicht abgedunkelter Hintergrund */
+            width: 100%;
+            flex-shrink: 0;
+        }
+
+        /* Wrapper für Sidebar und Iframe nebeneinander */
+        .map-body-wrapper {
+            display: flex;
+            flex-direction: row;
+            flex-grow: 1;
+            width: 100%;
+            overflow: hidden; /* Damit Scrollbalken nur in Sidebar/Iframe entstehen */
         }
 
         /* --- Linke Sidebar --- */
@@ -56,10 +88,8 @@
             border-right: 2px solid var(--color-red);
             display: flex;
             flex-direction: column;
-            overflow-y: auto; /* Scrollbar wenn Liste zu lang */
+            overflow-y: auto; 
             flex-shrink: 0;
-            
-            /* Scrollbar Styling (Webkit) */
             scrollbar-width: thin;
             scrollbar-color: var(--color-red) transparent;
         }
@@ -72,7 +102,7 @@
             border-radius: 3px;
         }
 
-        /* Sidebar Header */
+        /* Sidebar Header (Intern) */
         .sidebar-header {
             padding: 20px;
             text-align: center;
@@ -82,7 +112,7 @@
 
         .sidebar-title {
             font-family: var(--font-header);
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             color: var(--color-text);
             text-transform: uppercase;
             letter-spacing: 1px;
@@ -99,14 +129,16 @@
         /* Gruppen-Header */
         .group-header {
             padding: 15px 20px 5px 20px;
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             font-weight: 700;
             color: var(--color-red);
             text-transform: uppercase;
             border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
             margin-bottom: 5px;
             font-family: var(--font-header);
+            margin-top: 10px;
         }
+        .group-header:first-child { margin-top: 0; }
 
         /* Map Buttons */
         .map-btn {
@@ -128,7 +160,7 @@
         .map-btn:hover {
             background-color: rgba(255, 255, 255, 0.05);
             color: #fff;
-            padding-left: 25px; /* Kleiner Slide-Effekt */
+            padding-left: 25px; 
         }
 
         .map-btn.active {
@@ -142,7 +174,7 @@
         .status-dot {
             height: 8px;
             width: 8px;
-            background-color: #4CAF50; /* Grün für Online/Live */
+            background-color: #4CAF50; 
             border-radius: 50%;
             box-shadow: 0 0 5px #4CAF50;
         }
@@ -174,7 +206,7 @@
             border-top: 5px solid var(--color-red);
             animation: spin 1s linear infinite;
             z-index: 5;
-            display: none; /* Standard aus */
+            display: none; 
         }
 
         @keyframes spin {
@@ -184,12 +216,12 @@
 
         /* --- Responsive Design --- */
         @media (max-width: 900px) {
-            .map-widget-container {
+            .map-body-wrapper {
                 flex-direction: column;
             }
             .map-sidebar {
                 width: 100%;
-                height: 250px; /* Begrenzte Höhe auf Mobile */
+                height: 200px; 
                 border-right: none;
                 border-bottom: 3px solid var(--color-red);
             }
@@ -199,6 +231,9 @@
             .sidebar-title {
                 font-size: 1.2rem;
             }
+            .main-page-header {
+                font-size: 2rem;
+            }
         }
     </style>
 </head>
@@ -206,67 +241,72 @@
 
     <div class="map-widget-container">
         
-        <!-- Sidebar Navigation -->
-        <div class="map-sidebar">
-            <div class="sidebar-header">
-                <h2 class="sidebar-title">Live Map Explorer</h2>
-                <div class="sidebar-subtitle">Wähle eine Karte</div>
+        <!-- NEU: Integrierter Header -->
+        <div class="main-page-header">Kartographie</div>
+
+        <div class="map-body-wrapper">
+            <!-- Sidebar Navigation -->
+            <div class="map-sidebar">
+                <div class="sidebar-header">
+                    <h2 class="sidebar-title">Live Map Explorer</h2>
+                    <div class="sidebar-subtitle">Wähle eine Karte</div>
+                </div>
+
+                <!-- Gruppe 1: Official Cluster -->
+                <div class="group-header">IOP Official Cluster</div>
+                <button class="map-btn active" onclick="loadMap(this, 'https://arkmap.axi92.at/f1df34b8-fb4e-4411-8f10-d16502d5534a')">
+                    The Island <span class="status-dot"></span>
+                </button>
+                <button class="map-btn" onclick="loadMap(this, 'https://arkmap.axi92.at/5205c82b-ddc6-465c-a43e-2a1cfc395fad')">
+                    The Center <span class="status-dot"></span>
+                </button>
+                <button class="map-btn" onclick="loadMap(this, 'https://arkmap.axi92.at/126c63dd-17c2-4770-8b86-b1c13121e445')">
+                    Scorched Earth <span class="status-dot"></span>
+                </button>
+                <button class="map-btn" onclick="loadMap(this, 'https://arkmap.axi92.at/cb9a2f61-1171-42d4-a7a3-8996f2e61640')">
+                    Aberration <span class="status-dot"></span>
+                </button>
+                <button class="map-btn" onclick="loadMap(this, 'https://arkmap.axi92.at/f9384885-6f6e-45ac-ae2f-027f87cb0122')">
+                    Extinction <span class="status-dot"></span>
+                </button>
+                <button class="map-btn" onclick="loadMap(this, 'https://arkmap.axi92.at/1e1c1f9a-283d-4e23-9505-0abe717cd2ff')">
+                    Ragnarok <span class="status-dot"></span>
+                </button>
+                <button class="map-btn" onclick="loadMap(this, 'https://arkmap.axi92.at/0d77d17e-34f7-4dfe-b849-2e4bc174cd6e')">
+                    Valguero <span class="status-dot"></span>
+                </button>
+                <button class="map-btn" onclick="loadMap(this, 'https://arkmap.axi92.at/6b719b3d-f04c-47f5-beb6-a5a0b1260e7c')">
+                    Astraeos <span class="status-dot"></span>
+                </button>
+                <button class="map-btn" onclick="loadMap(this, 'https://arkmap.axi92.at/581b1a31-d430-415e-97c5-be02d713d369')">
+                    Svartalfheim <span class="status-dot"></span>
+                </button>
+                <button class="map-btn" onclick="loadMap(this, 'https://arkmap.axi92.at/85b59c62-b7bd-42d9-a976-7dd5e682b37b')">
+                    Lost Colony <span class="status-dot"></span>
+                </button>
+
+                <!-- Gruppe 2: Season Server -->
+                <div class="group-header">Season Server</div>
+                <button class="map-btn" onclick="loadMap(this, 'https://arkmap.axi92.at/1f471511-0845-400b-a547-8b2053784c20')">
+                    IOP Adventures <span class="status-dot"></span>
+                </button>
+
+                <!-- Gruppe 3: Overhaul's -->
+                <div class="group-header">Overhaul's</div>
+                <button class="map-btn" onclick="loadMap(this, 'https://arkmap.axi92.at/1c2177f1-635c-478d-bbee-08359416beef')">
+                    Primal Nemesis <span class="status-dot"></span>
+                </button>
+                <button class="map-btn" onclick="loadMap(this, 'https://arkmap.axi92.at/ada947db-fa4c-48ec-9477-185808943b8f')">
+                    Primal Chaos <span class="status-dot"></span>
+                </button>
+
             </div>
 
-            <!-- Gruppe 1: Official Cluster -->
-            <div class="group-header">IOP Official Cluster</div>
-            <button class="map-btn active" onclick="loadMap(this, 'https://arkmap.axi92.at/f1df34b8-fb4e-4411-8f10-d16502d5534a')">
-                The Island <span class="status-dot"></span>
-            </button>
-            <button class="map-btn" onclick="loadMap(this, 'https://arkmap.axi92.at/5205c82b-ddc6-465c-a43e-2a1cfc395fad')">
-                The Center <span class="status-dot"></span>
-            </button>
-            <button class="map-btn" onclick="loadMap(this, 'https://arkmap.axi92.at/126c63dd-17c2-4770-8b86-b1c13121e445')">
-                Scorched Earth <span class="status-dot"></span>
-            </button>
-            <button class="map-btn" onclick="loadMap(this, 'https://arkmap.axi92.at/cb9a2f61-1171-42d4-a7a3-8996f2e61640')">
-                Aberration <span class="status-dot"></span>
-            </button>
-            <button class="map-btn" onclick="loadMap(this, 'https://arkmap.axi92.at/f9384885-6f6e-45ac-ae2f-027f87cb0122')">
-                Extinction <span class="status-dot"></span>
-            </button>
-            <button class="map-btn" onclick="loadMap(this, 'https://arkmap.axi92.at/1e1c1f9a-283d-4e23-9505-0abe717cd2ff')">
-                Ragnarok <span class="status-dot"></span>
-            </button>
-            <button class="map-btn" onclick="loadMap(this, 'https://arkmap.axi92.at/0d77d17e-34f7-4dfe-b849-2e4bc174cd6e')">
-                Valguero <span class="status-dot"></span>
-            </button>
-            <button class="map-btn" onclick="loadMap(this, 'https://arkmap.axi92.at/6b719b3d-f04c-47f5-beb6-a5a0b1260e7c')">
-                Astraeos <span class="status-dot"></span>
-            </button>
-            <button class="map-btn" onclick="loadMap(this, 'https://arkmap.axi92.at/581b1a31-d430-415e-97c5-be02d713d369')">
-                Svartalfheim <span class="status-dot"></span>
-            </button>
-            <button class="map-btn" onclick="loadMap(this, 'https://arkmap.axi92.at/85b59c62-b7bd-42d9-a976-7dd5e682b37b')">
-                Lost Colony <span class="status-dot"></span>
-            </button>
-
-            <!-- Gruppe 2: Season Server -->
-            <div class="group-header">Season Server</div>
-            <button class="map-btn" onclick="loadMap(this, 'https://arkmap.axi92.at/1f471511-0845-400b-a547-8b2053784c20')">
-                IOP Adventures <span class="status-dot"></span>
-            </button>
-
-            <!-- Gruppe 3: Overhaul's -->
-            <div class="group-header">Overhaul's</div>
-            <button class="map-btn" onclick="loadMap(this, 'https://arkmap.axi92.at/1c2177f1-635c-478d-bbee-08359416beef')">
-                Primal Nemesis <span class="status-dot"></span>
-            </button>
-            <button class="map-btn" onclick="loadMap(this, 'https://arkmap.axi92.at/ada947db-fa4c-48ec-9477-185808943b8f')">
-                Primal Chaos <span class="status-dot"></span>
-            </button>
-
-        </div>
-
-        <!-- Iframe Display -->
-        <div class="iframe-wrapper">
-            <div id="loader" class="loader"></div>
-            <iframe id="mapFrame" src="" allowfullscreen></iframe>
+            <!-- Karten Bereich -->
+            <div class="iframe-wrapper">
+                <div id="loader" class="loader"></div>
+                <iframe id="mapFrame" src="" allowfullscreen></iframe>
+            </div>
         </div>
 
     </div>
@@ -274,11 +314,9 @@
     <script>
         function loadMap(button, url) {
             // 1. Aktiven Status umschalten
-            // Entferne 'active' von allen Buttons
             const buttons = document.querySelectorAll('.map-btn');
             buttons.forEach(btn => btn.classList.remove('active'));
             
-            // Füge 'active' zum geklickten Button hinzu
             button.classList.add('active');
 
             // 2. Iframe laden
@@ -286,23 +324,22 @@
             const loader = document.getElementById('loader');
 
             if (url) {
-                loader.style.display = 'block'; // Lade-Spinner an
+                loader.style.display = 'block'; 
                 iframe.src = url;
 
                 iframe.onload = function() {
-                    loader.style.display = 'none'; // Lade-Spinner aus
+                    loader.style.display = 'none'; 
                 };
             }
         }
 
-        // Initialisierung: Lade die erste Karte (The Island) beim Start
+        // Initialisierung: Lade die erste Karte beim Start
         document.addEventListener('DOMContentLoaded', () => {
-            // Finde den Button, der die Klasse 'active' hat, und lade dessen URL
             const activeButton = document.querySelector('.map-btn.active');
             if (activeButton) {
-                // Wir simulieren einen Klick oder rufen die Funktion direkt auf.
-                // Da onclick im HTML definiert ist, extrahieren wir hier die URL manuell oder triggern einfach.
-                // Einfacher: Wir nehmen die URL direkt aus dem ersten Aufruf.
+                // Hier URL hartcodieren oder aus dem Attribut ziehen, 
+                // um sicherzustellen, dass beim Neuladen die richtige Map kommt.
+                // Da onclick im HTML ist, nehmen wir hier einfach die Island URL als Default:
                 const initialUrl = 'https://arkmap.axi92.at/f1df34b8-fb4e-4411-8f10-d16502d5534a';
                 loadMap(activeButton, initialUrl);
             }
