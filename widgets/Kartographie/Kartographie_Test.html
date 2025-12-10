@@ -140,9 +140,13 @@
             font-family: var(--font-main);
             transition: all 0.2s ease;
             border-left: 3px solid transparent;
+            
+            /* KORREKTUR: Volle Breite und Flexbox für Abstand */
+            width: 100%; 
             display: flex;
             justify-content: space-between;
             align-items: center;
+            box-sizing: border-box; /* Wichtig damit Padding nicht die Breite sprengt */
         }
 
         .map-btn:hover {
@@ -164,6 +168,7 @@
             background-color: #4CAF50; 
             border-radius: 50%;
             box-shadow: 0 0 5px #4CAF50;
+            flex-shrink: 0; /* Verhindert das Schrumpfen des Punktes */
         }
 
         /* --- Content Area --- */
@@ -481,7 +486,7 @@
                     const id = `map-${groupKey}-${index}`;
                     html += `
                     <button id="${id}" class="map-btn" onclick="selectMap('${groupKey}', ${index}, this)">
-                        ${map.name} <span class="status-dot"></span>
+                        <span>${map.name}</span> <span class="status-dot"></span>
                     </button>`;
                 });
             };
