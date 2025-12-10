@@ -3,20 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IOP Cluster Widget v3.0 (Engine Rewrite)</title>
+    <title>IOP Cluster Widget v3.3 (Bulletproof)</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <style>
         /* CORE LAYOUT */
         * { box-sizing: border-box; }
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: #020408; font-family: 'Segoe UI', sans-serif; color: #e2e8f0; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: #0f1115; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #e2e8f0; }
         
         .app-shell { display: grid; grid-template-columns: 320px 1fr; height: 100vh; width: 100vw; }
         
         /* SIDEBAR */
-        .sidebar { background: #111827; border-right: 1px solid #374151; display: flex; flex-direction: column; z-index: 50; box-shadow: 5px 0 15px rgba(0,0,0,0.5); }
-        .sidebar-header { padding: 16px; background: #0f172a; border-bottom: 1px solid #374151; }
+        .sidebar { background: #1a1d24; border-right: 1px solid #333; display: flex; flex-direction: column; z-index: 50; box-shadow: 5px 0 15px rgba(0,0,0,0.5); height: 100%; }
+        .sidebar-header { padding: 16px; background: #0f172a; border-bottom: 1px solid #333; }
         
-        /* TABS */
         .tabs-nav { display: flex; background: #1f2937; }
         .tab-btn { flex: 1; padding: 12px; background: transparent; border: none; color: #9ca3af; cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.2s; font-size: 0.9rem; font-weight: 600; }
         .tab-btn:hover { color: #f3f4f6; background: #374151; }
@@ -27,10 +26,11 @@
         .tab-view.active { display: block; animation: fadeEffect 0.3s; }
         @keyframes fadeEffect { from { opacity: 0; } to { opacity: 1; } }
 
-        /* MAP ENGINE AREA */
+        /* MAP AREA */
         .viewport { 
             position: relative; 
-            background: #000; 
+            /* Dunkelgrauer Hintergrund als Debug-Hilfe: Wenn du Grau siehst, ist der Canvas da aber leer. */
+            background: #1e293b; 
             overflow: hidden; 
             width: 100%; 
             height: 100%; 
@@ -39,40 +39,33 @@
             align-items: center;
         }
         
-        /* The Canvas Stack Container */
         .render-target { 
             position: relative; 
             box-shadow: 0 0 100px rgba(0,0,0,0.9);
-            /* Debug Border to see if container exists */
-            /* border: 1px solid #333; */ 
+            background: #000; /* Schwarzer Hintergrund HINTER der Karte */
         }
         
         canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
         #input-layer { pointer-events: auto; cursor: grab; }
         #input-layer:active { cursor: grabbing; }
 
-        /* UI COMPONENTS */
-        .ui-panel { background: rgba(17, 24, 39, 0.95); border: 1px solid #374151; padding: 10px; border-radius: 6px; backdrop-filter: blur(4px); }
-        
-        .hud-coords { position: absolute; top: 20px; right: 20px; color: #fbbf24; font-family: monospace; z-index: 100; pointer-events: none; }
+        /* UI ELEMENTS */
+        .hud-coords { position: absolute; top: 20px; right: 20px; color: #fbbf24; font-family: monospace; z-index: 100; pointer-events: none; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
         .hud-zoom { position: absolute; bottom: 20px; right: 20px; display: flex; gap: 8px; z-index: 100; }
-        .zoom-btn { width: 40px; height: 40px; background: #1f2937; color: white; border: 1px solid #4b5563; border-radius: 4px; font-size: 1.5rem; cursor: pointer; display: grid; place-items: center; }
+        .zoom-btn { width: 40px; height: 40px; background: #1f2937; color: white; border: 1px solid #4b5563; border-radius: 4px; font-size: 1.5rem; cursor: pointer; display: grid; place-items: center; transition: all 0.2s; }
         .zoom-btn:hover { background: #fbbf24; color: black; border-color: #fbbf24; }
 
-        /* DATA LISTS */
         .list-item { padding: 10px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; margin-bottom: 4px; transition: 0.2s; }
         .list-item:hover { background: #374151; }
         .list-item.selected { background: rgba(251, 191, 36, 0.2); border-left: 3px solid #fbbf24; }
         .list-item img { width: 28px; height: 28px; margin-right: 12px; object-fit: contain; }
 
-        /* TOGGLES */
         .toggle-row { display: flex; align-items: center; margin-bottom: 12px; user-select: none; cursor: pointer; }
         .checkbox-custom { width: 18px; height: 18px; border: 2px solid #4b5563; border-radius: 4px; margin-right: 10px; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
         .toggle-row.active .checkbox-custom { background: #fbbf24; border-color: #fbbf24; }
         .toggle-row.active .checkbox-custom::after { content: '✔'; font-size: 12px; color: black; }
         .toggle-label { font-size: 0.95rem; color: #d1d5db; }
 
-        /* LOADING SCREEN */
         .loader { position: absolute; inset: 0; background: #020408; z-index: 200; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.5s; pointer-events: none; }
         .loader.hidden { opacity: 0; }
         .spinner { width: 50px; height: 50px; border: 4px solid #333; border-top-color: #fbbf24; border-radius: 50%; animation: spin 1s infinite linear; }
@@ -84,7 +77,6 @@
         ::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
         ::-webkit-scrollbar-thumb:hover { background: #666; }
         
-        /* INFO PANEL */
         .info-panel { position: absolute; top: 0; right: 0; bottom: 0; width: 360px; background: #111827; border-left: 1px solid #fbbf24; transform: translateX(100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 150; box-shadow: -10px 0 30px rgba(0,0,0,0.8); display: flex; flex-direction: column; }
         .info-panel.visible { transform: translateX(0); }
         .info-header { padding: 20px; background: #1f2937; border-bottom: 1px solid #374151; display: flex; justify-content: space-between; align-items: start; }
@@ -92,7 +84,18 @@
         .close-btn { background: none; border: none; color: #9ca3af; cursor: pointer; font-size: 1.5rem; }
         .close-btn:hover { color: white; }
 
-        /* AI CHAT */
+        .switch { position: relative; display: inline-block; width: 40px; height: 20px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #444; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 2px; bottom: 2px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: #fbbf24; }
+        input:checked + .slider:before { transform: translateX(20px); }
+        .toggle-wrapper { display: flex; align-items: center; margin-bottom: 12px; }
+        .section-title { font-size: 0.75rem; text-transform: uppercase; color: #9ca3af; font-weight: bold; margin-bottom: 10px; letter-spacing: 0.05em; margin-top: 20px; }
+
+        .map-switcher ul { position: absolute; background: #2d313a; border: 1px solid #444; border-radius: 4px; width: 200px; z-index: 100; box-shadow: 0 4px 6px rgba(0,0,0,0.3); max-height: 300px; overflow-y: auto; }
+        
+        /* Chat */
         .chat-box { display: flex; flex-direction: column; height: 100%; }
         .chat-log { flex: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 12px; }
         .msg { padding: 10px 14px; border-radius: 8px; font-size: 0.9rem; max-width: 90%; line-height: 1.5; }
@@ -101,18 +104,27 @@
         .chat-input { display: flex; gap: 8px; padding-top: 10px; border-top: 1px solid #374151; }
         .chat-input input { flex: 1; background: #1f2937; border: 1px solid #4b5563; padding: 8px; border-radius: 4px; color: white; }
         .chat-input button { background: #fbbf24; color: black; border: none; padding: 0 16px; border-radius: 4px; font-weight: bold; cursor: pointer; }
+
+        /* DEBUG CONSOLE */
+        #debug-console {
+            position: absolute; top: 0; left: 0; width: 100%; background: rgba(220, 38, 38, 0.9); color: white;
+            padding: 5px 10px; font-size: 12px; z-index: 9999; display: none; text-align: center; pointer-events: none;
+        }
     </style>
 </head>
 <body>
 
-<!-- LOADING OVERLAY -->
+<!-- MAP SOURCE: Hidden but technically visible to ensure browser renders it -->
+<img id="map-source" style="position: fixed; top: -9999px; left: -9999px; opacity: 0; pointer-events: none;" crossorigin="anonymous">
+
+<div id="debug-console"></div>
+
 <div id="loader" class="loader">
     <div class="spinner"></div>
     <div id="loading-status" class="mt-4 text-amber-500 font-mono text-sm">Systemstart...</div>
 </div>
 
 <div class="app-shell">
-    <!-- LEFT SIDEBAR -->
     <aside class="sidebar">
         <div class="sidebar-header">
             <h1 class="text-xl font-bold text-amber-500 tracking-wide">IOP CLUSTER</h1>
@@ -124,23 +136,20 @@
             </div>
         </div>
 
-        <div class="tabs-nav">
+        <nav class="tabs-nav">
             <button class="tab-btn active" onclick="app.switchTab('dinos')">DINOS</button>
             <button class="tab-btn" onclick="app.switchTab('resources')">RES.</button>
             <button class="tab-btn" onclick="app.switchTab('pois')">ORTE</button>
             <button class="tab-btn" onclick="app.switchTab('ai')">✨ AI</button>
             <button class="tab-btn" onclick="app.switchTab('settings')">⚙</button>
-        </div>
+        </nav>
 
         <div class="sidebar-content custom-scrollbar">
-            
-            <!-- DINOS TAB -->
             <div id="tab-dinos" class="tab-view active">
                 <input type="text" id="dino-search" placeholder="Suche..." class="w-full bg-gray-800 border border-gray-600 rounded p-2 text-white mb-4 focus:border-amber-500 outline-none">
                 <div id="dino-list"></div>
             </div>
 
-            <!-- RESOURCES TAB -->
             <div id="tab-resources" class="tab-view">
                 <div class="flex items-center justify-between mb-4 pb-2 border-b border-gray-700">
                     <span class="text-xs font-bold text-gray-500 uppercase">Ressourcen</span>
@@ -149,7 +158,6 @@
                 <div id="resource-list"></div>
             </div>
 
-            <!-- POIS TAB -->
             <div id="tab-pois" class="tab-view">
                 <div class="mb-6">
                     <div class="text-xs font-bold text-gray-500 uppercase mb-3">Allgemein</div>
@@ -168,7 +176,6 @@
                 </div>
             </div>
 
-            <!-- AI TAB -->
             <div id="tab-ai" class="tab-view h-full">
                 <div class="chat-box">
                     <div id="chat-log" class="chat-log custom-scrollbar">
@@ -181,7 +188,6 @@
                 </div>
             </div>
 
-            <!-- SETTINGS TAB -->
             <div id="tab-settings" class="tab-view">
                 <div class="text-xs font-bold text-gray-500 uppercase mb-3">Layer Optionen</div>
                 <div class="toggle-row" onclick="app.toggleLayer('playerSpawns')">
@@ -193,35 +199,31 @@
                     <span class="toggle-label">Explorer Notes</span>
                 </div>
                 <div class="mt-10 text-center text-xs text-gray-600">
-                    Engine v3.0 | Status: <span id="engine-status" class="text-green-500">Running</span>
+                    Engine v3.3 | Status: <span id="engine-status" class="text-green-500">Running</span>
                 </div>
             </div>
-
         </div>
     </aside>
 
-    <!-- MAIN VIEWPORT -->
     <main class="viewport" id="viewport">
-        <!-- The Render Target is strictly sized via JS to maintain aspect ratio -->
+        <!-- RENDER TARGET -->
         <div id="render-target" class="render-target">
-            <!-- Layers stack (Canvas 0 is bottom) -->
-            <canvas id="layer-map" style="z-index: 0; background: #0f172a;"></canvas> <!-- Base Map -->
-            <canvas id="layer-zones" style="z-index: 1;"></canvas> <!-- Spawn Zones -->
-            <canvas id="layer-overlays" style="z-index: 2;"></canvas> <!-- Resources, POIs -->
-            <canvas id="input-layer" style="z-index: 10;"></canvas> <!-- Mouse Interaction -->
+            <canvas id="layer-map" style="z-index: 0;"></canvas>
+            <canvas id="layer-zones" style="z-index: 1;"></canvas>
+            <canvas id="layer-overlays" style="z-index: 2;"></canvas>
+            <canvas id="input-layer" style="z-index: 10;"></canvas>
         </div>
 
-        <!-- HUD -->
         <div class="hud-coords ui-panel">
             LAT: <span id="hud-lat">00.0</span> | LON: <span id="hud-lon">00.0</span>
         </div>
         <div class="hud-zoom">
+            <button class="zoom-btn" onclick="app.resetView()" title="Reset">⟲</button>
             <button class="zoom-btn" onclick="app.zoomIn()">+</button>
             <button class="zoom-btn" onclick="app.zoomOut()">-</button>
         </div>
     </main>
 
-    <!-- SLIDE-OUT INFO PANEL -->
     <div id="info-panel" class="info-panel">
         <div class="info-header">
             <h2 id="info-title" class="text-xl font-bold text-amber-500">Titel</h2>
@@ -233,9 +235,17 @@
 
 <script>
 /**
- * IOP CLUSTER WIDGET ENGINE v3.0
- * Fully rewritten to separate State, Logic, and Rendering.
+ * IOP CLUSTER WIDGET ENGINE v3.3
  */
+
+// ERROR HANDLER
+function logError(msg) {
+    const el = document.getElementById('debug-console');
+    el.style.display = 'block';
+    el.textContent = `ERROR: ${msg}`;
+    console.error(msg);
+}
+window.onerror = function(msg, url, line) { logError(`${msg} (Line ${line})`); };
 
 const CONFIG = {
     urls: {
@@ -243,82 +253,63 @@ const CONFIG = {
         icons: 'https://raw.githubusercontent.com/iophantonie/iophantonie-IOP_Custom_Map_Explorer.github.io/refs/heads/main/Icon_Datenbank/Icondb.jsn',
         trans: 'https://raw.githubusercontent.com/iophantonie/iophantonie-IOP_Custom_Map_Explorer.github.io/main/Translation_Datenbank/translationdb.jsn'
     },
-    colors: {
-        spawn: 'rgba(251, 191, 36, 0.4)',
-        spawnBorder: 'rgba(251, 191, 36, 0.9)',
-        highlight: '#fbbf24'
-    }
+    colors: { spawn: 'rgba(251, 191, 36, 0.4)', spawnBorder: 'rgba(251, 191, 36, 0.9)', highlight: '#fbbf24' }
 };
 
-// --- APP STATE (Single Source of Truth) ---
+// --- STATE ---
 const State = {
     currentMapKey: 'TheIsland',
     mapConfig: null,
-    mapImage: new Image(),
-    isMapLoaded: false,
+    // DOM Element Reference
+    mapImageElement: null,
     
-    // Viewport
     scale: 1,
     pan: { x: 0, y: 0 },
     isDragging: false,
     lastMouse: { x: 0, y: 0 },
     
-    // Data
-    dinos: {},
-    resources: {},
-    pois: [],
-    obelisks: [],
-    caves: [],
-    
-    // Selection / Filters
+    dinos: {}, resources: {}, pois: [], obelisks: [], caves: [],
     selectedDino: null,
     activeResources: new Set(),
     activeObelisks: new Set(),
-    layers: {
-        publicSpots: false,
-        caves: false,
-        playerSpawns: false,
-        notes: false
-    },
-    
-    // Assets
-    icons: {},
-    translations: { res: {}, dinos: {} }
+    layers: { publicSpots: false, caves: false, playerSpawns: false, notes: false },
+    icons: {}, translations: { res: {}, dinos: {} }
 };
 
-// --- ENGINE CORE ---
+// --- ENGINE ---
 const Engine = {
-    ctx: {}, // Canvas Contexts
-    canvases: {},
+    ctx: {}, canvases: {},
 
     init() {
-        // Setup Contexts
+        State.mapImageElement = document.getElementById('map-source');
+        
         ['map', 'zones', 'overlays', 'input'].forEach(id => {
             const el = document.getElementById(id === 'input' ? 'input-layer' : `layer-${id}`);
             this.canvases[id] = el;
             if(id !== 'input') this.ctx[id] = el.getContext('2d');
         });
 
-        // Event Listeners
         window.addEventListener('resize', () => this.resize());
         this.setupInput();
         
-        // Start Loop
-        this.resize();
-        this.renderLoop();
+        // Init Size
+        setTimeout(() => this.resize(), 100);
     },
 
     resize() {
         const viewport = document.getElementById('viewport');
         const target = document.getElementById('render-target');
+        const margin = 40;
         
-        // Determine square size that fits
-        const size = Math.min(viewport.clientWidth, viewport.clientHeight);
+        // Fallback size if viewport is hidden (e.g. init)
+        const vw = viewport.clientWidth || window.innerWidth;
+        const vh = viewport.clientHeight || window.innerHeight;
+        
+        const size = Math.max(100, Math.min(vw, vh) - margin);
         
         target.style.width = size + 'px';
         target.style.height = size + 'px';
 
-        // Resize all canvases
         Object.values(this.canvases).forEach(cvs => {
             cvs.width = size;
             cvs.height = size;
@@ -342,19 +333,16 @@ const Engine = {
         });
 
         cvs.addEventListener('mousemove', e => {
-            // HUD Update
             const rect = cvs.getBoundingClientRect();
             const x = (e.clientX - rect.left - State.pan.x) / State.scale;
             const y = (e.clientY - rect.top - State.pan.y) / State.scale;
             
-            // Convert to Game Coords (0-100)
             const lat = (y / cvs.height) * 100;
             const lon = (x / cvs.width) * 100;
             
             document.getElementById('hud-lat').textContent = Math.max(0, Math.min(100, lat)).toFixed(1);
             document.getElementById('hud-lon').textContent = Math.max(0, Math.min(100, lon)).toFixed(1);
 
-            // Pan Logic
             if(State.isDragging) {
                 const dx = e.clientX - State.lastMouse.x;
                 const dy = e.clientY - State.lastMouse.y;
@@ -367,139 +355,135 @@ const Engine = {
 
         cvs.addEventListener('wheel', e => {
             e.preventDefault();
-            const zoomSpeed = 0.1;
-            const delta = e.deltaY > 0 ? (1 - zoomSpeed) : (1 + zoomSpeed);
-            
-            // Zoom towards mouse logic could go here, simplified centered zoom for stability
-            State.scale *= delta;
-            State.scale = Math.max(1, Math.min(10, State.scale));
-            
-            // Clamp Pan (Keep map in view) - Simplified
-            // State.pan.x = Math.min(0, Math.max(cvs.width * (1 - State.scale), State.pan.x));
-            
+            const delta = e.deltaY > 0 ? 0.9 : 1.1;
+            State.scale = Math.max(0.5, Math.min(10, State.scale * delta));
             this.requestRender();
         });
 
         cvs.addEventListener('click', e => {
-            if (State.isDragging) return; // Prevent click on drag end
+            if (State.isDragging) return;
             app.handleMapClick(e);
         });
     },
 
     requestRender() {
-        window.requestAnimationFrame(() => this.render());
+        // Simple direct render for stability
+        this.render();
     },
 
     render() {
+        if(!this.canvases.map) return;
         const w = this.canvases.map.width;
         const h = this.canvases.map.height;
+        
+        // Safety check for size
+        if(w === 0 || h === 0) return;
 
-        // 1. CLEAR ALL LAYERS (Crucial for toggling)
-        Object.values(this.ctx).forEach(ctx => ctx.clearRect(0, 0, w, h));
+        // 1. Clear
+        try {
+            Object.values(this.ctx).forEach(ctx => ctx.clearRect(0, 0, w, h));
+        } catch(e) { console.warn("Clear error"); }
 
-        // 2. DRAW BASE MAP
+        // 2. Draw Map
         const ctxMap = this.ctx.map;
         ctxMap.save();
         ctxMap.translate(State.pan.x, State.pan.y);
         ctxMap.scale(State.scale, State.scale);
 
-        if (State.isMapLoaded) {
-            ctxMap.drawImage(State.mapImage, 0, 0, w, h);
+        if (State.mapImageElement.complete && State.mapImageElement.naturalWidth > 0) {
+            try {
+                ctxMap.drawImage(State.mapImageElement, 0, 0, w, h);
+            } catch(e) {
+                console.error("Map Draw Error", e);
+                this.drawDebugText(ctxMap, w, h, "Rendering Error");
+            }
         } else {
-            // Draw placeholder text if map missing
-            ctxMap.fillStyle = '#1f2937';
-            ctxMap.fillRect(0, 0, w, h);
-            ctxMap.fillStyle = '#ef4444';
-            ctxMap.font = '20px sans-serif';
-            ctxMap.textAlign = 'center';
-            ctxMap.fillText("Lade Karte...", w/2, h/2);
+            // Draw Fallback
+            this.drawDebugText(ctxMap, w, h, "Lade Karte...");
         }
         ctxMap.restore();
 
-        // 3. DRAW ZONES (Dinos)
-        if (State.selectedDino && State.dinos[State.selectedDino]) {
-            const ctxZone = this.ctx.zones;
-            ctxZone.save();
-            ctxZone.translate(State.pan.x, State.pan.y);
-            ctxZone.scale(State.scale, State.scale);
-            
-            State.dinos[State.selectedDino].forEach(zone => {
-                const x = (zone.min.lon / 100) * w;
-                const y = (zone.min.lat / 100) * h;
-                const zw = ((zone.max.lon - zone.min.lon) / 100) * w;
-                const zh = ((zone.max.lat - zone.min.lat) / 100) * h;
+        // 3. Draw Dinos
+        try {
+            if (State.selectedDino && State.dinos && State.dinos[State.selectedDino]) {
+                const ctxZone = this.ctx.zones;
+                ctxZone.save();
+                ctxZone.translate(State.pan.x, State.pan.y);
+                ctxZone.scale(State.scale, State.scale);
                 
-                ctxZone.fillStyle = CONFIG.colors.spawn;
-                ctxZone.fillRect(x, y, zw, zh);
-                ctxZone.strokeStyle = CONFIG.colors.spawnBorder;
-                ctxZone.lineWidth = 1 / State.scale;
-                ctxZone.strokeRect(x, y, zw, zh);
+                State.dinos[State.selectedDino].forEach(zone => {
+                    const x = (zone.min.lon / 100) * w;
+                    const y = (zone.min.lat / 100) * h;
+                    const zw = ((zone.max.lon - zone.min.lon) / 100) * w;
+                    const zh = ((zone.max.lat - zone.min.lat) / 100) * h;
+                    
+                    ctxZone.fillStyle = CONFIG.colors.spawn;
+                    ctxZone.fillRect(x, y, zw, zh);
+                    ctxZone.strokeStyle = CONFIG.colors.spawnBorder;
+                    ctxZone.lineWidth = 1 / State.scale;
+                    ctxZone.strokeRect(x, y, zw, zh);
+                });
+                ctxZone.restore();
+            }
+        } catch(e) { console.error("Dino Draw Error", e); }
+
+        // 4. Draw Overlays
+        try {
+            const ctxOver = this.ctx.overlays;
+            ctxOver.save();
+            ctxOver.translate(State.pan.x, State.pan.y);
+            ctxOver.scale(State.scale, State.scale);
+
+            // Resources
+            State.activeResources.forEach(resKey => {
+                if (State.resources[resKey]) {
+                    const color = { 'Metal': '#b87333', 'Crystal': '#a5f3fc', 'Obsidian': '#111', 'Oil': '#1e3a8a', 'Silica Pearls': '#fff' }[resKey] || '#fff';
+                    ctxOver.fillStyle = color;
+                    State.resources[resKey].forEach(node => {
+                        const cx = (node.lon / 100) * w;
+                        const cy = (node.lat / 100) * h;
+                        ctxOver.beginPath(); ctxOver.arc(cx, cy, 3/State.scale, 0, Math.PI*2); ctxOver.fill();
+                    });
+                }
             });
-            ctxZone.restore();
-        }
 
-        // 4. DRAW OVERLAYS (Resources, POIs)
-        const ctxOver = this.ctx.overlays;
-        ctxOver.save();
-        ctxOver.translate(State.pan.x, State.pan.y);
-        ctxOver.scale(State.scale, State.scale);
-
-        // Resources
-        State.activeResources.forEach(resKey => {
-            if (State.resources[resKey]) {
-                const color = {
-                    'Metal': '#b87333', 'Crystal': '#a5f3fc', 'Obsidian': '#111', 
-                    'Oil': '#1e3a8a', 'Silica Pearls': '#fff'
-                }[resKey] || '#fff';
-                
-                ctxOver.fillStyle = color;
-                State.resources[resKey].forEach(node => {
-                    const cx = (node.lon / 100) * w;
-                    const cy = (node.lat / 100) * h;
-                    ctxOver.beginPath();
-                    ctxOver.arc(cx, cy, 3 / State.scale, 0, Math.PI * 2);
-                    ctxOver.fill();
+            // POIs
+            if (State.layers.publicSpots) {
+                State.pois.forEach(spot => {
+                    const cx = (spot.lon/100)*w, cy = (spot.lat/100)*h;
+                    this.drawPin(ctxOver, cx, cy, '#fbbf24');
                 });
             }
-        });
-
-        // Public Spots
-        if (State.layers.publicSpots) {
-            State.pois.forEach(spot => {
-                const cx = (spot.lon / 100) * w;
-                const cy = (spot.lat / 100) * h;
-                this.drawPin(ctxOver, cx, cy, '#fbbf24');
-            });
-        }
-
-        // Caves
-        if (State.layers.caves) {
-            State.caves.forEach(cave => {
-                const cx = (cave.lon / 100) * w;
-                const cy = (cave.lat / 100) * h;
-                this.drawPin(ctxOver, cx, cy, '#a855f7'); // Purple
-            });
-        }
-
-        // Obelisks
-        State.activeObelisks.forEach(obKey => {
-            const ob = State.obelisks.find(o => o.name === obKey);
-            if (ob) {
-                const cx = (ob.lon / 100) * w;
-                const cy = (ob.lat / 100) * h;
-                const color = ob.name.includes('Rot') ? '#ef4444' : ob.name.includes('Grün') ? '#22c55e' : '#3b82f6';
-                
-                ctxOver.beginPath();
-                ctxOver.arc(cx, cy, 8 / State.scale, 0, Math.PI * 2);
-                ctxOver.fillStyle = color;
-                ctxOver.fill();
-                ctxOver.lineWidth = 2 / State.scale;
-                ctxOver.strokeStyle = '#fff';
-                ctxOver.stroke();
+            
+            // Caves
+            if (State.layers.caves) {
+                State.caves.forEach(cave => {
+                    const cx = (cave.lon/100)*w, cy = (cave.lat/100)*h;
+                    this.drawPin(ctxOver, cx, cy, '#a855f7');
+                });
             }
-        });
 
-        ctxOver.restore();
+            // Obelisks
+            State.activeObelisks.forEach(obKey => {
+                const ob = State.obelisks.find(o => o.name === obKey);
+                if (ob) {
+                    const cx = (ob.lon/100)*w, cy = (ob.lat/100)*h;
+                    const color = ob.name.includes('Rot') ? '#ef4444' : ob.name.includes('Grün') ? '#22c55e' : '#3b82f6';
+                    ctxOver.beginPath(); ctxOver.arc(cx, cy, 8/State.scale, 0, Math.PI*2);
+                    ctxOver.fillStyle = color; ctxOver.fill();
+                    ctxOver.lineWidth = 2/State.scale; ctxOver.strokeStyle = '#fff'; ctxOver.stroke();
+                }
+            });
+
+            ctxOver.restore();
+        } catch(e) { console.error("Overlay Draw Error", e); }
+    },
+
+    drawDebugText(ctx, w, h, text) {
+        ctx.fillStyle = '#ef4444';
+        ctx.font = '20px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(text, w/2, h/2);
     },
 
     drawPin(ctx, x, y, color) {
@@ -509,25 +493,15 @@ const Engine = {
         ctx.lineTo(x - 5*s, y - 15*s);
         ctx.arc(x, y - 15*s, 5*s, Math.PI, 0);
         ctx.lineTo(x, y);
-        ctx.fillStyle = color;
-        ctx.fill();
-        ctx.strokeStyle = '#000';
-        ctx.lineWidth = s;
-        ctx.stroke();
-    },
-
-    renderLoop() {
-        // Optional: Continuous loop if animations are needed.
-        // For now, on-demand render via requestRender() is more efficient.
+        ctx.fillStyle = color; ctx.fill();
+        ctx.strokeStyle = '#000'; ctx.lineWidth = s; ctx.stroke();
     }
 };
 
-// --- APP CONTROLLER ---
+// --- CONTROLLER ---
 const app = {
     async init() {
         Engine.init();
-        
-        // Load Base Configs
         try {
             const [mapCfg, icons, trans] = await Promise.all([
                 fetchData(CONFIG.urls.configs),
@@ -542,11 +516,9 @@ const app = {
             }
             
             this.buildMapSelector(mapCfg);
-            this.loadMap('TheIsland'); // Default
-            
+            this.loadMap('TheIsland'); 
         } catch(e) {
-            document.getElementById('loading-status').innerText = "Fehler: Configs nicht geladen.";
-            console.error(e);
+            logError("Config Load Failed");
         }
     },
 
@@ -557,49 +529,45 @@ const app = {
             const btn = document.createElement('div');
             btn.className = 'p-2 hover:bg-gray-700 cursor-pointer text-sm text-gray-300';
             btn.textContent = configs[k].displayName;
-            btn.onclick = () => { 
-                this.loadMap(k); 
-                document.getElementById('map-dropdown').classList.add('hidden');
-            };
+            btn.onclick = () => { this.loadMap(k); document.getElementById('map-dropdown').classList.add('hidden'); };
             dd.appendChild(btn);
         }
-        
-        // Toggle Logic
-        document.getElementById('map-select-btn').onclick = (e) => {
-            e.stopPropagation();
-            document.getElementById('map-dropdown').classList.toggle('hidden');
-        }
+        document.getElementById('map-select-btn').onclick = (e) => { e.stopPropagation(); document.getElementById('map-dropdown').classList.toggle('hidden'); }
     },
 
     async loadMap(key) {
-        // UI Reset
         document.getElementById('loader').classList.remove('hidden');
         document.getElementById('loading-status').textContent = "Lade Kartendaten...";
         
-        // Reset State
         State.currentMapKey = key;
-        State.scale = 1; 
-        State.pan = {x:0,y:0};
         State.selectedDino = null;
         State.activeResources.clear();
         State.activeObelisks.clear();
-        // Reset Checkboxes UI
+        this.resetView();
+        
+        // Reset Checkboxes
         document.querySelectorAll('.toggle-row').forEach(el => el.classList.remove('active'));
         
-        const cfg = State.mapConfig = mapConfigs[key]; // Assuming mapConfigs is global or fetched
+        const cfg = State.mapConfig = mapConfigs[key];
         document.getElementById('current-map-name').textContent = cfg.displayName;
         document.getElementById('ai-map-ref').textContent = cfg.displayName;
 
-        // Image Load (Robust)
-        State.isMapLoaded = false;
-        State.mapImage.src = cfg.mapImageUrl;
-        State.mapImage.onload = () => {
-            State.isMapLoaded = true;
+        // Image Loading (DOM based)
+        const img = State.mapImageElement;
+        img.onload = () => {
+            document.getElementById('loader').classList.add('hidden');
+            Engine.resize(); // Force resize when image known
             Engine.requestRender();
+        };
+        img.onerror = () => {
+            logError(`Image Load Error: ${cfg.mapImageUrl}`);
             document.getElementById('loader').classList.add('hidden');
         };
+        
+        // Only set src if changed to avoid reload
+        if(img.src !== cfg.mapImageUrl) img.src = cfg.mapImageUrl;
+        else if(img.complete) img.onload();
 
-        // Data Fetching
         try {
             const [dinoData, resData, poiData, obData, caveData] = await Promise.all([
                 fetchData(cfg.creatureDataUrl),
@@ -619,47 +587,45 @@ const app = {
             Engine.requestRender();
 
         } catch(e) {
-            console.error("Data Load Error", e);
-            document.getElementById('loading-status').textContent = "Datenfehler!";
+            logError("Data Load Error");
         }
     },
 
     updateSidebarUI() {
-        // Dinos
         const dList = document.getElementById('dino-list');
         dList.innerHTML = '';
         
-        // Search Filter Logic
         const searchInput = document.getElementById('dino-search');
         const filterDinos = () => {
             const term = searchInput.value.toLowerCase();
             dList.innerHTML = '';
             
             const entries = Object.keys(State.dinos).map(k => ({
-                key: k,
-                name: State.translations.dinos[k] || k,
-                icon: State.icons[k]?.iconUrl
+                key: k, name: State.translations.dinos[k] || k, icon: State.icons[k]?.iconUrl
             })).sort((a,b) => a.name.localeCompare(b.name));
 
             entries.filter(e => e.name.toLowerCase().includes(term)).forEach(e => {
                 const el = document.createElement('div');
                 el.className = 'list-item';
                 if(State.selectedDino === e.key) el.classList.add('selected');
-                
                 el.innerHTML = `<img src="${e.icon || 'https://placehold.co/32?text=?'}"> <span>${e.name}</span>`;
                 el.onclick = () => {
-                    State.selectedDino = e.key;
-                    // Update UI selection classes
-                    Array.from(dList.children).forEach(c => c.classList.remove('selected'));
-                    el.classList.add('selected');
+                    // TOGGLE FIX
+                    if (State.selectedDino === e.key) {
+                        State.selectedDino = null;
+                        el.classList.remove('selected');
+                    } else {
+                        State.selectedDino = e.key;
+                        Array.from(dList.children).forEach(c => c.classList.remove('selected'));
+                        el.classList.add('selected');
+                    }
                     Engine.requestRender();
                 };
                 dList.appendChild(el);
             });
         };
-        
         searchInput.oninput = filterDinos;
-        filterDinos(); // Init
+        filterDinos();
 
         // Resources
         const rList = document.getElementById('resource-list');
@@ -702,19 +668,18 @@ const app = {
         });
     },
 
-    // UI ACTIONS
     switchTab(tabId) {
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.querySelectorAll('.tab-view').forEach(v => v.classList.remove('active'));
         
-        // Find button by onclick attr logic or structure (Simplified here)
-        // In clean DOM usage we would use IDs on buttons, but here we query:
         const btnIndex = ['dinos', 'resources', 'pois', 'ai', 'settings'].indexOf(tabId);
         document.querySelectorAll('.tab-btn')[btnIndex].classList.add('active');
         document.getElementById(`tab-${tabId}`).classList.add('active');
         
-        // IMPORTANT: Ensure layout is correct after tab switch
-        setTimeout(() => Engine.resize(), 50);
+        // FORCE RENDER ON TAB SWITCH
+        setTimeout(() => { Engine.resize(); Engine.requestRender(); }, 10);
+        setTimeout(() => { Engine.requestRender(); }, 50);
+        setTimeout(() => { Engine.requestRender(); }, 300);
     },
 
     toggleLayer(layerName) {
@@ -727,39 +692,30 @@ const app = {
     toggleAllResources() {
         const allKeys = Object.keys(State.resources);
         const rList = document.getElementById('resource-list');
-        
         if(State.activeResources.size === allKeys.length) {
-            State.activeResources.clear(); // Deselect All
+            State.activeResources.clear();
             Array.from(rList.children).forEach(c => c.classList.remove('active'));
         } else {
-            allKeys.forEach(k => State.activeResources.add(k)); // Select All
+            allKeys.forEach(k => State.activeResources.add(k));
             Array.from(rList.children).forEach(c => c.classList.add('active'));
         }
         Engine.requestRender();
     },
 
     zoomIn() { State.scale = Math.min(10, State.scale * 1.2); Engine.requestRender(); },
-    zoomOut() { State.scale = Math.max(1, State.scale / 1.2); Engine.requestRender(); },
+    zoomOut() { State.scale = Math.max(0.5, State.scale / 1.2); Engine.requestRender(); },
+    resetView() { State.scale = 1; State.pan = {x:0, y:0}; Engine.requestRender(); },
 
     handleMapClick(e) {
         const rect = Engine.canvases.input.getBoundingClientRect();
-        const mouseX = e.clientX - rect.left;
-        const mouseY = e.clientY - rect.top;
-        
-        // Calculate World Coords relative to rendered map
-        const worldX = (mouseX - State.pan.x) / State.scale;
-        const worldY = (mouseY - State.pan.y) / State.scale;
-        
-        const w = Engine.canvases.map.width;
-        const h = Engine.canvases.map.height;
+        const mouseX = e.clientX - rect.left, mouseY = e.clientY - rect.top;
+        const worldX = (mouseX - State.pan.x)/State.scale, worldY = (mouseY - State.pan.y)/State.scale;
+        const w = Engine.canvases.map.width, h = Engine.canvases.map.height;
 
-        // Check POIs
         if(State.layers.publicSpots) {
             const hit = State.pois.find(p => {
-                const px = (p.lon / 100) * w;
-                const py = (p.lat / 100) * h;
-                const dist = Math.sqrt((worldX-px)**2 + (worldY-py)**2);
-                return dist < (15 / State.scale); // Hitbox
+                const px = (p.lon/100)*w, py = (p.lat/100)*h;
+                return Math.sqrt((worldX-px)**2 + (worldY-py)**2) < (15/State.scale);
             });
             if(hit) this.showInfo(hit);
         }
@@ -776,11 +732,8 @@ const app = {
         panel.classList.add('visible');
     },
 
-    closeInfo() {
-        document.getElementById('info-panel').classList.remove('visible');
-    },
+    closeInfo() { document.getElementById('info-panel').classList.remove('visible'); },
     
-    // AI Chat
     async sendAiMessage() {
         const inp = document.getElementById('ai-input');
         const txt = inp.value.trim();
@@ -791,31 +744,24 @@ const app = {
         inp.value = '';
         log.scrollTop = log.scrollHeight;
 
-        const apiKey = ""; // API KEY HERE
+        const apiKey = ""; 
         const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
-        
-        const context = `Map: ${State.mapConfig?.displayName}. User looks at: ${State.selectedDino || 'Nothing'}.`;
+        const context = `Map: ${State.mapConfig?.displayName}. Selected Dino: ${State.selectedDino || 'None'}.`;
         
         try {
             const res = await fetch(url, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({
-                    contents: [{ parts: [{ text: txt }] }],
-                    systemInstruction: { parts: [{ text: `You are an ARK Survival Expert. German language. Context: ${context}` }] }
-                })
+                body: JSON.stringify({ contents: [{ parts: [{ text: txt }] }], systemInstruction: { parts: [{ text: `ARK Survival Expert. German. Context: ${context}` }] } })
             });
             const data = await res.json();
-            const ans = data.candidates?.[0]?.content?.parts?.[0]?.text || "Fehler.";
+            const ans = data.candidates?.[0]?.content?.parts?.[0]?.text || "Error.";
             log.innerHTML += `<div class="msg bot">${ans.replace(/\n/g, '<br>')}</div>`;
-        } catch(e) {
-            log.innerHTML += `<div class="msg bot" style="color:red">Verbindungsfehler.</div>`;
-        }
+        } catch(e) { log.innerHTML += `<div class="msg bot" style="color:red">Error.</div>`; }
         log.scrollTop = log.scrollHeight;
     }
 };
 
-// Utils
 async function fetchData(url) {
     try {
         const r = await fetch(url);
@@ -824,15 +770,10 @@ async function fetchData(url) {
     } catch(e) { return null; }
 }
 
-// Global hook for Map Configs (Needed because loadMap expects it)
 let mapConfigs = {};
 fetchData(CONFIG.urls.configs).then(c => {
-    if(c) {
-        mapConfigs = c;
-        app.init();
-    } else {
-        document.getElementById('loading-status').textContent = "FATAL: Configs failed.";
-    }
+    if(c) { mapConfigs = c; app.init(); }
+    else { document.getElementById('loading-status').textContent = "FATAL: Config Error"; }
 });
 
 </script>
