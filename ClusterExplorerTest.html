@@ -3,1066 +3,838 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IOP Cluster Widget</title>
-    <!-- Tailwind für Basis-Styling -->
+    <title>IOP Cluster Widget v3.0 (Engine Rewrite)</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
-    
     <style>
-        /* --- CSS STYLES --- */
-        
-        /* RESET & BASE */
+        /* CORE LAYOUT */
         * { box-sizing: border-box; }
-        body, html {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden; /* WICHTIG: Kein Scrollen der Seite */
-            background-color: #0f1115; /* Dunkler Hintergrund als Default */
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            color: #e2e8f0;
-        }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: #020408; font-family: 'Segoe UI', sans-serif; color: #e2e8f0; }
+        
+        .app-shell { display: grid; grid-template-columns: 320px 1fr; height: 100vh; width: 100vw; }
+        
+        /* SIDEBAR */
+        .sidebar { background: #111827; border-right: 1px solid #374151; display: flex; flex-direction: column; z-index: 50; box-shadow: 5px 0 15px rgba(0,0,0,0.5); }
+        .sidebar-header { padding: 16px; background: #0f172a; border-bottom: 1px solid #374151; }
+        
+        /* TABS */
+        .tabs-nav { display: flex; background: #1f2937; }
+        .tab-btn { flex: 1; padding: 12px; background: transparent; border: none; color: #9ca3af; cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.2s; font-size: 0.9rem; font-weight: 600; }
+        .tab-btn:hover { color: #f3f4f6; background: #374151; }
+        .tab-btn.active { color: #fbbf24; border-bottom-color: #fbbf24; background: #374151; }
+        
+        .sidebar-content { flex: 1; overflow-y: auto; padding: 16px; position: relative; }
+        .tab-view { display: none; }
+        .tab-view.active { display: block; animation: fadeEffect 0.3s; }
+        @keyframes fadeEffect { from { opacity: 0; } to { opacity: 1; } }
 
-        /* APP SHELL GRID - Das Layout */
-        .app-container {
-            display: grid;
-            grid-template-columns: 320px 1fr; /* Sidebar Breite fix, Rest Karte */
-            height: 100vh;
-            width: 100vw;
-            background-color: #0f1115;
-        }
-
-        /* SIDEBAR STYLES */
-        .sidebar {
-            background: #1a1d24;
-            border-right: 1px solid #333;
-            display: flex;
-            flex-direction: column;
-            z-index: 20;
-            box-shadow: 2px 0 10px rgba(0,0,0,0.5);
-            height: 100%;
-        }
-
-        .sidebar-header {
-            padding: 15px;
-            background: #14161b;
-            border-bottom: 1px solid #333;
-        }
-
-        .sidebar-tabs {
-            display: flex;
-            background: #252830;
-        }
-
-        .tab-btn {
-            flex: 1;
-            padding: 10px;
-            background: transparent;
-            border: none;
-            color: #888;
-            cursor: pointer;
-            border-bottom: 2px solid transparent;
-            transition: all 0.2s;
-            font-size: 0.9rem;
-        }
-
-        .tab-btn:hover { color: #fff; background: #2d313a; }
-        .tab-btn.active {
-            color: #fbbf24; /* Amber */
-            border-bottom: 2px solid #fbbf24;
-            background: #2d313a;
-        }
-
-        .sidebar-content {
-            flex: 1;
-            overflow-y: auto; /* Nur hier wird gescrollt */
-            padding: 15px;
-            position: relative;
-        }
-
-        /* Tab Logic */
-        .tab-pane { display: none; }
-        .tab-pane.active { display: block; animation: fadeIn 0.3s; }
-
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        /* MAP AREA */
-        .map-area {
-            position: relative;
-            background: #000;
-            overflow: hidden;
-            width: 100%;
-            height: 100%;
-        }
-
-        #canvas-stack {
-            position: absolute;
-            top: 0; left: 0;
-            /* Zentrierung erfolgt via JS */
-        }
-
-        canvas {
-            position: absolute;
-            top: 0; left: 0;
-            pointer-events: none; /* Klicks gehen durch */
-        }
-
-        #click-canvas {
-            pointer-events: auto; /* Nur dieser Canvas fängt Maus-Events */
-            cursor: grab;
-        }
-
-        /* HUD ELEMENTS */
-        .hud-top-right {
-            position: absolute; top: 20px; right: 20px; z-index: 10;
-        }
-        .hud-bottom-right {
-            position: absolute; bottom: 20px; right: 20px; z-index: 10; display: flex; gap: 5px;
-        }
-
-        .hud-box {
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(5px);
-            padding: 8px 12px;
-            border-radius: 4px;
-            border: 1px solid #444;
-            font-family: monospace;
-            font-size: 14px;
-            color: #fbbf24;
-        }
-
-        .hud-btn {
-            background: rgba(0, 0, 0, 0.7);
-            color: white;
-            border: 1px solid #444;
-            width: 36px; height: 36px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 20px;
-            display: flex;
+        /* MAP ENGINE AREA */
+        .viewport { 
+            position: relative; 
+            background: #000; 
+            overflow: hidden; 
+            width: 100%; 
+            height: 100%; 
+            display: flex; 
+            justify-content: center; 
             align-items: center;
-            justify-content: center;
         }
-        .hud-btn:hover { background: #fbbf24; color: black; border-color: #fbbf24; }
-
-        /* DETAIL PANEL (SLIDE IN) */
-        .detail-panel {
-            position: absolute;
-            top: 0; right: 0; bottom: 0;
-            width: 350px;
-            background: rgba(20, 24, 30, 0.95);
-            backdrop-filter: blur(10px);
-            border-left: 1px solid #fbbf24;
-            transform: translateX(100%);
-            transition: transform 0.3s ease-in-out;
-            z-index: 30;
-            box-shadow: -5px 0 20px rgba(0,0,0,0.5);
-        }
-
-        .detail-panel.open {
-            transform: translateX(0);
-        }
-
-        /* LIST STYLES */
-        .creature-item {
-            padding: 8px;
-            cursor: pointer;
-            border-radius: 4px;
-            margin-bottom: 2px;
-            transition: background 0.2s;
-        }
-        .creature-item:hover { background: #2d313a; }
-        .creature-item.active { background: rgba(251, 191, 36, 0.1); border-left: 3px solid #fbbf24; }
-
-        /* Custom Scrollbar */
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: #1a1d24; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #666; }
-
-        /* TOGGLE SWITCHES */
-        .switch { position: relative; display: inline-block; width: 40px; height: 20px; }
-        .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #444; transition: .4s; }
-        .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 2px; bottom: 2px; background-color: white; transition: .4s; }
-        input:checked + .slider { background-color: #fbbf24; }
-        input:checked + .slider:before { transform: translateX(20px); }
-        .slider.round { border-radius: 34px; }
-        .slider.round:before { border-radius: 50%; }
-        .toggle-wrapper { display: flex; align-items: center; margin-bottom: 10px; }
-
-        /* LOADING & TITLES */
-        .section-title { font-size: 0.8rem; text-transform: uppercase; color: #6b7280; font-weight: bold; margin-bottom: 10px; letter-spacing: 0.05em; }
         
-        .loading-overlay {
-            position: absolute; top:0; left:0; right:0; bottom:0;
-            background: #0f1115; z-index: 50;
-            display: flex; flex-direction: column;
-            align-items: center; justify-content: center;
+        /* The Canvas Stack Container */
+        .render-target { 
+            position: relative; 
+            box-shadow: 0 0 100px rgba(0,0,0,0.9);
+            /* Debug Border to see if container exists */
+            /* border: 1px solid #333; */ 
         }
-        .spinner { border: 4px solid #333; border-top: 4px solid #fbbf24; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom: 10px; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
-        .map-switcher ul {
-            position: absolute;
-            background: #2d313a;
-            border: 1px solid #444;
-            border-radius: 4px;
-            width: 200px;
-            z-index: 100;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-            max-height: 300px;
-            overflow-y: auto;
-        }
+        canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+        #input-layer { pointer-events: auto; cursor: grab; }
+        #input-layer:active { cursor: grabbing; }
+
+        /* UI COMPONENTS */
+        .ui-panel { background: rgba(17, 24, 39, 0.95); border: 1px solid #374151; padding: 10px; border-radius: 6px; backdrop-filter: blur(4px); }
+        
+        .hud-coords { position: absolute; top: 20px; right: 20px; color: #fbbf24; font-family: monospace; z-index: 100; pointer-events: none; }
+        .hud-zoom { position: absolute; bottom: 20px; right: 20px; display: flex; gap: 8px; z-index: 100; }
+        .zoom-btn { width: 40px; height: 40px; background: #1f2937; color: white; border: 1px solid #4b5563; border-radius: 4px; font-size: 1.5rem; cursor: pointer; display: grid; place-items: center; }
+        .zoom-btn:hover { background: #fbbf24; color: black; border-color: #fbbf24; }
+
+        /* DATA LISTS */
+        .list-item { padding: 10px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; margin-bottom: 4px; transition: 0.2s; }
+        .list-item:hover { background: #374151; }
+        .list-item.selected { background: rgba(251, 191, 36, 0.2); border-left: 3px solid #fbbf24; }
+        .list-item img { width: 28px; height: 28px; margin-right: 12px; object-fit: contain; }
+
+        /* TOGGLES */
+        .toggle-row { display: flex; align-items: center; margin-bottom: 12px; user-select: none; cursor: pointer; }
+        .checkbox-custom { width: 18px; height: 18px; border: 2px solid #4b5563; border-radius: 4px; margin-right: 10px; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+        .toggle-row.active .checkbox-custom { background: #fbbf24; border-color: #fbbf24; }
+        .toggle-row.active .checkbox-custom::after { content: '✔'; font-size: 12px; color: black; }
+        .toggle-label { font-size: 0.95rem; color: #d1d5db; }
+
+        /* LOADING SCREEN */
+        .loader { position: absolute; inset: 0; background: #020408; z-index: 200; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.5s; pointer-events: none; }
+        .loader.hidden { opacity: 0; }
+        .spinner { width: 50px; height: 50px; border: 4px solid #333; border-top-color: #fbbf24; border-radius: 50%; animation: spin 1s infinite linear; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* SCROLLBAR */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #111; }
+        ::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #666; }
+        
+        /* INFO PANEL */
+        .info-panel { position: absolute; top: 0; right: 0; bottom: 0; width: 360px; background: #111827; border-left: 1px solid #fbbf24; transform: translateX(100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 150; box-shadow: -10px 0 30px rgba(0,0,0,0.8); display: flex; flex-direction: column; }
+        .info-panel.visible { transform: translateX(0); }
+        .info-header { padding: 20px; background: #1f2937; border-bottom: 1px solid #374151; display: flex; justify-content: space-between; align-items: start; }
+        .info-body { padding: 20px; overflow-y: auto; flex: 1; }
+        .close-btn { background: none; border: none; color: #9ca3af; cursor: pointer; font-size: 1.5rem; }
+        .close-btn:hover { color: white; }
+
+        /* AI CHAT */
+        .chat-box { display: flex; flex-direction: column; height: 100%; }
+        .chat-log { flex: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 12px; }
+        .msg { padding: 10px 14px; border-radius: 8px; font-size: 0.9rem; max-width: 90%; line-height: 1.5; }
+        .msg.user { background: #2563eb; color: white; align-self: flex-end; }
+        .msg.bot { background: #374151; color: #e5e7eb; align-self: flex-start; border-left: 3px solid #fbbf24; }
+        .chat-input { display: flex; gap: 8px; padding-top: 10px; border-top: 1px solid #374151; }
+        .chat-input input { flex: 1; background: #1f2937; border: 1px solid #4b5563; padding: 8px; border-radius: 4px; color: white; }
+        .chat-input button { background: #fbbf24; color: black; border: none; padding: 0 16px; border-radius: 4px; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <!-- Haupt-Container (App Shell) -->
-    <div class="app-container">
+<!-- LOADING OVERLAY -->
+<div id="loader" class="loader">
+    <div class="spinner"></div>
+    <div id="loading-status" class="mt-4 text-amber-500 font-mono text-sm">Systemstart...</div>
+</div>
 
-        <!-- LINKE SIDEBAR (Steuerung) -->
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <h1 id="map-name" class="text-xl font-bold text-amber-500">IOP Cluster</h1>
-                <!-- Map Switcher (Mini) -->
-                <div class="map-switcher mt-1 relative">
-                    <button id="map-select-btn" class="text-xs text-gray-400 hover:text-white flex items-center">Karte wechseln <span class="ml-1">▼</span></button>
-                    <ul id="map-list" class="hidden custom-scrollbar">
-                        <!-- Wird per JS gefüllt -->
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Navigation Tabs -->
-            <nav class="sidebar-tabs">
-                <button class="tab-btn active" data-target="tab-creatures">Dinos</button>
-                <button class="tab-btn" data-target="tab-resources">Res.</button>
-                <button class="tab-btn" data-target="tab-pois">Orte</button>
-                <button class="tab-btn" data-target="tab-settings">⚙</button>
-            </nav>
-
-            <!-- Scrollbarer Inhalt der Sidebar -->
-            <div class="sidebar-content custom-scrollbar">
-                
-                <!-- TAB: KREATUREN -->
-                <div id="tab-creatures" class="tab-pane active">
-                    <div class="search-wrapper mb-2">
-                        <input type="text" id="creature-search" placeholder="Suche Dino..." class="w-full bg-gray-800 text-white p-2 rounded border border-gray-600 focus:border-amber-500 outline-none placeholder-gray-500 text-sm">
-                    </div>
-                    <!-- Liste -->
-                    <div id="creature-list" class="list-group">
-                        <p class="text-xs text-gray-500 text-center mt-4">Lade Kreaturen...</p>
-                    </div>
-                    <div id="region-info" class="mt-4 p-2 bg-gray-900 rounded hidden text-sm text-gray-300 border border-gray-700">
-                        <!-- Spawn Infos -->
-                    </div>
-                </div>
-
-                <!-- TAB: RESSOURCEN -->
-                <div id="tab-resources" class="tab-pane">
-                    <div class="flex items-center mb-4 pb-2 border-b border-gray-700">
-                        <input type="checkbox" id="select-all-resources" class="mr-2 h-4 w-4 bg-gray-800 border-gray-600 rounded text-amber-500 focus:ring-0">
-                        <label for="select-all-resources" class="text-sm text-gray-300 font-medium">Alle auswählen</label>
-                    </div>
-                    <div id="resource-controls" class="space-y-2">
-                        <p class="text-xs text-gray-500">Lade Ressourcen...</p>
-                    </div>
-                </div>
-
-                <!-- TAB: ORTE (POIS & HÖHLEN) -->
-                <div id="tab-pois" class="tab-pane">
-                    <h3 class="section-title">Wichtige Orte</h3>
-                    <div class="toggle-wrapper">
-                        <label class="switch">
-                            <input type="checkbox" id="spots-toggle">
-                            <span class="slider round"></span>
-                        </label>
-                        <span class="ml-2 text-white text-sm">Public Spots</span>
-                    </div>
-                    
-                    <h3 class="section-title mt-6">Höhlen</h3>
-                    <div class="toggle-wrapper">
-                        <label class="switch">
-                            <input type="checkbox" id="cave-spots-toggle">
-                            <span class="slider round"></span>
-                        </label>
-                        <span class="ml-2 text-white text-sm">Höhlen anzeigen</span>
-                    </div>
-
-                    <h3 class="section-title mt-6">Obelisken</h3>
-                    <div id="obelisk-controls" class="space-y-1"></div>
-                </div>
-
-                <!-- TAB: EINSTELLUNGEN & LEGENDE -->
-                <div id="tab-settings" class="tab-pane">
-                    <h3 class="section-title">Legende</h3>
-                    <div id="legend" class="mb-4 text-sm space-y-1"></div>
-                    
-                    <h3 class="section-title mt-6">Spieler Spawns</h3>
-                    <div class="toggle-wrapper">
-                        <label class="switch">
-                            <input type="checkbox" id="toggle-all-player-spawns">
-                            <span class="slider round"></span>
-                        </label>
-                        <span class="ml-2 text-white text-sm">Anzeigen</span>
-                    </div>
-                    
-                    <h3 class="section-title mt-6">Explorer Notizen</h3>
-                    <div class="toggle-wrapper">
-                        <label class="switch">
-                            <input type="checkbox" id="toggle-all-notes">
-                            <span class="slider round"></span>
-                        </label>
-                        <span class="ml-2 text-white text-sm">Anzeigen</span>
-                    </div>
-
-                    <div class="mt-8 pt-4 border-t border-gray-700 text-xs text-gray-500 text-center">
-                        IOP Map Widget v2.0<br>Infinity of Phoenix
-                    </div>
-                </div>
-
-            </div>
-        </aside>
-
-        <!-- HAUPTBEREICH (Karte) -->
-        <main class="map-area">
-            
-            <!-- HUD: Koordinaten & Zoom (Floating) -->
-            <div class="hud-top-right">
-                <div id="coords-display" class="hud-box">
-                    <span id="lat-display">Lat: 00.00</span> | 
-                    <span id="lon-display">Lon: 00.00</span>
-                </div>
-            </div>
-
-            <div class="hud-bottom-right">
-                <button id="zoom-in" class="hud-btn" title="Zoom In">+</button>
-                <button id="zoom-out" class="hud-btn" title="Zoom Out">-</button>
-            </div>
-
-            <!-- Canvas Container (Stapelt alle Canvases übereinander) -->
-            <div id="canvas-stack">
-                <!-- Die Reihenfolge ist wichtig für z-index -->
-                <img id="map-image" style="display:none;" crossorigin="anonymous"> 
-                <canvas id="map-canvas"></canvas>
-                <canvas id="region-canvas"></canvas>
-                <canvas id="spawn-canvas"></canvas>
-                <canvas id="resource-canvas"></canvas>
-                <canvas id="player-spawn-canvas"></canvas>
-                <canvas id="obelisk-canvas"></canvas>
-                <canvas id="spots-canvas"></canvas>
-                <canvas id="cave-spots-canvas"></canvas>
-                <canvas id="notes-canvas"></canvas>
-                <canvas id="click-canvas"></canvas> <!-- Oberste Ebene für Interaktion -->
-            </div>
-            
-            <div id="loading-indicator" class="loading-overlay">
-                <div class="spinner"></div>
-                <span id="loading-text" class="text-amber-500 font-bold mt-2">Initialisiere App...</span>
-            </div>
-        </main>
-
-        <!-- RECHTES DETAIL PANEL (Slide-In) -->
-        <div id="detail-panel" class="detail-panel">
-            <button id="close-detail" class="absolute top-2 right-2 text-gray-400 hover:text-white z-10 p-2 bg-black/20 rounded-full">✕</button>
-            <div id="detail-content" class="h-full overflow-y-auto p-6 custom-scrollbar">
-                <!-- Hier kommen Details rein wenn man auf Marker klickt -->
-                <div class="flex flex-col items-center justify-center h-full text-gray-500">
-                    <p>Wähle einen Marker auf der Karte aus.</p>
-                </div>
+<div class="app-shell">
+    <!-- LEFT SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h1 class="text-xl font-bold text-amber-500 tracking-wide">IOP CLUSTER</h1>
+            <div class="mt-2 relative group">
+                <button id="map-select-btn" class="text-xs text-gray-400 hover:text-white flex items-center w-full justify-between bg-gray-800 p-2 rounded">
+                    <span id="current-map-name">Lade...</span> <span>▼</span>
+                </button>
+                <div id="map-dropdown" class="hidden absolute top-full left-0 w-full bg-gray-800 border border-gray-600 rounded mt-1 z-50 max-h-60 overflow-y-auto"></div>
             </div>
         </div>
-        
-        <!-- Tooltip -->
-        <div id="map-tooltip" class="hidden absolute bg-black/90 border border-amber-500/50 p-2 rounded pointer-events-none z-50 text-xs text-white shadow-lg backdrop-filter backdrop-blur-sm">
-            <div id="tooltip-content"></div>
+
+        <div class="tabs-nav">
+            <button class="tab-btn active" onclick="app.switchTab('dinos')">DINOS</button>
+            <button class="tab-btn" onclick="app.switchTab('resources')">RES.</button>
+            <button class="tab-btn" onclick="app.switchTab('pois')">ORTE</button>
+            <button class="tab-btn" onclick="app.switchTab('ai')">✨ AI</button>
+            <button class="tab-btn" onclick="app.switchTab('settings')">⚙</button>
         </div>
 
+        <div class="sidebar-content custom-scrollbar">
+            
+            <!-- DINOS TAB -->
+            <div id="tab-dinos" class="tab-view active">
+                <input type="text" id="dino-search" placeholder="Suche..." class="w-full bg-gray-800 border border-gray-600 rounded p-2 text-white mb-4 focus:border-amber-500 outline-none">
+                <div id="dino-list"></div>
+            </div>
+
+            <!-- RESOURCES TAB -->
+            <div id="tab-resources" class="tab-view">
+                <div class="flex items-center justify-between mb-4 pb-2 border-b border-gray-700">
+                    <span class="text-xs font-bold text-gray-500 uppercase">Ressourcen</span>
+                    <button onclick="app.toggleAllResources()" class="text-xs text-amber-500 hover:text-amber-400">Alle Umschalten</button>
+                </div>
+                <div id="resource-list"></div>
+            </div>
+
+            <!-- POIS TAB -->
+            <div id="tab-pois" class="tab-view">
+                <div class="mb-6">
+                    <div class="text-xs font-bold text-gray-500 uppercase mb-3">Allgemein</div>
+                    <div class="toggle-row" onclick="app.toggleLayer('publicSpots')">
+                        <div class="checkbox-custom" id="cb-publicSpots"></div>
+                        <span class="toggle-label">Public Spots</span>
+                    </div>
+                    <div class="toggle-row" onclick="app.toggleLayer('caves')">
+                        <div class="checkbox-custom" id="cb-caves"></div>
+                        <span class="toggle-label">Höhlen</span>
+                    </div>
+                </div>
+                <div>
+                    <div class="text-xs font-bold text-gray-500 uppercase mb-3">Obelisken</div>
+                    <div id="obelisk-list"></div>
+                </div>
+            </div>
+
+            <!-- AI TAB -->
+            <div id="tab-ai" class="tab-view h-full">
+                <div class="chat-box">
+                    <div id="chat-log" class="chat-log custom-scrollbar">
+                        <div class="msg bot">Hallo Survivor! Ich kenne mich auf <strong id="ai-map-ref">dieser Karte</strong> bestens aus. Frag mich etwas!</div>
+                    </div>
+                    <div class="chat-input">
+                        <input type="text" id="ai-input" placeholder="Nachricht...">
+                        <button onclick="app.sendAiMessage()">SENDEN</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SETTINGS TAB -->
+            <div id="tab-settings" class="tab-view">
+                <div class="text-xs font-bold text-gray-500 uppercase mb-3">Layer Optionen</div>
+                <div class="toggle-row" onclick="app.toggleLayer('playerSpawns')">
+                    <div class="checkbox-custom" id="cb-playerSpawns"></div>
+                    <span class="toggle-label">Spieler Spawns</span>
+                </div>
+                <div class="toggle-row" onclick="app.toggleLayer('notes')">
+                    <div class="checkbox-custom" id="cb-notes"></div>
+                    <span class="toggle-label">Explorer Notes</span>
+                </div>
+                <div class="mt-10 text-center text-xs text-gray-600">
+                    Engine v3.0 | Status: <span id="engine-status" class="text-green-500">Running</span>
+                </div>
+            </div>
+
+        </div>
+    </aside>
+
+    <!-- MAIN VIEWPORT -->
+    <main class="viewport" id="viewport">
+        <!-- The Render Target is strictly sized via JS to maintain aspect ratio -->
+        <div id="render-target" class="render-target">
+            <!-- Layers stack (Canvas 0 is bottom) -->
+            <canvas id="layer-map" style="z-index: 0; background: #0f172a;"></canvas> <!-- Base Map -->
+            <canvas id="layer-zones" style="z-index: 1;"></canvas> <!-- Spawn Zones -->
+            <canvas id="layer-overlays" style="z-index: 2;"></canvas> <!-- Resources, POIs -->
+            <canvas id="input-layer" style="z-index: 10;"></canvas> <!-- Mouse Interaction -->
+        </div>
+
+        <!-- HUD -->
+        <div class="hud-coords ui-panel">
+            LAT: <span id="hud-lat">00.0</span> | LON: <span id="hud-lon">00.0</span>
+        </div>
+        <div class="hud-zoom">
+            <button class="zoom-btn" onclick="app.zoomIn()">+</button>
+            <button class="zoom-btn" onclick="app.zoomOut()">-</button>
+        </div>
+    </main>
+
+    <!-- SLIDE-OUT INFO PANEL -->
+    <div id="info-panel" class="info-panel">
+        <div class="info-header">
+            <h2 id="info-title" class="text-xl font-bold text-amber-500">Titel</h2>
+            <button class="close-btn" onclick="app.closeInfo()">×</button>
+        </div>
+        <div id="info-body" class="info-body custom-scrollbar text-gray-300 text-sm leading-relaxed"></div>
     </div>
+</div>
 
-    <!-- JAVASCRIPT LOGIC -->
-    <script>
-        // --- CONFIGURATION & GLOBAL VARIABLES ---
-        let allCreatureData = {};
-        let allResourceData = {};
-        let allPublicSpotsData = {};
-        let allCaveSpotsData = {};
-        let allInfoBadgeData = {};
-        let allObeliskData = {};
-        let allRegionData = {};
-        let allPlayerSpawnData = {};
-        let allExplorerNotesData = [];
-        let mapConfigs = {};
-        let currentMapConfig = {};
+<script>
+/**
+ * IOP CLUSTER WIDGET ENGINE v3.0
+ * Fully rewritten to separate State, Logic, and Rendering.
+ */
 
-        // Status Variables
-        let highlightedSpotId = null;
-        let hoveredSpotId = null;
-        let highlightedCaveSpotId = null;
-        let hoveredCaveSpotId = null;
-        let highlightedObeliskId = null;
-        let hoveredObeliskId = null;
-        let highlightedZone = null;
-        let selectedCreatureValue = null;
+const CONFIG = {
+    urls: {
+        configs: 'https://raw.githubusercontent.com/iophantonie/iophantonie-IOP_Custom_Map_Explorer.github.io/main/MapConfigs/MapConfigs.jsn',
+        icons: 'https://raw.githubusercontent.com/iophantonie/iophantonie-IOP_Custom_Map_Explorer.github.io/refs/heads/main/Icon_Datenbank/Icondb.jsn',
+        trans: 'https://raw.githubusercontent.com/iophantonie/iophantonie-IOP_Custom_Map_Explorer.github.io/main/Translation_Datenbank/translationdb.jsn'
+    },
+    colors: {
+        spawn: 'rgba(251, 191, 36, 0.4)',
+        spawnBorder: 'rgba(251, 191, 36, 0.9)',
+        highlight: '#fbbf24'
+    }
+};
 
-        // Assets & Icons
-        let obeliskIcons = {};
-        let spotIcons = {};
-        let caveSpotIcons = {};
-        let resourceIcons = {};
-        let regionImages = {};
-        let noteIcon = null;
+// --- APP STATE (Single Source of Truth) ---
+const State = {
+    currentMapKey: 'TheIsland',
+    mapConfig: null,
+    mapImage: new Image(),
+    isMapLoaded: false,
+    
+    // Viewport
+    scale: 1,
+    pan: { x: 0, y: 0 },
+    isDragging: false,
+    lastMouse: { x: 0, y: 0 },
+    
+    // Data
+    dinos: {},
+    resources: {},
+    pois: [],
+    obelisks: [],
+    caves: [],
+    
+    // Selection / Filters
+    selectedDino: null,
+    activeResources: new Set(),
+    activeObelisks: new Set(),
+    layers: {
+        publicSpots: false,
+        caves: false,
+        playerSpawns: false,
+        notes: false
+    },
+    
+    // Assets
+    icons: {},
+    translations: { res: {}, dinos: {} }
+};
 
-        // Translations & Configs
-        let resourceTranslations = {};
-        let creatureTranslations = {};
-        let infoBadgeTranslations = {};
-        let alphaVariantConfigs = {};
-        let globalItemDatabase = {};
-        let spawnZoneBlocklistData = {};
-        let spawnSharingConfig = {};
-        let spawnRarityConfig = {};
-        let difficultyConfig = {
-            "Leicht": { "borderColor": "#22c55e", "bgColor": "rgba(34, 197, 94, 0.2)", "textColor": "#4ade80" },
-            "Mittel": { "borderColor": "#eab308", "bgColor": "rgba(234, 179, 8, 0.2)", "textColor": "#facc15" },
-            "Schwer": { "borderColor": "#ef4444", "bgColor": "rgba(239, 68, 68, 0.2)", "textColor": "#fca5a5" },
-            "Extrem": { "borderColor": "#a21caf", "bgColor": "rgba(162, 28, 175, 0.2)", "textColor": "#e879f9" }
-        };
+// --- ENGINE CORE ---
+const Engine = {
+    ctx: {}, // Canvas Contexts
+    canvases: {},
 
-        // Animation Frames
-        let pulseAnimationId = null;
-        let notePulseAnimationId = null;
-        let highlightPulseAnimationId = null;
+    init() {
+        // Setup Contexts
+        ['map', 'zones', 'overlays', 'input'].forEach(id => {
+            const el = document.getElementById(id === 'input' ? 'input-layer' : `layer-${id}`);
+            this.canvases[id] = el;
+            if(id !== 'input') this.ctx[id] = el.getContext('2d');
+        });
 
-        // Map Navigation State
-        let scale = 1;
-        let panOffset = { x: 0, y: 0 };
-        let isPanning = false;
-        let panStart = { x: 0, y: 0 };
-        const maxScale = 8;
-        const minScale = 1;
+        // Event Listeners
+        window.addEventListener('resize', () => this.resize());
+        this.setupInput();
+        
+        // Start Loop
+        this.resize();
+        this.renderLoop();
+    },
 
-        // Constants
-        const MAP_LAT_MIN = 0; const MAP_LAT_MAX = 100;
-        const MAP_LON_MIN = 0; const MAP_LON_MAX = 100;
-        const MAP_LAT_RANGE = 100; const MAP_LON_RANGE = 100;
-        const SPOT_LAT_MIN = 0; const SPOT_LAT_MAX = 100;
-        const SPOT_LON_MIN = 0; const SPOT_LON_MAX = 100;
-        const SPOT_LAT_RANGE = 100; const SPOT_LON_RANGE = 100;
+    resize() {
+        const viewport = document.getElementById('viewport');
+        const target = document.getElementById('render-target');
+        
+        // Determine square size that fits
+        const size = Math.min(viewport.clientWidth, viewport.clientHeight);
+        
+        target.style.width = size + 'px';
+        target.style.height = size + 'px';
 
-        const resourceConfig = {
-            'Metal': { color: '#b87333' }, 'Crystal': { color: '#ADD8E6' },
-            'Obsidian': { color: '#333333' }, 'Oil': { color: '#663399' },
-            'Rich Metal': { color: '#DAA520' }, 'Silica Pearls': { color: '#F5F5DC' }
-        };
+        // Resize all canvases
+        Object.values(this.canvases).forEach(cvs => {
+            cvs.width = size;
+            cvs.height = size;
+        });
 
-        const obeliskConfig = {
-            'Grüner Obelisk': { color: '#22c55e' },
-            'Blauer Obelisk': { color: '#3b82f6' },
-            'Roter Obelisk': { color: '#ef4444' }
-        };
+        this.requestRender();
+    },
 
-        let mapCanvas, mapCtx, spawnCanvas, spawnCtx, resourceCanvas, resourceCtx, 
-            spotsCanvas, spotsCtx, clickCanvas, clickCtx, obeliskCanvas, obeliskCtx, 
-            caveSpotsCanvas, caveSpotsCtx, regionCanvas, regionCtx, 
-            playerSpawnCanvas, playerSpawnCtx, notesCanvas, notesCtx;
+    setupInput() {
+        const cvs = this.canvases.input;
+        
+        cvs.addEventListener('mousedown', e => {
+            State.isDragging = true;
+            State.lastMouse = { x: e.clientX, y: e.clientY };
+            cvs.style.cursor = 'grabbing';
+        });
 
-        let mapImage, tooltipElement, tooltipContentElement;
-        let currentMapKey = 'TheIsland'; 
+        window.addEventListener('mouseup', () => {
+            State.isDragging = false;
+            cvs.style.cursor = 'grab';
+        });
 
-        // --- UTILITY FUNCTIONS ---
-
-        function getIconUrl(itemName) {
-            const trimmedItem = itemName.trim();
-            const dbEntry = globalItemDatabase[trimmedItem];
-            if (dbEntry && dbEntry.iconUrl) return dbEntry.iconUrl;
-            return 'https://placehold.co/32x32/333/FFF?text=?';
-        }
-
-        async function fetchData(url) {
-            if (!url) return null;
-            try {
-                const response = await fetch(url);
-                if (!response.ok) return null;
-                let text = await response.text();
-                const cleanedText = text.replace(/^\uFEFF/, '').replace(/\u00A0/g, ' ');
-                return JSON.parse(cleanedText);
-            } catch (e) {
-                console.error("Fetch Error:", e);
-                return null;
-            }
-        }
-
-        // --- UI POPULATION ---
-
-        function populateMapList() {
-            const list = document.getElementById('map-list');
-            list.innerHTML = '';
-            for (const key in mapConfigs) {
-                const map = mapConfigs[key];
-                if (map.activated) {
-                    const li = document.createElement('li');
-                    li.className = 'px-4 py-2 hover:bg-gray-600 cursor-pointer text-sm text-gray-300 transition-colors border-b border-gray-700 last:border-0';
-                    li.textContent = map.displayName;
-                    li.onclick = () => {
-                        loadMapData(key);
-                        document.getElementById('map-list').classList.add('hidden');
-                    };
-                    list.appendChild(li);
-                }
-            }
-        }
-
-        function populateCreatureList(searchTerm = "") {
-            const listContainer = document.getElementById('creature-list');
-            listContainer.innerHTML = '';
+        cvs.addEventListener('mousemove', e => {
+            // HUD Update
+            const rect = cvs.getBoundingClientRect();
+            const x = (e.clientX - rect.left - State.pan.x) / State.scale;
+            const y = (e.clientY - rect.top - State.pan.y) / State.scale;
             
-            const creatureNames = Object.keys(allCreatureData);
-            const translatedNames = creatureNames.map(name => ({
-                english: name,
-                german: creatureTranslations[name.trim()] || name.trim()
-            }));
+            // Convert to Game Coords (0-100)
+            const lat = (y / cvs.height) * 100;
+            const lon = (x / cvs.width) * 100;
+            
+            document.getElementById('hud-lat').textContent = Math.max(0, Math.min(100, lat)).toFixed(1);
+            document.getElementById('hud-lon').textContent = Math.max(0, Math.min(100, lon)).toFixed(1);
 
-            const filtered = translatedNames
-                .filter(c => c.german.toLowerCase().includes(searchTerm.toLowerCase()))
-                .sort((a, b) => a.german.localeCompare(b.german));
-
-            if(filtered.length === 0) {
-                listContainer.innerHTML = '<p class="text-xs text-gray-500 text-center mt-2">Keine Dinos gefunden.</p>';
-                return;
+            // Pan Logic
+            if(State.isDragging) {
+                const dx = e.clientX - State.lastMouse.x;
+                const dy = e.clientY - State.lastMouse.y;
+                State.pan.x += dx;
+                State.pan.y += dy;
+                State.lastMouse = { x: e.clientX, y: e.clientY };
+                this.requestRender();
             }
+        });
 
-            filtered.forEach(c => {
-                const div = document.createElement('div');
-                div.className = `creature-item ${selectedCreatureValue === c.english ? 'active' : ''}`;
+        cvs.addEventListener('wheel', e => {
+            e.preventDefault();
+            const zoomSpeed = 0.1;
+            const delta = e.deltaY > 0 ? (1 - zoomSpeed) : (1 + zoomSpeed);
+            
+            // Zoom towards mouse logic could go here, simplified centered zoom for stability
+            State.scale *= delta;
+            State.scale = Math.max(1, Math.min(10, State.scale));
+            
+            // Clamp Pan (Keep map in view) - Simplified
+            // State.pan.x = Math.min(0, Math.max(cvs.width * (1 - State.scale), State.pan.x));
+            
+            this.requestRender();
+        });
+
+        cvs.addEventListener('click', e => {
+            if (State.isDragging) return; // Prevent click on drag end
+            app.handleMapClick(e);
+        });
+    },
+
+    requestRender() {
+        window.requestAnimationFrame(() => this.render());
+    },
+
+    render() {
+        const w = this.canvases.map.width;
+        const h = this.canvases.map.height;
+
+        // 1. CLEAR ALL LAYERS (Crucial for toggling)
+        Object.values(this.ctx).forEach(ctx => ctx.clearRect(0, 0, w, h));
+
+        // 2. DRAW BASE MAP
+        const ctxMap = this.ctx.map;
+        ctxMap.save();
+        ctxMap.translate(State.pan.x, State.pan.y);
+        ctxMap.scale(State.scale, State.scale);
+
+        if (State.isMapLoaded) {
+            ctxMap.drawImage(State.mapImage, 0, 0, w, h);
+        } else {
+            // Draw placeholder text if map missing
+            ctxMap.fillStyle = '#1f2937';
+            ctxMap.fillRect(0, 0, w, h);
+            ctxMap.fillStyle = '#ef4444';
+            ctxMap.font = '20px sans-serif';
+            ctxMap.textAlign = 'center';
+            ctxMap.fillText("Lade Karte...", w/2, h/2);
+        }
+        ctxMap.restore();
+
+        // 3. DRAW ZONES (Dinos)
+        if (State.selectedDino && State.dinos[State.selectedDino]) {
+            const ctxZone = this.ctx.zones;
+            ctxZone.save();
+            ctxZone.translate(State.pan.x, State.pan.y);
+            ctxZone.scale(State.scale, State.scale);
+            
+            State.dinos[State.selectedDino].forEach(zone => {
+                const x = (zone.min.lon / 100) * w;
+                const y = (zone.min.lat / 100) * h;
+                const zw = ((zone.max.lon - zone.min.lon) / 100) * w;
+                const zh = ((zone.max.lat - zone.min.lat) / 100) * h;
                 
-                const iconUrl = getIconUrl(c.english);
-                div.innerHTML = `
-                    <div class="flex items-center">
-                        <img src="${iconUrl}" class="w-6 h-6 mr-3 object-contain" onerror="this.src='https://placehold.co/20?text=?'">
-                        <span class="text-sm font-medium text-gray-300">${c.german}</span>
-                    </div>
-                `;
+                ctxZone.fillStyle = CONFIG.colors.spawn;
+                ctxZone.fillRect(x, y, zw, zh);
+                ctxZone.strokeStyle = CONFIG.colors.spawnBorder;
+                ctxZone.lineWidth = 1 / State.scale;
+                ctxZone.strokeRect(x, y, zw, zh);
+            });
+            ctxZone.restore();
+        }
+
+        // 4. DRAW OVERLAYS (Resources, POIs)
+        const ctxOver = this.ctx.overlays;
+        ctxOver.save();
+        ctxOver.translate(State.pan.x, State.pan.y);
+        ctxOver.scale(State.scale, State.scale);
+
+        // Resources
+        State.activeResources.forEach(resKey => {
+            if (State.resources[resKey]) {
+                const color = {
+                    'Metal': '#b87333', 'Crystal': '#a5f3fc', 'Obsidian': '#111', 
+                    'Oil': '#1e3a8a', 'Silica Pearls': '#fff'
+                }[resKey] || '#fff';
                 
-                div.onclick = () => {
-                    selectedCreatureValue = c.english;
-                    document.querySelectorAll('.creature-item').forEach(el => el.classList.remove('active'));
+                ctxOver.fillStyle = color;
+                State.resources[resKey].forEach(node => {
+                    const cx = (node.lon / 100) * w;
+                    const cy = (node.lat / 100) * h;
+                    ctxOver.beginPath();
+                    ctxOver.arc(cx, cy, 3 / State.scale, 0, Math.PI * 2);
+                    ctxOver.fill();
+                });
+            }
+        });
+
+        // Public Spots
+        if (State.layers.publicSpots) {
+            State.pois.forEach(spot => {
+                const cx = (spot.lon / 100) * w;
+                const cy = (spot.lat / 100) * h;
+                this.drawPin(ctxOver, cx, cy, '#fbbf24');
+            });
+        }
+
+        // Caves
+        if (State.layers.caves) {
+            State.caves.forEach(cave => {
+                const cx = (cave.lon / 100) * w;
+                const cy = (cave.lat / 100) * h;
+                this.drawPin(ctxOver, cx, cy, '#a855f7'); // Purple
+            });
+        }
+
+        // Obelisks
+        State.activeObelisks.forEach(obKey => {
+            const ob = State.obelisks.find(o => o.name === obKey);
+            if (ob) {
+                const cx = (ob.lon / 100) * w;
+                const cy = (ob.lat / 100) * h;
+                const color = ob.name.includes('Rot') ? '#ef4444' : ob.name.includes('Grün') ? '#22c55e' : '#3b82f6';
+                
+                ctxOver.beginPath();
+                ctxOver.arc(cx, cy, 8 / State.scale, 0, Math.PI * 2);
+                ctxOver.fillStyle = color;
+                ctxOver.fill();
+                ctxOver.lineWidth = 2 / State.scale;
+                ctxOver.strokeStyle = '#fff';
+                ctxOver.stroke();
+            }
+        });
+
+        ctxOver.restore();
+    },
+
+    drawPin(ctx, x, y, color) {
+        const s = 1 / State.scale;
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        ctx.lineTo(x - 5*s, y - 15*s);
+        ctx.arc(x, y - 15*s, 5*s, Math.PI, 0);
+        ctx.lineTo(x, y);
+        ctx.fillStyle = color;
+        ctx.fill();
+        ctx.strokeStyle = '#000';
+        ctx.lineWidth = s;
+        ctx.stroke();
+    },
+
+    renderLoop() {
+        // Optional: Continuous loop if animations are needed.
+        // For now, on-demand render via requestRender() is more efficient.
+    }
+};
+
+// --- APP CONTROLLER ---
+const app = {
+    async init() {
+        Engine.init();
+        
+        // Load Base Configs
+        try {
+            const [mapCfg, icons, trans] = await Promise.all([
+                fetchData(CONFIG.urls.configs),
+                fetchData(CONFIG.urls.icons),
+                fetchData(CONFIG.urls.trans)
+            ]);
+            
+            State.icons = {...icons?.Items, ...icons?.Kreaturen};
+            if(trans) {
+                State.translations.res = trans.Ressourcen || {};
+                State.translations.dinos = trans.Kreaturen || {};
+            }
+            
+            this.buildMapSelector(mapCfg);
+            this.loadMap('TheIsland'); // Default
+            
+        } catch(e) {
+            document.getElementById('loading-status').innerText = "Fehler: Configs nicht geladen.";
+            console.error(e);
+        }
+    },
+
+    buildMapSelector(configs) {
+        const dd = document.getElementById('map-dropdown');
+        for(const k in configs) {
+            if(!configs[k].activated) continue;
+            const btn = document.createElement('div');
+            btn.className = 'p-2 hover:bg-gray-700 cursor-pointer text-sm text-gray-300';
+            btn.textContent = configs[k].displayName;
+            btn.onclick = () => { 
+                this.loadMap(k); 
+                document.getElementById('map-dropdown').classList.add('hidden');
+            };
+            dd.appendChild(btn);
+        }
+        
+        // Toggle Logic
+        document.getElementById('map-select-btn').onclick = (e) => {
+            e.stopPropagation();
+            document.getElementById('map-dropdown').classList.toggle('hidden');
+        }
+    },
+
+    async loadMap(key) {
+        // UI Reset
+        document.getElementById('loader').classList.remove('hidden');
+        document.getElementById('loading-status').textContent = "Lade Kartendaten...";
+        
+        // Reset State
+        State.currentMapKey = key;
+        State.scale = 1; 
+        State.pan = {x:0,y:0};
+        State.selectedDino = null;
+        State.activeResources.clear();
+        State.activeObelisks.clear();
+        // Reset Checkboxes UI
+        document.querySelectorAll('.toggle-row').forEach(el => el.classList.remove('active'));
+        
+        const cfg = State.mapConfig = mapConfigs[key]; // Assuming mapConfigs is global or fetched
+        document.getElementById('current-map-name').textContent = cfg.displayName;
+        document.getElementById('ai-map-ref').textContent = cfg.displayName;
+
+        // Image Load (Robust)
+        State.isMapLoaded = false;
+        State.mapImage.src = cfg.mapImageUrl;
+        State.mapImage.onload = () => {
+            State.isMapLoaded = true;
+            Engine.requestRender();
+            document.getElementById('loader').classList.add('hidden');
+        };
+
+        // Data Fetching
+        try {
+            const [dinoData, resData, poiData, obData, caveData] = await Promise.all([
+                fetchData(cfg.creatureDataUrl),
+                fetchData(cfg.resourceDataUrl),
+                fetchData(cfg.publicSpotsDataUrl),
+                fetchData(cfg.obeliskDataUrl),
+                fetchData(cfg.caveSpotsDataUrl)
+            ]);
+
+            State.dinos = dinoData?.dinoSpawns || {};
+            State.resources = resData?.resources || {};
+            State.pois = poiData?.publicSpots || [];
+            State.obelisks = obData?.obelisks || [];
+            State.caves = caveData?.caveSpots || [];
+
+            this.updateSidebarUI();
+            Engine.requestRender();
+
+        } catch(e) {
+            console.error("Data Load Error", e);
+            document.getElementById('loading-status').textContent = "Datenfehler!";
+        }
+    },
+
+    updateSidebarUI() {
+        // Dinos
+        const dList = document.getElementById('dino-list');
+        dList.innerHTML = '';
+        
+        // Search Filter Logic
+        const searchInput = document.getElementById('dino-search');
+        const filterDinos = () => {
+            const term = searchInput.value.toLowerCase();
+            dList.innerHTML = '';
+            
+            const entries = Object.keys(State.dinos).map(k => ({
+                key: k,
+                name: State.translations.dinos[k] || k,
+                icon: State.icons[k]?.iconUrl
+            })).sort((a,b) => a.name.localeCompare(b.name));
+
+            entries.filter(e => e.name.toLowerCase().includes(term)).forEach(e => {
+                const el = document.createElement('div');
+                el.className = 'list-item';
+                if(State.selectedDino === e.key) el.classList.add('selected');
+                
+                el.innerHTML = `<img src="${e.icon || 'https://placehold.co/32?text=?'}"> <span>${e.name}</span>`;
+                el.onclick = () => {
+                    State.selectedDino = e.key;
+                    // Update UI selection classes
+                    Array.from(dList.children).forEach(c => c.classList.remove('selected'));
+                    el.classList.add('selected');
+                    Engine.requestRender();
+                };
+                dList.appendChild(el);
+            });
+        };
+        
+        searchInput.oninput = filterDinos;
+        filterDinos(); // Init
+
+        // Resources
+        const rList = document.getElementById('resource-list');
+        rList.innerHTML = '';
+        Object.keys(State.resources).sort().forEach(r => {
+            const div = document.createElement('div');
+            div.className = 'toggle-row';
+            div.innerHTML = `<div class="checkbox-custom"></div><span class="toggle-label">${State.translations.res[r] || r}</span>`;
+            div.onclick = () => {
+                if(State.activeResources.has(r)) {
+                    State.activeResources.delete(r);
+                    div.classList.remove('active');
+                } else {
+                    State.activeResources.add(r);
                     div.classList.add('active');
-                    drawSpawns();
-                };
-                listContainer.appendChild(div);
-            });
-        }
-
-        function populateResourceControls() {
-            const container = document.getElementById('resource-controls');
-            container.innerHTML = '';
-            if (!allResourceData) return;
-
-            const sortedResources = Object.keys(allResourceData).sort();
-
-            sortedResources.forEach(res => {
-                const label = document.createElement('label');
-                label.className = 'flex items-center text-gray-300 cursor-pointer hover:bg-gray-800 p-2 rounded transition-colors';
-                
-                const checkbox = document.createElement('input');
-                checkbox.type = 'checkbox';
-                checkbox.name = res;
-                checkbox.className = 'mr-3 h-4 w-4 bg-gray-700 border-gray-500 rounded text-amber-500 focus:ring-0';
-                checkbox.onchange = () => drawResources();
-
-                const name = resourceTranslations[res] || res;
-                const iconUrl = getIconUrl(res);
-                
-                const img = document.createElement('img');
-                img.src = iconUrl;
-                img.className = "w-5 h-5 mr-2 object-contain";
-                
-                label.append(checkbox, img, document.createTextNode(name));
-                container.appendChild(label);
-            });
-        }
-
-        function populateObeliskControls() {
-            const container = document.getElementById('obelisk-controls');
-            container.innerHTML = '';
-            if (!allObeliskData.obelisks) return;
-
-            allObeliskData.obelisks.forEach(ob => {
-                const div = document.createElement('label');
-                div.className = 'flex items-center text-gray-300 cursor-pointer hover:bg-gray-800 p-2 rounded';
-                const cb = document.createElement('input');
-                cb.type = 'checkbox';
-                cb.name = ob.name;
-                cb.className = 'mr-3 h-4 w-4 bg-gray-700 border-gray-500 rounded text-amber-500 focus:ring-0';
-                cb.onchange = () => drawObelisks();
-                
-                const colorDot = document.createElement('span');
-                colorDot.className = 'w-3 h-3 rounded-full mr-2 inline-block';
-                colorDot.style.backgroundColor = obeliskConfig[ob.name]?.color || '#fff';
-                colorDot.style.boxShadow = `0 0 5px ${obeliskConfig[ob.name]?.color || '#fff'}`;
-                
-                div.append(cb, colorDot, document.createTextNode(ob.name));
-                container.appendChild(div);
-            });
-        }
-
-        // --- DRAWING LOGIC ---
-
-        function redrawAll() {
-            requestAnimationFrame(() => {
-                [mapCtx, spawnCtx, resourceCtx, spotsCtx, clickCtx, obeliskCtx, caveSpotsCtx, regionCtx, playerSpawnCtx, notesCtx].forEach(ctx => {
-                     if(ctx) ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-                });
-
-                drawMapImage();
-                drawSpawns(); 
-                drawResources();
-                drawObelisks();
-                if(document.getElementById('spots-toggle').checked) drawPublicSpots();
-                if(document.getElementById('cave-spots-toggle').checked) drawCaveSpots();
-            });
-        }
-
-        function drawMapImage() {
-            if(!mapCtx || !mapImage.complete) return;
-            mapCtx.save();
-            mapCtx.translate(panOffset.x, panOffset.y);
-            mapCtx.scale(scale, scale);
-            mapCtx.drawImage(mapImage, 0, 0, mapCanvas.width, mapCanvas.height);
-            mapCtx.restore();
-        }
-
-        function drawSpawns() {
-            if (!selectedCreatureValue) return;
-            const areas = allCreatureData[selectedCreatureValue];
-            if (!areas) return;
-
-            spawnCtx.save();
-            spawnCtx.translate(panOffset.x, panOffset.y);
-            spawnCtx.scale(scale, scale);
-
-            const width = spawnCanvas.width;
-            const height = spawnCanvas.height;
-
-            areas.forEach(area => {
-                const x = ((area.min.lon - MAP_LON_MIN) / MAP_LON_RANGE) * width;
-                const y = ((area.min.lat - MAP_LAT_MIN) / MAP_LAT_RANGE) * height;
-                const w = ((area.max.lon - area.min.lon) / MAP_LON_RANGE) * width;
-                const h = ((area.max.lat - area.min.lat) / MAP_LAT_RANGE) * height;
-
-                spawnCtx.fillStyle = 'rgba(251, 191, 36, 0.4)'; // Amber transparent
-                spawnCtx.fillRect(x, y, w, h);
-                spawnCtx.strokeStyle = 'rgba(251, 191, 36, 0.8)';
-                spawnCtx.lineWidth = 1/scale;
-                spawnCtx.strokeRect(x, y, w, h);
-            });
-            spawnCtx.restore();
-        }
-
-        function drawResources() {
-            const checkboxes = document.querySelectorAll('#resource-controls input[type="checkbox"]:checked');
-            if (checkboxes.length === 0) return;
-            
-            const width = resourceCanvas.width;
-            const height = resourceCanvas.height;
-
-            resourceCtx.save();
-            resourceCtx.translate(panOffset.x, panOffset.y);
-            resourceCtx.scale(scale, scale);
-
-            checkboxes.forEach(cb => {
-                const resName = cb.name;
-                if(allResourceData[resName]) {
-                    const icon = resourceIcons[resName]; // Preloading logic missing in simplified version, assuming placeholder or simple dots
-                    allResourceData[resName].forEach(node => {
-                        const x = ((node.lon - MAP_LON_MIN) / MAP_LON_RANGE) * width;
-                        const y = ((node.lat - MAP_LAT_MIN) / MAP_LAT_RANGE) * height;
-                        const radius = 3 / scale;
-                        
-                        resourceCtx.beginPath();
-                        resourceCtx.arc(x, y, radius, 0, Math.PI*2);
-                        resourceCtx.fillStyle = resourceConfig[resName]?.color || '#fff';
-                        resourceCtx.fill();
-                    });
                 }
-            });
-            resourceCtx.restore();
-        }
-
-        function drawObelisks() {
-            const checkboxes = document.querySelectorAll('#obelisk-controls input[type="checkbox"]:checked');
-            if(checkboxes.length === 0) return;
-             const width = obeliskCanvas.width;
-            const height = obeliskCanvas.height;
-
-            obeliskCtx.save();
-            obeliskCtx.translate(panOffset.x, panOffset.y);
-            obeliskCtx.scale(scale, scale);
-
-            checkboxes.forEach(cb => {
-                const obName = cb.name;
-                const ob = allObeliskData.obelisks.find(o => o.name === obName);
-                if(ob) {
-                    const x = ((ob.lon - MAP_LON_MIN) / MAP_LON_RANGE) * width;
-                    const y = ((ob.lat - MAP_LAT_MIN) / MAP_LAT_RANGE) * height;
-                    const radius = 8 / scale;
-
-                    obeliskCtx.beginPath();
-                    obeliskCtx.arc(x, y, radius, 0, Math.PI*2);
-                    obeliskCtx.fillStyle = obeliskConfig[obName]?.color || '#fff';
-                    obeliskCtx.shadowBlur = 10;
-                    obeliskCtx.shadowColor = obeliskCtx.fillStyle;
-                    obeliskCtx.fill();
-                }
-            });
-            obeliskCtx.restore();
-        }
-
-        function drawPublicSpots() {
-           if(!allPublicSpotsData.publicSpots) return;
-           const width = spotsCanvas.width;
-           const height = spotsCanvas.height;
-           
-           spotsCtx.save();
-           spotsCtx.translate(panOffset.x, panOffset.y);
-           spotsCtx.scale(scale, scale);
-           
-           allPublicSpotsData.publicSpots.forEach(spot => {
-                const x = ((spot.lon - SPOT_LON_MIN) / SPOT_LON_RANGE) * width;
-                const y = ((spot.lat - SPOT_LAT_MIN) / SPOT_LAT_RANGE) * height;
-                
-                // Draw Pin
-                spotsCtx.beginPath();
-                spotsCtx.moveTo(x, y);
-                spotsCtx.lineTo(x - 5/scale, y - 15/scale);
-                spotsCtx.quadraticCurveTo(x, y - 25/scale, x + 5/scale, y - 15/scale);
-                spotsCtx.closePath();
-                spotsCtx.fillStyle = '#f59e0b'; // Amber
-                spotsCtx.fill();
-                spotsCtx.strokeStyle = '#000';
-                spotsCtx.lineWidth = 1/scale;
-                spotsCtx.stroke();
-           });
-           spotsCtx.restore();
-        }
-
-        function drawCaveSpots() {
-           if(!allCaveSpotsData.caveSpots) return;
-           const width = caveSpotsCanvas.width;
-           const height = caveSpotsCanvas.height;
-           
-           caveSpotsCtx.save();
-           caveSpotsCtx.translate(panOffset.x, panOffset.y);
-           caveSpotsCtx.scale(scale, scale);
-           
-           allCaveSpotsData.caveSpots.forEach(spot => {
-                const x = ((spot.lon - SPOT_LON_MIN) / SPOT_LON_RANGE) * width;
-                const y = ((spot.lat - SPOT_LAT_MIN) / SPOT_LAT_RANGE) * height;
-                
-                caveSpotsCtx.beginPath();
-                caveSpotsCtx.arc(x, y, 6/scale, 0, Math.PI*2);
-                caveSpotsCtx.fillStyle = '#a855f7'; // Purple
-                caveSpotsCtx.fill();
-                caveSpotsCtx.strokeStyle = '#fff';
-                caveSpotsCtx.lineWidth = 1/scale;
-                caveSpotsCtx.stroke();
-           });
-           caveSpotsCtx.restore();
-        }
-
-        // --- INTERACTION ---
-
-        function setupInteraction() {
-            clickCanvas.addEventListener('mousedown', (e) => {
-                isPanning = true;
-                panStart = { x: e.clientX - panOffset.x, y: e.clientY - panOffset.y };
-                clickCanvas.style.cursor = 'grabbing';
-            });
-
-            window.addEventListener('mouseup', () => {
-                isPanning = false;
-                clickCanvas.style.cursor = 'grab';
-            });
-
-            clickCanvas.addEventListener('mousemove', (e) => {
-                const rect = clickCanvas.getBoundingClientRect();
-                const mouseX = e.clientX - rect.left;
-                const mouseY = e.clientY - rect.top;
-                
-                const mapX = (mouseX - panOffset.x) / scale;
-                const mapY = (mouseY - panOffset.y) / scale;
-                
-                const lon = (mapX / mapCanvas.width) * 100;
-                const lat = (mapY / mapCanvas.height) * 100;
-                
-                document.getElementById('lat-display').innerHTML = `Lat: <span class="text-white font-bold">${Math.max(0, Math.min(100, lat)).toFixed(2)}</span>`;
-                document.getElementById('lon-display').innerHTML = `Lon: <span class="text-white font-bold">${Math.max(0, Math.min(100, lon)).toFixed(2)}</span>`;
-
-                if (isPanning) {
-                    panOffset.x = e.clientX - panStart.x;
-                    panOffset.y = e.clientY - panStart.y;
-                    
-                    // Boundary check simplified
-                    // const minX = clickCanvas.width * (1 - scale);
-                    // panOffset.x = Math.min(0, Math.max(minX, panOffset.x));
-                    // panOffset.y = Math.min(0, Math.max(clickCanvas.height * (1 - scale), panOffset.y));
-                    
-                    redrawAll();
-                }
-            });
-
-            clickCanvas.addEventListener('wheel', (e) => {
-                e.preventDefault();
-                const rect = clickCanvas.getBoundingClientRect();
-                const mouseX = e.clientX - rect.left;
-                const mouseY = e.clientY - rect.top;
-
-                const zoom = e.deltaY < 0 ? 1.1 : 0.9;
-                const newScale = Math.min(maxScale, Math.max(minScale, scale * zoom));
-                
-                const worldX = (mouseX - panOffset.x) / scale;
-                const worldY = (mouseY - panOffset.y) / scale;
-                
-                panOffset.x = mouseX - worldX * newScale;
-                panOffset.y = mouseY - worldY * newScale;
-                scale = newScale;
-                
-                redrawAll();
-            });
-
-            clickCanvas.addEventListener('click', (e) => {
-                if(isPanning) return;
-                const rect = clickCanvas.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                
-                // Inverse transform to get map coords
-                const mapX = (x - panOffset.x) / scale;
-                const mapY = (y - panOffset.y) / scale;
-                
-                // Convert to Game Coords
-                const width = mapCanvas.width;
-                const height = mapCanvas.height;
-                
-                // Check Public Spots
-                if(document.getElementById('spots-toggle').checked && allPublicSpotsData.publicSpots) {
-                    const hit = allPublicSpotsData.publicSpots.find(spot => {
-                        const sx = ((spot.lon - SPOT_LON_MIN) / SPOT_LON_RANGE) * width;
-                        const sy = ((spot.lat - SPOT_LAT_MIN) / SPOT_LAT_RANGE) * height;
-                        const dist = Math.sqrt(Math.pow(mapX - sx, 2) + Math.pow(mapY - sy, 2));
-                        return dist < 20/scale; // Hitbox
-                    });
-                    
-                    if(hit) {
-                        openDetailPanel(hit);
-                        return;
-                    }
-                }
-                
-                // Check Caves
-                 if(document.getElementById('cave-spots-toggle').checked && allCaveSpotsData.caveSpots) {
-                    const hit = allCaveSpotsData.caveSpots.find(spot => {
-                        const sx = ((spot.lon - SPOT_LON_MIN) / SPOT_LON_RANGE) * width;
-                        const sy = ((spot.lat - SPOT_LAT_MIN) / SPOT_LAT_RANGE) * height;
-                        const dist = Math.sqrt(Math.pow(mapX - sx, 2) + Math.pow(mapY - sy, 2));
-                        return dist < 20/scale;
-                    });
-                    
-                    if(hit) {
-                        openDetailPanel(hit);
-                        return;
-                    }
-                }
-            });
-        }
-
-        function setupTabs() {
-            const buttons = document.querySelectorAll('.tab-btn');
-            buttons.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-                    document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
-                    btn.classList.add('active');
-                    document.getElementById(btn.dataset.target).classList.add('active');
-                });
-            });
-        }
-
-        function openDetailPanel(data) {
-            const panel = document.getElementById('detail-panel');
-            const content = document.getElementById('detail-content');
-            
-            let html = `<h2 class="text-3xl text-amber-500 font-bold mb-2">${data.name}</h2>`;
-            html += `<div class="text-sm text-gray-400 mb-4">Lat: ${data.lat.toFixed(1)} / Lon: ${data.lon.toFixed(1)}</div>`;
-            
-            if(data.images && data.images.length) {
-                html += `<div class="relative w-full h-48 mb-4 rounded overflow-hidden border border-gray-700">
-                            <img src="${data.images[0]}" class="w-full h-full object-cover">
-                         </div>`;
-            }
-            
-            if(data.description || data.shortDescription) {
-                html += `<div class="bg-gray-800 p-3 rounded border-l-2 border-amber-500 text-gray-300 text-sm leading-relaxed">
-                            ${data.description || data.shortDescription}
-                         </div>`;
-            }
-            
-            if(data.artifacts) {
-                html += `<h3 class="mt-4 font-bold text-gray-300">Artefakte</h3><div class="flex gap-2 mt-2">`;
-                data.artifacts.forEach(a => {
-                   html += `<span class="px-2 py-1 bg-gray-700 rounded text-xs text-amber-300 border border-gray-600">${a.name}</span>`; 
-                });
-                html += `</div>`;
-            }
-
-            content.innerHTML = html;
-            panel.classList.add('open');
-        }
-
-        document.getElementById('close-detail').addEventListener('click', () => {
-            document.getElementById('detail-panel').classList.remove('open');
+                Engine.requestRender();
+            };
+            rList.appendChild(div);
         });
 
-
-        // --- INITIALIZATION ---
-
-        async function loadMapData(mapKey) {
-            const indicator = document.getElementById('loading-indicator');
-            const loadingText = document.getElementById('loading-text');
-            indicator.style.display = 'flex';
-            loadingText.textContent = `Lade ${mapConfigs[mapKey]?.displayName || 'Karte'}...`;
-            
-            currentMapKey = mapKey;
-            const config = mapConfigs[mapKey];
-            
-            document.getElementById('map-name').textContent = config.displayName;
-            selectedCreatureValue = null;
-            scale = 1; panOffset = {x:0, y:0};
-            
-            mapImage.src = config.mapImageUrl;
-            
-            try {
-                const [creatureData, resourceData, spotsData, obeliskData, caveData] = await Promise.all([
-                    fetchData(config.creatureDataUrl),
-                    fetchData(config.resourceDataUrl),
-                    fetchData(config.publicSpotsDataUrl),
-                    fetchData(config.obeliskDataUrl),
-                    fetchData(config.caveSpotsDataUrl)
-                ]);
-
-                if(creatureData) allCreatureData = creatureData.dinoSpawns || {}; 
-                if(resourceData) allResourceData = resourceData.resources || {};
-                if(spotsData) allPublicSpotsData = spotsData || { publicSpots: [] };
-                if(obeliskData) allObeliskData = obeliskData || { obelisks: [] };
-                if(caveData) allCaveSpotsData = caveData || { caveSpots: [] };
-
-                populateCreatureList();
-                populateResourceControls();
-                populateObeliskControls();
-
-                mapImage.onload = () => {
-                    handleResize();
-                    indicator.style.display = 'none';
-                    redrawAll();
-                };
-                
-                // Fallback if image fails
-                mapImage.onerror = () => {
-                    loadingText.textContent = "Fehler: Kartenbild konnte nicht geladen werden.";
-                    loadingText.classList.add('text-red-500');
-                };
-                
-            } catch (err) {
-                console.error(err);
-                loadingText.textContent = "Fehler beim Laden der Daten.";
-            }
-        }
-
-        function handleResize() {
-            const container = document.querySelector('.map-area');
-            const size = Math.min(container.clientWidth, container.clientHeight);
-            
-            const canvases = document.querySelectorAll('canvas');
-            canvases.forEach(cvs => {
-                cvs.width = size;
-                cvs.height = size;
-                cvs.style.width = size + 'px';
-                cvs.style.height = size + 'px';
-                
-                // Center
-                cvs.style.left = (container.clientWidth - size) / 2 + 'px';
-                cvs.style.top = (container.clientHeight - size) / 2 + 'px';
-            });
-            
-            redrawAll();
-        }
-
-        window.addEventListener('resize', handleResize);
-
-        document.addEventListener('DOMContentLoaded', async () => {
-            mapCanvas = document.getElementById('map-canvas'); mapCtx = mapCanvas.getContext('2d');
-            spawnCanvas = document.getElementById('spawn-canvas'); spawnCtx = spawnCanvas.getContext('2d');
-            clickCanvas = document.getElementById('click-canvas'); clickCtx = clickCanvas.getContext('2d');
-            resourceCanvas = document.getElementById('resource-canvas'); resourceCtx = resourceCanvas.getContext('2d');
-            spotsCanvas = document.getElementById('spots-canvas'); spotsCtx = spotsCanvas.getContext('2d');
-            obeliskCanvas = document.getElementById('obelisk-canvas'); obeliskCtx = obeliskCanvas.getContext('2d');
-            caveSpotsCanvas = document.getElementById('cave-spots-canvas'); caveSpotsCtx = caveSpotsCanvas.getContext('2d');
-
-            // Dummy context init for safe array looping in redraw
-            regionCanvas = document.getElementById('region-canvas'); regionCtx = regionCanvas.getContext('2d');
-            playerSpawnCanvas = document.getElementById('player-spawn-canvas'); playerSpawnCtx = playerSpawnCanvas.getContext('2d');
-            notesCanvas = document.getElementById('notes-canvas'); notesCtx = notesCanvas.getContext('2d');
-
-            mapImage = document.getElementById('map-image');
-            tooltipElement = document.getElementById('map-tooltip');
-            tooltipContentElement = document.getElementById('tooltip-content');
-
-            setupInteraction();
-            setupTabs();
-            
-            document.getElementById('map-select-btn').onclick = (e) => {
-                e.stopPropagation();
-                document.getElementById('map-list').classList.toggle('hidden');
-            }
-
-            document.getElementById('creature-search').addEventListener('input', (e) => {
-                populateCreatureList(e.target.value);
-            });
-
-            document.getElementById('spots-toggle').addEventListener('change', redrawAll);
-            document.getElementById('cave-spots-toggle').addEventListener('change', redrawAll);
-            document.getElementById('select-all-resources').addEventListener('change', (e) => {
-                document.querySelectorAll('#resource-controls input').forEach(cb => cb.checked = e.target.checked);
-                redrawAll();
-            });
-
-            document.getElementById('zoom-in').onclick = () => { scale = Math.min(maxScale, scale * 1.2); redrawAll(); };
-            document.getElementById('zoom-out').onclick = () => { scale = Math.max(minScale, scale / 1.2); redrawAll(); };
-
-            // Initial Config Load
-            const configUrl = 'https://raw.githubusercontent.com/iophantonie/iophantonie-IOP_Custom_Map_Explorer.github.io/main/MapConfigs/MapConfigs.jsn'; 
-            const dbUrl = 'https://raw.githubusercontent.com/iophantonie/iophantonie-IOP_Custom_Map_Explorer.github.io/refs/heads/main/Icon_Datenbank/Icondb.jsn';
-            const transUrl = 'https://raw.githubusercontent.com/iophantonie/iophantonie-IOP_Custom_Map_Explorer.github.io/main/Translation_Datenbank/translationdb.jsn';
-            
-            try {
-                const [configs, itemDb, transDb] = await Promise.all([fetchData(configUrl), fetchData(dbUrl), fetchData(transUrl)]);
-                
-                if(configs) mapConfigs = configs;
-                if(itemDb) globalItemDatabase = {...itemDb.Items, ...itemDb.Kreaturen};
-                if(transDb) {
-                    resourceTranslations = transDb.Ressourcen || {};
-                    creatureTranslations = transDb.Kreaturen || {};
+        // Obelisks
+        const oList = document.getElementById('obelisk-list');
+        oList.innerHTML = '';
+        State.obelisks.forEach(ob => {
+            const div = document.createElement('div');
+            div.className = 'toggle-row';
+            div.innerHTML = `<div class="checkbox-custom"></div><span class="toggle-label">${ob.name}</span>`;
+            div.onclick = () => {
+                if(State.activeObelisks.has(ob.name)) {
+                    State.activeObelisks.delete(ob.name);
+                    div.classList.remove('active');
+                } else {
+                    State.activeObelisks.add(ob.name);
+                    div.classList.add('active');
                 }
-
-                populateMapList();
-                loadMapData('TheIsland'); 
-            } catch(e) {
-                console.error("Critical Init Error:", e);
-                document.getElementById('loading-text').innerText = "Fehler beim Laden der Konfiguration.";
-            }
+                Engine.requestRender();
+            };
+            oList.appendChild(div);
         });
-    </script>
+    },
+
+    // UI ACTIONS
+    switchTab(tabId) {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-view').forEach(v => v.classList.remove('active'));
+        
+        // Find button by onclick attr logic or structure (Simplified here)
+        // In clean DOM usage we would use IDs on buttons, but here we query:
+        const btnIndex = ['dinos', 'resources', 'pois', 'ai', 'settings'].indexOf(tabId);
+        document.querySelectorAll('.tab-btn')[btnIndex].classList.add('active');
+        document.getElementById(`tab-${tabId}`).classList.add('active');
+        
+        // IMPORTANT: Ensure layout is correct after tab switch
+        setTimeout(() => Engine.resize(), 50);
+    },
+
+    toggleLayer(layerName) {
+        State.layers[layerName] = !State.layers[layerName];
+        const el = document.getElementById(`cb-${layerName}`);
+        if(el) el.parentElement.classList.toggle('active');
+        Engine.requestRender();
+    },
+
+    toggleAllResources() {
+        const allKeys = Object.keys(State.resources);
+        const rList = document.getElementById('resource-list');
+        
+        if(State.activeResources.size === allKeys.length) {
+            State.activeResources.clear(); // Deselect All
+            Array.from(rList.children).forEach(c => c.classList.remove('active'));
+        } else {
+            allKeys.forEach(k => State.activeResources.add(k)); // Select All
+            Array.from(rList.children).forEach(c => c.classList.add('active'));
+        }
+        Engine.requestRender();
+    },
+
+    zoomIn() { State.scale = Math.min(10, State.scale * 1.2); Engine.requestRender(); },
+    zoomOut() { State.scale = Math.max(1, State.scale / 1.2); Engine.requestRender(); },
+
+    handleMapClick(e) {
+        const rect = Engine.canvases.input.getBoundingClientRect();
+        const mouseX = e.clientX - rect.left;
+        const mouseY = e.clientY - rect.top;
+        
+        // Calculate World Coords relative to rendered map
+        const worldX = (mouseX - State.pan.x) / State.scale;
+        const worldY = (mouseY - State.pan.y) / State.scale;
+        
+        const w = Engine.canvases.map.width;
+        const h = Engine.canvases.map.height;
+
+        // Check POIs
+        if(State.layers.publicSpots) {
+            const hit = State.pois.find(p => {
+                const px = (p.lon / 100) * w;
+                const py = (p.lat / 100) * h;
+                const dist = Math.sqrt((worldX-px)**2 + (worldY-py)**2);
+                return dist < (15 / State.scale); // Hitbox
+            });
+            if(hit) this.showInfo(hit);
+        }
+    },
+
+    showInfo(data) {
+        const panel = document.getElementById('info-panel');
+        document.getElementById('info-title').textContent = data.name;
+        document.getElementById('info-body').innerHTML = `
+            <img src="${data.images?.[0] || ''}" class="w-full rounded mb-4 bg-gray-800" onerror="this.style.display='none'">
+            <div class="mb-2 text-gray-400">Lat: ${data.lat} / Lon: ${data.lon}</div>
+            <p>${data.description || 'Keine Beschreibung.'}</p>
+        `;
+        panel.classList.add('visible');
+    },
+
+    closeInfo() {
+        document.getElementById('info-panel').classList.remove('visible');
+    },
+    
+    // AI Chat
+    async sendAiMessage() {
+        const inp = document.getElementById('ai-input');
+        const txt = inp.value.trim();
+        if(!txt) return;
+        
+        const log = document.getElementById('chat-log');
+        log.innerHTML += `<div class="msg user">${txt}</div>`;
+        inp.value = '';
+        log.scrollTop = log.scrollHeight;
+
+        const apiKey = ""; // API KEY HERE
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+        
+        const context = `Map: ${State.mapConfig?.displayName}. User looks at: ${State.selectedDino || 'Nothing'}.`;
+        
+        try {
+            const res = await fetch(url, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    contents: [{ parts: [{ text: txt }] }],
+                    systemInstruction: { parts: [{ text: `You are an ARK Survival Expert. German language. Context: ${context}` }] }
+                })
+            });
+            const data = await res.json();
+            const ans = data.candidates?.[0]?.content?.parts?.[0]?.text || "Fehler.";
+            log.innerHTML += `<div class="msg bot">${ans.replace(/\n/g, '<br>')}</div>`;
+        } catch(e) {
+            log.innerHTML += `<div class="msg bot" style="color:red">Verbindungsfehler.</div>`;
+        }
+        log.scrollTop = log.scrollHeight;
+    }
+};
+
+// Utils
+async function fetchData(url) {
+    try {
+        const r = await fetch(url);
+        const t = await r.text();
+        return JSON.parse(t.replace(/^\uFEFF/, '').replace(/\u00A0/g, ' '));
+    } catch(e) { return null; }
+}
+
+// Global hook for Map Configs (Needed because loadMap expects it)
+let mapConfigs = {};
+fetchData(CONFIG.urls.configs).then(c => {
+    if(c) {
+        mapConfigs = c;
+        app.init();
+    } else {
+        document.getElementById('loading-status').textContent = "FATAL: Configs failed.";
+    }
+});
+
+</script>
 </body>
 </html>
