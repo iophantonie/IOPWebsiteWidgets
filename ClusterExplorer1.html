@@ -3,1278 +3,860 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IOP Cluster Widget</title>
-    <!-- Tailwind für Basis-Styling -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <title>Cluster Live Maps</title>
+    <link href="https://fonts.googleapis.com/css2?family=Acme&display=swap" rel="stylesheet">
     
     <style>
-        /* --- CSS STYLES --- */
-        
-        /* RESET & BASE */
-        * { box-sizing: border-box; }
-        body, html {
+        /* Farben und Schriftarten */
+        :root {
+            --color-red: #E53935; /* Feuerrot */
+            --color-dark: rgba(20, 20, 20, 0.95);
+            --color-text: #f7f7f7;
+            --color-light-dark: rgba(30, 30, 30, 0.95);
+            --color-gold: #FFEB3B;
+            --sidebar-width: 260px;
+            
+            --font-main: sans-serif;
+            --font-header: 'Acme', var(--font-main);
+        }
+
+        body {
+            background-color: transparent;
+            font-family: var(--font-main);
+            color: var(--color-text);
             margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden; /* WICHTIG: Kein Scrollen der Seite */
-            background-color: #0f1115; /* Dunkler Hintergrund als Default */
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            color: #e2e8f0;
-        }
-
-        /* APP SHELL GRID - Das Layout */
-        .app-container {
-            display: grid;
-            grid-template-columns: 320px 1fr; /* Sidebar Breite fix, Rest Karte */
-            height: 100vh;
-            width: 100vw;
-            background-color: #0f1115;
-        }
-
-        /* SIDEBAR STYLES */
-        .sidebar {
-            background: #1a1d24;
-            border-right: 1px solid #333;
+            padding: 20px;
             display: flex;
             flex-direction: column;
-            z-index: 20;
-            box-shadow: 2px 0 10px rgba(0,0,0,0.5);
-            height: 100%;
+            align-items: center;
+            width: 100%;
+            min-height: 100vh; 
+            box-sizing: border-box;
+            overflow-y: auto; 
         }
+
+        /* Hauptcontainer */
+        .map-widget-container {
+            background-color: var(--color-dark);
+            border-radius: 12px;
+            border: 3px solid var(--color-red);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.8);
+            width: 100%;
+            max-width: 1800px;
+            height: auto; 
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+            margin-bottom: 50px; 
+        }
+
+        /* Header */
+        .main-page-header {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--color-red);
+            font-family: var(--font-header);
+            text-transform: uppercase;
+            text-align: center;
+            padding: 10px 0;
+            margin: 0;
+            text-shadow: 0 0 20px rgba(229, 57, 53, 0.4);
+            border-bottom: 2px solid var(--color-red);
+            background-color: rgba(0, 0, 0, 0.3);
+            flex-shrink: 0;
+        }
+
+        /* Layout Wrapper */
+        .map-body-wrapper {
+            display: flex;
+            flex-direction: row;
+            align-items: stretch; 
+        }
+
+        /* --- Sidebar --- */
+        .map-sidebar {
+            width: var(--sidebar-width);
+            background-color: rgba(0, 0, 0, 0.4);
+            border-right: 2px solid var(--color-red);
+            display: flex;
+            flex-direction: column;
+            min-height: 800px; 
+            flex-shrink: 0;
+        }
+
+        .sidebar-content-sticky {
+            position: sticky;
+            top: 0;
+            max-height: 100vh;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: var(--color-red) transparent;
+        }
+
+        .sidebar-content-sticky::-webkit-scrollbar { width: 6px; }
+        .sidebar-content-sticky::-webkit-scrollbar-thumb { background-color: var(--color-red); border-radius: 3px; }
 
         .sidebar-header {
             padding: 15px;
-            background: #14161b;
-            border-bottom: 1px solid #333;
+            text-align: center;
+            border-bottom: 2px solid var(--color-red);
+            background-color: rgba(229, 57, 53, 0.1);
         }
 
-        .sidebar-tabs {
-            display: flex;
-            background: #252830;
+        .sidebar-title {
+            font-family: var(--font-header);
+            font-size: 1.2rem;
+            color: var(--color-text);
+            text-transform: uppercase;
+            margin: 0;
         }
 
-        .tab-btn {
-            flex: 1;
-            padding: 10px;
+        .group-header {
+            padding: 10px 15px 5px 15px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--color-red);
+            text-transform: uppercase;
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+            margin-top: 10px;
+            font-family: var(--font-header);
+        }
+        .group-header:first-child { margin-top: 0; }
+
+        .map-btn {
             background: transparent;
             border: none;
-            color: #888;
+            color: rgba(255, 255, 255, 0.7);
+            padding: 10px 15px;
+            text-align: left;
             cursor: pointer;
-            border-bottom: 2px solid transparent;
-            transition: all 0.2s;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
+            font-family: var(--font-main);
+            transition: all 0.2s ease;
+            border-left: 3px solid transparent;
+            width: 100%; 
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-sizing: border-box; 
         }
 
-        .tab-btn:hover { color: #fff; background: #2d313a; }
-        .tab-btn.active {
-            color: #fbbf24; /* Amber */
-            border-bottom: 2px solid #fbbf24;
-            background: #2d313a;
+        .map-btn:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+            color: #fff;
+            padding-left: 20px; 
         }
 
-        .sidebar-content {
-            flex: 1;
-            overflow-y: auto; /* Nur hier wird gescrollt */
-            padding: 15px;
-            position: relative;
+        .map-btn.active {
+            background-color: rgba(229, 57, 53, 0.15);
+            color: #fff;
+            border-left-color: var(--color-red);
+            font-weight: 600;
         }
 
-        /* Tab Logic */
-        .tab-pane { display: none; }
-        .tab-pane.active { display: block; animation: fadeIn 0.3s; }
+        .status-dot {
+            height: 6px;
+            width: 6px;
+            background-color: #4CAF50; 
+            border-radius: 50%;
+            box-shadow: 0 0 5px #4CAF50;
+            flex-shrink: 0; 
+        }
 
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        /* AI CHAT STYLES */
-        .chat-container {
+        /* --- Content Area --- */
+        .content-area {
+            flex-grow: 1;
             display: flex;
             flex-direction: column;
-            height: 100%;
-            min-height: 400px;
-        }
-        .chat-messages {
-            flex: 1;
-            overflow-y: auto;
-            margin-bottom: 10px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        .chat-message {
-            padding: 8px 12px;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            max-width: 90%;
-            line-height: 1.4;
-        }
-        .chat-message.user {
-            align-self: flex-end;
-            background-color: #3b82f6; /* Blue */
-            color: white;
-        }
-        .chat-message.ai {
-            align-self: flex-start;
-            background-color: #374151; /* Dark Gray */
-            color: #e5e7eb;
-            border-left: 2px solid #fbbf24; /* Amber Accent */
-        }
-        .chat-input-area {
-            display: flex;
-            gap: 5px;
-        }
-        .ai-typing {
-            font-style: italic;
-            color: #fbbf24;
-            font-size: 0.8rem;
-            margin-bottom: 5px;
-            display: none;
+            background-color: #121212;
+            width: calc(100% - var(--sidebar-width)); 
         }
 
-        /* MAP AREA - NEU: Flexbox für automatische Zentrierung */
-        .map-area {
+        /* 1. Map Bereich (VERGRÖSSERT) */
+        .iframe-container {
+            width: 100%;
+            height: 85vh; 
+            min-height: 600px;
             position: relative;
-            background: #000;
-            overflow: hidden;
+            background-color: #000;
+            border-bottom: 3px solid var(--color-red);
+            flex-shrink: 0; 
+        }
+
+        iframe {
             width: 100%;
             height: 100%;
-            display: flex; /* Flexbox aktiviert */
-            justify-content: center; /* Horizontal zentrieren */
-            align-items: center; /* Vertikal zentrieren */
+            border: none;
+            display: block;
         }
 
-        /* Canvas Stack ist jetzt relativ zum Flex-Container */
-        #canvas-stack {
-            position: relative; 
-            /* Keine absolute Positionierung (top/left) mehr nötig durch Flexbox */
-            box-shadow: 0 0 50px rgba(0,0,0,0.5); /* Hübscher Schatten um die Map */
+        /* 2. POI Bereich */
+        .poi-section {
+            background-color: var(--color-light-dark);
+            padding: 20px;
+            box-sizing: border-box;
+            min-height: 300px; 
         }
 
-        canvas {
+        /* Kategorie Header */
+        .poi-category-header {
+            font-family: var(--font-header);
+            font-size: 1.1rem;
+            color: var(--color-gold);
+            margin-bottom: 10px;
+            margin-top: 15px;
+            padding-left: 10px;
+            border-left: 4px solid var(--color-red);
+            text-transform: uppercase;
+        }
+        .poi-category-header:first-child { margin-top: 0; }
+
+        /* Slider Wrapper */
+        .poi-slider-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        /* Horizontaler Slider */
+        .poi-slider {
+            display: flex;
+            gap: 15px;
+            overflow-x: auto;
+            padding: 10px 5px; 
+            scroll-behavior: smooth;
+            width: 100%;
+            -ms-overflow-style: none;  
+            scrollbar-width: none; 
+        }
+        
+        .poi-slider::-webkit-scrollbar { display: none; }
+
+        /* Pfeile */
+        .slider-arrow {
             position: absolute;
-            top: 0; left: 0;
-            pointer-events: none; /* Klicks gehen durch */
-        }
-
-        #click-canvas {
-            pointer-events: auto; /* Nur dieser Canvas fängt Maus-Events */
-            cursor: grab;
-        }
-
-        /* HUD ELEMENTS */
-        .hud-top-right {
-            position: absolute; top: 20px; right: 20px; z-index: 10;
-        }
-        .hud-bottom-right {
-            position: absolute; bottom: 20px; right: 20px; z-index: 10; display: flex; gap: 5px;
-        }
-
-        .hud-box {
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(5px);
-            padding: 8px 12px;
-            border-radius: 4px;
-            border: 1px solid #444;
-            font-family: monospace;
-            font-size: 14px;
-            color: #fbbf24;
-        }
-
-        .hud-btn {
-            background: rgba(0, 0, 0, 0.7);
-            color: white;
-            border: 1px solid #444;
-            width: 36px; height: 36px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 40px;
+            height: 40px;
+            background-color: rgba(0, 0, 0, 0.8);
+            border: 2px solid var(--color-red);
+            border-radius: 50%;
+            color: #fff;
             display: flex;
             align-items: center;
             justify-content: center;
-        }
-        .hud-btn:hover { background: #fbbf24; color: black; border-color: #fbbf24; }
-
-        /* DETAIL PANEL (SLIDE IN) */
-        .detail-panel {
-            position: absolute;
-            top: 0; right: 0; bottom: 0;
-            width: 350px;
-            background: rgba(20, 24, 30, 0.95);
-            backdrop-filter: blur(10px);
-            border-left: 1px solid #fbbf24;
-            transform: translateX(100%);
-            transition: transform 0.3s ease-in-out;
-            z-index: 30;
-            box-shadow: -5px 0 20px rgba(0,0,0,0.5);
-        }
-
-        .detail-panel.open {
-            transform: translateX(0);
-        }
-
-        /* LIST STYLES */
-        .creature-item {
-            padding: 8px;
             cursor: pointer;
-            border-radius: 4px;
-            margin-bottom: 2px;
+            z-index: 10;
+            transition: all 0.2s ease;
+            user-select: none;
+            font-size: 1.2rem;
+            font-weight: bold;
+            opacity: 0.8;
+            display: none; 
+        }
+
+        .slider-arrow:hover {
+            background-color: var(--color-red);
+            box-shadow: 0 0 10px rgba(229, 57, 53, 0.6);
+            opacity: 1;
+        }
+
+        .slider-arrow.prev { left: -15px; }
+        .slider-arrow.next { right: -15px; }
+        
+        @media (max-width: 768px) {
+            .slider-arrow { display: none; } 
+        }
+
+        /* POI Card Styling */
+        .poi-card {
+            flex: 0 0 240px; 
+            background-color: rgba(0, 0, 0, 0.6);
+            border-radius: 6px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.2s, border-color 0.2s;
+            display: flex;
+            flex-direction: column;
+            cursor: pointer; /* Zeigt an, dass es klickbar ist */
+        }
+
+        .poi-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--color-red);
+            box-shadow: 0 4px 15px rgba(229, 57, 53, 0.3);
+        }
+
+        .poi-image {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            border-bottom: 1px solid var(--color-red);
+        }
+
+        .poi-info {
+            padding: 12px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .poi-title {
+            font-family: var(--font-header);
+            font-size: 1rem;
+            color: #fff;
+            margin-bottom: 4px;
+            line-height: 1.2;
+        }
+
+        .poi-coords {
+            font-size: 0.85rem;
+            color: var(--color-gold);
+            font-weight: bold;
+        }
+        
+        .poi-subtext {
+             font-size: 0.75rem;
+             color: rgba(255,255,255,0.6);
+             margin-top: 2px;
+        }
+
+        /* MODAL (LIGHTBOX) STYLES */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            display: none; /* Standard aus */
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-content {
+            background-color: var(--color-light-dark);
+            border: 2px solid var(--color-red);
+            border-radius: 12px;
+            max-width: 90%;
+            max-height: 90%;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 0 30px rgba(229, 57, 53, 0.5);
+            display: flex;
+            flex-direction: column;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: scale(1);
+        }
+
+        .modal-close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            cursor: pointer;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             transition: background 0.2s;
         }
-        .creature-item:hover { background: #2d313a; }
-        .creature-item.active { background: rgba(251, 191, 36, 0.1); border-left: 3px solid #fbbf24; }
 
-        /* Custom Scrollbar */
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: #1a1d24; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #666; }
-
-        /* TOGGLE SWITCHES */
-        .switch { position: relative; display: inline-block; width: 40px; height: 20px; }
-        .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #444; transition: .4s; }
-        .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 2px; bottom: 2px; background-color: white; transition: .4s; }
-        input:checked + .slider { background-color: #fbbf24; }
-        input:checked + .slider:before { transform: translateX(20px); }
-        .slider.round { border-radius: 34px; }
-        .slider.round:before { border-radius: 50%; }
-        .toggle-wrapper { display: flex; align-items: center; margin-bottom: 10px; }
-
-        /* LOADING & TITLES */
-        .section-title { font-size: 0.8rem; text-transform: uppercase; color: #6b7280; font-weight: bold; margin-bottom: 10px; letter-spacing: 0.05em; }
-        
-        .loading-overlay {
-            position: absolute; top:0; left:0; right:0; bottom:0;
-            background: #0f1115; z-index: 50;
-            display: flex; flex-direction: column;
-            align-items: center; justify-content: center;
+        .modal-close-btn:hover {
+            background: var(--color-red);
         }
-        .spinner { border: 4px solid #333; border-top: 4px solid #fbbf24; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom: 10px; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        
-        .map-switcher ul {
+
+        .modal-image {
+            width: 100%;
+            max-height: 70vh;
+            object-fit: contain;
+            background-color: black;
+            border-bottom: 2px solid var(--color-red);
+        }
+
+        .modal-details {
+            padding: 20px;
+            text-align: center;
+        }
+
+        .modal-title {
+            font-family: var(--font-header);
+            font-size: 1.8rem;
+            color: var(--color-text);
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+
+        .modal-type {
+            color: var(--color-red);
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 1rem;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .modal-coords {
+            font-size: 1.2rem;
+            color: var(--color-gold);
+            font-weight: bold;
+            background: rgba(0,0,0,0.3);
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+        }
+
+        /* Lade-Animation */
+        .loader {
             position: absolute;
-            background: #2d313a;
-            border: 1px solid #444;
-            border-radius: 4px;
-            width: 200px;
-            z-index: 100;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-            max-height: 300px;
-            overflow-y: auto;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50px; height: 50px;
+            border: 5px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            border-top: 5px solid var(--color-red);
+            animation: spin 1s linear infinite;
+            z-index: 5;
+            display: none; 
+        }
+
+        @keyframes spin { 0% { transform: translate(-50%, -50%) rotate(0deg); } 100% { transform: translate(-50%, -50%) rotate(360deg); } }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .map-body-wrapper { flex-direction: column; }
+            .map-sidebar { width: 100%; min-height: auto; border-right: none; border-bottom: 3px solid var(--color-red); }
+            .sidebar-content-sticky { position: static; max-height: 300px; }
+            .iframe-container { height: 500px; }
+            .content-area { width: 100%; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Haupt-Container (App Shell) -->
-    <div class="app-container">
-
-        <!-- LINKE SIDEBAR (Steuerung) -->
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <h1 id="map-name" class="text-xl font-bold text-amber-500">IOP Cluster</h1>
-                <!-- Map Switcher (Mini) -->
-                <div class="map-switcher mt-1 relative">
-                    <button id="map-select-btn" class="text-xs text-gray-400 hover:text-white flex items-center">Karte wechseln <span class="ml-1">▼</span></button>
-                    <ul id="map-list" class="hidden custom-scrollbar">
-                        <!-- Wird per JS gefüllt -->
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Navigation Tabs -->
-            <nav class="sidebar-tabs">
-                <button class="tab-btn active" data-target="tab-creatures">Dinos</button>
-                <button class="tab-btn" data-target="tab-resources">Res.</button>
-                <button class="tab-btn" data-target="tab-pois">Orte</button>
-                <button class="tab-btn" data-target="tab-ai">✨ AI</button> <!-- NEW AI TAB -->
-                <button class="tab-btn" data-target="tab-settings">⚙</button>
-            </nav>
-
-            <!-- Scrollbarer Inhalt der Sidebar -->
-            <div class="sidebar-content custom-scrollbar">
-                
-                <!-- TAB: KREATUREN -->
-                <div id="tab-creatures" class="tab-pane active">
-                    <div class="search-wrapper mb-2">
-                        <input type="text" id="creature-search" placeholder="Suche Dino..." class="w-full bg-gray-800 text-white p-2 rounded border border-gray-600 focus:border-amber-500 outline-none placeholder-gray-500 text-sm">
-                    </div>
-                    <!-- Liste -->
-                    <div id="creature-list" class="list-group">
-                        <p class="text-xs text-gray-500 text-center mt-4">Lade Kreaturen...</p>
-                    </div>
-                    <div id="region-info" class="mt-4 p-2 bg-gray-900 rounded hidden text-sm text-gray-300 border border-gray-700">
-                        <!-- Spawn Infos -->
-                    </div>
-                </div>
-
-                <!-- TAB: RESSOURCEN -->
-                <div id="tab-resources" class="tab-pane">
-                    <div class="flex items-center mb-4 pb-2 border-b border-gray-700">
-                        <input type="checkbox" id="select-all-resources" class="mr-2 h-4 w-4 bg-gray-800 border-gray-600 rounded text-amber-500 focus:ring-0">
-                        <label for="select-all-resources" class="text-sm text-gray-300 font-medium">Alle auswählen</label>
-                    </div>
-                    <div id="resource-controls" class="space-y-2">
-                        <p class="text-xs text-gray-500">Lade Ressourcen...</p>
-                    </div>
-                </div>
-
-                <!-- TAB: ORTE (POIS & HÖHLEN) -->
-                <div id="tab-pois" class="tab-pane">
-                    <h3 class="section-title">Wichtige Orte</h3>
-                    <div class="toggle-wrapper">
-                        <label class="switch">
-                            <input type="checkbox" id="spots-toggle">
-                            <span class="slider round"></span>
-                        </label>
-                        <span class="ml-2 text-white text-sm">Public Spots</span>
-                    </div>
-                    
-                    <h3 class="section-title mt-6">Höhlen</h3>
-                    <div class="toggle-wrapper">
-                        <label class="switch">
-                            <input type="checkbox" id="cave-spots-toggle">
-                            <span class="slider round"></span>
-                        </label>
-                        <span class="ml-2 text-white text-sm">Höhlen anzeigen</span>
-                    </div>
-
-                    <h3 class="section-title mt-6">Obelisken</h3>
-                    <div id="obelisk-controls" class="space-y-1"></div>
-                </div>
-
-                <!-- TAB: AI GUIDE (NEW FEATURE) -->
-                <div id="tab-ai" class="tab-pane h-full">
-                    <div class="chat-container">
-                        <div class="bg-gray-800 p-2 rounded mb-2 border border-amber-500/30">
-                            <p class="text-xs text-amber-400">✨ <strong>Survival Assistant</strong></p>
-                            <p class="text-xs text-gray-400">Frag mich nach Taming-Tipps, Ressourcen oder Höhlen auf der aktuellen Karte.</p>
-                        </div>
-                        <div id="chat-history" class="chat-messages custom-scrollbar">
-                            <div class="chat-message ai">Hallo! Ich bin dein IOP Assistent. Wir sind gerade auf <strong id="ai-current-map">...</strong>. Wie kann ich helfen?</div>
-                        </div>
-                        <div class="ai-typing" id="ai-loading">Assistant schreibt...</div>
-                        <div class="chat-input-area">
-                            <input type="text" id="ai-input" placeholder="Frage stellen..." class="flex-1 bg-gray-800 text-white p-2 rounded text-sm border border-gray-600 focus:border-amber-500 outline-none">
-                            <button id="ai-send-btn" class="bg-amber-600 hover:bg-amber-500 text-white p-2 rounded">➤</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- TAB: EINSTELLUNGEN & LEGENDE -->
-                <div id="tab-settings" class="tab-pane">
-                    <h3 class="section-title">Legende</h3>
-                    <div id="legend" class="mb-4 text-sm space-y-1"></div>
-                    
-                    <h3 class="section-title mt-6">Spieler Spawns</h3>
-                    <div class="toggle-wrapper">
-                        <label class="switch">
-                            <input type="checkbox" id="toggle-all-player-spawns">
-                            <span class="slider round"></span>
-                        </label>
-                        <span class="ml-2 text-white text-sm">Anzeigen</span>
-                    </div>
-                    
-                    <h3 class="section-title mt-6">Explorer Notizen</h3>
-                    <div class="toggle-wrapper">
-                        <label class="switch">
-                            <input type="checkbox" id="toggle-all-notes">
-                            <span class="slider round"></span>
-                        </label>
-                        <span class="ml-2 text-white text-sm">Anzeigen</span>
-                    </div>
-
-                    <div class="mt-8 pt-4 border-t border-gray-700 text-xs text-gray-500 text-center">
-                        IOP Map Widget v2.1<br>Powered by Gemini ✨
-                    </div>
-                </div>
-
-            </div>
-        </aside>
-
-        <!-- HAUPTBEREICH (Karte) -->
-        <main class="map-area">
-            
-            <!-- HUD: Koordinaten & Zoom (Floating) -->
-            <div class="hud-top-right">
-                <div id="coords-display" class="hud-box">
-                    <span id="lat-display">Lat: 00.00</span> | 
-                    <span id="lon-display">Lon: 00.00</span>
-                </div>
-            </div>
-
-            <div class="hud-bottom-right">
-                <button id="zoom-in" class="hud-btn" title="Zoom In">+</button>
-                <button id="zoom-out" class="hud-btn" title="Zoom Out">-</button>
-            </div>
-
-            <!-- Canvas Container (Stapelt alle Canvases übereinander) -->
-            <div id="canvas-stack">
-                <img id="map-image" style="display:none;"> 
-                <canvas id="map-canvas"></canvas>
-                <canvas id="region-canvas"></canvas>
-                <canvas id="spawn-canvas"></canvas>
-                <canvas id="resource-canvas"></canvas>
-                <canvas id="player-spawn-canvas"></canvas>
-                <canvas id="obelisk-canvas"></canvas>
-                <canvas id="spots-canvas"></canvas>
-                <canvas id="cave-spots-canvas"></canvas>
-                <canvas id="notes-canvas"></canvas>
-                <canvas id="click-canvas"></canvas> <!-- Oberste Ebene für Interaktion -->
-            </div>
-            
-            <div id="loading-indicator" class="loading-overlay">
-                <div class="spinner"></div>
-                <span id="loading-text" class="text-amber-500 font-bold mt-2">Initialisiere App...</span>
-            </div>
-        </main>
-
-        <!-- RECHTES DETAIL PANEL (Slide-In) -->
-        <div id="detail-panel" class="detail-panel">
-            <button id="close-detail" class="absolute top-2 right-2 text-gray-400 hover:text-white z-10 p-2 bg-black/20 rounded-full">✕</button>
-            <div id="detail-content" class="h-full overflow-y-auto p-6 custom-scrollbar">
-                <!-- Hier kommen Details rein wenn man auf Marker klickt -->
-                <div class="flex flex-col items-center justify-center h-full text-gray-500">
-                    <p>Wähle einen Marker auf der Karte aus.</p>
-                </div>
+    <!-- MODAL OVERLAY (Lightbox) -->
+    <div id="poiModal" class="modal-overlay" onclick="closeModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <button class="modal-close-btn" onclick="closeModal(event)">×</button>
+            <img id="modalImg" src="" alt="" class="modal-image">
+            <div class="modal-details">
+                <span id="modalType" class="modal-type"></span>
+                <div id="modalTitle" class="modal-title"></div>
+                <div id="modalCoords" class="modal-coords"></div>
             </div>
         </div>
-        
-        <!-- Tooltip -->
-        <div id="map-tooltip" class="hidden absolute bg-black/90 border border-amber-500/50 p-2 rounded pointer-events-none z-50 text-xs text-white shadow-lg backdrop-filter backdrop-blur-sm">
-            <div id="tooltip-content"></div>
-        </div>
-
     </div>
 
-    <!-- JAVASCRIPT LOGIC -->
+    <div class="map-widget-container">
+        <div class="main-page-header">Kartographie</div>
+
+        <div class="map-body-wrapper">
+            <!-- Sidebar Navigation -->
+            <div class="map-sidebar">
+                <div class="sidebar-content-sticky" id="mapSidebar">
+                    <!-- Wird per JS gefüllt -->
+                </div>
+            </div>
+
+            <!-- Rechter Content Bereich -->
+            <div class="content-area">
+                <!-- Live Map -->
+                <div class="iframe-container">
+                    <div id="loader" class="loader"></div>
+                    <iframe id="mapFrame" src="" allowfullscreen></iframe>
+                </div>
+
+                <!-- Points of Interest -->
+                <div class="poi-section" id="poiSection" style="display: none;">
+                    <div id="poiContainer">
+                        <!-- Hier werden die Slider pro Kategorie generiert -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // --- CONFIGURATION & GLOBAL VARIABLES ---
-        const apiKey = ""; // Provided by Environment
-        
-        let allCreatureData = {};
-        let allResourceData = {};
-        let allPublicSpotsData = {};
-        let allCaveSpotsData = {};
-        let allInfoBadgeData = {};
-        let allObeliskData = {};
-        let allRegionData = {};
-        let allPlayerSpawnData = {};
-        let allExplorerNotesData = [];
-        let mapConfigs = {};
-        let currentMapConfig = {};
-
-        // Status Variables
-        let highlightedSpotId = null;
-        let hoveredSpotId = null;
-        let highlightedCaveSpotId = null;
-        let hoveredCaveSpotId = null;
-        let highlightedObeliskId = null;
-        let hoveredObeliskId = null;
-        let highlightedZone = null;
-        let selectedCreatureValue = null;
-
-        // Assets & Icons
-        let obeliskIcons = {};
-        let spotIcons = {};
-        let caveSpotIcons = {};
-        let resourceIcons = {};
-        let regionImages = {};
-        let noteIcon = null;
-
-        // Translations & Configs
-        let resourceTranslations = {};
-        let creatureTranslations = {};
-        let infoBadgeTranslations = {};
-        let alphaVariantConfigs = {};
-        let globalItemDatabase = {};
-        let spawnZoneBlocklistData = {};
-        let spawnSharingConfig = {};
-        let spawnRarityConfig = {};
-        let difficultyConfig = {
-            "Leicht": { "borderColor": "#22c55e", "bgColor": "rgba(34, 197, 94, 0.2)", "textColor": "#4ade80" },
-            "Mittel": { "borderColor": "#eab308", "bgColor": "rgba(234, 179, 8, 0.2)", "textColor": "#facc15" },
-            "Schwer": { "borderColor": "#ef4444", "bgColor": "rgba(239, 68, 68, 0.2)", "textColor": "#fca5a5" },
-            "Extrem": { "borderColor": "#a21caf", "bgColor": "rgba(162, 28, 175, 0.2)", "textColor": "#e879f9" }
+        // DATENBANK
+        const mapData = {
+            "official": [
+                {
+                    name: "The Island",
+                    url: "https://arkmap.axi92.at/f1df34b8-fb4e-4411-8f10-d16502d5534a",
+                    pois: [
+                        { title: "Öffentliche Harzfarm", type: "Teleporter", coords: "Lat: 61 / Lon: 49.5", img: "https://i.postimg.cc/xTv4jhTV/Bild-2024-05-16-133412340.png" },
+                        { title: "Grüner Obelisk", type: "Teleporter", coords: "Lat: 59.5 / Lon: 77.5", img: "https://i.postimg.cc/QxRFgPjn/Bild-2024-05-16-130443256.png" },
+                        { title: "Roter Obelisk", type: "Teleporter", coords: "Lat: 85.5 / Lon: 13", img: "https://i.postimg.cc/hvzhbVvV/Bild-2024-05-16-133733722.png" },
+                        { title: "Blauer Obelisk", type: "Teleporter", coords: "Lat: 22 / Lon: 21", img: "https://i.postimg.cc/DzCbFvbp/Bild-2024-05-16-132500159.png" },
+                        { title: "Lava Cave", type: "Artefakt", sub: "Gewaltigen/Massive", coords: "Lat: 74 / Lon: 92", img: "https://i.postimg.cc/Fsfddxfy/Bild-2024-06-30-171335914.png" },
+                        { title: "Lower South Cave", type: "Artefakt", sub: "Jägers/Hunter", coords: "Lat: 85 / Lon: 54", img: "https://i.postimg.cc/1tWM08Mp/Bild-2024-06-30-171919385.png" },
+                        { title: "Swamp Cave", type: "Artefakt", sub: "Immunen/Immune", coords: "Lat: 65 / Lon: 35", img: "https://i.postimg.cc/cHG4DrS6/Bild-2024-06-30-175803492.png" },
+                        { title: "Snow Cave", type: "Artefakt", sub: "Stärke/Strong", coords: "Lat: 26 / Lon: 29", img: "https://i.postimg.cc/MKQKV7RV/Bild-2024-06-30-181533870.png" },
+                        { title: "North West Cave", type: "Artefakt", sub: "Himmelsherren/Skylord", coords: "Lat: 14 / Lon: 14", img: "https://i.postimg.cc/zfCjdz2p/Bild-2024-06-30-190654637.png" },
+                        { title: "North East Cave", type: "Artefakt", sub: "Fressers/Devourer", coords: "Lat: 9 / Lon: 91", img: "https://i.postimg.cc/SQnHQ8nM/Bild-2024-06-30-185632249.png" },
+                        { title: "Upper South Cave", type: "Artefakt", sub: "Rudels/Pack", coords: "Lat: 71 / Lon: 57", img: "https://i.postimg.cc/brjVqq3F/Bild-2024-06-30-193806399.png" },
+                        { title: "Caverns of Lost Hope", type: "Artefakt", sub: "List/Devious", coords: "Lat: 45 / Lon: 98", img: "https://i.postimg.cc/hv9qbSC9/Bild-2024-06-30-194923321.png" },
+                        { title: "Caverns of Lost Faith", type: "Artefakt", sub: "Brute", coords: "Lat: 53 / Lon: 3", img: "https://i.postimg.cc/4yrQZGZF/Bild-2024-06-30-195311581.png" },
+                        { title: "Central Cave", type: "Artefakt", sub: "Schlauen/Clever", coords: "Lat: 40.5 / Lon: 46", img: "https://i.postimg.cc/Y9xK2yW6/Bild-2024-07-01-204126849.png" },
+                        { title: "Tek Cave", type: "Boss Arena", sub: "Terminal", coords: "Lat: 42 / Lon: 37", img: "https://i.postimg.cc/Sxrsxcw4/Bild-2024-06-30-184412268.png" }
+                    ]
+                },
+                { 
+                    name: "The Center", 
+                    url: "https://arkmap.axi92.at/5205c82b-ddc6-465c-a43e-2a1cfc395fad", 
+                    pois: [
+                        { title: "Öffentliche Harzfarm", type: "Teleporter", coords: "Lat: 77.5 / Lon: 44.5", img: "https://i.postimg.cc/DyywMZjJ/Bild-2024-06-06-190132220.png" },
+                        { title: "Grüner Obelisk", type: "Teleporter", coords: "Lat: 36 / Lon: 14.5", img: "https://i.postimg.cc/tT2Kch4Y/Bild-2024-06-06-192019904.png" },
+                        { title: "Roter Obelisk", type: "Teleporter", coords: "Lat: 12 / Lon: 55", img: "https://i.postimg.cc/Kv7ffmqH/Bild-2024-06-06-191335394.png" },
+                        { title: "Blauer Obelisk", type: "Teleporter", coords: "Lat: 51 / Lon: 75", img: "https://i.postimg.cc/85wWvYXj/Bild-2024-06-06-191041579.png" },
+                        { title: "Lava Cave", type: "Artefakt", sub: "Gewaltigen/Massive", coords: "Lat: 15 / Lon: 62.7", img: "https://i.postimg.cc/Vv4vB18p/Bild-2024-07-30-190739432.png" },
+                        { title: "Lava Oasis Cave", type: "Artefakt", sub: "Jägers/Hunter", coords: "Lat: 20 / Lon: 46", img: "https://i.postimg.cc/6QmmqbmX/Bild-2024-07-30-192204921.png" },
+                        { title: "Lava Cave (Strong)", type: "Artefakt", sub: "Starken/Strong", coords: "Lat: 18.8 / Lon: 57.4", img: "https://i.postimg.cc/GhVcZrRF/Bild-2024-07-30-193716409.png" },
+                        { title: "The Center Cave", type: "Artefakt", sub: "Hinterhältigen/Devious", coords: "Lat: 41.7 / Lon: 27.4", img: "https://i.postimg.cc/NjCHbTsY/Bild-2024-07-30-212542107.png" },
+                        { title: "Cliffside Cavern", type: "Artefakt", sub: "List/Cunning", coords: "Lat: 36.5 / Lon: 12.5", img: "https://i.postimg.cc/GpZPqRkg/Bild-2024-07-30-201506191.png" },
+                        { title: "North Ice Cave", type: "Artefakt", sub: "Schlauen & Fressers", coords: "Lat: 21.5 / Lon: 27.2", img: "https://i.postimg.cc/zf3ggGcH/Bild-2024-07-30-202836983.png" },
+                        { title: "South Ice Cave", type: "Artefakt", sub: "Himmelsherren/Skylord", coords: "Lat: 59.7 / Lon: 20.3", img: "https://i.postimg.cc/bNWMM37Z/Bild-2024-07-30-203944019.png" },
+                        { title: "Deepsea", type: "Artefakt", sub: "Brutalen/Brute", coords: "Lat: 67.1 / Lon: 88.8", img: "https://i.postimg.cc/9QmGVqvy/Bild-2024-07-30-204912302.png" },
+                        { title: "Underground World", type: "Artefakt", sub: "Rudels/Pack", coords: "Lat: 54 / Lon: 49", img: "https://i.postimg.cc/jqzGDGFt/Bild-2024-07-30-205903203.png" },
+                        { title: "Jungle Cave", type: "Artefakt", sub: "Immunen/Immune", coords: "Lat: 46.8 / Lon: 58", img: "https://i.postimg.cc/vmkvN5Z5/Bild-2024-07-30-211537593.png" },
+                        { title: "Sonnenhöhle", type: "Besonderer Ort", sub: "Eingang", coords: "Lat: 36.6 / Lon: 60.6", img: "https://i.postimg.cc/fyB0S0kV/Bild-2024-07-30-213359059.png" },
+                        { title: "Sonnenhöhle", type: "Besonderer Ort", sub: "Eingang", coords: "Lat: 45.4 / Lon: 53.2", img: "https://i.postimg.cc/fbYnvGmN/Bild-2024-07-30-213913083.png" },
+                        { title: "Sonnenhöhle", type: "Besonderer Ort", sub: "Eingang", coords: "Lat: 65.5 / Lon: 47.3", img: "https://i.postimg.cc/65k0130y/Bild-2024-08-01-202216681.png" },
+                        { title: "Sonnenhöhle", type: "Besonderer Ort", sub: "Ausgang", coords: "Lat: 65.8 / Lon: 50.1", img: "https://i.postimg.cc/5NvXmq2Q/Bild-2024-08-01-203045224.png" },
+                        { title: "Südliche Luftkuppel", type: "Besonderer Ort", sub: "", coords: "Lat: 65.4 / Lon: 59.5", img: "https://i.postimg.cc/Pr44d8Bc/Bild-2024-08-01-204937964.png" },
+                        { title: "Südliche Luftkuppel", type: "Besonderer Ort", sub: "", coords: "Lat: 65.4 / Lon: 59.5", img: "https://i.postimg.cc/xTQ4nmdD/Bild-2024-08-01-205950452.png" },
+                        { title: "Westliche Luftkuppel", type: "Besonderer Ort", sub: "", coords: "Lat: 27.5 / Lon: 82.5", img: "https://i.postimg.cc/3xtL7bkz/Bild-2024-08-01-210523406.png" },
+                        { title: "Westliche Luftkuppel", type: "Besonderer Ort", sub: "", coords: "Lat: 27.5 / Lon: 82.5", img: "https://i.postimg.cc/RVyF8vRY/Bild-2024-08-01-210633287.png" }
+                    ]
+                },
+                { 
+                    name: "Scorched Earth", 
+                    url: "https://arkmap.axi92.at/126c63dd-17c2-4770-8b86-b1c13121e445", 
+                    pois: [
+                        { title: "Öffentliche Ölfarm", type: "Teleporter", coords: "Lat: 59.5 / Lon: 77", img: "https://i.postimg.cc/JntyW8hQ/Bild-2024-05-16-143030551.png" },
+                        { title: "Grüner Obelisk", type: "Teleporter", coords: "Lat: 50.5 / Lon: 75", img: "https://i.postimg.cc/3RDKBxRz/Bild-2024-05-16-142927878.png" },
+                        { title: "Roter Obelisk", type: "Teleporter", coords: "Lat: 72 / Lon: 39.5", img: "https://i.postimg.cc/SsDKTxbr/Bild-2024-05-16-143219050.png" },
+                        { title: "Blauer Obelisk", type: "Teleporter", coords: "Lat: 17 / Lon: 34", img: "https://i.postimg.cc/MGQXp5SC/Bild-2024-05-16-142802082.png" },
+                        { title: "Wyvern Falle Südwest", type: "Besonderer Ort", sub: "Öffentlich", coords: "Lat: 70.5 / Lon: 15.5", img: "https://i.postimg.cc/3J7znFx3/Bild-2024-05-16-143627729.png" },
+                        { title: "Wyvern Falle West", type: "Besonderer Ort", sub: "Öffentlich", coords: "Lat: 56.5 / Lon: 12.5", img: "https://i.postimg.cc/vT3RW49r/Bild-2024-05-16-143808360.png" },
+                        { title: "Wyvern Falle Nordwest", type: "Besonderer Ort", sub: "Öffentlich", coords: "Lat: 34 / Lon: 8", img: "https://i.postimg.cc/MpcTpw2P/Bild-2024-05-16-143932986.png" }
+                    ]
+                },
+                { 
+                    name: "Aberration", 
+                    url: "https://arkmap.axi92.at/cb9a2f61-1171-42d4-a7a3-8996f2e61640", 
+                    pois: [
+                        { title: "Öffentliche Harzfarm", type: "Teleporter", coords: "Lat: 26 / Lon: 49", img: "https://i.postimg.cc/br9FW8GF/Bild-2024-09-15-114714323.png" },
+                        { title: "Öffentliche Gasfarm", type: "Teleporter", coords: "Lat: 26 / Lon: 49", img: "https://i.postimg.cc/Y2GzDQLK/Bild-2024-09-15-114928119.png" },
+                        { title: "Öffentliche Reaper-Falle", type: "Teleporter", coords: "Lat: 61.3 / Lon: 72", img: "https://i.postimg.cc/SNd9jPhn/Bild-2025-03-15-153702775.png" },
+                        { title: "Old Railway Cave", type: "Artefakt", sub: "Tiefe/Depths", coords: "Lat: 48 / Lon: 28", img: "https://i.postimg.cc/d3gdxDPv/Bild-2024-09-15-125701027.png" },
+                        { title: "Hidden Grotto Cave", type: "Artefakt", sub: "Schatten/Shadows", coords: "Lat: 55 / Lon: 66", img: "https://i.postimg.cc/Y23mLpXh/Bild-2024-09-15-131025238.png" },
+                        { title: "Element Vault Cave", type: "Artefakt", sub: "Pirschens/Stalker", coords: "Lat: 80.5 / Lon: 45.8", img: "https://i.postimg.cc/dVh5hK1b/Bild-2024-09-15-124725471.png" },
+                        { title: "Westlicher Aufgang", type: "Besonderer Ort", sub: "Roter Obelisk", coords: "Lat: 51.7 / Lon: 21.6", img: "https://i.postimg.cc/qvvzLbrx/Bild-2024-09-15-123339109.png" },
+                        { title: "Südwestlicher Aufgang", type: "Besonderer Ort", sub: "Roter Obelisk", coords: "Lat: 78 / Lon: 29", img: "https://i.postimg.cc/vHr3wmpZ/Bild-2024-09-15-123947145.png" },
+                        { title: "Nordöstlicher Aufgang", type: "Besonderer Ort", sub: "Grüner Obelisk", coords: "Lat: 27 / Lon: 63", img: "https://i.postimg.cc/wBDyyK20/Bild-2024-09-15-121624761.png" },
+                        { title: "Nordöstlicher Aufgang", type: "Besonderer Ort", sub: "Grüner Obelisk", coords: "Lat: 40.5 / Lon: 79", img: "https://i.postimg.cc/LXWC01dy/Bild-2024-09-15-122517143.png" },
+                        { title: "Nordwestlicher Aufgang", type: "Besonderer Ort", sub: "Blauer Obelisk", coords: "Lat: 19.3 / Lon: 27.9", img: "https://i.postimg.cc/Twh0v3fp/Bild-2024-09-15-121318783.png" },
+                        { title: "Bossterminal Rockdrake", type: "Besonderer Ort", sub: "Schlucht", coords: "Lat: 42.7 / Lon: 36.8", img: "https://i.postimg.cc/43xh1jmX/Bild-2024-09-15-132004280.png" },
+                        { title: "Rockdrake Schlucht", type: "Besonderer Ort", sub: "", coords: "Lat: 56.4 / Lon: 56.6", img: "https://i.postimg.cc/k5syYSQK/Bild-2024-09-15-132250980.png" }
+                    ]
+                },
+                { 
+                    name: "Extinction", 
+                    url: "https://arkmap.axi92.at/f9384885-6f6e-45ac-ae2f-027f87cb0122", 
+                    pois: [
+                        { title: "City Terminal", type: "Teleporter", coords: "Lat: 50.7 / Lon: 36.7", img: "https://i.postimg.cc/50w0xq9T/Bild-2025-01-19-131143331.png" },
+                        { title: "SE Biom", type: "Teleporter", coords: "Lat: 85.5 / Lon: 86.2", img: "https://i.postimg.cc/7YTwnLDZ/Bild-2025-01-19-125304820.png" },
+                        { title: "Underground", type: "Teleporter", coords: "Lat: 23.5 / Lon: 18", img: "https://i.postimg.cc/bwc2jJRZ/Bild-2025-01-19-131536796.png" },
+                        { title: "Schnee Biom", type: "Teleporter", coords: "Lat: 18.2 / Lon: 81.3", img: "https://i.postimg.cc/NF3p1tv5/Bild-2025-01-19-131351367.png" },
+                        { title: "Forest Cave", type: "Artefakt", sub: "Wachstums/Growth", coords: "Lat: 5.5 / Lon: 35.8", img: "https://i.postimg.cc/50Tk4Lyc/Bild-2025-01-19-131732899.png" },
+                        { title: "Desert Cave", type: "Artefakt", sub: "Chaos", coords: "Lat: 93 / Lon: 74", img: "https://i.postimg.cc/76h0BRxD/Bild-2025-01-19-132519654.png" },
+                        { title: "Ice Cave", type: "Artefakt", sub: "Leere/Void", coords: "Lat: 15 / Lon: 63", img: "https://i.postimg.cc/vT1jdXvw/Bild-2025-01-19-132922835.png" }
+                    ]
+                },
+                { 
+                    name: "Ragnarok", 
+                    url: "https://arkmap.axi92.at/1e1c1f9a-283d-4e23-9505-0abe717cd2ff", 
+                    pois: [
+                         { title: "Grüner Obelisk", type: "Teleporter", coords: "Lat: 57 / Lon: 39", img: "https://i.postimg.cc/pTVYxVjP/Bild-2025-07-08-231557928.png" },
+                         { title: "Blauer Obelisk", type: "Teleporter", coords: "Lat: 18.7 / Lon: 18", img: "https://i.postimg.cc/PxQhcwvr/Bild-2025-07-08-232913973.png" },
+                         { title: "Roter Obelisk", type: "Teleporter", coords: "Lat: 35.7 / Lon: 84.9", img: "https://i.postimg.cc/6qdTjgWF/Bild-2025-07-08-232357128.png" },
+                         { title: "Öffentliche Harzfarm", type: "Teleporter", coords: "Lat: 60.5 / Lon: 40.5", img: "https://i.postimg.cc/25cz5Ttg/Bild-2025-07-08-230813181.png" },
+                         { title: "Öffentliche Ölfarm", type: "Teleporter", coords: "Lat: 39 / Lon: 45", img: "https://i.postimg.cc/JhGLrzYM/Bild-2025-07-08-234811998.png" },
+                         { title: "Öffentliche Wyvern Falle", type: "Besonderer Ort", coords: "Lat: 21.7 / Lon: 72", img: "https://i.postimg.cc/Nf6SRY8c/Bild-2025-07-09-010545987.png" },
+                         { title: "Oluf Jungle Cave", type: "Artefakt", sub: "Jägers/Hunter", coords: "Lat: 18.6 / Lon: 27.8", img: "https://i.postimg.cc/rm1gKBPp/Bild-2025-07-09-014751706.jpg", miniBoss: "Lava Golem" },
+                         { title: "Carnivorous Caverns", type: "Artefakt", sub: "Immunen & List", coords: "Lat: 21.9 / Lon: 42.1", img: "https://i.postimg.cc/FzpKsx56/Bild-2025-07-09-020329030.png" },
+                         { title: "Frozen Dungeon", type: "Artefakt", sub: "Rudels/Pack", coords: "Lat: 31 / Lon: 37.8", img: "https://i.postimg.cc/PrnsVDZG/Bild-2025-07-09-022338880.jpg", miniBoss: "Ice Queen" },
+                         { title: "Life's Labyrinth", type: "Artefakt", sub: "Multi (4)", coords: "Lat: 51.7 / Lon: 77.8", img: "https://i.postimg.cc/Y0Tpd2gp/Bild-2025-07-09-022647310.jpg" },
+                         { title: "Tuso Trench", type: "Artefakt", sub: "Fressers/Devourer", coords: "Lat: 47 / Lon: 2.5", img: "https://i.postimg.cc/66Dmc4Sk/Bild-2025-07-09-024331789-1.jpg" },
+                         { title: "Wyvern Cave/Trench", type: "Artefakt", sub: "Stärke/Strong", coords: "Lat: 69 / Lon: 42.1", img: "https://i.postimg.cc/MpkXz5L9/Bild-2025-07-09-024700432.jpg" }
+                    ]
+                },
+                { 
+                    name: "Valguero", 
+                    url: "https://arkmap.axi92.at/0d77d17e-34f7-4dfe-b849-2e4bc174cd6e", 
+                    pois: [
+                        { title: "Blauer Obelisk", type: "Teleporter", coords: "Lat: 11 / Lon: 19", img: "https://i.postimg.cc/pdndxQLW/image.png" },
+                        { title: "Roter Obelisk", type: "Teleporter", coords: "Lat: 75 / Lon: 17", img: "https://i.postimg.cc/CdyNPs5v/image.png" },
+                        { title: "Grüner Obelisk", type: "Teleporter", coords: "Lat: 50.6 / Lon: 76", img: "https://i.postimg.cc/DZxfPxCc/image.png" },
+                        { title: "Öffentliche Harzfarm", type: "Teleporter", coords: "Lat: 83.3 / Lon: 50.2", img: "https://i.postimg.cc/VL5fwyg2/image.png" },
+                        { title: "Öffentliche Ölfarm", type: "Teleporter", coords: "Lat: 49 / Lon: 19.5", img: "https://i.postimg.cc/02CBVr71/image.png" },
+                        { title: "Whitecliff Caverns", type: "Artefakt", sub: "Himmelsherren/Skylord", coords: "Lat: 78.2 / Lon: 90.4", img: "https://i.postimg.cc/k58C066H/image.jpg" },
+                        { title: "Boreal Forest Cave", type: "Artefakt", sub: "Felsens/Crag", coords: "Lat: 35 / Lon: 52.2", img: "https://i.postimg.cc/fT9htSC2/image.jpg" },
+                        { title: "Lost Temple", type: "Artefakt", sub: "Brutalen & Fressers", coords: "Lat: 46.8 / Lon: 87.4", img: "https://i.postimg.cc/sDdZZ7yQ/image-1.jpg" },
+                        { title: "Snow Mountains Cave", type: "Artefakt", sub: "List & Zerstörers", coords: "Lat: 15.6 / Lon: 27.5", img: "https://i.postimg.cc/wvtZn3WB/image-1.jpg" },
+                        { title: "The Liar", type: "Artefakt", sub: "Rudels, Stärke, Immunen", coords: "Lat: 73.8 / Lon: 41.8", img: "https://i.postimg.cc/XNHBQmwH/image-2.jpg" },
+                        { title: "The Emerald Forest", type: "Artefakt", sub: "Torwächters/Gatekeeper", coords: "Lat: 37.9 / Lon: 57.8", img: "https://i.postimg.cc/2yVQ0DyH/image.jpg" },
+                        { title: "Brutmutter Lystrix", type: "Worldboss", coords: "Lat: 74 / Lon: 42.5", img: "https://i.postimg.cc/hGMKKJbN/image.png" }
+                    ]
+                },
+                { 
+                    name: "Astraeos", 
+                    url: "https://arkmap.axi92.at/6b719b3d-f04c-47f5-beb6-a5a0b1260e7c", 
+                    pois: [
+                        { title: "Phokintos", type: "Teleporter", coords: "Lat: 5.2 / Lon: 13.1", img: "https://i.postimg.cc/g0nhpfVr/Bild-2025-04-17-205208988.png" },
+                        { title: "Korinthos Obelisk", type: "Teleporter", coords: "Lat: 35 / Lon: 16.5", img: "https://i.postimg.cc/43KnSnJw/Bild-2024-10-13-154757580.png" },
+                        { title: "Therokis", type: "Teleporter", coords: "Lat: 60.5 / Lon: 61", img: "https://i.postimg.cc/4yDTqTNV/Bild-2025-04-17-204017515.png" },
+                        { title: "Lemnokis Obelisk", type: "Teleporter", coords: "Lat: 9 / Lon: 91", img: "https://i.postimg.cc/TwgpBLJS/Bild-2025-06-25-235357969.png" },
+                        { title: "Öffentliche Wyvernfalle", type: "Besonderer Ort", coords: "Lat: 15.5 / Lon: 48.2", img: "https://i.postimg.cc/KYJcPV4h/Bild-2025-04-18-144820353.png" },
+                        { title: "Forgotten Temple", type: "Artefakt", sub: "Jägers", coords: "Lat: 30 / Lon: 9.5", img: "https://i.postimg.cc/HxYS4G0w/Bild-2024-10-13-155016304.jpg" },
+                        { title: "Old Tomb", type: "Artefakt", sub: "Gewaltigen", coords: "Lat: 37.5 / Lon: 22.5", img: "https://i.postimg.cc/FFWr23Rv/Bild-2024-10-13-161000550.png" },
+                        { title: "Sunken Caverns", type: "Artefakt", sub: "Schlauen", coords: "Lat: 24.4 / Lon: 24", img: "https://i.postimg.cc/76xVTbpH/Bild-2024-10-13-161723209.png" },
+                        { title: "Sunken Temple", type: "Artefakt", sub: "Brutalen", coords: "Lat: 48.6 / Lon: 49.8", img: "https://i.postimg.cc/jjGn4xHp/Bild-2025-04-18-140111314.jpg" },
+                        { title: "Artemis Tomb", type: "Artefakt", sub: "Fressers", coords: "Lat: 21.8 / Lon: 43.3", img: "https://i.postimg.cc/vBXm4GmF/Bild-2025-04-18-140741400.jpg" },
+                        { title: "Lava Caverns", type: "Artefakt", sub: "Rudels", coords: "Lat: 67.4 / Lon: 62.9", img: "https://i.postimg.cc/cHZqtz9Q/Bild-2025-04-18-141031037.jpg" }
+                    ]
+                },
+                { 
+                    name: "Svartalfheim", 
+                    url: "https://arkmap.axi92.at/581b1a31-d430-415e-97c5-be02d713d369", 
+                    pois: [
+                        { title: "Worldboss (Troll)", type: "Höhleneingang", coords: "Lat: 78.9 / Lon: 8.9", img: "https://i.postimg.cc/MTmJpG18/Bild-2024-08-03-130554359.png" },
+                        { title: "Schwerter Svartalfheims", type: "Besonderer Ort", coords: "Lat: 58.3 / Lon: 81.6", img: "https://i.postimg.cc/GmF8rF97/Bild-2024-08-03-130409102.png" },
+                        { title: "Ruine & Entwicklermanifest", type: "Besonderer Ort", coords: "Lat: 63.6 / Lon: 19.8", img: "https://i.postimg.cc/ryb1spmW/Bild-2024-08-03-125158752.png" },
+                        { title: "Dwarven Kingdom Durungahl", type: "Besonderer Ort", coords: "Lat: 18.1 / Lon: 60.4", img: "https://i.postimg.cc/KYVRDJWY/Bild-2024-08-03-130450722.png" },
+                        { title: "Wikinger-Inselstadt", type: "Besonderer Ort", coords: "Lat: 90 / Lon: 90", img: "https://i.postimg.cc/KYGfBvMN/Bild-2024-08-03-125659020.png" },
+                        { title: "Wikinger-Bergdorf", type: "Besonderer Ort", coords: "Lat: 93.2 / Lon: 4.4", img: "https://i.postimg.cc/cHgd1WXx/Bild-2024-08-03-130205507.png" },
+                        { title: "Glacier Grotto", type: "Artefakt", sub: "Himmelsherren", coords: "Lat: 12.1 / Lon: 9.6", img: "https://i.postimg.cc/8cTJ7s3d/Bild-2024-08-03-130748392.png" },
+                        { title: "The Furnace", type: "Artefakt", sub: "Fressers", coords: "Lat: 30.4 / Lon: 79.3", img: "https://i.postimg.cc/QxyQykwR/Bild-2024-08-03-130912405.png" },
+                        { title: "Otter Temple", type: "Artefakt", sub: "Gewaltigen", coords: "Lat: 31.7 / Lon: 50.8", img: "https://i.postimg.cc/xjtNB4vC/Bild-2024-08-03-124109905.png" },
+                        { title: "Engineer Halls", type: "Artefakt", sub: "Stärke & List", coords: "Lat: 47.6 / Lon: 4.7", img: "https://i.postimg.cc/XvMyYgCR/Bild-2024-08-03-121516896.png" },
+                        { title: "Forbidden Underrot", type: "Artefakt", sub: "Immunen", coords: "Lat: 89.3 / Lon: 13.4", img: "https://i.postimg.cc/hvz1Y1Qp/Bild-2024-08-03-122805119.png" },
+                        { title: "Teleporter: 3 Schwerter", type: "Teleporter", coords: "Lat: 58.5 / Lon: 82", img: "https://i.postimg.cc/jqFjryHy/Bild-2024-05-16-141718086.png" }
+                    ]
+                },
+                { name: "Lost Colony", url: "https://arkmap.axi92.at/85b59c62-b7bd-42d9-a976-7dd5e682b37b", pois: [] }
+            ],
+            "season": [
+                { name: "IOP Adventures", url: "https://arkmap.axi92.at/1f471511-0845-400b-a547-8b2053784c20", pois: [] }
+            ],
+            "overhaul": [
+                { name: "Primal Nemesis", url: "https://arkmap.axi92.at/1c2177f1-635c-478d-bbee-08359416beef", pois: [] },
+                { name: "Primal Chaos", url: "https://arkmap.axi92.at/ada947db-fa4c-48ec-9477-185808943b8f", pois: [] }
+            ]
         };
 
-        // Animation Frames
-        let pulseAnimationId = null;
-        let notePulseAnimationId = null;
-        let highlightPulseAnimationId = null;
+        // RENDER SIDEBAR
+        function renderSidebar() {
+            const sidebar = document.getElementById('mapSidebar');
+            let html = `
+                <div class="sidebar-header">
+                    <h2 class="sidebar-title">Live Map Explorer</h2>
+                    <div class="sidebar-subtitle">Wähle eine Karte</div>
+                </div>`;
 
-        // Map Navigation State
-        let scale = 1;
-        let panOffset = { x: 0, y: 0 };
-        let isPanning = false;
-        let panStart = { x: 0, y: 0 };
-        const maxScale = 8;
-        const minScale = 1;
-
-        // Constants
-        const MAP_LAT_MIN = 0; const MAP_LAT_MAX = 100;
-        const MAP_LON_MIN = 0; const MAP_LON_MAX = 100;
-        const MAP_LAT_RANGE = 100; const MAP_LON_RANGE = 100;
-        const SPOT_LAT_MIN = 0; const SPOT_LAT_MAX = 100;
-        const SPOT_LON_MIN = 0; const SPOT_LON_MAX = 100;
-        const SPOT_LAT_RANGE = 100; const SPOT_LON_RANGE = 100;
-
-        const resourceConfig = {
-            'Metal': { color: '#b87333' }, 'Crystal': { color: '#ADD8E6' },
-            'Obsidian': { color: '#333333' }, 'Oil': { color: '#663399' },
-            'Rich Metal': { color: '#DAA520' }, 'Silica Pearls': { color: '#F5F5DC' }
-        };
-
-        const obeliskConfig = {
-            'Grüner Obelisk': { color: '#22c55e' },
-            'Blauer Obelisk': { color: '#3b82f6' },
-            'Roter Obelisk': { color: '#ef4444' }
-        };
-
-        let mapCanvas, mapCtx, spawnCanvas, spawnCtx, resourceCanvas, resourceCtx, 
-            spotsCanvas, spotsCtx, clickCanvas, clickCtx, obeliskCanvas, obeliskCtx, 
-            caveSpotsCanvas, caveSpotsCtx, regionCanvas, regionCtx, 
-            playerSpawnCanvas, playerSpawnCtx, notesCanvas, notesCtx;
-
-        let mapImage, tooltipElement, tooltipContentElement;
-        let currentMapKey = 'TheIsland'; 
-
-        // --- GEMINI AI INTEGRATION ---
-        
-        async function callGeminiAPI(userQuery) {
-            const historyDiv = document.getElementById('chat-history');
-            const loadingDiv = document.getElementById('ai-loading');
-            
-            // Add User Message
-            historyDiv.innerHTML += `<div class="chat-message user">${userQuery}</div>`;
-            historyDiv.scrollTop = historyDiv.scrollHeight;
-            loadingDiv.style.display = 'block';
-
-            // Construct Contextual Prompt
-            let context = `Current Map: ${currentMapConfig.displayName || 'Unknown'}. `;
-            if(selectedCreatureValue) {
-                context += `User has selected creature: ${selectedCreatureValue}. `;
-            }
-            const systemPrompt = `You are a survival expert for the game ARK: Survival Ascended. 
-            You are assisting a user on the Infinity of Phoenix server cluster.
-            Answer clearly and concisely in German.
-            Context: ${context}`;
-
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
-            const payload = {
-                contents: [{ parts: [{ text: userQuery }] }],
-                systemInstruction: { parts: [{ text: systemPrompt }] }
+            const createButtons = (groupKey, title) => {
+                html += `<div class="group-header">${title}</div>`;
+                mapData[groupKey].forEach((map, index) => {
+                    const id = `map-${groupKey}-${index}`;
+                    html += `
+                    <button id="${id}" class="map-btn" onclick="selectMap('${groupKey}', ${index}, this)">
+                        <span>${map.name}</span> <span class="status-dot"></span>
+                    </button>`;
+                });
             };
 
-            try {
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                
-                const data = await response.json();
-                const aiText = data.candidates?.[0]?.content?.parts?.[0]?.text || "Entschuldigung, ich konnte keine Antwort generieren.";
-                
-                // Add AI Message
-                historyDiv.innerHTML += `<div class="chat-message ai">${markedParse(aiText)}</div>`;
-            } catch (error) {
-                console.error("Gemini API Error:", error);
-                historyDiv.innerHTML += `<div class="chat-message ai" style="color:red">Fehler bei der Verbindung zum KI-Assistenten.</div>`;
-            } finally {
-                loadingDiv.style.display = 'none';
-                historyDiv.scrollTop = historyDiv.scrollHeight;
-            }
+            createButtons("official", "IOP Official Cluster");
+            createButtons("season", "Season Server");
+            createButtons("overhaul", "Overhaul's");
+
+            sidebar.innerHTML = html;
         }
 
-        // Simple Markdown Parser for bold/italic in chat
-        function markedParse(text) {
-            let html = text
-                .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
-                .replace(/\*(.*?)\*/g, '<i>$1</i>')
-                .replace(/\n/g, '<br>');
-            return html;
-        }
-
-        // --- UTILITY FUNCTIONS ---
-
-        function getIconUrl(itemName) {
-            const trimmedItem = itemName.trim();
-            const dbEntry = globalItemDatabase[trimmedItem];
-            if (dbEntry && dbEntry.iconUrl) return dbEntry.iconUrl;
-            return 'https://placehold.co/32x32/333/FFF?text=?';
-        }
-
-        async function fetchData(url) {
-            if (!url) return null;
-            try {
-                const response = await fetch(url);
-                if (!response.ok) return null;
-                let text = await response.text();
-                const cleanedText = text.replace(/^\uFEFF/, '').replace(/\u00A0/g, ' ');
-                return JSON.parse(cleanedText);
-            } catch (e) {
-                console.error("Fetch Error:", e);
-                return null;
-            }
-        }
-
-        // --- UI POPULATION ---
-
-        function populateMapList() {
-            const list = document.getElementById('map-list');
-            list.innerHTML = '';
-            for (const key in mapConfigs) {
-                const map = mapConfigs[key];
-                if (map.activated) {
-                    const li = document.createElement('li');
-                    li.className = 'px-4 py-2 hover:bg-gray-600 cursor-pointer text-sm text-gray-300 transition-colors border-b border-gray-700 last:border-0';
-                    li.textContent = map.displayName;
-                    li.onclick = () => {
-                        loadMapData(key);
-                        document.getElementById('map-list').classList.add('hidden');
-                    };
-                    list.appendChild(li);
-                }
-            }
-        }
-
-        function populateCreatureList(searchTerm = "") {
-            const listContainer = document.getElementById('creature-list');
-            listContainer.innerHTML = '';
+        // SCROLL FUNCTION FOR SLIDER
+        function scrollSlider(btn, direction) {
+            const wrapper = btn.closest('.poi-slider-wrapper');
+            const slider = wrapper.querySelector('.poi-slider');
+            const scrollAmount = 300; 
+            slider.scrollBy({ left: scrollAmount * direction, behavior: 'smooth' });
             
-            const creatureNames = Object.keys(allCreatureData);
-            const translatedNames = creatureNames.map(name => ({
-                english: name,
-                german: creatureTranslations[name.trim()] || name.trim()
-            }));
-
-            const filtered = translatedNames
-                .filter(c => c.german.toLowerCase().includes(searchTerm.toLowerCase()))
-                .sort((a, b) => a.german.localeCompare(b.german));
-
-            if(filtered.length === 0) {
-                listContainer.innerHTML = '<p class="text-xs text-gray-500 text-center mt-2">Keine Dinos gefunden.</p>';
+            setTimeout(() => updateArrows(slider), 350); 
+        }
+        
+        // UPDATE ARROWS VISIBILITY
+        function updateArrows(slider) {
+            const wrapper = slider.closest('.poi-slider-wrapper');
+            if (!wrapper) return;
+            
+            const prev = wrapper.querySelector('.prev');
+            const next = wrapper.querySelector('.next');
+            
+            if (window.innerWidth <= 768) {
+                prev.style.display = 'none';
+                next.style.display = 'none';
                 return;
             }
 
-            filtered.forEach(c => {
-                const div = document.createElement('div');
-                div.className = `creature-item ${selectedCreatureValue === c.english ? 'active' : ''}`;
-                
-                const iconUrl = getIconUrl(c.english);
-                div.innerHTML = `
-                    <div class="flex items-center">
-                        <img src="${iconUrl}" class="w-6 h-6 mr-3 object-contain" onerror="this.src='https://placehold.co/20?text=?'">
-                        <span class="text-sm font-medium text-gray-300">${c.german}</span>
-                    </div>
-                `;
-                
-                div.onclick = () => {
-                    selectedCreatureValue = c.english;
-                    document.querySelectorAll('.creature-item').forEach(el => el.classList.remove('active'));
-                    div.classList.add('active');
-                    drawSpawns();
-                };
-                listContainer.appendChild(div);
-            });
+            const tolerance = 2; 
+            const maxScroll = slider.scrollWidth - slider.clientWidth;
+
+            if (maxScroll <= 0) {
+                prev.style.display = 'none';
+                next.style.display = 'none';
+            } else {
+                prev.style.display = slider.scrollLeft > tolerance ? 'flex' : 'none';
+                next.style.display = slider.scrollLeft < maxScroll - tolerance ? 'flex' : 'none';
+            }
         }
 
-        function populateResourceControls() {
-            const container = document.getElementById('resource-controls');
-            container.innerHTML = '';
-            if (!allResourceData) return;
+        // SELECT MAP LOGIC
+        function selectMap(groupKey, index, buttonElement) {
+            document.querySelectorAll('.map-btn').forEach(btn => btn.classList.remove('active'));
+            buttonElement.classList.add('active');
 
-            const sortedResources = Object.keys(allResourceData).sort();
+            const map = mapData[groupKey][index];
+            const iframe = document.getElementById('mapFrame');
+            const loader = document.getElementById('loader');
+            const poiSection = document.getElementById('poiSection');
+            const poiContainer = document.getElementById('poiContainer');
 
-            sortedResources.forEach(res => {
-                const label = document.createElement('label');
-                label.className = 'flex items-center text-gray-300 cursor-pointer hover:bg-gray-800 p-2 rounded transition-colors';
-                
-                const checkbox = document.createElement('input');
-                checkbox.type = 'checkbox';
-                checkbox.name = res;
-                checkbox.className = 'mr-3 h-4 w-4 bg-gray-700 border-gray-500 rounded text-amber-500 focus:ring-0';
-                checkbox.onchange = () => drawResources();
+            // 1. Map laden
+            loader.style.display = 'block';
+            iframe.src = map.url;
+            iframe.onload = function() { loader.style.display = 'none'; };
 
-                const name = resourceTranslations[res] || res;
-                const iconUrl = getIconUrl(res);
-                
-                const img = document.createElement('img');
-                img.src = iconUrl;
-                img.className = "w-5 h-5 mr-2 object-contain";
-                
-                label.append(checkbox, img, document.createTextNode(name));
-                container.appendChild(label);
-            });
-        }
+            // 2. POIs gruppieren und Slider erstellen
+            if (map.pois && map.pois.length > 0) {
+                poiSection.style.display = 'block';
+                poiContainer.innerHTML = ''; 
 
-        function populateObeliskControls() {
-            const container = document.getElementById('obelisk-controls');
-            container.innerHTML = '';
-            if (!allObeliskData.obelisks) return;
-
-            allObeliskData.obelisks.forEach(ob => {
-                const div = document.createElement('label');
-                div.className = 'flex items-center text-gray-300 cursor-pointer hover:bg-gray-800 p-2 rounded';
-                const cb = document.createElement('input');
-                cb.type = 'checkbox';
-                cb.name = ob.name;
-                cb.className = 'mr-3 h-4 w-4 bg-gray-700 border-gray-500 rounded text-amber-500 focus:ring-0';
-                cb.onchange = () => drawObelisks();
-                
-                const colorDot = document.createElement('span');
-                colorDot.className = 'w-3 h-3 rounded-full mr-2 inline-block';
-                colorDot.style.backgroundColor = obeliskConfig[ob.name]?.color || '#fff';
-                colorDot.style.boxShadow = `0 0 5px ${obeliskConfig[ob.name]?.color || '#fff'}`;
-                
-                div.append(cb, colorDot, document.createTextNode(ob.name));
-                container.appendChild(div);
-            });
-        }
-
-        // --- DRAWING LOGIC (UPDATED WITH CLEARS) ---
-
-        function redrawAll() {
-            requestAnimationFrame(() => {
-                [mapCtx, spawnCtx, resourceCtx, spotsCtx, clickCtx, obeliskCtx, caveSpotsCtx, regionCtx, playerSpawnCtx, notesCtx].forEach(ctx => {
-                     if(ctx) ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                const groups = {};
+                map.pois.forEach(poi => {
+                    let groupName = poi.type.split(':')[0].trim(); 
+                    if(groupName.includes("Artefakt")) groupName = "Artefakte";
+                    if(groupName.includes("Teleporter")) groupName = "Teleporter";
+                    
+                    if (!groups[groupName]) groups[groupName] = [];
+                    groups[groupName].push(poi);
                 });
 
-                if(mapImage.complete && mapImage.naturalWidth > 0) {
-                    drawMapImage();
-                } else {
-                    mapCtx.fillStyle = '#111';
-                    mapCtx.fillRect(0,0,mapCanvas.width, mapCanvas.height);
-                    mapCtx.fillStyle = '#ef4444';
-                    mapCtx.font = '20px sans-serif';
-                    mapCtx.textAlign = 'center';
-                    mapCtx.fillText('Bildfehler: Karte konnte nicht geladen werden', mapCanvas.width/2, mapCanvas.height/2);
-                }
-
-                drawSpawns(); 
-                drawResources();
-                drawObelisks();
-                if(document.getElementById('spots-toggle').checked) drawPublicSpots();
-                if(document.getElementById('cave-spots-toggle').checked) drawCaveSpots();
-            });
-        }
-
-        function drawMapImage() {
-            if(!mapCtx || !mapImage.complete) return;
-            mapCtx.save();
-            mapCtx.translate(panOffset.x, panOffset.y);
-            mapCtx.scale(scale, scale);
-            mapCtx.drawImage(mapImage, 0, 0, mapCanvas.width, mapCanvas.height);
-            mapCtx.restore();
-        }
-
-        function drawSpawns() {
-            // FIX: Always clear spawn layer first
-            const width = spawnCanvas.width;
-            const height = spawnCanvas.height;
-            spawnCtx.clearRect(0, 0, width, height);
-
-            if (!selectedCreatureValue) return;
-            const areas = allCreatureData[selectedCreatureValue];
-            if (!areas) return;
-
-            spawnCtx.save();
-            spawnCtx.translate(panOffset.x, panOffset.y);
-            spawnCtx.scale(scale, scale);
-
-            areas.forEach(area => {
-                const x = ((area.min.lon - MAP_LON_MIN) / MAP_LON_RANGE) * width;
-                const y = ((area.min.lat - MAP_LAT_MIN) / MAP_LAT_RANGE) * height;
-                const w = ((area.max.lon - area.min.lon) / MAP_LON_RANGE) * width;
-                const h = ((area.max.lat - area.min.lat) / MAP_LAT_RANGE) * height;
-
-                spawnCtx.fillStyle = 'rgba(251, 191, 36, 0.4)'; // Amber transparent
-                spawnCtx.fillRect(x, y, w, h);
-                spawnCtx.strokeStyle = 'rgba(251, 191, 36, 0.8)';
-                spawnCtx.lineWidth = 1/scale;
-                spawnCtx.strokeRect(x, y, w, h);
-            });
-            spawnCtx.restore();
-        }
-
-        function drawResources() {
-            // FIX: Always clear resource layer first
-            const width = resourceCanvas.width;
-            const height = resourceCanvas.height;
-            resourceCtx.clearRect(0, 0, width, height);
-
-            const checkboxes = document.querySelectorAll('#resource-controls input[type="checkbox"]:checked');
-            if (checkboxes.length === 0) return;
-            
-            resourceCtx.save();
-            resourceCtx.translate(panOffset.x, panOffset.y);
-            resourceCtx.scale(scale, scale);
-
-            checkboxes.forEach(cb => {
-                const resName = cb.name;
-                if(allResourceData[resName]) {
-                    const icon = resourceIcons[resName];
-                    allResourceData[resName].forEach(node => {
-                        const x = ((node.lon - MAP_LON_MIN) / MAP_LON_RANGE) * width;
-                        const y = ((node.lat - MAP_LAT_MIN) / MAP_LAT_RANGE) * height;
-                        const radius = 3 / scale;
-                        
-                        resourceCtx.beginPath();
-                        resourceCtx.arc(x, y, radius, 0, Math.PI*2);
-                        resourceCtx.fillStyle = resourceConfig[resName]?.color || '#fff';
-                        resourceCtx.fill();
-                    });
-                }
-            });
-            resourceCtx.restore();
-        }
-
-        function drawObelisks() {
-            // FIX: Always clear obelisk layer first
-            const width = obeliskCanvas.width;
-            const height = obeliskCanvas.height;
-            obeliskCtx.clearRect(0, 0, width, height);
-
-            const checkboxes = document.querySelectorAll('#obelisk-controls input[type="checkbox"]:checked');
-            if(checkboxes.length === 0) return;
-
-            obeliskCtx.save();
-            obeliskCtx.translate(panOffset.x, panOffset.y);
-            obeliskCtx.scale(scale, scale);
-
-            checkboxes.forEach(cb => {
-                const obName = cb.name;
-                const ob = allObeliskData.obelisks.find(o => o.name === obName);
-                if(ob) {
-                    const x = ((ob.lon - MAP_LON_MIN) / MAP_LON_RANGE) * width;
-                    const y = ((ob.lat - MAP_LAT_MIN) / MAP_LAT_RANGE) * height;
-                    const radius = 8 / scale;
-
-                    obeliskCtx.beginPath();
-                    obeliskCtx.arc(x, y, radius, 0, Math.PI*2);
-                    obeliskCtx.fillStyle = obeliskConfig[obName]?.color || '#fff';
-                    obeliskCtx.shadowBlur = 10;
-                    obeliskCtx.shadowColor = obeliskCtx.fillStyle;
-                    obeliskCtx.fill();
-                }
-            });
-            obeliskCtx.restore();
-        }
-
-        function drawPublicSpots() {
-           // FIX: Always clear spots layer first
-           const width = spotsCanvas.width;
-           const height = spotsCanvas.height;
-           spotsCtx.clearRect(0, 0, width, height);
-
-           if(!allPublicSpotsData.publicSpots) return;
-           
-           spotsCtx.save();
-           spotsCtx.translate(panOffset.x, panOffset.y);
-           spotsCtx.scale(scale, scale);
-           
-           allPublicSpotsData.publicSpots.forEach(spot => {
-                const x = ((spot.lon - SPOT_LON_MIN) / SPOT_LON_RANGE) * width;
-                const y = ((spot.lat - SPOT_LAT_MIN) / SPOT_LAT_RANGE) * height;
-                
-                // Draw Pin
-                spotsCtx.beginPath();
-                spotsCtx.moveTo(x, y);
-                spotsCtx.lineTo(x - 5/scale, y - 15/scale);
-                spotsCtx.quadraticCurveTo(x, y - 25/scale, x + 5/scale, y - 15/scale);
-                spotsCtx.closePath();
-                spotsCtx.fillStyle = '#f59e0b'; // Amber
-                spotsCtx.fill();
-                spotsCtx.strokeStyle = '#000';
-                spotsCtx.lineWidth = 1/scale;
-                spotsCtx.stroke();
-           });
-           spotsCtx.restore();
-        }
-
-        function drawCaveSpots() {
-           // FIX: Always clear caves layer first
-           const width = caveSpotsCanvas.width;
-           const height = caveSpotsCanvas.height;
-           caveSpotsCtx.clearRect(0, 0, width, height);
-
-           if(!allCaveSpotsData.caveSpots) return;
-           
-           caveSpotsCtx.save();
-           caveSpotsCtx.translate(panOffset.x, panOffset.y);
-           caveSpotsCtx.scale(scale, scale);
-           
-           allCaveSpotsData.caveSpots.forEach(spot => {
-                const x = ((spot.lon - SPOT_LON_MIN) / SPOT_LON_RANGE) * width;
-                const y = ((spot.lat - SPOT_LAT_MIN) / SPOT_LAT_RANGE) * height;
-                
-                caveSpotsCtx.beginPath();
-                caveSpotsCtx.arc(x, y, 6/scale, 0, Math.PI*2);
-                caveSpotsCtx.fillStyle = '#a855f7'; // Purple
-                caveSpotsCtx.fill();
-                caveSpotsCtx.strokeStyle = '#fff';
-                caveSpotsCtx.lineWidth = 1/scale;
-                caveSpotsCtx.stroke();
-           });
-           caveSpotsCtx.restore();
-        }
-
-        // --- INTERACTION ---
-
-        function setupInteraction() {
-            clickCanvas.addEventListener('mousedown', (e) => {
-                isPanning = true;
-                panStart = { x: e.clientX - panOffset.x, y: e.clientY - panOffset.y };
-                clickCanvas.style.cursor = 'grabbing';
-            });
-
-            window.addEventListener('mouseup', () => {
-                isPanning = false;
-                clickCanvas.style.cursor = 'grab';
-            });
-
-            clickCanvas.addEventListener('mousemove', (e) => {
-                const rect = clickCanvas.getBoundingClientRect();
-                const mouseX = e.clientX - rect.left;
-                const mouseY = e.clientY - rect.top;
-                
-                const mapX = (mouseX - panOffset.x) / scale;
-                const mapY = (mouseY - panOffset.y) / scale;
-                
-                const lon = (mapX / mapCanvas.width) * 100;
-                const lat = (mapY / mapCanvas.height) * 100;
-                
-                document.getElementById('lat-display').innerHTML = `Lat: <span class="text-white font-bold">${Math.max(0, Math.min(100, lat)).toFixed(2)}</span>`;
-                document.getElementById('lon-display').innerHTML = `Lon: <span class="text-white font-bold">${Math.max(0, Math.min(100, lon)).toFixed(2)}</span>`;
-
-                if (isPanning) {
-                    panOffset.x = e.clientX - panStart.x;
-                    panOffset.y = e.clientY - panStart.y;
-                    
-                    // Boundary check simplified
-                    // const minX = clickCanvas.width * (1 - scale);
-                    // panOffset.x = Math.min(0, Math.max(minX, panOffset.x));
-                    // panOffset.y = Math.min(0, Math.max(clickCanvas.height * (1 - scale), panOffset.y));
-                    
-                    redrawAll();
-                }
-            });
-
-            clickCanvas.addEventListener('wheel', (e) => {
-                e.preventDefault();
-                const rect = clickCanvas.getBoundingClientRect();
-                const mouseX = e.clientX - rect.left;
-                const mouseY = e.clientY - rect.top;
-
-                const zoom = e.deltaY < 0 ? 1.1 : 0.9;
-                const newScale = Math.min(maxScale, Math.max(minScale, scale * zoom));
-                
-                const worldX = (mouseX - panOffset.x) / scale;
-                const worldY = (mouseY - panOffset.y) / scale;
-                
-                panOffset.x = mouseX - worldX * newScale;
-                panOffset.y = mouseY - worldY * newScale;
-                scale = newScale;
-                
-                redrawAll();
-            });
-
-            clickCanvas.addEventListener('click', (e) => {
-                if(isPanning) return;
-                const rect = clickCanvas.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                
-                // Inverse transform to get map coords
-                const mapX = (x - panOffset.x) / scale;
-                const mapY = (y - panOffset.y) / scale;
-                
-                // Convert to Game Coords
-                const width = mapCanvas.width;
-                const height = mapCanvas.height;
-                
-                // Check Public Spots
-                if(document.getElementById('spots-toggle').checked && allPublicSpotsData.publicSpots) {
-                    const hit = allPublicSpotsData.publicSpots.find(spot => {
-                        const sx = ((spot.lon - SPOT_LON_MIN) / SPOT_LON_RANGE) * width;
-                        const sy = ((spot.lat - SPOT_LAT_MIN) / SPOT_LAT_RANGE) * height;
-                        const dist = Math.sqrt(Math.pow(mapX - sx, 2) + Math.pow(mapY - sy, 2));
-                        return dist < 20/scale; // Hitbox
-                    });
-                    
-                    if(hit) {
-                        openDetailPanel(hit);
-                        return;
-                    }
+                for (const [groupName, items] of Object.entries(groups)) {
+                    // Erstelle Slider-Struktur
+                    const groupHtml = `
+                        <div class="poi-category-header">${groupName}</div>
+                        <div class="poi-slider-wrapper">
+                            <button class="slider-arrow prev" onclick="scrollSlider(this, -1)">&#10094;</button>
+                            <div class="poi-slider">
+                                ${items.map((poi, i) => `
+                                    <div class="poi-card" onclick="openModal('${groupKey}', ${index}, '${groupName}', ${i})">
+                                        <img src="${poi.img}" class="poi-image" loading="lazy" alt="${poi.title}">
+                                        <div class="poi-info">
+                                            <span class="poi-type">${poi.sub || poi.type}</span>
+                                            <div class="poi-title">${poi.title}</div>
+                                            <div class="poi-coords">${poi.coords}</div>
+                                            ${poi.miniBoss ? `<div class="poi-subtext" style="color:#FF9800;">Mini Boss: ${poi.miniBoss}</div>` : ''}
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                            <button class="slider-arrow next" onclick="scrollSlider(this, 1)">&#10095;</button>
+                        </div>
+                    `;
+                    poiContainer.innerHTML += groupHtml;
                 }
                 
-                // Check Caves
-                 if(document.getElementById('cave-spots-toggle').checked && allCaveSpotsData.caveSpots) {
-                    const hit = allCaveSpotsData.caveSpots.find(spot => {
-                        const sx = ((spot.lon - SPOT_LON_MIN) / SPOT_LON_RANGE) * width;
-                        const sy = ((spot.lat - SPOT_LAT_MIN) / SPOT_LAT_RANGE) * height;
-                        const dist = Math.sqrt(Math.pow(mapX - sx, 2) + Math.pow(mapY - sy, 2));
-                        return dist < 20/scale;
-                    });
-                    
-                    if(hit) {
-                        openDetailPanel(hit);
-                        return;
-                    }
-                }
-            });
-        }
-
-        function setupTabs() {
-            const buttons = document.querySelectorAll('.tab-btn');
-            buttons.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-                    document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
-                    btn.classList.add('active');
-                    document.getElementById(btn.dataset.target).classList.add('active');
+                // Initialize arrow visibility for new sliders
+                const sliders = poiContainer.querySelectorAll('.poi-slider');
+                sliders.forEach(slider => {
+                    slider.addEventListener('scroll', () => updateArrows(slider));
+                    setTimeout(() => updateArrows(slider), 50);
                 });
+
+            } else {
+                poiSection.style.display = 'none';
+                poiContainer.innerHTML = '';
+            }
+        }
+
+        // --- MODAL FUNKTIONEN ---
+        function openModal(groupKey, mapIndex, groupName, poiIndex) {
+            const map = mapData[groupKey][mapIndex];
+            
+            // Wir filtern genau wie oben im Loop, um die richtige Gruppe zu finden
+            const groups = {};
+            map.pois.forEach(p => {
+                let gName = p.type.split(':')[0].trim(); 
+                if(gName.includes("Artefakt")) gName = "Artefakte";
+                if(gName.includes("Teleporter")) gName = "Teleporter";
+                if (!groups[gName]) groups[gName] = [];
+                groups[gName].push(p);
             });
+            
+            const poi = groups[groupName][poiIndex];
+            
+            if(poi) {
+                document.getElementById('modalImg').src = poi.img;
+                document.getElementById('modalType').textContent = poi.sub || poi.type;
+                document.getElementById('modalTitle').textContent = poi.title;
+                document.getElementById('modalCoords').textContent = poi.coords;
+                
+                // Modal öffnen
+                const modal = document.getElementById('poiModal');
+                modal.classList.add('active');
+            }
         }
 
-        // Setup AI Chat
-        function setupAIChat() {
-            const btn = document.getElementById('ai-send-btn');
-            const input = document.getElementById('ai-input');
-            
-            function send() {
-                const text = input.value.trim();
-                if(text) {
-                    callGeminiAPI(text);
-                    input.value = '';
-                }
-            }
-
-            btn.addEventListener('click', send);
-            input.addEventListener('keypress', (e) => {
-                if(e.key === 'Enter') send();
-            });
+        function closeModal(event) {
+            document.getElementById('poiModal').classList.remove('active');
         }
 
-        function openDetailPanel(data) {
-            const panel = document.getElementById('detail-panel');
-            const content = document.getElementById('detail-content');
-            
-            let html = `<h2 class="text-3xl text-amber-500 font-bold mb-2">${data.name}</h2>`;
-            html += `<div class="text-sm text-gray-400 mb-4">Lat: ${data.lat.toFixed(1)} / Lon: ${data.lon.toFixed(1)}</div>`;
-            
-            if(data.images && data.images.length) {
-                html += `<div class="relative w-full h-48 mb-4 rounded overflow-hidden border border-gray-700">
-                            <img src="${data.images[0]}" class="w-full h-full object-cover">
-                         </div>`;
-            }
-            
-            if(data.description || data.shortDescription) {
-                html += `<div class="bg-gray-800 p-3 rounded border-l-2 border-amber-500 text-gray-300 text-sm leading-relaxed">
-                            ${data.description || data.shortDescription}
-                         </div>`;
-            }
-            
-            if(data.artifacts) {
-                html += `<h3 class="mt-4 font-bold text-gray-300">Artefakte</h3><div class="flex gap-2 mt-2">`;
-                data.artifacts.forEach(a => {
-                   html += `<span class="px-2 py-1 bg-gray-700 rounded text-xs text-amber-300 border border-gray-600">${a.name}</span>`; 
-                });
-                html += `</div>`;
-            }
-
-            content.innerHTML = html;
-            panel.classList.add('open');
-        }
-
-        document.getElementById('close-detail').addEventListener('click', () => {
-            document.getElementById('detail-panel').classList.remove('open');
+        // Global Resize Listener
+        window.addEventListener('resize', () => {
+            document.querySelectorAll('.poi-slider').forEach(updateArrows);
         });
 
-
-        // --- INITIALIZATION ---
-
-        async function loadMapData(mapKey) {
-            const indicator = document.getElementById('loading-indicator');
-            const loadingText = document.getElementById('loading-text');
-            indicator.style.display = 'flex';
-            
-            // Safe config access
-            const config = mapConfigs[mapKey];
-            if (!config) {
-                loadingText.textContent = `Fehler: Konfiguration für Karte '${mapKey}' nicht gefunden.`;
-                loadingText.classList.add('text-red-500');
-                return;
-            }
-
-            loadingText.textContent = `Lade ${config.displayName}...`;
-            loadingText.classList.remove('text-red-500');
-            
-            currentMapKey = mapKey;
-            document.getElementById('map-name').textContent = config.displayName;
-            
-            // Update AI Context Display
-            const aiMapDisplay = document.getElementById('ai-current-map');
-            if(aiMapDisplay) aiMapDisplay.textContent = config.displayName;
-
-            selectedCreatureValue = null;
-            scale = 1; panOffset = {x:0, y:0};
-            
-            // Image Loading with explicit handling
-            const imageLoadPromise = new Promise((resolve, reject) => {
-                mapImage.onload = () => resolve();
-                mapImage.onerror = () => reject(`Kartenbild konnte nicht geladen werden: ${config.mapImageUrl}`);
-                
-                // Force reset src to ensure trigger if same URL
-                mapImage.src = ''; 
-                if (config.mapImageUrl) {
-                    mapImage.src = config.mapImageUrl;
-                } else {
-                    reject("Map Image URL is missing in config.");
-                }
-            });
-
-            try {
-                // Fetch Data and Image
-                const results = await Promise.allSettled([
-                    fetchData(config.creatureDataUrl),
-                    fetchData(config.resourceDataUrl),
-                    fetchData(config.publicSpotsDataUrl),
-                    fetchData(config.obeliskDataUrl),
-                    fetchData(config.caveSpotsDataUrl),
-                    imageLoadPromise
-                ]);
-
-                // Extract results (Promise.allSettled returns objects)
-                // We use allSettled so one failed JSON doesn't kill the map
-                const creatureData = results[0].status === 'fulfilled' ? results[0].value : null;
-                const resourceData = results[1].status === 'fulfilled' ? results[1].value : null;
-                const spotsData = results[2].status === 'fulfilled' ? results[2].value : null;
-                const obeliskData = results[3].status === 'fulfilled' ? results[3].value : null;
-                const caveData = results[4].status === 'fulfilled' ? results[4].value : null;
-                const imageStatus = results[5].status;
-
-                if (imageStatus === 'rejected') {
-                    throw new Error(results[5].reason);
-                }
-
-                // Assign Data
-                if(creatureData) allCreatureData = creatureData.dinoSpawns || {}; 
-                if(resourceData) allResourceData = resourceData.resources || {};
-                if(spotsData) allPublicSpotsData = spotsData || { publicSpots: [] };
-                if(obeliskData) allObeliskData = obeliskData || { obelisks: [] };
-                if(caveData) allCaveSpotsData = caveData || { caveSpots: [] };
-
-                populateCreatureList();
-                populateResourceControls();
-                populateObeliskControls();
-
-                // Einfach nur das Canvas-Resize aufrufen ohne Argumente - Flexbox erledigt den Rest
-                handleResize();
-                indicator.style.display = 'none';
-                redrawAll();
-                
-            } catch (err) {
-                console.error(err);
-                loadingText.textContent = `Fehler: ${err.message || "Daten konnten nicht geladen werden."}`;
-                loadingText.classList.add('text-red-500');
-            }
-        }
-
-        // VEREINFACHTE RESIZE FUNKTION
-        // Keine manuellen top/left Berechnungen mehr nötig dank CSS Flexbox
-        function handleResize() {
-            const container = document.querySelector('.map-area');
-            const size = Math.min(container.clientWidth, container.clientHeight);
-            
-            const canvases = document.querySelectorAll('canvas');
-            canvases.forEach(cvs => {
-                cvs.width = size;
-                cvs.height = size;
-                cvs.style.width = size + 'px';
-                cvs.style.height = size + 'px';
-                
-                // Top/Left wird von CSS Flexbox geregelt - wir müssen nichts tun!
-                // Zur Sicherheit setzen wir sie zurück
-                cvs.style.left = 'auto';
-                cvs.style.top = 'auto';
-            });
-            
-            // Auch den Stack Container anpassen
-            const stack = document.getElementById('canvas-stack');
-            stack.style.width = size + 'px';
-            stack.style.height = size + 'px';
-            
-            redrawAll();
-        }
-
-        window.addEventListener('resize', handleResize);
-
-        document.addEventListener('DOMContentLoaded', async () => {
-            mapCanvas = document.getElementById('map-canvas'); mapCtx = mapCanvas.getContext('2d');
-            spawnCanvas = document.getElementById('spawn-canvas'); spawnCtx = spawnCanvas.getContext('2d');
-            clickCanvas = document.getElementById('click-canvas'); clickCtx = clickCanvas.getContext('2d');
-            resourceCanvas = document.getElementById('resource-canvas'); resourceCtx = resourceCanvas.getContext('2d');
-            spotsCanvas = document.getElementById('spots-canvas'); spotsCtx = spotsCanvas.getContext('2d');
-            obeliskCanvas = document.getElementById('obelisk-canvas'); obeliskCtx = obeliskCanvas.getContext('2d');
-            caveSpotsCanvas = document.getElementById('cave-spots-canvas'); caveSpotsCtx = caveSpotsCanvas.getContext('2d');
-
-            // Dummy context init for safe array looping in redraw
-            regionCanvas = document.getElementById('region-canvas'); regionCtx = regionCanvas.getContext('2d');
-            playerSpawnCanvas = document.getElementById('player-spawn-canvas'); playerSpawnCtx = playerSpawnCanvas.getContext('2d');
-            notesCanvas = document.getElementById('notes-canvas'); notesCtx = notesCanvas.getContext('2d');
-
-            mapImage = document.getElementById('map-image');
-            tooltipElement = document.getElementById('map-tooltip');
-            tooltipContentElement = document.getElementById('tooltip-content');
-
-            setupInteraction();
-            setupTabs();
-            setupAIChat(); // Init Chat Listeners
-            
-            document.getElementById('map-select-btn').onclick = (e) => {
-                e.stopPropagation();
-                document.getElementById('map-list').classList.toggle('hidden');
-            }
-
-            document.getElementById('creature-search').addEventListener('input', (e) => {
-                populateCreatureList(e.target.value);
-            });
-
-            document.getElementById('spots-toggle').addEventListener('change', redrawAll);
-            document.getElementById('cave-spots-toggle').addEventListener('change', redrawAll);
-            document.getElementById('select-all-resources').addEventListener('change', (e) => {
-                document.querySelectorAll('#resource-controls input').forEach(cb => cb.checked = e.target.checked);
-                redrawAll();
-            });
-
-            document.getElementById('zoom-in').onclick = () => { scale = Math.min(maxScale, scale * 1.2); redrawAll(); };
-            document.getElementById('zoom-out').onclick = () => { scale = Math.max(minScale, scale / 1.2); redrawAll(); };
-
-            // Initial Config Load
-            const configUrl = 'https://raw.githubusercontent.com/iophantonie/iophantonie-IOP_Custom_Map_Explorer.github.io/main/MapConfigs/MapConfigs.jsn'; 
-            const dbUrl = 'https://raw.githubusercontent.com/iophantonie/iophantonie-IOP_Custom_Map_Explorer.github.io/refs/heads/main/Icon_Datenbank/Icondb.jsn';
-            const transUrl = 'https://raw.githubusercontent.com/iophantonie/iophantonie-IOP_Custom_Map_Explorer.github.io/main/Translation_Datenbank/translationdb.jsn';
-            
-            try {
-                const [configs, itemDb, transDb] = await Promise.all([fetchData(configUrl), fetchData(dbUrl), fetchData(transUrl)]);
-                
-                if(configs) mapConfigs = configs;
-                if(itemDb) globalItemDatabase = {...itemDb.Items, ...itemDb.Kreaturen};
-                if(transDb) {
-                    resourceTranslations = transDb.Ressourcen || {};
-                    creatureTranslations = transDb.Kreaturen || {};
-                }
-
-                populateMapList();
-                loadMapData('TheIsland'); 
-            } catch(e) {
-                console.error("Critical Init Error:", e);
-                document.getElementById('loading-text').innerText = "Fehler beim Laden der Konfiguration.";
+        // INIT
+        document.addEventListener('DOMContentLoaded', () => {
+            renderSidebar();
+            const firstButton = document.getElementById('map-official-0');
+            if (firstButton) {
+                selectMap('official', 0, firstButton);
             }
         });
     </script>
+
 </body>
 </html>
