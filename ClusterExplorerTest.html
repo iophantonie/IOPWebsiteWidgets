@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IOP Cluster Explorer (Fire Edition)</title>
+    <title>IOP Cluster Explorer (Fire Edition v10.5)</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <style>
         /* --- CORE --- */
         * { box-sizing: border-box; }
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #000; overflow: hidden; font-family: 'Segoe UI', 'Roboto', sans-serif; color: #e2e8f0; }
 
-        /* PHOENIX FIRE COLORS */
+        /* PHOENIX COLORS */
         :root {
-            --phoenix-fire: #ff2a00; /* Kräftiges Feuer-Rot */
-            --phoenix-glow: #ff5500; /* Helleres Glühen für Hover */
+            --phoenix-fire: #ff2a00;
+            --phoenix-glow: #ff5500;
             --bg-dark: #050505;
             --bg-panel: #0a0a0a;
             --border-color: #2a2a2a;
@@ -169,7 +169,7 @@
             
             <!-- VIEW: DINOS -->
             <div id="view-dinos" class="view active">
-                <div class="sticky top-0 bg-[#111827] z-10 pb-4">
+                <div class="sticky top-0 bg-[#0a0a0a] z-10 pb-4">
                     <input type="text" id="dino-search" placeholder="Dino suchen..." class="phoenix-input w-full">
                 </div>
                 <div id="dino-list-root"></div>
@@ -214,7 +214,7 @@
             <!-- VIEW: SETTINGS -->
             <div id="view-settings" class="view">
                 <div class="text-xs font-bold text-gray-500 mb-3 tracking-wider">ANSICHT</div>
-                <button onclick="Map.reset()" class="phoenix-btn mb-6">Karte zentrieren</button>
+                <button onclick="MapEngine.reset()" class="phoenix-btn mb-6">Karte zentrieren</button>
                 
                 <div class="text-xs font-bold text-gray-500 mb-3 tracking-wider">LAYER</div>
                 <div class="toggle-item" id="tog-players" onclick="Layers.toggle('players')">
@@ -222,7 +222,7 @@
                 </div>
                 
                 <div class="mt-12 text-center text-xs text-gray-600 font-mono">
-                    Infinity of Phoenix<br>Cluster Explorer v10.2
+                    Infinity of Phoenix<br>Cluster Explorer v10.5
                 </div>
             </div>
 
@@ -246,16 +246,16 @@
         <!-- HUD -->
         <div class="hud-top">LAT: <span id="lat">00.0</span> | LON: <span id="lon">00.0</span></div>
         <div class="hud-bot">
-            <button class="zoom-btn" onclick="Map.reset()">⟲</button>
-            <button class="zoom-btn" onclick="Map.zoom(1.2)">+</button>
-            <button class="zoom-btn" onclick="Map.zoom(0.8)">-</button>
+            <button class="zoom-btn" onclick="MapEngine.reset()">⟲</button>
+            <button class="zoom-btn" onclick="MapEngine.zoom(1.2)">+</button>
+            <button class="zoom-btn" onclick="MapEngine.zoom(0.8)">-</button>
         </div>
     </div>
 </div>
 
 <script>
 /**
- * IOP WIDGET CORE v10.2 (Fire Edition)
+ * IOP WIDGET CORE v10.5 (Scale Fix)
  */
 
 // CONFIG
@@ -263,7 +263,6 @@ const CONFIG = {
     cfg: 'https://raw.githubusercontent.com/iophantonie/iophantonie-IOP_Custom_Map_Explorer.github.io/main/MapConfigs/MapConfigs.jsn',
     ico: 'https://raw.githubusercontent.com/iophantonie/iophantonie-IOP_Custom_Map_Explorer.github.io/refs/heads/main/Icon_Datenbank/Icondb.jsn',
     txt: 'https://raw.githubusercontent.com/iophantonie/iophantonie-IOP_Custom_Map_Explorer.github.io/main/Translation_Datenbank/translationdb.jsn',
-    // Fire Red Colors for Spawns
     colors: { spawn: 'rgba(255, 42, 0, 0.4)', border: '#ff2a00' }
 };
 
@@ -284,12 +283,13 @@ const Store = {
 };
 
 // --- MAP ENGINE ---
-const Map = {
+const MapEngine = {
     el: null,
     bg: null,
     cvs: null,
     ctx: null,
     vp: null,
+    iconCache: new Map(),
 
     init() {
         this.vp = document.getElementById('viewport');
@@ -338,7 +338,6 @@ const Map = {
         this.cvs.width = size;
         this.cvs.height = size;
         
-        // AUTO CENTER
         this.el.style.left = (this.vp.clientWidth - size) / 2 + 'px';
         this.el.style.top = (this.vp.clientHeight - size) / 2 + 'px';
 
@@ -362,6 +361,24 @@ const Map = {
         Store.scale = 1; Store.x = 0; Store.y = 0;
         this.update();
         this.resize(); 
+    },
+    
+    getIcon(key) {
+        const url = Store.icons[key]?.iconUrl;
+        if (!url) return null;
+        
+        if (this.iconCache.has(key)) {
+            return this.iconCache.get(key);
+        }
+
+        const img = new Image();
+        img.src = url;
+        img.onload = () => {
+             if (Store.activeRes.has(key)) this.draw();
+        };
+        
+        this.iconCache.set(key, img);
+        return img;
     },
 
     draw() {
@@ -387,15 +404,30 @@ const Map = {
 
         Store.activeRes.forEach(k => {
             if(Store.data.res[k]) {
+                const iconImg = this.getIcon(k);
                 const c = {'Metal':'#b87333','Crystal':'#a5f3fc', 'Obsidian':'#000', 'Oil':'#111'}[k]||'#fff';
-                ctx.fillStyle = c;
+                
                 Store.data.res[k].forEach(p => {
-                    ctx.beginPath(); ctx.arc((p.lon/100)*w, (p.lat/100)*h, 3, 0, Math.PI*2); ctx.fill();
+                    const cx = (p.lon/100)*w;
+                    const cy = (p.lat/100)*h;
+                    
+                    // --- NEUE SKALIERUNGSLOGIK ---
+                    // Basis: 12px. Pro Menge +2px. Maximal 32px.
+                    const amount = p.size || 1;
+                    const size = Math.min(32, 10 + (amount * 2)); 
+
+                    if (iconImg && iconImg.complete && iconImg.naturalWidth > 0) {
+                        ctx.drawImage(iconImg, cx - size/2, cy - size/2, size, size);
+                    } else {
+                        ctx.fillStyle = c;
+                        // Punkt Fallback ebenfalls skaliert
+                        ctx.beginPath(); ctx.arc(cx, cy, size/4, 0, Math.PI*2); ctx.fill();
+                    }
                 });
             }
         });
 
-        if(Store.layers.public) this.drawPois(Store.data.pois, '#ff2a00', w, h); // Phoenix Red Pins
+        if(Store.layers.public) this.drawPois(Store.data.pois, '#ff2a00', w, h); 
         if(Store.layers.caves) this.drawPois(Store.data.caves, '#a855f7', w, h);
         Store.activeObs.forEach(k => {
             const o = Store.data.obs.find(i => i.name === k);
@@ -421,7 +453,7 @@ const Map = {
 // --- LOGIC ---
 const App = {
     async init() {
-        Map.init();
+        MapEngine.init();
         try {
             const [cfg, ic, tr] = await Promise.all([
                 fetchData(CONFIG.cfg), fetchData(CONFIG.ico), fetchData(CONFIG.txt)
@@ -430,7 +462,13 @@ const App = {
             if(!cfg) throw new Error("Config Error");
             
             Store.cfg = cfg;
-            Store.icons = {...(ic?.Items||{}), ...(ic?.Kreaturen||{})};
+            
+            Store.icons = {
+                ...(ic?.Items||{}), 
+                ...(ic?.Kreaturen||{}),
+                ...(ic?.Ressourcen||{}) 
+            };
+            
             if(tr) { Store.trans.res = tr.Ressourcen||{}; Store.trans.dinos = tr.Kreaturen||{}; }
 
             const sel = document.getElementById('map-select');
@@ -461,8 +499,8 @@ const App = {
         Store.map = c;
         
         Store.selDino = null; Store.activeRes.clear(); Store.activeObs.clear();
-        Map.reset();
-        Map.setImage(c.mapImageUrl);
+        MapEngine.reset();
+        MapEngine.setImage(c.mapImageUrl);
 
         const urls = [c.creatureDataUrl, c.resourceDataUrl, c.publicSpotsDataUrl, c.obeliskDataUrl, c.caveSpotsDataUrl];
         const [d, r, p, o, ca] = await Promise.all(urls.map(u => fetchData(u).catch(()=>({}))));
@@ -476,11 +514,11 @@ const App = {
         Dinos.init();
         Resources.init();
         Layers.initObs();
-        Map.draw();
+        MapEngine.draw();
         
         setTimeout(() => {
             loader.classList.add('hidden');
-            Map.resize(); 
+            MapEngine.resize(); 
         }, 800);
     }
 };
@@ -520,7 +558,7 @@ const Dinos = {
         if(Store.selDino === key) Store.selDino = null;
         else Store.selDino = key;
         this.render(document.getElementById('dino-search').value);
-        Map.draw();
+        MapEngine.draw();
     }
 };
 
@@ -531,11 +569,18 @@ const Resources = {
         Object.keys(Store.data.res).sort().forEach(k => {
             const div = document.createElement('div');
             div.className = 'toggle-item';
-            div.innerHTML = `<div class="chk"></div><span class="toggle-text">${Store.trans.res[k] || k}</span>`;
+            
+            // Try to find icon for list
+            const iconUrl = Store.icons[k]?.iconUrl;
+            const iconHTML = iconUrl 
+                ? `<img src="${iconUrl}" style="width:20px;height:20px;margin-right:10px;object-fit:contain;">`
+                : `<div class="chk"></div>`;
+
+            div.innerHTML = `${iconHTML}<span class="toggle-text">${Store.trans.res[k] || k}</span>`;
             div.onclick = () => {
                 if(Store.activeRes.has(k)) { Store.activeRes.delete(k); div.classList.remove('checked'); }
                 else { Store.activeRes.add(k); div.classList.add('checked'); }
-                Map.draw();
+                MapEngine.draw();
             };
             list.appendChild(div);
         });
@@ -543,7 +588,7 @@ const Resources = {
     clear() {
         Store.activeRes.clear();
         document.querySelectorAll('#res-list-root .toggle-item').forEach(e => e.classList.remove('checked'));
-        Map.draw();
+        MapEngine.draw();
     }
 };
 
@@ -558,7 +603,7 @@ const Layers = {
             div.onclick = () => {
                 if(Store.activeObs.has(o.name)) { Store.activeObs.delete(o.name); div.classList.remove('checked'); }
                 else { Store.activeObs.add(o.name); div.classList.add('checked'); }
-                Map.draw();
+                MapEngine.draw();
             };
             list.appendChild(div);
         });
@@ -566,7 +611,7 @@ const Layers = {
     toggle(key) {
         Store.layers[key] = !Store.layers[key];
         document.getElementById('tog-'+key).classList.toggle('checked');
-        Map.draw();
+        MapEngine.draw();
     }
 };
 
@@ -578,8 +623,7 @@ const Tabs = {
         const idx = ['dinos','res','pois','ai','settings'].indexOf(id);
         if(idx>=0) document.querySelectorAll('.tab-btn')[idx].classList.add('active');
         document.getElementById('view-'+id).classList.add('active');
-        // Force resize on tab switch to ensure centering
-        setTimeout(() => Map.resize(), 10);
+        setTimeout(() => MapEngine.resize(), 10);
     }
 };
 
