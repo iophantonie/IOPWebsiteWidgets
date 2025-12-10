@@ -210,20 +210,66 @@
         }
         .poi-category-header:first-child { margin-top: 0; }
 
+        /* Slider Wrapper für Pfeile */
+        .poi-slider-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
         /* Horizontaler Slider Container */
         .poi-slider {
             display: flex;
             gap: 15px;
             overflow-x: auto;
-            padding-bottom: 10px; /* Platz für Scrollbar */
+            padding: 10px 5px; /* Etwas Padding für Schatten */
             scroll-behavior: smooth;
+            width: 100%;
             
-            scrollbar-width: thin;
-            scrollbar-color: rgba(229, 57, 53, 0.5) transparent;
+            /* Scrollbar ausblenden */
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
         }
         
-        .poi-slider::-webkit-scrollbar { height: 6px; }
-        .poi-slider::-webkit-scrollbar-thumb { background-color: rgba(229, 57, 53, 0.5); border-radius: 3px; }
+        .poi-slider::-webkit-scrollbar { 
+            display: none; 
+        }
+
+        /* Pfeile für Slider */
+        .slider-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 40px;
+            height: 40px;
+            background-color: rgba(0, 0, 0, 0.7);
+            border: 2px solid var(--color-red);
+            border-radius: 50%;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+            transition: all 0.2s ease;
+            user-select: none;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .slider-arrow:hover {
+            background-color: var(--color-red);
+            box-shadow: 0 0 10px rgba(229, 57, 53, 0.6);
+        }
+
+        .slider-arrow.prev { left: -10px; }
+        .slider-arrow.next { right: -10px; }
+        
+        /* Damit die Pfeile bei Touch nicht stören, auf Mobile evtl. anpassen */
+        @media (max-width: 768px) {
+            .slider-arrow { display: none; } /* Auf Mobile wischt man eh lieber */
+        }
 
         /* POI Card Styling (Kompakt) */
         .poi-card {
@@ -308,20 +354,20 @@
         <div class="main-page-header">Kartographie</div>
 
         <div class="map-body-wrapper">
-            <!-- Sidebar -->
+            <!-- Sidebar Navigation -->
             <div class="map-sidebar" id="mapSidebar">
                 <!-- Wird per JS gefüllt -->
             </div>
 
-            <!-- Content Area (Split: Map oben, POIs unten) -->
+            <!-- Rechter Content Bereich -->
             <div class="content-area">
-                <!-- Map -->
+                <!-- Live Map -->
                 <div class="iframe-container">
                     <div id="loader" class="loader"></div>
                     <iframe id="mapFrame" src="" allowfullscreen></iframe>
                 </div>
 
-                <!-- POIs (Dynamisch) -->
+                <!-- Points of Interest -->
                 <div class="poi-section" id="poiSection" style="display: none;">
                     <div id="poiContainer">
                         <!-- Hier werden die Slider pro Kategorie generiert -->
@@ -379,7 +425,9 @@
                         { title: "Sonnenhöhle", type: "Besonderer Ort", sub: "Eingang", coords: "Lat: 65.5 / Lon: 47.3", img: "https://i.postimg.cc/65k0130y/Bild-2024-08-01-202216681.png" },
                         { title: "Sonnenhöhle", type: "Besonderer Ort", sub: "Ausgang", coords: "Lat: 65.8 / Lon: 50.1", img: "https://i.postimg.cc/5NvXmq2Q/Bild-2024-08-01-203045224.png" },
                         { title: "Südliche Luftkuppel", type: "Besonderer Ort", sub: "", coords: "Lat: 65.4 / Lon: 59.5", img: "https://i.postimg.cc/Pr44d8Bc/Bild-2024-08-01-204937964.png" },
-                        { title: "Westliche Luftkuppel", type: "Besonderer Ort", sub: "", coords: "Lat: 27.5 / Lon: 82.5", img: "https://i.postimg.cc/3xtL7bkz/Bild-2024-08-01-210523406.png" }
+                        { title: "Südliche Luftkuppel", type: "Besonderer Ort", sub: "", coords: "Lat: 65.4 / Lon: 59.5", img: "https://i.postimg.cc/xTQ4nmdD/Bild-2024-08-01-205950452.png" },
+                        { title: "Westliche Luftkuppel", type: "Besonderer Ort", sub: "", coords: "Lat: 27.5 / Lon: 82.5", img: "https://i.postimg.cc/3xtL7bkz/Bild-2024-08-01-210523406.png" },
+                        { title: "Westliche Luftkuppel", type: "Besonderer Ort", sub: "", coords: "Lat: 27.5 / Lon: 82.5", img: "https://i.postimg.cc/RVyF8vRY/Bild-2024-08-01-210633287.png" }
                     ]
                 },
                 { name: "Scorched Earth", url: "https://arkmap.axi92.at/126c63dd-17c2-4770-8b86-b1c13121e445", pois: [] },
@@ -427,6 +475,14 @@
             sidebar.innerHTML = html;
         }
 
+        // SCROLL FUNCTION FOR SLIDER
+        function scrollSlider(btn, direction) {
+            const wrapper = btn.closest('.poi-slider-wrapper');
+            const slider = wrapper.querySelector('.poi-slider');
+            const scrollAmount = 300; 
+            slider.scrollBy({ left: scrollAmount * direction, behavior: 'smooth' });
+        }
+
         // SELECT MAP LOGIC
         function selectMap(groupKey, index, buttonElement) {
             document.querySelectorAll('.map-btn').forEach(btn => btn.classList.remove('active'));
@@ -446,14 +502,11 @@
             // 2. POIs gruppieren und Slider erstellen
             if (map.pois && map.pois.length > 0) {
                 poiSection.style.display = 'block';
-                poiContainer.innerHTML = ''; // Reset
+                poiContainer.innerHTML = ''; 
 
-                // Gruppiere nach Typ
                 const groups = {};
                 map.pois.forEach(poi => {
-                    // Wenn der Typ "Artefakt..." ist, kürzen wir es für den Header auf "Artefakt"
                     let groupName = poi.type.split(':')[0].trim(); 
-                    // Für "Besonderer Ort" oder "Teleporter" einfach nehmen
                     if(groupName.includes("Artefakt")) groupName = "Artefakte";
                     if(groupName.includes("Teleporter")) groupName = "Teleporter";
                     
@@ -461,21 +514,24 @@
                     groups[groupName].push(poi);
                 });
 
-                // Erstelle für jede Gruppe einen Header und einen Slider
                 for (const [groupName, items] of Object.entries(groups)) {
                     const groupHtml = `
                         <div class="poi-category-header">${groupName}</div>
-                        <div class="poi-slider">
-                            ${items.map(poi => `
-                                <div class="poi-card">
-                                    <img src="${poi.img}" class="poi-image" loading="lazy" alt="${poi.title}">
-                                    <div class="poi-info">
-                                        <span class="poi-type">${poi.sub || poi.type}</span>
-                                        <div class="poi-title">${poi.title}</div>
-                                        <div class="poi-coords">${poi.coords}</div>
+                        <div class="poi-slider-wrapper">
+                            <button class="slider-arrow prev" onclick="scrollSlider(this, -1)">&#10094;</button>
+                            <div class="poi-slider">
+                                ${items.map(poi => `
+                                    <div class="poi-card">
+                                        <img src="${poi.img}" class="poi-image" loading="lazy" alt="${poi.title}">
+                                        <div class="poi-info">
+                                            <span class="poi-type">${poi.sub || poi.type}</span>
+                                            <div class="poi-title">${poi.title}</div>
+                                            <div class="poi-coords">${poi.coords}</div>
+                                        </div>
                                     </div>
-                                </div>
-                            `).join('')}
+                                `).join('')}
+                            </div>
+                            <button class="slider-arrow next" onclick="scrollSlider(this, 1)">&#10095;</button>
                         </div>
                     `;
                     poiContainer.innerHTML += groupHtml;
