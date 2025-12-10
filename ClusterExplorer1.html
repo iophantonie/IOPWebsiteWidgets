@@ -86,6 +86,51 @@
 
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
+        /* AI CHAT STYLES */
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            min-height: 400px;
+        }
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .chat-message {
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            max-width: 90%;
+            line-height: 1.4;
+        }
+        .chat-message.user {
+            align-self: flex-end;
+            background-color: #3b82f6; /* Blue */
+            color: white;
+        }
+        .chat-message.ai {
+            align-self: flex-start;
+            background-color: #374151; /* Dark Gray */
+            color: #e5e7eb;
+            border-left: 2px solid #fbbf24; /* Amber Accent */
+        }
+        .chat-input-area {
+            display: flex;
+            gap: 5px;
+        }
+        .ai-typing {
+            font-style: italic;
+            color: #fbbf24;
+            font-size: 0.8rem;
+            margin-bottom: 5px;
+            display: none;
+        }
+
         /* MAP AREA - NEU: Flexbox für automatische Zentrierung */
         .map-area {
             position: relative;
@@ -243,6 +288,7 @@
                 <button class="tab-btn active" data-target="tab-creatures">Dinos</button>
                 <button class="tab-btn" data-target="tab-resources">Res.</button>
                 <button class="tab-btn" data-target="tab-pois">Orte</button>
+                <button class="tab-btn" data-target="tab-ai">✨ AI</button> <!-- NEW AI TAB -->
                 <button class="tab-btn" data-target="tab-settings">⚙</button>
             </nav>
 
@@ -298,6 +344,24 @@
                     <div id="obelisk-controls" class="space-y-1"></div>
                 </div>
 
+                <!-- TAB: AI GUIDE (NEW FEATURE) -->
+                <div id="tab-ai" class="tab-pane h-full">
+                    <div class="chat-container">
+                        <div class="bg-gray-800 p-2 rounded mb-2 border border-amber-500/30">
+                            <p class="text-xs text-amber-400">✨ <strong>Survival Assistant</strong></p>
+                            <p class="text-xs text-gray-400">Frag mich nach Taming-Tipps, Ressourcen oder Höhlen auf der aktuellen Karte.</p>
+                        </div>
+                        <div id="chat-history" class="chat-messages custom-scrollbar">
+                            <div class="chat-message ai">Hallo! Ich bin dein IOP Assistent. Wir sind gerade auf <strong id="ai-current-map">...</strong>. Wie kann ich helfen?</div>
+                        </div>
+                        <div class="ai-typing" id="ai-loading">Assistant schreibt...</div>
+                        <div class="chat-input-area">
+                            <input type="text" id="ai-input" placeholder="Frage stellen..." class="flex-1 bg-gray-800 text-white p-2 rounded text-sm border border-gray-600 focus:border-amber-500 outline-none">
+                            <button id="ai-send-btn" class="bg-amber-600 hover:bg-amber-500 text-white p-2 rounded">➤</button>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- TAB: EINSTELLUNGEN & LEGENDE -->
                 <div id="tab-settings" class="tab-pane">
                     <h3 class="section-title">Legende</h3>
@@ -322,7 +386,7 @@
                     </div>
 
                     <div class="mt-8 pt-4 border-t border-gray-700 text-xs text-gray-500 text-center">
-                        IOP Map Widget v2.0<br>Infinity of Phoenix
+                        IOP Map Widget v2.1<br>Powered by Gemini ✨
                     </div>
                 </div>
 
@@ -387,6 +451,8 @@
     <!-- JAVASCRIPT LOGIC -->
     <script>
         // --- CONFIGURATION & GLOBAL VARIABLES ---
+        const apiKey = ""; // Provided by Environment
+        
         let allCreatureData = {};
         let allResourceData = {};
         let allPublicSpotsData = {};
@@ -473,6 +539,63 @@
 
         let mapImage, tooltipElement, tooltipContentElement;
         let currentMapKey = 'TheIsland'; 
+
+        // --- GEMINI AI INTEGRATION ---
+        
+        async function callGeminiAPI(userQuery) {
+            const historyDiv = document.getElementById('chat-history');
+            const loadingDiv = document.getElementById('ai-loading');
+            
+            // Add User Message
+            historyDiv.innerHTML += `<div class="chat-message user">${userQuery}</div>`;
+            historyDiv.scrollTop = historyDiv.scrollHeight;
+            loadingDiv.style.display = 'block';
+
+            // Construct Contextual Prompt
+            let context = `Current Map: ${currentMapConfig.displayName || 'Unknown'}. `;
+            if(selectedCreatureValue) {
+                context += `User has selected creature: ${selectedCreatureValue}. `;
+            }
+            const systemPrompt = `You are a survival expert for the game ARK: Survival Ascended. 
+            You are assisting a user on the Infinity of Phoenix server cluster.
+            Answer clearly and concisely in German.
+            Context: ${context}`;
+
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+            const payload = {
+                contents: [{ parts: [{ text: userQuery }] }],
+                systemInstruction: { parts: [{ text: systemPrompt }] }
+            };
+
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                const data = await response.json();
+                const aiText = data.candidates?.[0]?.content?.parts?.[0]?.text || "Entschuldigung, ich konnte keine Antwort generieren.";
+                
+                // Add AI Message
+                historyDiv.innerHTML += `<div class="chat-message ai">${markedParse(aiText)}</div>`;
+            } catch (error) {
+                console.error("Gemini API Error:", error);
+                historyDiv.innerHTML += `<div class="chat-message ai" style="color:red">Fehler bei der Verbindung zum KI-Assistenten.</div>`;
+            } finally {
+                loadingDiv.style.display = 'none';
+                historyDiv.scrollTop = historyDiv.scrollHeight;
+            }
+        }
+
+        // Simple Markdown Parser for bold/italic in chat
+        function markedParse(text) {
+            let html = text
+                .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
+                .replace(/\*(.*?)\*/g, '<i>$1</i>')
+                .replace(/\n/g, '<br>');
+            return html;
+        }
 
         // --- UTILITY FUNCTIONS ---
 
@@ -611,7 +734,7 @@
             });
         }
 
-        // --- DRAWING LOGIC ---
+        // --- DRAWING LOGIC (UPDATED WITH CLEARS) ---
 
         function redrawAll() {
             requestAnimationFrame(() => {
@@ -619,7 +742,6 @@
                      if(ctx) ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
                 });
 
-                // Wenn Bild nicht geladen, zeichne Fehlertext
                 if(mapImage.complete && mapImage.naturalWidth > 0) {
                     drawMapImage();
                 } else {
@@ -649,6 +771,11 @@
         }
 
         function drawSpawns() {
+            // FIX: Always clear spawn layer first
+            const width = spawnCanvas.width;
+            const height = spawnCanvas.height;
+            spawnCtx.clearRect(0, 0, width, height);
+
             if (!selectedCreatureValue) return;
             const areas = allCreatureData[selectedCreatureValue];
             if (!areas) return;
@@ -656,9 +783,6 @@
             spawnCtx.save();
             spawnCtx.translate(panOffset.x, panOffset.y);
             spawnCtx.scale(scale, scale);
-
-            const width = spawnCanvas.width;
-            const height = spawnCanvas.height;
 
             areas.forEach(area => {
                 const x = ((area.min.lon - MAP_LON_MIN) / MAP_LON_RANGE) * width;
@@ -676,12 +800,14 @@
         }
 
         function drawResources() {
+            // FIX: Always clear resource layer first
+            const width = resourceCanvas.width;
+            const height = resourceCanvas.height;
+            resourceCtx.clearRect(0, 0, width, height);
+
             const checkboxes = document.querySelectorAll('#resource-controls input[type="checkbox"]:checked');
             if (checkboxes.length === 0) return;
             
-            const width = resourceCanvas.width;
-            const height = resourceCanvas.height;
-
             resourceCtx.save();
             resourceCtx.translate(panOffset.x, panOffset.y);
             resourceCtx.scale(scale, scale);
@@ -689,7 +815,7 @@
             checkboxes.forEach(cb => {
                 const resName = cb.name;
                 if(allResourceData[resName]) {
-                    const icon = resourceIcons[resName]; // Preloading logic missing in simplified version, assuming placeholder or simple dots
+                    const icon = resourceIcons[resName];
                     allResourceData[resName].forEach(node => {
                         const x = ((node.lon - MAP_LON_MIN) / MAP_LON_RANGE) * width;
                         const y = ((node.lat - MAP_LAT_MIN) / MAP_LAT_RANGE) * height;
@@ -706,10 +832,13 @@
         }
 
         function drawObelisks() {
+            // FIX: Always clear obelisk layer first
+            const width = obeliskCanvas.width;
+            const height = obeliskCanvas.height;
+            obeliskCtx.clearRect(0, 0, width, height);
+
             const checkboxes = document.querySelectorAll('#obelisk-controls input[type="checkbox"]:checked');
             if(checkboxes.length === 0) return;
-             const width = obeliskCanvas.width;
-            const height = obeliskCanvas.height;
 
             obeliskCtx.save();
             obeliskCtx.translate(panOffset.x, panOffset.y);
@@ -735,9 +864,12 @@
         }
 
         function drawPublicSpots() {
-           if(!allPublicSpotsData.publicSpots) return;
+           // FIX: Always clear spots layer first
            const width = spotsCanvas.width;
            const height = spotsCanvas.height;
+           spotsCtx.clearRect(0, 0, width, height);
+
+           if(!allPublicSpotsData.publicSpots) return;
            
            spotsCtx.save();
            spotsCtx.translate(panOffset.x, panOffset.y);
@@ -763,9 +895,12 @@
         }
 
         function drawCaveSpots() {
-           if(!allCaveSpotsData.caveSpots) return;
+           // FIX: Always clear caves layer first
            const width = caveSpotsCanvas.width;
            const height = caveSpotsCanvas.height;
+           caveSpotsCtx.clearRect(0, 0, width, height);
+
+           if(!allCaveSpotsData.caveSpots) return;
            
            caveSpotsCtx.save();
            caveSpotsCtx.translate(panOffset.x, panOffset.y);
@@ -904,6 +1039,25 @@
             });
         }
 
+        // Setup AI Chat
+        function setupAIChat() {
+            const btn = document.getElementById('ai-send-btn');
+            const input = document.getElementById('ai-input');
+            
+            function send() {
+                const text = input.value.trim();
+                if(text) {
+                    callGeminiAPI(text);
+                    input.value = '';
+                }
+            }
+
+            btn.addEventListener('click', send);
+            input.addEventListener('keypress', (e) => {
+                if(e.key === 'Enter') send();
+            });
+        }
+
         function openDetailPanel(data) {
             const panel = document.getElementById('detail-panel');
             const content = document.getElementById('detail-content');
@@ -960,6 +1114,11 @@
             
             currentMapKey = mapKey;
             document.getElementById('map-name').textContent = config.displayName;
+            
+            // Update AI Context Display
+            const aiMapDisplay = document.getElementById('ai-current-map');
+            if(aiMapDisplay) aiMapDisplay.textContent = config.displayName;
+
             selectedCreatureValue = null;
             scale = 1; panOffset = {x:0, y:0};
             
@@ -1073,6 +1232,7 @@
 
             setupInteraction();
             setupTabs();
+            setupAIChat(); // Init Chat Listeners
             
             document.getElementById('map-select-btn').onclick = (e) => {
                 e.stopPropagation();
