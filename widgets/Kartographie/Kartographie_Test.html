@@ -14,7 +14,7 @@
             --color-text: #f7f7f7;
             --color-light-dark: rgba(30, 30, 30, 0.95);
             --color-gold: #FFEB3B;
-            --sidebar-width: 280px;
+            --sidebar-width: 260px;
             
             --font-main: sans-serif;
             --font-header: 'Acme', var(--font-main);
@@ -32,10 +32,10 @@
             width: 100%;
             height: 100vh;
             box-sizing: border-box;
-            overflow: hidden; 
+            overflow: hidden; /* Kein Scrollen auf Body-Ebene */
         }
 
-        /* Hauptcontainer des Widgets */
+        /* Hauptcontainer */
         .map-widget-container {
             background-color: var(--color-dark);
             border-radius: 12px;
@@ -43,42 +43,39 @@
             box-shadow: 0 4px 30px rgba(0, 0, 0, 0.8);
             width: 100%;
             max-width: 1800px;
-            flex-grow: 1; 
-            min-height: 600px;
-            margin-bottom: 20px;
+            height: 100%; /* Füllt die Höhe */
             display: flex;
             flex-direction: column;
             overflow: hidden;
             position: relative;
         }
 
-        /* Integrierter Header */
+        /* Header */
         .main-page-header {
-            font-size: 2.5rem;
+            font-size: 2rem;
             font-weight: 800;
             color: var(--color-red);
             font-family: var(--font-header);
             text-transform: uppercase;
             text-align: center;
-            padding: 15px 0;
+            padding: 10px 0;
             margin: 0;
             text-shadow: 0 0 20px rgba(229, 57, 53, 0.4);
-            border-bottom: 3px solid var(--color-red);
-            background-color: rgba(0, 0, 0, 0.2);
-            width: 100%;
+            border-bottom: 2px solid var(--color-red);
+            background-color: rgba(0, 0, 0, 0.3);
             flex-shrink: 0;
         }
 
-        /* Wrapper für Sidebar und Content */
+        /* Layout Wrapper */
         .map-body-wrapper {
             display: flex;
             flex-direction: row;
             flex-grow: 1;
-            width: 100%;
+            height: 100%;
             overflow: hidden; 
         }
 
-        /* --- Linke Sidebar --- */
+        /* --- Sidebar --- */
         .map-sidebar {
             width: var(--sidebar-width);
             background-color: rgba(0, 0, 0, 0.4);
@@ -95,38 +92,29 @@
         .map-sidebar::-webkit-scrollbar-thumb { background-color: var(--color-red); border-radius: 3px; }
 
         .sidebar-header {
-            padding: 20px;
+            padding: 15px;
             text-align: center;
-            border-bottom: 3px solid var(--color-red);
+            border-bottom: 2px solid var(--color-red);
             background-color: rgba(229, 57, 53, 0.1);
         }
 
         .sidebar-title {
             font-family: var(--font-header);
-            font-size: 1.4rem;
+            font-size: 1.2rem;
             color: var(--color-text);
             text-transform: uppercase;
-            letter-spacing: 1px;
             margin: 0;
-        }
-        
-        .sidebar-subtitle {
-            font-size: 0.8rem;
-            color: var(--color-red);
-            opacity: 0.8;
-            margin-top: 5px;
         }
 
         .group-header {
-            padding: 15px 20px 5px 20px;
-            font-size: 0.9rem;
+            padding: 10px 15px 5px 15px;
+            font-size: 0.8rem;
             font-weight: 700;
             color: var(--color-red);
             text-transform: uppercase;
             border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
-            margin-bottom: 5px;
-            font-family: var(--font-header);
             margin-top: 10px;
+            font-family: var(--font-header);
         }
         .group-header:first-child { margin-top: 0; }
 
@@ -134,13 +122,13 @@
             background: transparent;
             border: none;
             color: rgba(255, 255, 255, 0.7);
-            padding: 12px 20px;
+            padding: 10px 15px;
             text-align: left;
             cursor: pointer;
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-family: var(--font-main);
             transition: all 0.2s ease;
-            border-left: 4px solid transparent;
+            border-left: 3px solid transparent;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -149,7 +137,7 @@
         .map-btn:hover {
             background-color: rgba(255, 255, 255, 0.05);
             color: #fff;
-            padding-left: 25px; 
+            padding-left: 20px; 
         }
 
         .map-btn.active {
@@ -158,34 +146,31 @@
             border-left-color: var(--color-red);
             font-weight: 600;
         }
-        
+
         .status-dot {
-            height: 8px;
-            width: 8px;
+            height: 6px;
+            width: 6px;
             background-color: #4CAF50; 
             border-radius: 50%;
             box-shadow: 0 0 5px #4CAF50;
         }
 
-        /* --- Rechter Content Bereich (Scrollbar) --- */
+        /* --- Content Area (Split View) --- */
         .content-area {
             flex-grow: 1;
-            overflow-y: auto;
-            background-color: #121212;
             display: flex;
             flex-direction: column;
-            scrollbar-width: thin;
-            scrollbar-color: var(--color-red) #121212;
+            overflow: hidden;
+            background-color: #121212;
         }
 
-        /* Iframe Container */
+        /* 1. Map Bereich (Flexibel) */
         .iframe-container {
-            width: 100%;
-            height: 800px; /* Feste Höhe für die Map */
+            flex-grow: 1; /* Nimmt den meisten Platz */
+            min-height: 40%; /* Mindesthöhe damit Map nutzbar bleibt */
             position: relative;
             background-color: #000;
             border-bottom: 3px solid var(--color-red);
-            flex-shrink: 0;
         }
 
         iframe {
@@ -195,81 +180,110 @@
             display: block;
         }
 
-        /* POI Sektion */
+        /* 2. POI Bereich (Unten, scrollbar wenn nötig) */
         .poi-section {
-            padding: 30px;
+            height: auto;
+            max-height: 45%; /* Maximal 45% der Höhe */
             background-color: var(--color-light-dark);
+            overflow-y: auto; /* Vertikales Scrollen nur hier */
+            padding: 15px 20px;
+            box-sizing: border-box;
+            
+            scrollbar-width: thin;
+            scrollbar-color: var(--color-red) #1a1a1a;
         }
+        
+        .poi-section::-webkit-scrollbar { width: 8px; }
+        .poi-section::-webkit-scrollbar-track { background: #1a1a1a; }
+        .poi-section::-webkit-scrollbar-thumb { background-color: var(--color-red); border-radius: 4px; }
 
-        .poi-header {
+        /* Kategorie Header */
+        .poi-category-header {
             font-family: var(--font-header);
-            font-size: 1.8rem;
-            color: var(--color-text);
-            margin-bottom: 20px;
-            border-left: 5px solid var(--color-red);
-            padding-left: 15px;
+            font-size: 1.1rem;
+            color: var(--color-gold);
+            margin-bottom: 10px;
+            margin-top: 15px;
+            padding-left: 10px;
+            border-left: 4px solid var(--color-red);
             text-transform: uppercase;
         }
+        .poi-category-header:first-child { margin-top: 0; }
 
-        .poi-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
+        /* Horizontaler Slider Container */
+        .poi-slider {
+            display: flex;
+            gap: 15px;
+            overflow-x: auto;
+            padding-bottom: 10px; /* Platz für Scrollbar */
+            scroll-behavior: smooth;
+            
+            scrollbar-width: thin;
+            scrollbar-color: rgba(229, 57, 53, 0.5) transparent;
         }
+        
+        .poi-slider::-webkit-scrollbar { height: 6px; }
+        .poi-slider::-webkit-scrollbar-thumb { background-color: rgba(229, 57, 53, 0.5); border-radius: 3px; }
 
+        /* POI Card Styling (Kompakt) */
         .poi-card {
-            background-color: rgba(0, 0, 0, 0.5);
-            border-radius: 8px;
+            flex: 0 0 220px; /* Feste Breite */
+            background-color: rgba(0, 0, 0, 0.6);
+            border-radius: 6px;
             overflow: hidden;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: transform 0.2s;
+            transition: transform 0.2s, border-color 0.2s;
+            display: flex;
+            flex-direction: column;
         }
 
         .poi-card:hover {
-            transform: translateY(-5px);
+            transform: translateY(-3px);
             border-color: var(--color-red);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
         }
 
         .poi-image {
             width: 100%;
-            height: 180px;
+            height: 100px; /* Kompakte Höhe */
             object-fit: cover;
-            border-bottom: 2px solid var(--color-red);
+            border-bottom: 1px solid var(--color-red);
         }
 
         .poi-info {
-            padding: 15px;
+            padding: 10px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
         .poi-title {
             font-family: var(--font-header);
-            font-size: 1.2rem;
-            color: var(--color-gold);
-            margin-bottom: 5px;
+            font-size: 0.95rem;
+            color: #fff;
+            margin-bottom: 3px;
+            line-height: 1.2;
         }
 
         .poi-coords {
-            font-size: 0.9rem;
-            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.8rem;
+            color: var(--color-gold);
             font-weight: bold;
         }
         
-        .poi-type {
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            color: var(--color-red);
-            margin-bottom: 5px;
-            display: block;
+        .poi-subtext {
+             font-size: 0.75rem;
+             color: rgba(255,255,255,0.6);
+             margin-top: 2px;
         }
 
         /* Lade-Animation */
         .loader {
             position: absolute;
-            top: 50%;
-            left: 50%;
+            top: 50%; left: 50%;
             transform: translate(-50%, -50%);
-            width: 50px;
-            height: 50px;
+            width: 50px; height: 50px;
             border: 5px solid rgba(255, 255, 255, 0.1);
             border-radius: 50%;
             border-top: 5px solid var(--color-red);
@@ -278,17 +292,13 @@
             display: none; 
         }
 
-        @keyframes spin {
-            0% { transform: translate(-50%, -50%) rotate(0deg); }
-            100% { transform: translate(-50%, -50%) rotate(360deg); }
-        }
+        @keyframes spin { 0% { transform: translate(-50%, -50%) rotate(0deg); } 100% { transform: translate(-50%, -50%) rotate(360deg); } }
 
-        /* --- Responsive Design --- */
+        /* Responsive */
         @media (max-width: 900px) {
             .map-body-wrapper { flex-direction: column; }
-            .map-sidebar { width: 100%; height: 200px; border-right: none; border-bottom: 3px solid var(--color-red); }
-            .iframe-container { height: 400px; }
-            .main-page-header { font-size: 2rem; }
+            .map-sidebar { width: 100%; height: 180px; border-right: none; border-bottom: 3px solid var(--color-red); }
+            .poi-section { max-height: 40%; }
         }
     </style>
 </head>
@@ -298,24 +308,23 @@
         <div class="main-page-header">Kartographie</div>
 
         <div class="map-body-wrapper">
-            <!-- Sidebar Navigation -->
+            <!-- Sidebar -->
             <div class="map-sidebar" id="mapSidebar">
                 <!-- Wird per JS gefüllt -->
             </div>
 
-            <!-- Rechter Content Bereich -->
+            <!-- Content Area (Split: Map oben, POIs unten) -->
             <div class="content-area">
-                <!-- Live Map -->
+                <!-- Map -->
                 <div class="iframe-container">
                     <div id="loader" class="loader"></div>
                     <iframe id="mapFrame" src="" allowfullscreen></iframe>
                 </div>
 
-                <!-- Points of Interest -->
+                <!-- POIs (Dynamisch) -->
                 <div class="poi-section" id="poiSection" style="display: none;">
-                    <div class="poi-header">Wichtige Orte & Höhlen</div>
-                    <div class="poi-grid" id="poiGrid">
-                        <!-- Wird per JS gefüllt -->
+                    <div id="poiContainer">
+                        <!-- Hier werden die Slider pro Kategorie generiert -->
                     </div>
                 </div>
             </div>
@@ -323,7 +332,7 @@
     </div>
 
     <script>
-        // DATENBANK DER KARTEN UND POIS
+        // DATENBANK
         const mapData = {
             "official": [
                 {
@@ -334,20 +343,45 @@
                         { title: "Grüner Obelisk", type: "Teleporter", coords: "Lat: 59.5 / Lon: 77.5", img: "https://i.postimg.cc/QxRFgPjn/Bild-2024-05-16-130443256.png" },
                         { title: "Roter Obelisk", type: "Teleporter", coords: "Lat: 85.5 / Lon: 13", img: "https://i.postimg.cc/hvzhbVvV/Bild-2024-05-16-133733722.png" },
                         { title: "Blauer Obelisk", type: "Teleporter", coords: "Lat: 22 / Lon: 21", img: "https://i.postimg.cc/DzCbFvbp/Bild-2024-05-16-132500159.png" },
-                        { title: "Lava Cave", type: "Artefakt: Gewaltigen/Massive", coords: "Lat: 74 / Lon: 92", img: "https://i.postimg.cc/Fsfddxfy/Bild-2024-06-30-171335914.png" },
-                        { title: "Lower South Cave", type: "Artefakt: Jägers/Hunter", coords: "Lat: 85 / Lon: 54", img: "https://i.postimg.cc/1tWM08Mp/Bild-2024-06-30-171919385.png" },
-                        { title: "Swamp Cave", type: "Artefakt: Immunen/Immune", coords: "Lat: 65 / Lon: 35", img: "https://i.postimg.cc/cHG4DrS6/Bild-2024-06-30-175803492.png" },
-                        { title: "Snow Cave", type: "Artefakt: Stärke/Strong", coords: "Lat: 26 / Lon: 29", img: "https://i.postimg.cc/MKQKV7RV/Bild-2024-06-30-181533870.png" },
-                        { title: "North West Cave", type: "Artefakt: Himmelsherren/Skylord", coords: "Lat: 14 / Lon: 14", img: "https://i.postimg.cc/zfCjdz2p/Bild-2024-06-30-190654637.png" },
-                        { title: "North East Cave", type: "Artefakt: Fressers/Devourer", coords: "Lat: 9 / Lon: 91", img: "https://i.postimg.cc/SQnHQ8nM/Bild-2024-06-30-185632249.png" },
-                        { title: "Upper South Cave", type: "Artefakt: Rudels/Pack", coords: "Lat: 71 / Lon: 57", img: "https://i.postimg.cc/brjVqq3F/Bild-2024-06-30-193806399.png" },
-                        { title: "Caverns of Lost Hope", type: "Artefakt: List/Devious", coords: "Lat: 45 / Lon: 98", img: "https://i.postimg.cc/hv9qbSC9/Bild-2024-06-30-194923321.png" },
-                        { title: "Caverns of Lost Faith", type: "Artefakt: Brute", coords: "Lat: 53 / Lon: 3", img: "https://i.postimg.cc/4yrQZGZF/Bild-2024-06-30-195311581.png" },
-                        { title: "Central Cave", type: "Artefakt: Schlauen/Clever", coords: "Lat: 40.5 / Lon: 46", img: "https://i.postimg.cc/Y9xK2yW6/Bild-2024-07-01-204126849.png" },
-                        { title: "Tek Cave", type: "Boss Arena", coords: "Lat: 42 / Lon: 37", img: "https://i.postimg.cc/Sxrsxcw4/Bild-2024-06-30-184412268.png" }
+                        { title: "Lava Cave", type: "Artefakt", sub: "Gewaltigen/Massive", coords: "Lat: 74 / Lon: 92", img: "https://i.postimg.cc/Fsfddxfy/Bild-2024-06-30-171335914.png" },
+                        { title: "Lower South Cave", type: "Artefakt", sub: "Jägers/Hunter", coords: "Lat: 85 / Lon: 54", img: "https://i.postimg.cc/1tWM08Mp/Bild-2024-06-30-171919385.png" },
+                        { title: "Swamp Cave", type: "Artefakt", sub: "Immunen/Immune", coords: "Lat: 65 / Lon: 35", img: "https://i.postimg.cc/cHG4DrS6/Bild-2024-06-30-175803492.png" },
+                        { title: "Snow Cave", type: "Artefakt", sub: "Stärke/Strong", coords: "Lat: 26 / Lon: 29", img: "https://i.postimg.cc/MKQKV7RV/Bild-2024-06-30-181533870.png" },
+                        { title: "North West Cave", type: "Artefakt", sub: "Himmelsherren/Skylord", coords: "Lat: 14 / Lon: 14", img: "https://i.postimg.cc/zfCjdz2p/Bild-2024-06-30-190654637.png" },
+                        { title: "North East Cave", type: "Artefakt", sub: "Fressers/Devourer", coords: "Lat: 9 / Lon: 91", img: "https://i.postimg.cc/SQnHQ8nM/Bild-2024-06-30-185632249.png" },
+                        { title: "Upper South Cave", type: "Artefakt", sub: "Rudels/Pack", coords: "Lat: 71 / Lon: 57", img: "https://i.postimg.cc/brjVqq3F/Bild-2024-06-30-193806399.png" },
+                        { title: "Caverns of Lost Hope", type: "Artefakt", sub: "List/Devious", coords: "Lat: 45 / Lon: 98", img: "https://i.postimg.cc/hv9qbSC9/Bild-2024-06-30-194923321.png" },
+                        { title: "Caverns of Lost Faith", type: "Artefakt", sub: "Brute", coords: "Lat: 53 / Lon: 3", img: "https://i.postimg.cc/4yrQZGZF/Bild-2024-06-30-195311581.png" },
+                        { title: "Central Cave", type: "Artefakt", sub: "Schlauen/Clever", coords: "Lat: 40.5 / Lon: 46", img: "https://i.postimg.cc/Y9xK2yW6/Bild-2024-07-01-204126849.png" },
+                        { title: "Tek Cave", type: "Boss Arena", sub: "Terminal", coords: "Lat: 42 / Lon: 37", img: "https://i.postimg.cc/Sxrsxcw4/Bild-2024-06-30-184412268.png" }
                     ]
                 },
-                { name: "The Center", url: "https://arkmap.axi92.at/5205c82b-ddc6-465c-a43e-2a1cfc395fad", pois: [] },
+                { 
+                    name: "The Center", 
+                    url: "https://arkmap.axi92.at/5205c82b-ddc6-465c-a43e-2a1cfc395fad", 
+                    pois: [
+                        { title: "Öffentliche Harzfarm", type: "Teleporter", coords: "Lat: 77.5 / Lon: 44.5", img: "https://i.postimg.cc/DyywMZjJ/Bild-2024-06-06-190132220.png" },
+                        { title: "Grüner Obelisk", type: "Teleporter", coords: "Lat: 36 / Lon: 14.5", img: "https://i.postimg.cc/tT2Kch4Y/Bild-2024-06-06-192019904.png" },
+                        { title: "Roter Obelisk", type: "Teleporter", coords: "Lat: 12 / Lon: 55", img: "https://i.postimg.cc/Kv7ffmqH/Bild-2024-06-06-191335394.png" },
+                        { title: "Blauer Obelisk", type: "Teleporter", coords: "Lat: 51 / Lon: 75", img: "https://i.postimg.cc/85wWvYXj/Bild-2024-06-06-191041579.png" },
+                        { title: "Lava Cave", type: "Artefakt", sub: "Gewaltigen/Massive", coords: "Lat: 15 / Lon: 62.7", img: "https://i.postimg.cc/Vv4vB18p/Bild-2024-07-30-190739432.png" },
+                        { title: "Lava Oasis Cave", type: "Artefakt", sub: "Jägers/Hunter", coords: "Lat: 20 / Lon: 46", img: "https://i.postimg.cc/6QmmqbmX/Bild-2024-07-30-192204921.png" },
+                        { title: "Lava Cave (Strong)", type: "Artefakt", sub: "Starken/Strong", coords: "Lat: 18.8 / Lon: 57.4", img: "https://i.postimg.cc/GhVcZrRF/Bild-2024-07-30-193716409.png" },
+                        { title: "The Center Cave", type: "Artefakt", sub: "Hinterhältigen/Devious", coords: "Lat: 41.7 / Lon: 27.4", img: "https://i.postimg.cc/NjCHbTsY/Bild-2024-07-30-212542107.png" },
+                        { title: "Cliffside Cavern", type: "Artefakt", sub: "List/Cunning", coords: "Lat: 36.5 / Lon: 12.5", img: "https://i.postimg.cc/GpZPqRkg/Bild-2024-07-30-201506191.png" },
+                        { title: "North Ice Cave", type: "Artefakt", sub: "Schlauen & Fressers", coords: "Lat: 21.5 / Lon: 27.2", img: "https://i.postimg.cc/zf3ggGcH/Bild-2024-07-30-202836983.png" },
+                        { title: "South Ice Cave", type: "Artefakt", sub: "Himmelsherren/Skylord", coords: "Lat: 59.7 / Lon: 20.3", img: "https://i.postimg.cc/bNWMM37Z/Bild-2024-07-30-203944019.png" },
+                        { title: "Deepsea", type: "Artefakt", sub: "Brutalen/Brute", coords: "Lat: 67.1 / Lon: 88.8", img: "https://i.postimg.cc/9QmGVqvy/Bild-2024-07-30-204912302.png" },
+                        { title: "Underground World", type: "Artefakt", sub: "Rudels/Pack", coords: "Lat: 54 / Lon: 49", img: "https://i.postimg.cc/jqzGDGFt/Bild-2024-07-30-205903203.png" },
+                        { title: "Jungle Cave", type: "Artefakt", sub: "Immunen/Immune", coords: "Lat: 46.8 / Lon: 58", img: "https://i.postimg.cc/vmkvN5Z5/Bild-2024-07-30-211537593.png" },
+                        { title: "Sonnenhöhle", type: "Besonderer Ort", sub: "Eingang", coords: "Lat: 36.6 / Lon: 60.6", img: "https://i.postimg.cc/fyB0S0kV/Bild-2024-07-30-213359059.png" },
+                        { title: "Sonnenhöhle", type: "Besonderer Ort", sub: "Eingang", coords: "Lat: 45.4 / Lon: 53.2", img: "https://i.postimg.cc/fbYnvGmN/Bild-2024-07-30-213913083.png" },
+                        { title: "Sonnenhöhle", type: "Besonderer Ort", sub: "Eingang", coords: "Lat: 65.5 / Lon: 47.3", img: "https://i.postimg.cc/65k0130y/Bild-2024-08-01-202216681.png" },
+                        { title: "Sonnenhöhle", type: "Besonderer Ort", sub: "Ausgang", coords: "Lat: 65.8 / Lon: 50.1", img: "https://i.postimg.cc/5NvXmq2Q/Bild-2024-08-01-203045224.png" },
+                        { title: "Südliche Luftkuppel", type: "Besonderer Ort", sub: "", coords: "Lat: 65.4 / Lon: 59.5", img: "https://i.postimg.cc/Pr44d8Bc/Bild-2024-08-01-204937964.png" },
+                        { title: "Westliche Luftkuppel", type: "Besonderer Ort", sub: "", coords: "Lat: 27.5 / Lon: 82.5", img: "https://i.postimg.cc/3xtL7bkz/Bild-2024-08-01-210523406.png" }
+                    ]
+                },
                 { name: "Scorched Earth", url: "https://arkmap.axi92.at/126c63dd-17c2-4770-8b86-b1c13121e445", pois: [] },
                 { name: "Aberration", url: "https://arkmap.axi92.at/cb9a2f61-1171-42d4-a7a3-8996f2e61640", pois: [] },
                 { name: "Extinction", url: "https://arkmap.axi92.at/f9384885-6f6e-45ac-ae2f-027f87cb0122", pois: [] },
@@ -375,11 +409,9 @@
                     <div class="sidebar-subtitle">Wähle eine Karte</div>
                 </div>`;
 
-            // Helper function for buttons
             const createButtons = (groupKey, title) => {
                 html += `<div class="group-header">${title}</div>`;
                 mapData[groupKey].forEach((map, index) => {
-                    // ID generieren um später darauf zuzugreifen
                     const id = `map-${groupKey}-${index}`;
                     html += `
                     <button id="${id}" class="map-btn" onclick="selectMap('${groupKey}', ${index}, this)">
@@ -397,7 +429,6 @@
 
         // SELECT MAP LOGIC
         function selectMap(groupKey, index, buttonElement) {
-            // Active Class setzen
             document.querySelectorAll('.map-btn').forEach(btn => btn.classList.remove('active'));
             buttonElement.classList.add('active');
 
@@ -405,38 +436,60 @@
             const iframe = document.getElementById('mapFrame');
             const loader = document.getElementById('loader');
             const poiSection = document.getElementById('poiSection');
-            const poiGrid = document.getElementById('poiGrid');
+            const poiContainer = document.getElementById('poiContainer');
 
-            // Map Laden
+            // 1. Map laden
             loader.style.display = 'block';
             iframe.src = map.url;
-            iframe.onload = function() {
-                loader.style.display = 'none';
-            };
+            iframe.onload = function() { loader.style.display = 'none'; };
 
-            // POIs rendern
+            // 2. POIs gruppieren und Slider erstellen
             if (map.pois && map.pois.length > 0) {
                 poiSection.style.display = 'block';
-                poiGrid.innerHTML = map.pois.map(poi => `
-                    <div class="poi-card">
-                        <img src="${poi.img}" class="poi-image" alt="${poi.title}">
-                        <div class="poi-info">
-                            <span class="poi-type">${poi.type}</span>
-                            <div class="poi-title">${poi.title}</div>
-                            <div class="poi-coords">${poi.coords}</div>
+                poiContainer.innerHTML = ''; // Reset
+
+                // Gruppiere nach Typ
+                const groups = {};
+                map.pois.forEach(poi => {
+                    // Wenn der Typ "Artefakt..." ist, kürzen wir es für den Header auf "Artefakt"
+                    let groupName = poi.type.split(':')[0].trim(); 
+                    // Für "Besonderer Ort" oder "Teleporter" einfach nehmen
+                    if(groupName.includes("Artefakt")) groupName = "Artefakte";
+                    if(groupName.includes("Teleporter")) groupName = "Teleporter";
+                    
+                    if (!groups[groupName]) groups[groupName] = [];
+                    groups[groupName].push(poi);
+                });
+
+                // Erstelle für jede Gruppe einen Header und einen Slider
+                for (const [groupName, items] of Object.entries(groups)) {
+                    const groupHtml = `
+                        <div class="poi-category-header">${groupName}</div>
+                        <div class="poi-slider">
+                            ${items.map(poi => `
+                                <div class="poi-card">
+                                    <img src="${poi.img}" class="poi-image" loading="lazy" alt="${poi.title}">
+                                    <div class="poi-info">
+                                        <span class="poi-type">${poi.sub || poi.type}</span>
+                                        <div class="poi-title">${poi.title}</div>
+                                        <div class="poi-coords">${poi.coords}</div>
+                                    </div>
+                                </div>
+                            `).join('')}
                         </div>
-                    </div>
-                `).join('');
+                    `;
+                    poiContainer.innerHTML += groupHtml;
+                }
+
             } else {
                 poiSection.style.display = 'none';
-                poiGrid.innerHTML = '';
+                poiContainer.innerHTML = '';
             }
         }
 
         // INIT
         document.addEventListener('DOMContentLoaded', () => {
             renderSidebar();
-            // Starte mit The Island (Official, Index 0)
             const firstButton = document.getElementById('map-official-0');
             if (firstButton) {
                 selectMap('official', 0, firstButton);
