@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IOP Cluster Explorer (Fire Edition v10.5)</title>
+    <title>IOP Cluster Explorer (Fire Edition v10.8)</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <style>
         /* --- CORE --- */
@@ -72,8 +72,9 @@
             top: 0; left: 0;
             width: 1024px; height: 1024px;
             box-shadow: 0 0 100px rgba(0,0,0,0.9);
-            transform-origin: 0 0;
+            transform-origin: 0 0; /* WICHTIG: Zoom vom Nullpunkt, wir berechnen den Offset manuell */
             background-color: #050505;
+            will-change: transform;
         }
 
         #layer-image {
@@ -222,7 +223,7 @@
                 </div>
                 
                 <div class="mt-12 text-center text-xs text-gray-600 font-mono">
-                    Infinity of Phoenix<br>Cluster Explorer v10.5
+                    Infinity of Phoenix<br>Cluster Explorer v10.8
                 </div>
             </div>
 
@@ -247,15 +248,15 @@
         <div class="hud-top">LAT: <span id="lat">00.0</span> | LON: <span id="lon">00.0</span></div>
         <div class="hud-bot">
             <button class="zoom-btn" onclick="MapEngine.reset()">⟲</button>
-            <button class="zoom-btn" onclick="MapEngine.zoom(1.2)">+</button>
-            <button class="zoom-btn" onclick="MapEngine.zoom(0.8)">-</button>
+            <button class="zoom-btn" onclick="MapEngine.zoomIn()">+</button>
+            <button class="zoom-btn" onclick="MapEngine.zoomOut()">-</button>
         </div>
     </div>
 </div>
 
 <script>
 /**
- * IOP WIDGET CORE v10.5 (Scale Fix)
+ * IOP WIDGET CORE v10.8 (Smart Zoom)
  */
 
 // CONFIG
@@ -311,7 +312,8 @@ const MapEngine = {
                 lx = e.clientX; ly = e.clientY;
                 this.update();
             }
-            // Coords
+            
+            // HUD Update
             const r = this.el.getBoundingClientRect();
             const lat = ((e.clientY - r.top) / r.height) * 100;
             const lon = ((e.clientX - r.left) / r.width) * 100;
@@ -321,7 +323,14 @@ const MapEngine = {
 
         input.addEventListener('wheel', e => {
             e.preventDefault();
-            this.zoom(e.deltaY > 0 ? 0.9 : 1.1);
+            const delta = e.deltaY > 0 ? 0.9 : 1.1;
+            
+            // Mouse relative to viewport
+            const rect = this.vp.getBoundingClientRect();
+            const mx = e.clientX - rect.left;
+            const my = e.clientY - rect.top;
+            
+            this.zoomAt(delta, mx, my);
         });
 
         window.addEventListener('resize', () => this.resize());
@@ -338,6 +347,7 @@ const MapEngine = {
         this.cvs.width = size;
         this.cvs.height = size;
         
+        // AUTO CENTER CSS
         this.el.style.left = (this.vp.clientWidth - size) / 2 + 'px';
         this.el.style.top = (this.vp.clientHeight - size) / 2 + 'px';
 
@@ -352,9 +362,79 @@ const MapEngine = {
         this.el.style.transform = `translate(${Store.x}px, ${Store.y}px) scale(${Store.scale})`;
     },
 
-    zoom(f) {
-        Store.scale = Math.max(0.5, Math.min(10, Store.scale * f));
+    // SMART ZOOM: Zooms towards cx, cy (coordinates relative to viewport)
+    zoomAt(factor, cx, cy) {
+        const oldScale = Store.scale;
+        const newScale = Math.max(0.5, Math.min(10, oldScale * factor));
+        
+        if (newScale === oldScale) return;
+
+        // Visual position logic:
+        // Before zoom, visual offset of point under mouse:
+        // P_world = P_base + Translate
+        // We want P_mouse relative to P_world to scale.
+        
+        // Formula: NewTranslate = Mouse - (Mouse - OldTranslate) * (NewScale / OldScale)
+        // Adjust for the center offset of the container since translate is relative to that
+        
+        // Correction: Translate is relative to element origin.
+        // Element origin in viewport space is:
+        // OriginX = ViewportCenterOffset + Store.x
+        // Actually, CSS Transform `translate` adds to the element's layout position.
+        // Let's use the offset logic:
+        
+        const elRect = this.el.getBoundingClientRect();
+        
+        // Mouse position relative to the element (scaled)
+        const mx = cx - elRect.left;
+        const my = cy - elRect.top;
+        
+        // The scale ratio
+        const ratio = newScale / oldScale;
+        
+        // Adjust translation to keep (mx, my) stationary
+        // NewX = CurrentX - (MouseX_in_unscaled_coords * (newScale - oldScale))
+        
+        // Actually simpler with the delta method:
+        // We need to shift the map opposite to the zoom direction relative to mouse
+        
+        // Calculate offset change needed
+        // Shift = (Mouse relative to World Origin) * (1 - ratio)
+        // Store.x and Store.y are the translation values.
+        
+        // Since we are scaling around 0,0 (top-left of element), we need to adjust translation
+        // so that the point under the mouse stays fixed relative to the viewport.
+        
+        // Math derivation:
+        // WorldX = (MouseX - OffsetLeft - TransX) / Scale
+        // We want WorldX to be constant.
+        // (MouseX - OffsetLeft - NewTransX) / NewScale = (MouseX - OffsetLeft - OldTransX) / OldScale
+        
+        const offsetLeft = parseFloat(this.el.style.left) || 0;
+        const offsetTop = parseFloat(this.el.style.top) || 0;
+        
+        const relMouseX = cx - offsetLeft - Store.x;
+        const relMouseY = cy - offsetTop - Store.y;
+        
+        const newX = cx - offsetLeft - (relMouseX * ratio);
+        const newY = cy - offsetTop - (relMouseY * ratio);
+        
+        Store.x = newX;
+        Store.y = newY;
+        Store.scale = newScale;
+        
         this.update();
+    },
+
+    zoomIn() { 
+        // Zoom to center
+        const rect = this.vp.getBoundingClientRect();
+        this.zoomAt(1.2, rect.width/2, rect.height/2); 
+    },
+    
+    zoomOut() { 
+        const rect = this.vp.getBoundingClientRect();
+        this.zoomAt(0.8, rect.width/2, rect.height/2); 
     },
 
     reset() {
@@ -363,23 +443,17 @@ const MapEngine = {
         this.resize(); 
     },
     
-    getIcon(key) {
-        const url = Store.icons[key]?.iconUrl;
+    getImg(url) {
         if (!url) return null;
-        
-        if (this.iconCache.has(key)) {
-            return this.iconCache.get(key);
-        }
-
+        if (this.iconCache.has(url)) return this.iconCache.get(url);
         const img = new Image();
         img.src = url;
-        img.onload = () => {
-             if (Store.activeRes.has(key)) this.draw();
-        };
-        
-        this.iconCache.set(key, img);
+        img.onload = () => { if (Store.activeRes.size > 0 || Store.activeObs.size > 0) this.draw(); };
+        this.iconCache.set(url, img);
         return img;
     },
+    
+    getResIcon(key) { return this.getImg(Store.icons[key]?.iconUrl); },
 
     draw() {
         const w = this.cvs.width;
@@ -404,23 +478,20 @@ const MapEngine = {
 
         Store.activeRes.forEach(k => {
             if(Store.data.res[k]) {
-                const iconImg = this.getIcon(k);
+                const iconImg = this.getResIcon(k);
                 const c = {'Metal':'#b87333','Crystal':'#a5f3fc', 'Obsidian':'#000', 'Oil':'#111'}[k]||'#fff';
                 
                 Store.data.res[k].forEach(p => {
                     const cx = (p.lon/100)*w;
                     const cy = (p.lat/100)*h;
                     
-                    // --- NEUE SKALIERUNGSLOGIK ---
-                    // Basis: 12px. Pro Menge +2px. Maximal 32px.
-                    const amount = p.size || 1;
-                    const size = Math.min(32, 10 + (amount * 2)); 
+                    const scaleFactor = (p.size || 1) * 1.0; 
+                    const size = Math.min(32, 10 + (scaleFactor * 2)); 
 
                     if (iconImg && iconImg.complete && iconImg.naturalWidth > 0) {
                         ctx.drawImage(iconImg, cx - size/2, cy - size/2, size, size);
                     } else {
                         ctx.fillStyle = c;
-                        // Punkt Fallback ebenfalls skaliert
                         ctx.beginPath(); ctx.arc(cx, cy, size/4, 0, Math.PI*2); ctx.fill();
                     }
                 });
@@ -429,15 +500,30 @@ const MapEngine = {
 
         if(Store.layers.public) this.drawPois(Store.data.pois, '#ff2a00', w, h); 
         if(Store.layers.caves) this.drawPois(Store.data.caves, '#a855f7', w, h);
+        
         Store.activeObs.forEach(k => {
             const o = Store.data.obs.find(i => i.name === k);
-            if(o) this.drawPoi(o.lon, o.lat, '#ff4500', w, h, 8);
+            if(o) {
+                const obImg = o.icon ? this.getImg(o.icon) : null;
+                const cx = (o.lon/100)*w;
+                const cy = (o.lat/100)*h;
+
+                if (obImg && obImg.complete && obImg.naturalWidth > 0) {
+                     const height = 60;
+                     const ratio = obImg.naturalWidth / obImg.naturalHeight;
+                     const width = height * ratio;
+                     ctx.drawImage(obImg, cx - width/2, cy - height, width, height);
+                } else {
+                    const color = o.name.includes('Rot') ? '#ef4444' : o.name.includes('Grün') ? '#22c55e' : '#3b82f6';
+                    ctx.beginPath(); ctx.arc(cx, cy, 8, 0, Math.PI*2);
+                    ctx.fillStyle = color; ctx.fill();
+                    ctx.lineWidth = 2; ctx.strokeStyle = '#fff'; ctx.stroke();
+                }
+            }
         });
     },
 
-    drawPois(list, c, w, h) {
-        list.forEach(p => this.drawPoi(p.lon, p.lat, c, w, h));
-    },
+    drawPois(list, c, w, h) { list.forEach(p => this.drawPoi(p.lon, p.lat, c, w, h)); },
 
     drawPoi(lon, lat, c, w, h, r=5) {
         const ctx = this.ctx;
@@ -463,12 +549,7 @@ const App = {
             
             Store.cfg = cfg;
             
-            Store.icons = {
-                ...(ic?.Items||{}), 
-                ...(ic?.Kreaturen||{}),
-                ...(ic?.Ressourcen||{}) 
-            };
-            
+            Store.icons = { ...(ic?.Items||{}), ...(ic?.Kreaturen||{}), ...(ic?.Ressourcen||{}) };
             if(tr) { Store.trans.res = tr.Ressourcen||{}; Store.trans.dinos = tr.Kreaturen||{}; }
 
             const sel = document.getElementById('map-select');
@@ -529,9 +610,7 @@ const Dinos = {
         const list = document.getElementById('dino-list-root');
         list.innerHTML = '';
         const keys = Object.keys(Store.data.dinos).sort();
-        this.cache = keys.map(k => ({
-            key: k, name: Store.trans.dinos[k] || k, icon: Store.icons[k]?.iconUrl
-        }));
+        this.cache = keys.map(k => ({ key: k, name: Store.trans.dinos[k] || k, icon: Store.icons[k]?.iconUrl }));
         this.render("");
         document.getElementById('dino-search').oninput = e => this.render(e.target.value);
     },
@@ -569,13 +648,8 @@ const Resources = {
         Object.keys(Store.data.res).sort().forEach(k => {
             const div = document.createElement('div');
             div.className = 'toggle-item';
-            
-            // Try to find icon for list
             const iconUrl = Store.icons[k]?.iconUrl;
-            const iconHTML = iconUrl 
-                ? `<img src="${iconUrl}" style="width:20px;height:20px;margin-right:10px;object-fit:contain;">`
-                : `<div class="chk"></div>`;
-
+            const iconHTML = iconUrl ? `<img src="${iconUrl}" style="width:20px;height:20px;margin-right:10px;object-fit:contain;">` : `<div class="chk"></div>`;
             div.innerHTML = `${iconHTML}<span class="toggle-text">${Store.trans.res[k] || k}</span>`;
             div.onclick = () => {
                 if(Store.activeRes.has(k)) { Store.activeRes.delete(k); div.classList.remove('checked'); }
@@ -619,7 +693,6 @@ const Tabs = {
     open(id) {
         document.querySelectorAll('.tab-btn').forEach(e => e.classList.remove('active'));
         document.querySelectorAll('.view').forEach(e => e.classList.remove('active'));
-        
         const idx = ['dinos','res','pois','ai','settings'].indexOf(id);
         if(idx>=0) document.querySelectorAll('.tab-btn')[idx].classList.add('active');
         document.getElementById('view-'+id).classList.add('active');
@@ -627,7 +700,6 @@ const Tabs = {
     }
 };
 
-// HELPER
 async function fetchData(url) {
     try {
         const r = await fetch(url);
@@ -644,9 +716,11 @@ const AI = {
         const log = document.getElementById('chat-log');
         log.innerHTML += `<div class="chat-msg u">${txt}</div>`;
         inp.value = '';
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${""}`;
+        const apiKey = ""; 
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+        const context = `Map: ${Store.map?.displayName}. Selected Dino: ${Store.selDino || 'None'}.`;
         try {
-            const res = await fetch(url, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({contents:[{parts:[{text:txt}]}]})});
+            const res = await fetch(url, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({contents:[{parts:[{text:txt}]}], systemInstruction: { parts: [{ text: `ARK Survival Expert. German. Context: ${context}` }] }})});
             const d = await res.json();
             log.innerHTML += `<div class="chat-msg b">${d.candidates[0].content.parts[0].text}</div>`;
         } catch { log.innerHTML += `<div class="chat-msg b text-red-500">Error</div>`; }
