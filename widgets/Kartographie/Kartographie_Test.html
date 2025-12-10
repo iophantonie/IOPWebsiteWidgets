@@ -30,7 +30,6 @@
             flex-direction: column;
             align-items: center;
             width: 100%;
-            /* KORREKTUR: Höhe nicht mehr begrenzt, damit gescrollt werden kann */
             min-height: 100vh; 
             box-sizing: border-box;
             overflow-y: auto; 
@@ -44,13 +43,12 @@
             box-shadow: 0 4px 30px rgba(0, 0, 0, 0.8);
             width: 100%;
             max-width: 1800px;
-            /* KORREKTUR: Höhe automatisch anhand des Inhalts */
             height: auto; 
             display: flex;
             flex-direction: column;
             overflow: hidden;
             position: relative;
-            margin-bottom: 50px; /* Platz unten zum Scrollen */
+            margin-bottom: 50px; 
         }
 
         /* Header */
@@ -73,7 +71,6 @@
         .map-body-wrapper {
             display: flex;
             flex-direction: row;
-            /* KORREKTUR: Stretcht den Container vertikal */
             align-items: stretch; 
         }
 
@@ -84,12 +81,10 @@
             border-right: 2px solid var(--color-red);
             display: flex;
             flex-direction: column;
-            /* Sidebar wächst mit dem Inhalt mit */
             min-height: 800px; 
             flex-shrink: 0;
         }
 
-        /* Sidebar Inhalt scrollbar machen, falls er zu lang wird (Sticky feeling) */
         .sidebar-content-sticky {
             position: sticky;
             top: 0;
@@ -140,13 +135,11 @@
             font-family: var(--font-main);
             transition: all 0.2s ease;
             border-left: 3px solid transparent;
-            
-            /* KORREKTUR: Volle Breite und Flexbox für Abstand */
             width: 100%; 
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-sizing: border-box; /* Wichtig damit Padding nicht die Breite sprengt */
+            box-sizing: border-box; 
         }
 
         .map-btn:hover {
@@ -168,7 +161,7 @@
             background-color: #4CAF50; 
             border-radius: 50%;
             box-shadow: 0 0 5px #4CAF50;
-            flex-shrink: 0; /* Verhindert das Schrumpfen des Punktes */
+            flex-shrink: 0; 
         }
 
         /* --- Content Area --- */
@@ -177,18 +170,19 @@
             display: flex;
             flex-direction: column;
             background-color: #121212;
-            width: calc(100% - var(--sidebar-width)); /* Restbreite */
+            width: calc(100% - var(--sidebar-width)); 
         }
 
-        /* 1. Map Bereich (FIXE GROSSE HÖHE) */
+        /* 1. Map Bereich (VERGRÖSSERT) */
         .iframe-container {
             width: 100%;
-            /* KORREKTUR: Feste Höhe für große Darstellung */
-            height: 750px; 
+            /* KORREKTUR: Sehr hohe Karte (85% der Viewport Höhe) */
+            height: 85vh; 
+            min-height: 600px;
             position: relative;
             background-color: #000;
             border-bottom: 3px solid var(--color-red);
-            flex-shrink: 0; /* Darf nicht schrumpfen */
+            flex-shrink: 0; 
         }
 
         iframe {
@@ -203,7 +197,6 @@
             background-color: var(--color-light-dark);
             padding: 20px;
             box-sizing: border-box;
-            /* Nimmt den Platz unter der Map ein */
             min-height: 300px; 
         }
 
@@ -263,6 +256,7 @@
             font-size: 1.2rem;
             font-weight: bold;
             opacity: 0.8;
+            display: none; 
         }
 
         .slider-arrow:hover {
@@ -280,7 +274,7 @@
 
         /* POI Card Styling */
         .poi-card {
-            flex: 0 0 240px; /* Etwas breiter */
+            flex: 0 0 240px; 
             background-color: rgba(0, 0, 0, 0.6);
             border-radius: 6px;
             overflow: hidden;
@@ -288,12 +282,13 @@
             transition: transform 0.2s, border-color 0.2s;
             display: flex;
             flex-direction: column;
+            cursor: pointer; /* Zeigt an, dass es klickbar ist */
         }
 
         .poi-card:hover {
             transform: translateY(-3px);
             border-color: var(--color-red);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            box-shadow: 0 4px 15px rgba(229, 57, 53, 0.3);
         }
 
         .poi-image {
@@ -331,6 +326,110 @@
              margin-top: 2px;
         }
 
+        /* MODAL (LIGHTBOX) STYLES */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            display: none; /* Standard aus */
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-content {
+            background-color: var(--color-light-dark);
+            border: 2px solid var(--color-red);
+            border-radius: 12px;
+            max-width: 90%;
+            max-height: 90%;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 0 30px rgba(229, 57, 53, 0.5);
+            display: flex;
+            flex-direction: column;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: scale(1);
+        }
+
+        .modal-close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            cursor: pointer;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+
+        .modal-close-btn:hover {
+            background: var(--color-red);
+        }
+
+        .modal-image {
+            width: 100%;
+            max-height: 70vh;
+            object-fit: contain;
+            background-color: black;
+            border-bottom: 2px solid var(--color-red);
+        }
+
+        .modal-details {
+            padding: 20px;
+            text-align: center;
+        }
+
+        .modal-title {
+            font-family: var(--font-header);
+            font-size: 1.8rem;
+            color: var(--color-text);
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+
+        .modal-type {
+            color: var(--color-red);
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 1rem;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .modal-coords {
+            font-size: 1.2rem;
+            color: var(--color-gold);
+            font-weight: bold;
+            background: rgba(0,0,0,0.3);
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+        }
+
         /* Lade-Animation */
         .loader {
             position: absolute;
@@ -358,6 +457,19 @@
     </style>
 </head>
 <body>
+
+    <!-- MODAL OVERLAY (Lightbox) -->
+    <div id="poiModal" class="modal-overlay" onclick="closeModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <button class="modal-close-btn" onclick="closeModal(event)">×</button>
+            <img id="modalImg" src="" alt="" class="modal-image">
+            <div class="modal-details">
+                <span id="modalType" class="modal-type"></span>
+                <div id="modalTitle" class="modal-title"></div>
+                <div id="modalCoords" class="modal-coords"></div>
+            </div>
+        </div>
+    </div>
 
     <div class="map-widget-container">
         <div class="main-page-header">Kartographie</div>
@@ -454,8 +566,38 @@
                         { title: "Wyvern Falle Nordwest", type: "Besonderer Ort", sub: "Öffentlich", coords: "Lat: 34 / Lon: 8", img: "https://i.postimg.cc/MpcTpw2P/Bild-2024-05-16-143932986.png" }
                     ]
                 },
-                { name: "Aberration", url: "https://arkmap.axi92.at/cb9a2f61-1171-42d4-a7a3-8996f2e61640", pois: [] },
-                { name: "Extinction", url: "https://arkmap.axi92.at/f9384885-6f6e-45ac-ae2f-027f87cb0122", pois: [] },
+                { 
+                    name: "Aberration", 
+                    url: "https://arkmap.axi92.at/cb9a2f61-1171-42d4-a7a3-8996f2e61640", 
+                    pois: [
+                        { title: "Öffentliche Harzfarm", type: "Teleporter", coords: "Lat: 26 / Lon: 49", img: "https://i.postimg.cc/br9FW8GF/Bild-2024-09-15-114714323.png" },
+                        { title: "Öffentliche Gasfarm", type: "Teleporter", coords: "Lat: 26 / Lon: 49", img: "https://i.postimg.cc/Y2GzDQLK/Bild-2024-09-15-114928119.png" },
+                        { title: "Öffentliche Reaper-Falle", type: "Teleporter", coords: "Lat: 61.3 / Lon: 72", img: "https://i.postimg.cc/SNd9jPhn/Bild-2025-03-15-153702775.png" },
+                        { title: "Old Railway Cave", type: "Artefakt", sub: "Tiefe/Depths", coords: "Lat: 48 / Lon: 28", img: "https://i.postimg.cc/d3gdxDPv/Bild-2024-09-15-125701027.png" },
+                        { title: "Hidden Grotto Cave", type: "Artefakt", sub: "Schatten/Shadows", coords: "Lat: 55 / Lon: 66", img: "https://i.postimg.cc/Y23mLpXh/Bild-2024-09-15-131025238.png" },
+                        { title: "Element Vault Cave", type: "Artefakt", sub: "Pirschens/Stalker", coords: "Lat: 80.5 / Lon: 45.8", img: "https://i.postimg.cc/dVh5hK1b/Bild-2024-09-15-124725471.png" },
+                        { title: "Westlicher Aufgang", type: "Besonderer Ort", sub: "Roter Obelisk", coords: "Lat: 51.7 / Lon: 21.6", img: "https://i.postimg.cc/qvvzLbrx/Bild-2024-09-15-123339109.png" },
+                        { title: "Südwestlicher Aufgang", type: "Besonderer Ort", sub: "Roter Obelisk", coords: "Lat: 78 / Lon: 29", img: "https://i.postimg.cc/vHr3wmpZ/Bild-2024-09-15-123947145.png" },
+                        { title: "Nordöstlicher Aufgang", type: "Besonderer Ort", sub: "Grüner Obelisk", coords: "Lat: 27 / Lon: 63", img: "https://i.postimg.cc/wBDyyK20/Bild-2024-09-15-121624761.png" },
+                        { title: "Nordöstlicher Aufgang", type: "Besonderer Ort", sub: "Grüner Obelisk", coords: "Lat: 40.5 / Lon: 79", img: "https://i.postimg.cc/LXWC01dy/Bild-2024-09-15-122517143.png" },
+                        { title: "Nordwestlicher Aufgang", type: "Besonderer Ort", sub: "Blauer Obelisk", coords: "Lat: 19.3 / Lon: 27.9", img: "https://i.postimg.cc/Twh0v3fp/Bild-2024-09-15-121318783.png" },
+                        { title: "Bossterminal Rockdrake", type: "Besonderer Ort", sub: "Schlucht", coords: "Lat: 42.7 / Lon: 36.8", img: "https://i.postimg.cc/43xh1jmX/Bild-2024-09-15-132004280.png" },
+                        { title: "Rockdrake Schlucht", type: "Besonderer Ort", sub: "", coords: "Lat: 56.4 / Lon: 56.6", img: "https://i.postimg.cc/k5syYSQK/Bild-2024-09-15-132250980.png" }
+                    ]
+                },
+                { 
+                    name: "Extinction", 
+                    url: "https://arkmap.axi92.at/f9384885-6f6e-45ac-ae2f-027f87cb0122", 
+                    pois: [
+                        { title: "City Terminal", type: "Teleporter", coords: "Lat: 50.7 / Lon: 36.7", img: "https://i.postimg.cc/50w0xq9T/Bild-2025-01-19-131143331.png" },
+                        { title: "SE Biom", type: "Teleporter", coords: "Lat: 85.5 / Lon: 86.2", img: "https://i.postimg.cc/7YTwnLDZ/Bild-2025-01-19-125304820.png" },
+                        { title: "Underground", type: "Teleporter", coords: "Lat: 23.5 / Lon: 18", img: "https://i.postimg.cc/bwc2jJRZ/Bild-2025-01-19-131536796.png" },
+                        { title: "Schnee Biom", type: "Teleporter", coords: "Lat: 18.2 / Lon: 81.3", img: "https://i.postimg.cc/NF3p1tv5/Bild-2025-01-19-131351367.png" },
+                        { title: "Forest Cave", type: "Artefakt", sub: "Wachstums/Growth", coords: "Lat: 5.5 / Lon: 35.8", img: "https://i.postimg.cc/50Tk4Lyc/Bild-2025-01-19-131732899.png" },
+                        { title: "Desert Cave", type: "Artefakt", sub: "Chaos", coords: "Lat: 93 / Lon: 74", img: "https://i.postimg.cc/76h0BRxD/Bild-2025-01-19-132519654.png" },
+                        { title: "Ice Cave", type: "Artefakt", sub: "Leere/Void", coords: "Lat: 15 / Lon: 63", img: "https://i.postimg.cc/vT1jdXvw/Bild-2025-01-19-132922835.png" }
+                    ]
+                },
                 { name: "Ragnarok", url: "https://arkmap.axi92.at/1e1c1f9a-283d-4e23-9505-0abe717cd2ff", pois: [] },
                 { name: "Valguero", url: "https://arkmap.axi92.at/0d77d17e-34f7-4dfe-b849-2e4bc174cd6e", pois: [] },
                 { name: "Astraeos", url: "https://arkmap.axi92.at/6b719b3d-f04c-47f5-beb6-a5a0b1260e7c", pois: [] },
@@ -504,6 +646,34 @@
             const slider = wrapper.querySelector('.poi-slider');
             const scrollAmount = 300; 
             slider.scrollBy({ left: scrollAmount * direction, behavior: 'smooth' });
+            
+            setTimeout(() => updateArrows(slider), 350); 
+        }
+        
+        // UPDATE ARROWS VISIBILITY
+        function updateArrows(slider) {
+            const wrapper = slider.closest('.poi-slider-wrapper');
+            if (!wrapper) return;
+            
+            const prev = wrapper.querySelector('.prev');
+            const next = wrapper.querySelector('.next');
+            
+            if (window.innerWidth <= 768) {
+                prev.style.display = 'none';
+                next.style.display = 'none';
+                return;
+            }
+
+            const tolerance = 2; 
+            const maxScroll = slider.scrollWidth - slider.clientWidth;
+
+            if (maxScroll <= 0) {
+                prev.style.display = 'none';
+                next.style.display = 'none';
+            } else {
+                prev.style.display = slider.scrollLeft > tolerance ? 'flex' : 'none';
+                next.style.display = slider.scrollLeft < maxScroll - tolerance ? 'flex' : 'none';
+            }
         }
 
         // SELECT MAP LOGIC
@@ -538,13 +708,14 @@
                 });
 
                 for (const [groupName, items] of Object.entries(groups)) {
+                    // Erstelle Slider-Struktur
                     const groupHtml = `
                         <div class="poi-category-header">${groupName}</div>
                         <div class="poi-slider-wrapper">
                             <button class="slider-arrow prev" onclick="scrollSlider(this, -1)">&#10094;</button>
                             <div class="poi-slider">
-                                ${items.map(poi => `
-                                    <div class="poi-card">
+                                ${items.map((poi, i) => `
+                                    <div class="poi-card" onclick="openModal('${groupKey}', ${index}, '${groupName}', ${i})">
                                         <img src="${poi.img}" class="poi-image" loading="lazy" alt="${poi.title}">
                                         <div class="poi-info">
                                             <span class="poi-type">${poi.sub || poi.type}</span>
@@ -559,12 +730,56 @@
                     `;
                     poiContainer.innerHTML += groupHtml;
                 }
+                
+                // Initialize arrow visibility for new sliders
+                const sliders = poiContainer.querySelectorAll('.poi-slider');
+                sliders.forEach(slider => {
+                    slider.addEventListener('scroll', () => updateArrows(slider));
+                    setTimeout(() => updateArrows(slider), 50);
+                });
 
             } else {
                 poiSection.style.display = 'none';
                 poiContainer.innerHTML = '';
             }
         }
+
+        // --- MODAL FUNKTIONEN ---
+        function openModal(groupKey, mapIndex, groupName, poiIndex) {
+            const map = mapData[groupKey][mapIndex];
+            
+            // Wir filtern genau wie oben im Loop, um die richtige Gruppe zu finden
+            const groups = {};
+            map.pois.forEach(p => {
+                let gName = p.type.split(':')[0].trim(); 
+                if(gName.includes("Artefakt")) gName = "Artefakte";
+                if(gName.includes("Teleporter")) gName = "Teleporter";
+                if (!groups[gName]) groups[gName] = [];
+                groups[gName].push(p);
+            });
+            
+            const poi = groups[groupName][poiIndex];
+            
+            if(poi) {
+                document.getElementById('modalImg').src = poi.img;
+                document.getElementById('modalType').textContent = poi.sub || poi.type;
+                document.getElementById('modalTitle').textContent = poi.title;
+                document.getElementById('modalCoords').textContent = poi.coords;
+                
+                // Modal öffnen
+                const modal = document.getElementById('poiModal');
+                modal.classList.add('active');
+            }
+        }
+
+        function closeModal(event) {
+            document.getElementById('poiModal').classList.remove('active');
+        }
+
+        // Global Resize Listener
+        window.addEventListener('resize', () => {
+            document.querySelectorAll('.poi-slider').forEach(updateArrows);
+        });
 
         // INIT
         document.addEventListener('DOMContentLoaded', () => {
