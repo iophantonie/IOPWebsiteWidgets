@@ -3,86 +3,95 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IOP Cluster Widget v10.0 (Citadel)</title>
+    <title>IOP Cluster Explorer (Fire Edition)</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <style>
         /* --- CORE --- */
         * { box-sizing: border-box; }
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #000; overflow: hidden; font-family: 'Segoe UI', sans-serif; color: #e2e8f0; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #000; overflow: hidden; font-family: 'Segoe UI', 'Roboto', sans-serif; color: #e2e8f0; }
 
-        /* LAYOUT: Absolute Positionierung für maximale Stabilität */
-        #app { position: absolute; inset: 0; display: flex; }
-
-        /* --- SIDEBAR (Links) --- */
-        #sidebar {
-            width: 340px; height: 100%; background: #111827; border-right: 1px solid #374151;
-            display: flex; flex-direction: column; z-index: 50; flex-shrink: 0;
-            box-shadow: 5px 0 15px rgba(0,0,0,0.5);
+        /* PHOENIX FIRE COLORS */
+        :root {
+            --phoenix-fire: #ff2a00; /* Kräftiges Feuer-Rot */
+            --phoenix-glow: #ff5500; /* Helleres Glühen für Hover */
+            --bg-dark: #050505;
+            --bg-panel: #0a0a0a;
+            --border-color: #2a2a2a;
         }
 
-        .sb-header { padding: 16px; background: #0f172a; border-bottom: 1px solid #374151; }
-        .sb-title { font-size: 1.1rem; font-weight: 800; color: #f59e0b; letter-spacing: 0.05em; margin-bottom: 8px; }
+        #app { position: absolute; inset: 0; display: flex; }
+
+        /* --- SIDEBAR --- */
+        #sidebar {
+            width: 340px; height: 100%; background: var(--bg-panel); border-right: 1px solid var(--border-color);
+            display: flex; flex-direction: column; z-index: 50; flex-shrink: 0;
+            box-shadow: 5px 0 20px rgba(0,0,0,0.9);
+        }
+
+        .sb-header { padding: 20px; background: #000; border-bottom: 2px solid var(--phoenix-fire); }
+        .sb-sub { font-size: 0.7rem; color: #666; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 2px; }
+        .sb-title { font-size: 1.1rem; font-weight: 900; color: var(--phoenix-fire); letter-spacing: 0.05em; text-transform: uppercase; text-shadow: 0 0 15px rgba(255, 42, 0, 0.4); }
         
-        .tabs { display: flex; background: #1f2937; border-bottom: 1px solid #374151; }
-        .tab-btn { flex: 1; padding: 12px 5px; color: #9ca3af; background: none; border: none; cursor: pointer; border-bottom: 3px solid transparent; font-size: 0.85rem; font-weight: 600; transition: 0.2s; }
-        .tab-btn:hover { color: white; background: #374151; }
-        .tab-btn.active { color: #f59e0b; border-color: #f59e0b; background: #374151; }
+        /* Stylized Tabs */
+        .tabs { display: flex; background: #111; border-bottom: 1px solid var(--border-color); }
+        .tab-btn { flex: 1; padding: 12px 5px; color: #777; background: none; border: none; cursor: pointer; border-bottom: 3px solid transparent; font-size: 0.8rem; font-weight: 700; transition: 0.2s; letter-spacing: 0.05em; }
+        .tab-btn:hover { color: white; background: #1a1a1a; }
+        .tab-btn.active { color: var(--phoenix-fire); border-color: var(--phoenix-fire); background: linear-gradient(to top, rgba(255, 42, 0, 0.15), transparent); }
 
         .sb-content { flex: 1; overflow-y: auto; position: relative; }
-        .view { display: none; padding: 10px; }
-        .view.active { display: block; animation: fadeIn 0.2s; }
+        .view { display: none; padding: 15px; }
+        .view.active { display: block; animation: fadeIn 0.3s; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
         /* --- LIST ITEMS --- */
         .dino-item { 
-            display: flex; align-items: center; padding: 8px; 
-            border-bottom: 1px solid #1f2937; cursor: pointer; transition: 0.15s; 
+            display: flex; align-items: center; padding: 10px; 
+            border-bottom: 1px solid #1a1a1a; cursor: pointer; transition: 0.15s; border-left: 3px solid transparent;
         }
-        .dino-item:hover { background: #1f2937; }
-        .dino-item.active { background: rgba(245, 158, 11, 0.15); border-left: 3px solid #f59e0b; }
-        .dino-icon { width: 30px; height: 30px; object-fit: contain; margin-right: 12px; }
-        .dino-name { font-size: 0.9rem; color: #cbd5e1; }
+        .dino-item:hover { background: #151515; border-left-color: #444; }
+        .dino-item.active { background: rgba(255, 42, 0, 0.1); border-left-color: var(--phoenix-fire); }
+        .dino-icon { width: 32px; height: 32px; object-fit: contain; margin-right: 12px; filter: drop-shadow(0 0 2px rgba(0,0,0,0.5)); }
+        .dino-name { font-size: 0.9rem; color: #ddd; font-weight: 500; }
 
-        .toggle-item { display: flex; align-items: center; padding: 8px; cursor: pointer; user-select: none; }
-        .chk { width: 18px; height: 18px; border: 2px solid #4b5563; border-radius: 4px; margin-right: 10px; display: flex; align-items: center; justify-content: center; }
-        .toggle-item.checked .chk { background: #f59e0b; border-color: #f59e0b; }
+        .toggle-item { display: flex; align-items: center; padding: 8px 0; cursor: pointer; user-select: none; }
+        .chk { width: 18px; height: 18px; border: 2px solid #444; border-radius: 3px; margin-right: 10px; display: flex; align-items: center; justify-content: center; transition: 0.2s; background: #000; }
+        .toggle-item:hover .chk { border-color: #888; }
+        .toggle-item.checked .chk { background: var(--phoenix-fire); border-color: var(--phoenix-fire); box-shadow: 0 0 8px var(--phoenix-fire); }
         .toggle-item.checked .chk::after { content: '✓'; color: black; font-size: 12px; font-weight: bold; }
+        .toggle-text { color: #aaa; font-size: 0.9rem; }
+        .toggle-item.checked .toggle-text { color: white; }
 
-        /* --- MAP ENGINE (Rechts) --- */
+        /* --- MAP ENGINE --- */
         #viewport {
-            flex: 1; position: relative; background: #050505; overflow: hidden;
-            display: flex; justify-content: center; align-items: center;
+            flex: 1; position: relative; background: #020202; overflow: hidden;
+            display: block; 
         }
 
-        /* Der Map-Container - Transformiert (Zoom/Pan) */
         #world {
-            position: relative;
+            position: absolute;
+            top: 0; left: 0;
             width: 1024px; height: 1024px;
-            box-shadow: 0 0 100px rgba(0,0,0,0.8);
-            transform-origin: 0 0; /* Wichtig für unsere Mathe */
-            background-color: #111; /* Fallback Farbe */
+            box-shadow: 0 0 100px rgba(0,0,0,0.9);
+            transform-origin: 0 0;
+            background-color: #050505;
         }
 
-        /* LAYER 1: DAS BILD (CSS Background - Unzerstörbar) */
         #layer-image {
             position: absolute; inset: 0; z-index: 1;
             background-size: 100% 100%;
             background-repeat: no-repeat;
             background-position: center;
             pointer-events: none;
-            /* Performance Hack */
             backface-visibility: hidden;
             transform: translateZ(0);
         }
 
-        /* LAYER 2: DATEN (Canvas) */
         #layer-data {
             position: absolute; inset: 0; z-index: 2;
             width: 100%; height: 100%;
             pointer-events: none;
         }
 
-        /* LAYER 3: INTERAKTION (Unsichtbar oben drauf) */
         #layer-input {
             position: absolute; inset: 0; z-index: 10;
             width: 100%; height: 100%;
@@ -90,31 +99,43 @@
         }
         #layer-input:active { cursor: grabbing; }
 
-        /* --- HUD & OVERLAYS --- */
-        .hud-top { position: absolute; top: 20px; right: 20px; background: rgba(0,0,0,0.8); padding: 6px 12px; border-radius: 4px; color: #f59e0b; font-family: monospace; font-size: 12px; z-index: 50; pointer-events: none; border: 1px solid #333; }
-        .hud-bot { position: absolute; bottom: 30px; right: 30px; display: flex; gap: 8px; z-index: 50; }
-        .zoom-btn { width: 40px; height: 40px; background: #1f2937; border: 1px solid #4b5563; color: white; border-radius: 4px; font-size: 20px; cursor: pointer; display: grid; place-items: center; }
-        .zoom-btn:hover { border-color: #f59e0b; color: #f59e0b; }
+        /* --- HUD --- */
+        .hud-top { position: absolute; top: 20px; right: 20px; background: rgba(0,0,0,0.9); padding: 8px 15px; border-radius: 4px; color: var(--phoenix-fire); font-family: monospace; font-size: 13px; z-index: 50; pointer-events: none; border: 1px solid #333; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+        .hud-bot { position: absolute; bottom: 30px; right: 30px; display: flex; gap: 10px; z-index: 50; }
+        .zoom-btn { width: 42px; height: 42px; background: #111; border: 1px solid #444; color: white; border-radius: 6px; font-size: 22px; cursor: pointer; display: grid; place-items: center; transition: 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+        .zoom-btn:hover { border-color: var(--phoenix-fire); color: var(--phoenix-fire); background: #222; box-shadow: 0 0 10px rgba(255, 42, 0, 0.2); }
 
         .loader { position: absolute; inset: 0; background: #000; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.5s; }
         .loader.hidden { opacity: 0; pointer-events: none; }
-        .spinner { width: 40px; height: 40px; border: 3px solid #333; border-top-color: #f59e0b; border-radius: 50%; animation: spin 1s infinite linear; margin-bottom: 10px; }
+        .spinner { width: 50px; height: 50px; border: 3px solid #333; border-top-color: var(--phoenix-fire); border-radius: 50%; animation: spin 1s infinite linear; margin-bottom: 20px; box-shadow: 0 0 20px rgba(255, 42, 0, 0.3); }
         @keyframes spin { to { transform: rotate(360deg); } }
 
         /* Chat */
         .chat-container { display: flex; flex-direction: column; height: 100%; }
-        .chat-log { flex: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 8px; }
-        .chat-msg { padding: 8px 12px; border-radius: 6px; font-size: 0.9rem; max-width: 90%; }
-        .chat-msg.u { align-self: flex-end; background: #2563eb; color: white; }
-        .chat-msg.b { align-self: flex-start; background: #374151; color: #e2e8f0; border-left: 2px solid #f59e0b; }
-        .chat-input { display: flex; padding: 10px; border-top: 1px solid #374151; gap: 5px; }
+        .chat-log { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
+        .chat-msg { padding: 10px 14px; border-radius: 8px; font-size: 0.9rem; max-width: 85%; line-height: 1.5; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        .chat-msg.u { align-self: flex-end; background: #333; color: white; border: 1px solid #555; }
+        .chat-msg.b { align-self: flex-start; background: #111; color: #ccc; border-left: 3px solid var(--phoenix-fire); }
+        .chat-input { display: flex; padding: 15px; border-top: 1px solid #333; gap: 10px; background: #050505; }
+        .chat-field { flex: 1; background: #1a1a1a; border: 1px solid #333; color: white; padding: 10px; border-radius: 6px; outline: none; transition: 0.2s; }
+        .chat-field:focus { border-color: var(--phoenix-fire); }
+        .chat-send { background: var(--phoenix-fire); color: white; border: none; padding: 0 20px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .chat-send:hover { background: var(--phoenix-glow); transform: translateY(-1px); box-shadow: 0 0 10px rgba(255, 42, 0, 0.4); }
 
         /* Scrollbar */
         ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #111; }
-        ::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
+        ::-webkit-scrollbar-track { background: #0a0a0a; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--phoenix-fire); }
         
         .hidden { display: none !important; }
+        
+        /* Inputs */
+        .phoenix-input { w-full: 100%; background: #050505; border: 1px solid #333; padding: 10px; border-radius: 6px; color: white; outline: none; font-size: 0.9rem; transition: 0.2s; }
+        .phoenix-input:focus { border-color: var(--phoenix-fire); box-shadow: 0 0 10px rgba(255, 42, 0, 0.15); }
+        
+        .phoenix-btn { width: 100%; background: #1f1f1f; border: 1px solid #333; color: #ccc; padding: 10px; border-radius: 6px; cursor: pointer; transition: 0.2s; text-transform: uppercase; font-size: 0.8rem; font-weight: bold; letter-spacing: 0.05em; }
+        .phoenix-btn:hover { border-color: var(--phoenix-fire); color: var(--phoenix-fire); background: #252525; }
     </style>
 </head>
 <body>
@@ -122,15 +143,16 @@
 <!-- LOADER -->
 <div id="loader" class="loader">
     <div class="spinner"></div>
-    <div id="loader-msg" class="text-amber-500 font-mono text-sm">Systemstart...</div>
+    <div id="loader-msg" class="text-white font-bold text-sm tracking-widest uppercase" style="color: var(--phoenix-fire)">Lade IOP Explorer...</div>
 </div>
 
 <div id="app">
     <!-- SIDEBAR -->
     <div id="sidebar">
         <div class="sb-header">
-            <div class="sb-title">IOP CLUSTER</div>
-            <select id="map-select" class="w-full bg-gray-800 text-white border border-gray-600 rounded p-1.5 text-sm outline-none focus:border-amber-500">
+            <div class="sb-sub">INFINITY OF PHOENIX</div>
+            <div class="sb-title">CLUSTER EXPLORER</div>
+            <select id="map-select" class="phoenix-input mt-3 w-full text-sm">
                 <option disabled selected>Karte wählen...</option>
             </select>
         </div>
@@ -147,25 +169,24 @@
             
             <!-- VIEW: DINOS -->
             <div id="view-dinos" class="view active">
-                <div class="sticky top-0 bg-[#111827] z-10 pb-2">
-                    <input type="text" id="dino-search" placeholder="Dino suchen..." 
-                           class="w-full bg-gray-800 text-white border border-gray-600 rounded p-2 text-sm outline-none focus:border-amber-500">
+                <div class="sticky top-0 bg-[#111827] z-10 pb-4">
+                    <input type="text" id="dino-search" placeholder="Dino suchen..." class="phoenix-input w-full">
                 </div>
                 <div id="dino-list-root"></div>
             </div>
 
             <!-- VIEW: RESOURCES -->
             <div id="view-res" class="view">
-                <div class="flex justify-between items-center mb-4 border-b border-gray-700 pb-2">
-                    <span class="text-xs font-bold text-gray-500">RESSOURCEN</span>
-                    <button onclick="Resources.clear()" class="text-xs text-amber-500">Reset</button>
+                <div class="flex justify-between items-center mb-6 border-b border-gray-800 pb-2">
+                    <span class="text-xs font-bold text-gray-500 tracking-wider">RESSOURCEN</span>
+                    <button onclick="Resources.clear()" class="text-xs hover:text-white transition" style="color: var(--phoenix-fire)">Reset</button>
                 </div>
                 <div id="res-list-root"></div>
             </div>
 
             <!-- VIEW: POIS -->
             <div id="view-pois" class="view">
-                <div class="text-xs font-bold text-gray-500 mb-2 mt-2">ALLGEMEIN</div>
+                <div class="text-xs font-bold text-gray-500 mb-3 mt-2 tracking-wider">ALLGEMEIN</div>
                 <div class="toggle-item" id="tog-public" onclick="Layers.toggle('public')">
                     <div class="chk"></div><span>Public Spots</span>
                 </div>
@@ -173,7 +194,7 @@
                     <div class="chk"></div><span>Höhlen</span>
                 </div>
 
-                <div class="text-xs font-bold text-gray-500 mb-2 mt-6">OBELISKEN</div>
+                <div class="text-xs font-bold text-gray-500 mb-3 mt-8 tracking-wider">OBELISKEN</div>
                 <div id="obelisk-list-root"></div>
             </div>
 
@@ -181,23 +202,28 @@
             <div id="view-ai" class="view h-full p-0">
                 <div class="chat-container">
                     <div id="chat-log" class="chat-log custom-scrollbar">
-                        <div class="chat-msg b">Hallo! Ich kenne die aktuelle Karte. Frag mich etwas!</div>
+                        <div class="chat-msg b">Willkommen beim <span style="color: var(--phoenix-fire)">IOP Explorer</span>! Ich kenne die aktuelle Karte. Frag mich etwas!</div>
                     </div>
                     <div class="chat-input">
-                        <input type="text" id="ai-input" class="flex-1 bg-gray-800 text-white p-2 rounded text-sm outline-none border border-gray-600" placeholder="Frage...">
-                        <button onclick="AI.send()" class="bg-amber-600 text-white px-3 rounded hover:bg-amber-500">➤</button>
+                        <input type="text" id="ai-input" class="chat-field" placeholder="Deine Frage...">
+                        <button onclick="AI.send()" class="chat-send">SENDEN</button>
                     </div>
                 </div>
             </div>
 
             <!-- VIEW: SETTINGS -->
             <div id="view-settings" class="view">
-                <div class="text-xs font-bold text-gray-500 mb-2">DEBUG</div>
-                <button onclick="Map.reset()" class="w-full bg-gray-700 text-white p-2 rounded text-sm mb-4">Ansicht zurücksetzen</button>
+                <div class="text-xs font-bold text-gray-500 mb-3 tracking-wider">ANSICHT</div>
+                <button onclick="Map.reset()" class="phoenix-btn mb-6">Karte zentrieren</button>
+                
+                <div class="text-xs font-bold text-gray-500 mb-3 tracking-wider">LAYER</div>
                 <div class="toggle-item" id="tog-players" onclick="Layers.toggle('players')">
                     <div class="chk"></div><span>Spieler Spawns</span>
                 </div>
-                <div class="mt-8 text-center text-xs text-gray-600">Core v10.0 (Citadel)</div>
+                
+                <div class="mt-12 text-center text-xs text-gray-600 font-mono">
+                    Infinity of Phoenix<br>Cluster Explorer v10.2
+                </div>
             </div>
 
         </div>
@@ -218,7 +244,7 @@
         </div>
 
         <!-- HUD -->
-        <div class="hud-top">LAT: <span id="lat">00.0</span> LON: <span id="lon">00.0</span></div>
+        <div class="hud-top">LAT: <span id="lat">00.0</span> | LON: <span id="lon">00.0</span></div>
         <div class="hud-bot">
             <button class="zoom-btn" onclick="Map.reset()">⟲</button>
             <button class="zoom-btn" onclick="Map.zoom(1.2)">+</button>
@@ -229,18 +255,19 @@
 
 <script>
 /**
- * IOP WIDGET CORE v10.0
+ * IOP WIDGET CORE v10.2 (Fire Edition)
  */
 
-// DATA CONFIG
+// CONFIG
 const CONFIG = {
     cfg: 'https://raw.githubusercontent.com/iophantonie/iophantonie-IOP_Custom_Map_Explorer.github.io/main/MapConfigs/MapConfigs.jsn',
     ico: 'https://raw.githubusercontent.com/iophantonie/iophantonie-IOP_Custom_Map_Explorer.github.io/refs/heads/main/Icon_Datenbank/Icondb.jsn',
     txt: 'https://raw.githubusercontent.com/iophantonie/iophantonie-IOP_Custom_Map_Explorer.github.io/main/Translation_Datenbank/translationdb.jsn',
-    colors: { spawn: 'rgba(245, 158, 11, 0.4)', border: '#f59e0b' }
+    // Fire Red Colors for Spawns
+    colors: { spawn: 'rgba(255, 42, 0, 0.4)', border: '#ff2a00' }
 };
 
-// GLOBAL STORE
+// STORE
 const Store = {
     cfg: {},
     map: null,
@@ -259,17 +286,18 @@ const Store = {
 // --- MAP ENGINE ---
 const Map = {
     el: null,
+    bg: null,
     cvs: null,
     ctx: null,
-    bg: null,
+    vp: null,
 
     init() {
+        this.vp = document.getElementById('viewport');
         this.el = document.getElementById('world');
         this.bg = document.getElementById('layer-image');
         this.cvs = document.getElementById('layer-data');
         this.ctx = this.cvs.getContext('2d');
         
-        // Input Handling
         const input = document.getElementById('layer-input');
         let isDrag = false, lx = 0, ly = 0;
 
@@ -296,14 +324,13 @@ const Map = {
             this.zoom(e.deltaY > 0 ? 0.9 : 1.1);
         });
 
-        // Resize
         window.addEventListener('resize', () => this.resize());
         setTimeout(() => this.resize(), 100);
     },
 
     resize() {
-        const vp = document.getElementById('viewport');
-        const s = Math.min(vp.clientWidth, vp.clientHeight) - 40;
+        const margin = 40;
+        const s = Math.min(this.vp.clientWidth, this.vp.clientHeight) - margin;
         const size = Math.max(100, s);
 
         this.el.style.width = size + 'px';
@@ -311,16 +338,19 @@ const Map = {
         this.cvs.width = size;
         this.cvs.height = size;
         
-        this.draw(); // Redraw canvas data
+        // AUTO CENTER
+        this.el.style.left = (this.vp.clientWidth - size) / 2 + 'px';
+        this.el.style.top = (this.vp.clientHeight - size) / 2 + 'px';
+
+        this.draw(); 
     },
 
     setImage(url) {
-        // Direct CSS Background update - Failsafe
         this.bg.style.backgroundImage = `url('${url}')`;
     },
 
     update() {
-        this.el.style.transform = `translate(-50%, -50%) translate(${Store.x}px, ${Store.y}px) scale(${Store.scale})`;
+        this.el.style.transform = `translate(${Store.x}px, ${Store.y}px) scale(${Store.scale})`;
     },
 
     zoom(f) {
@@ -331,6 +361,7 @@ const Map = {
     reset() {
         Store.scale = 1; Store.x = 0; Store.y = 0;
         this.update();
+        this.resize(); 
     },
 
     draw() {
@@ -340,7 +371,6 @@ const Map = {
 
         ctx.clearRect(0, 0, w, h);
 
-        // Dinos
         if(Store.selDino && Store.data.dinos[Store.selDino]) {
             Store.data.dinos[Store.selDino].forEach(z => {
                 const x = (z.min.lon/100)*w;
@@ -355,10 +385,9 @@ const Map = {
             });
         }
 
-        // Res
         Store.activeRes.forEach(k => {
             if(Store.data.res[k]) {
-                const c = {'Metal':'#b87333','Crystal':'#a5f3fc'}[k]||'#fff';
+                const c = {'Metal':'#b87333','Crystal':'#a5f3fc', 'Obsidian':'#000', 'Oil':'#111'}[k]||'#fff';
                 ctx.fillStyle = c;
                 Store.data.res[k].forEach(p => {
                     ctx.beginPath(); ctx.arc((p.lon/100)*w, (p.lat/100)*h, 3, 0, Math.PI*2); ctx.fill();
@@ -366,12 +395,11 @@ const Map = {
             }
         });
 
-        // Layers
-        if(Store.layers.public) this.drawPois(Store.data.pois, '#f59e0b', w, h);
+        if(Store.layers.public) this.drawPois(Store.data.pois, '#ff2a00', w, h); // Phoenix Red Pins
         if(Store.layers.caves) this.drawPois(Store.data.caves, '#a855f7', w, h);
         Store.activeObs.forEach(k => {
             const o = Store.data.obs.find(i => i.name === k);
-            if(o) this.drawPoi(o.lon, o.lat, '#ef4444', w, h, 8);
+            if(o) this.drawPoi(o.lon, o.lat, '#ff4500', w, h, 8);
         });
     },
 
@@ -390,7 +418,7 @@ const Map = {
     }
 };
 
-// --- DATA & UI ---
+// --- LOGIC ---
 const App = {
     async init() {
         Map.init();
@@ -405,7 +433,6 @@ const App = {
             Store.icons = {...(ic?.Items||{}), ...(ic?.Kreaturen||{})};
             if(tr) { Store.trans.res = tr.Ressourcen||{}; Store.trans.dinos = tr.Kreaturen||{}; }
 
-            // Build Map Selector
             const sel = document.getElementById('map-select');
             Object.keys(cfg).forEach(k => {
                 if(cfg[k].activated) {
@@ -418,23 +445,25 @@ const App = {
 
             this.loadMap('TheIsland');
 
-        } catch(e) { console.error(e); }
+        } catch(e) { 
+            console.error(e);
+            document.getElementById('loader-msg').innerText = "FEHLER BEIM LADEN";
+            document.getElementById('loader-msg').classList.add('text-red-500');
+        }
     },
 
     async loadMap(key) {
         const loader = document.getElementById('loader');
         loader.classList.remove('hidden');
-        document.getElementById('loader-msg').textContent = `Lade ${Store.cfg[key].displayName}...`;
+        document.getElementById('loader-msg').textContent = `LADE ${Store.cfg[key].displayName}...`;
 
         const c = Store.cfg[key];
         Store.map = c;
         
-        // Reset
         Store.selDino = null; Store.activeRes.clear(); Store.activeObs.clear();
         Map.reset();
-        Map.setImage(c.mapImageUrl); // Set CSS BG
+        Map.setImage(c.mapImageUrl);
 
-        // Load Data
         const urls = [c.creatureDataUrl, c.resourceDataUrl, c.publicSpotsDataUrl, c.obeliskDataUrl, c.caveSpotsDataUrl];
         const [d, r, p, o, ca] = await Promise.all(urls.map(u => fetchData(u).catch(()=>({}))));
 
@@ -444,18 +473,15 @@ const App = {
         Store.data.obs = o?.obelisks || [];
         Store.data.caves = ca?.caveSpots || [];
 
-        // Setup Lists
         Dinos.init();
         Resources.init();
         Layers.initObs();
-        
         Map.draw();
         
-        // Timeout to ensure CSS image load perception
         setTimeout(() => {
             loader.classList.add('hidden');
-            Map.resize(); // Force fit
-        }, 500);
+            Map.resize(); 
+        }, 800);
     }
 };
 
@@ -464,28 +490,18 @@ const Dinos = {
     init() {
         const list = document.getElementById('dino-list-root');
         list.innerHTML = '';
-        
-        // Sort & Render ALL (Simplified for performance, max 100 init)
         const keys = Object.keys(Store.data.dinos).sort();
         this.cache = keys.map(k => ({
-            key: k, 
-            name: Store.trans.dinos[k] || k, 
-            icon: Store.icons[k]?.iconUrl
+            key: k, name: Store.trans.dinos[k] || k, icon: Store.icons[k]?.iconUrl
         }));
-        
         this.render("");
-        
         document.getElementById('dino-search').oninput = e => this.render(e.target.value);
     },
 
     render(term) {
         const list = document.getElementById('dino-list-root');
         const search = term.toLowerCase();
-        
-        // Filter
         const filtered = this.cache.filter(i => i.name.toLowerCase().includes(search));
-        
-        // Optimization: Show max 50 items if no search
         const show = search ? filtered : filtered.slice(0, 50);
         
         list.innerHTML = show.map(d => `
@@ -496,15 +512,13 @@ const Dinos = {
         `).join('');
         
         if(!search && filtered.length > 50) {
-            list.innerHTML += `<div class="text-xs text-center text-gray-600 p-2">... ${filtered.length - 50} weitere ...</div>`;
+            list.innerHTML += `<div class="text-xs text-center text-gray-600 p-3 italic">... ${filtered.length - 50} weitere ...</div>`;
         }
     },
 
     toggle(key) {
         if(Store.selDino === key) Store.selDino = null;
         else Store.selDino = key;
-        
-        // Refresh UI class
         this.render(document.getElementById('dino-search').value);
         Map.draw();
     }
@@ -517,7 +531,7 @@ const Resources = {
         Object.keys(Store.data.res).sort().forEach(k => {
             const div = document.createElement('div');
             div.className = 'toggle-item';
-            div.innerHTML = `<div class="chk"></div><span class="text-sm text-gray-300">${Store.trans.res[k] || k}</span>`;
+            div.innerHTML = `<div class="chk"></div><span class="toggle-text">${Store.trans.res[k] || k}</span>`;
             div.onclick = () => {
                 if(Store.activeRes.has(k)) { Store.activeRes.delete(k); div.classList.remove('checked'); }
                 else { Store.activeRes.add(k); div.classList.add('checked'); }
@@ -540,7 +554,7 @@ const Layers = {
         Store.data.obs.forEach(o => {
             const div = document.createElement('div');
             div.className = 'toggle-item';
-            div.innerHTML = `<div class="chk"></div><span class="text-sm text-gray-300">${o.name}</span>`;
+            div.innerHTML = `<div class="chk"></div><span class="toggle-text">${o.name}</span>`;
             div.onclick = () => {
                 if(Store.activeObs.has(o.name)) { Store.activeObs.delete(o.name); div.classList.remove('checked'); }
                 else { Store.activeObs.add(o.name); div.classList.add('checked'); }
@@ -561,18 +575,15 @@ const Tabs = {
         document.querySelectorAll('.tab-btn').forEach(e => e.classList.remove('active'));
         document.querySelectorAll('.view').forEach(e => e.classList.remove('active'));
         
-        // Match Button (Simplified)
         const idx = ['dinos','res','pois','ai','settings'].indexOf(id);
         if(idx>=0) document.querySelectorAll('.tab-btn')[idx].classList.add('active');
-        
         document.getElementById('view-'+id).classList.add('active');
-        
-        // Force Resize on tab switch to fix any layout glitches
+        // Force resize on tab switch to ensure centering
         setTimeout(() => Map.resize(), 10);
     }
 };
 
-// UTILS
+// HELPER
 async function fetchData(url) {
     try {
         const r = await fetch(url);
@@ -598,7 +609,6 @@ const AI = {
     }
 };
 
-// BOOT
 document.addEventListener("DOMContentLoaded", () => App.init());
 
 </script>
