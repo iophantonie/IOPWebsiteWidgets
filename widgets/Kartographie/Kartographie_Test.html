@@ -173,10 +173,9 @@
             width: calc(100% - var(--sidebar-width)); 
         }
 
-        /* 1. Map Bereich (VERGRÖSSERT) */
+        /* 1. Map Bereich (FIXE GROSSE HÖHE) */
         .iframe-container {
             width: 100%;
-            /* KORREKTUR: Sehr hohe Karte (85% der Viewport Höhe) */
             height: 85vh; 
             min-height: 600px;
             position: relative;
@@ -598,7 +597,24 @@
                         { title: "Ice Cave", type: "Artefakt", sub: "Leere/Void", coords: "Lat: 15 / Lon: 63", img: "https://i.postimg.cc/vT1jdXvw/Bild-2025-01-19-132922835.png" }
                     ]
                 },
-                { name: "Ragnarok", url: "https://arkmap.axi92.at/1e1c1f9a-283d-4e23-9505-0abe717cd2ff", pois: [] },
+                { 
+                    name: "Ragnarok", 
+                    url: "https://arkmap.axi92.at/1e1c1f9a-283d-4e23-9505-0abe717cd2ff", 
+                    pois: [
+                         { title: "Grüner Obelisk", type: "Teleporter", coords: "Lat: 57 / Lon: 39", img: "https://i.postimg.cc/pTVYxVjP/Bild-2025-07-08-231557928.png" },
+                         { title: "Blauer Obelisk", type: "Teleporter", coords: "Lat: 18.7 / Lon: 18", img: "https://i.postimg.cc/PxQhcwvr/Bild-2025-07-08-232913973.png" },
+                         { title: "Roter Obelisk", type: "Teleporter", coords: "Lat: 35.7 / Lon: 84.9", img: "https://i.postimg.cc/6qdTjgWF/Bild-2025-07-08-232357128.png" },
+                         { title: "Öffentliche Harzfarm", type: "Teleporter", coords: "Lat: 60.5 / Lon: 40.5", img: "https://i.postimg.cc/25cz5Ttg/Bild-2025-07-08-230813181.png" },
+                         { title: "Öffentliche Ölfarm", type: "Teleporter", coords: "Lat: 39 / Lon: 45", img: "https://i.postimg.cc/JhGLrzYM/Bild-2025-07-08-234811998.png" },
+                         { title: "Öffentliche Wyvern Falle", type: "Besonderer Ort", coords: "Lat: 21.7 / Lon: 72", img: "https://i.postimg.cc/Nf6SRY8c/Bild-2025-07-09-010545987.png" },
+                         { title: "Oluf Jungle Cave", type: "Artefakt", sub: "Jägers/Hunter", coords: "Lat: 18.6 / Lon: 27.8", img: "https://i.postimg.cc/rm1gKBPp/Bild-2025-07-09-014751706.jpg", miniBoss: "Lava Golem" },
+                         { title: "Carnivorous Caverns", type: "Artefakt", sub: "Immunen & List", coords: "Lat: 21.9 / Lon: 42.1", img: "https://i.postimg.cc/FzpKsx56/Bild-2025-07-09-020329030.png" },
+                         { title: "Frozen Dungeon", type: "Artefakt", sub: "Rudels/Pack", coords: "Lat: 31 / Lon: 37.8", img: "https://i.postimg.cc/PrnsVDZG/Bild-2025-07-09-022338880.jpg", miniBoss: "Ice Queen" },
+                         { title: "Life's Labyrinth", type: "Artefakt", sub: "Multi (4)", coords: "Lat: 51.7 / Lon: 77.8", img: "https://i.postimg.cc/Y0Tpd2gp/Bild-2025-07-09-022647310.jpg" },
+                         { title: "Tuso Trench", type: "Artefakt", sub: "Fressers/Devourer", coords: "Lat: 47 / Lon: 2.5", img: "https://i.postimg.cc/66Dmc4Sk/Bild-2025-07-09-024331789-1.jpg" },
+                         { title: "Wyvern Cave/Trench", type: "Artefakt", sub: "Stärke/Strong", coords: "Lat: 69 / Lon: 42.1", img: "https://i.postimg.cc/MpkXz5L9/Bild-2025-07-09-024700432.jpg" }
+                    ]
+                },
                 { name: "Valguero", url: "https://arkmap.axi92.at/0d77d17e-34f7-4dfe-b849-2e4bc174cd6e", pois: [] },
                 { name: "Astraeos", url: "https://arkmap.axi92.at/6b719b3d-f04c-47f5-beb6-a5a0b1260e7c", pois: [] },
                 { name: "Svartalfheim", url: "https://arkmap.axi92.at/581b1a31-d430-415e-97c5-be02d713d369", pois: [] },
@@ -721,6 +737,7 @@
                                             <span class="poi-type">${poi.sub || poi.type}</span>
                                             <div class="poi-title">${poi.title}</div>
                                             <div class="poi-coords">${poi.coords}</div>
+                                            ${poi.miniBoss ? `<div class="poi-subtext" style="color:#FF9800;">Mini Boss: ${poi.miniBoss}</div>` : ''}
                                         </div>
                                     </div>
                                 `).join('')}
