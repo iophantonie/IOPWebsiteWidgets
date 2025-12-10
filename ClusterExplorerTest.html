@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IOP Cluster Explorer (Fire Edition v10.10)</title>
+    <title>IOP Cluster Explorer (Fire Edition v10.11)</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <style>
         /* --- CORE --- */
@@ -222,7 +222,7 @@
                 </div>
                 
                 <div class="mt-12 text-center text-xs text-gray-600 font-mono">
-                    Infinity of Phoenix<br>Cluster Explorer v10.10
+                    Infinity of Phoenix<br>Cluster Explorer v10.11
                 </div>
             </div>
 
@@ -256,7 +256,7 @@
     <div id="info-panel" class="info-panel">
         <div class="info-header">
             <h2 id="info-title" class="text-xl font-bold text-white uppercase tracking-wider">Titel</h2>
-            <button class="close-btn" onclick="app.closeInfo()">×</button>
+            <button class="close-btn" onclick="App.closeInfo()">×</button>
         </div>
         <div id="info-body" class="info-body custom-scrollbar text-gray-300 text-sm leading-relaxed"></div>
     </div>
@@ -264,7 +264,7 @@
 
 <script>
 /**
- * IOP WIDGET CORE v10.10 (Fix ReferenceError in drawPois)
+ * IOP WIDGET CORE v10.11 (Fix App vs app)
  */
 
 // CONFIG
@@ -336,7 +336,7 @@ const MapEngine = {
         // CLICK HANDLING for POIS
         input.addEventListener('click', e => {
             if(isDrag) return;
-            app.handleMapClick(e);
+            App.handleMapClick(e);
         });
 
         window.addEventListener('resize', () => this.resize());
@@ -463,12 +463,11 @@ const MapEngine = {
 
     // Updated POI Drawer to handle Icons
     drawPois(list, c, w, h) {
-        const ctx = this.ctx; // FIX: Ensure ctx is defined
+        const ctx = this.ctx;
         list.forEach(p => {
              const cx = (p.lon/100)*w;
              const cy = (p.lat/100)*h;
              
-             // Check if POI has an icon (e.g. Miniboss Skull)
              const iconImg = p.icon ? this.getImg(p.icon) : null;
              
              if(iconImg && iconImg.complete && iconImg.naturalWidth > 0) {
@@ -563,16 +562,15 @@ const App = {
 
     // CLICK HANDLER
     handleMapClick(e) {
-        const rect = MapEngine.el.getBoundingClientRect(); // Get Transformed World Rect
+        const rect = MapEngine.el.getBoundingClientRect(); 
         const relX = e.clientX - rect.left;
         const relY = e.clientY - rect.top;
         
-        // Calculate Game Coords (0-100) based on clicked position in scaled world
         const lon = (relX / rect.width) * 100;
         const lat = (relY / rect.height) * 100;
 
         let hit = null;
-        const radius = 2.5; // Detection radius in map %
+        const radius = 2.5;
 
         // Check Public Spots
         if(Store.layers.public && !hit) {
@@ -590,7 +588,6 @@ const App = {
     showInfo(data) {
         document.getElementById('info-title').textContent = data.name;
         
-        // Show Icon in Info Panel if available
         let imgHtml = '';
         if (data.icon) {
              imgHtml = `<div class="flex justify-center mb-4"><img src="${data.icon}" class="h-16 w-16 object-contain"></div>`;
@@ -740,6 +737,14 @@ const AI = {
         } catch { log.innerHTML += `<div class="chat-msg b text-red-500">Error</div>`; }
     }
 };
+
+// EXPOSE TO WINDOW TO PREVENT REFERENCE ERRORS
+window.App = App;
+window.MapEngine = MapEngine;
+window.Tabs = Tabs;
+window.Resources = Resources;
+window.Layers = Layers;
+window.AI = AI;
 
 document.addEventListener("DOMContentLoaded", () => App.init());
 
