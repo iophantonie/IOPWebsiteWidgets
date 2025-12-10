@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IOP Cluster Explorer (Fire Edition v10.8)</title>
+    <title>IOP Cluster Explorer (Fire Edition v10.10)</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <style>
         /* --- CORE --- */
@@ -72,9 +72,8 @@
             top: 0; left: 0;
             width: 1024px; height: 1024px;
             box-shadow: 0 0 100px rgba(0,0,0,0.9);
-            transform-origin: 0 0; /* WICHTIG: Zoom vom Nullpunkt, wir berechnen den Offset manuell */
+            transform-origin: 0 0;
             background-color: #050505;
-            will-change: transform;
         }
 
         #layer-image {
@@ -223,7 +222,7 @@
                 </div>
                 
                 <div class="mt-12 text-center text-xs text-gray-600 font-mono">
-                    Infinity of Phoenix<br>Cluster Explorer v10.8
+                    Infinity of Phoenix<br>Cluster Explorer v10.10
                 </div>
             </div>
 
@@ -248,15 +247,24 @@
         <div class="hud-top">LAT: <span id="lat">00.0</span> | LON: <span id="lon">00.0</span></div>
         <div class="hud-bot">
             <button class="zoom-btn" onclick="MapEngine.reset()">⟲</button>
-            <button class="zoom-btn" onclick="MapEngine.zoomIn()">+</button>
-            <button class="zoom-btn" onclick="MapEngine.zoomOut()">-</button>
+            <button class="zoom-btn" onclick="MapEngine.zoom(1.2)">+</button>
+            <button class="zoom-btn" onclick="MapEngine.zoom(0.8)">-</button>
         </div>
+    </div>
+
+    <!-- SLIDE-OUT INFO PANEL -->
+    <div id="info-panel" class="info-panel">
+        <div class="info-header">
+            <h2 id="info-title" class="text-xl font-bold text-white uppercase tracking-wider">Titel</h2>
+            <button class="close-btn" onclick="app.closeInfo()">×</button>
+        </div>
+        <div id="info-body" class="info-body custom-scrollbar text-gray-300 text-sm leading-relaxed"></div>
     </div>
 </div>
 
 <script>
 /**
- * IOP WIDGET CORE v10.8 (Smart Zoom)
+ * IOP WIDGET CORE v10.10 (Fix ReferenceError in drawPois)
  */
 
 // CONFIG
@@ -312,8 +320,7 @@ const MapEngine = {
                 lx = e.clientX; ly = e.clientY;
                 this.update();
             }
-            
-            // HUD Update
+            // Coords
             const r = this.el.getBoundingClientRect();
             const lat = ((e.clientY - r.top) / r.height) * 100;
             const lon = ((e.clientX - r.left) / r.width) * 100;
@@ -323,14 +330,13 @@ const MapEngine = {
 
         input.addEventListener('wheel', e => {
             e.preventDefault();
-            const delta = e.deltaY > 0 ? 0.9 : 1.1;
-            
-            // Mouse relative to viewport
-            const rect = this.vp.getBoundingClientRect();
-            const mx = e.clientX - rect.left;
-            const my = e.clientY - rect.top;
-            
-            this.zoomAt(delta, mx, my);
+            this.zoom(e.deltaY > 0 ? 0.9 : 1.1);
+        });
+
+        // CLICK HANDLING for POIS
+        input.addEventListener('click', e => {
+            if(isDrag) return;
+            app.handleMapClick(e);
         });
 
         window.addEventListener('resize', () => this.resize());
@@ -347,7 +353,6 @@ const MapEngine = {
         this.cvs.width = size;
         this.cvs.height = size;
         
-        // AUTO CENTER CSS
         this.el.style.left = (this.vp.clientWidth - size) / 2 + 'px';
         this.el.style.top = (this.vp.clientHeight - size) / 2 + 'px';
 
@@ -362,79 +367,9 @@ const MapEngine = {
         this.el.style.transform = `translate(${Store.x}px, ${Store.y}px) scale(${Store.scale})`;
     },
 
-    // SMART ZOOM: Zooms towards cx, cy (coordinates relative to viewport)
-    zoomAt(factor, cx, cy) {
-        const oldScale = Store.scale;
-        const newScale = Math.max(0.5, Math.min(10, oldScale * factor));
-        
-        if (newScale === oldScale) return;
-
-        // Visual position logic:
-        // Before zoom, visual offset of point under mouse:
-        // P_world = P_base + Translate
-        // We want P_mouse relative to P_world to scale.
-        
-        // Formula: NewTranslate = Mouse - (Mouse - OldTranslate) * (NewScale / OldScale)
-        // Adjust for the center offset of the container since translate is relative to that
-        
-        // Correction: Translate is relative to element origin.
-        // Element origin in viewport space is:
-        // OriginX = ViewportCenterOffset + Store.x
-        // Actually, CSS Transform `translate` adds to the element's layout position.
-        // Let's use the offset logic:
-        
-        const elRect = this.el.getBoundingClientRect();
-        
-        // Mouse position relative to the element (scaled)
-        const mx = cx - elRect.left;
-        const my = cy - elRect.top;
-        
-        // The scale ratio
-        const ratio = newScale / oldScale;
-        
-        // Adjust translation to keep (mx, my) stationary
-        // NewX = CurrentX - (MouseX_in_unscaled_coords * (newScale - oldScale))
-        
-        // Actually simpler with the delta method:
-        // We need to shift the map opposite to the zoom direction relative to mouse
-        
-        // Calculate offset change needed
-        // Shift = (Mouse relative to World Origin) * (1 - ratio)
-        // Store.x and Store.y are the translation values.
-        
-        // Since we are scaling around 0,0 (top-left of element), we need to adjust translation
-        // so that the point under the mouse stays fixed relative to the viewport.
-        
-        // Math derivation:
-        // WorldX = (MouseX - OffsetLeft - TransX) / Scale
-        // We want WorldX to be constant.
-        // (MouseX - OffsetLeft - NewTransX) / NewScale = (MouseX - OffsetLeft - OldTransX) / OldScale
-        
-        const offsetLeft = parseFloat(this.el.style.left) || 0;
-        const offsetTop = parseFloat(this.el.style.top) || 0;
-        
-        const relMouseX = cx - offsetLeft - Store.x;
-        const relMouseY = cy - offsetTop - Store.y;
-        
-        const newX = cx - offsetLeft - (relMouseX * ratio);
-        const newY = cy - offsetTop - (relMouseY * ratio);
-        
-        Store.x = newX;
-        Store.y = newY;
-        Store.scale = newScale;
-        
+    zoom(f) {
+        Store.scale = Math.max(0.5, Math.min(10, Store.scale * f));
         this.update();
-    },
-
-    zoomIn() { 
-        // Zoom to center
-        const rect = this.vp.getBoundingClientRect();
-        this.zoomAt(1.2, rect.width/2, rect.height/2); 
-    },
-    
-    zoomOut() { 
-        const rect = this.vp.getBoundingClientRect();
-        this.zoomAt(0.8, rect.width/2, rect.height/2); 
     },
 
     reset() {
@@ -448,7 +383,7 @@ const MapEngine = {
         if (this.iconCache.has(url)) return this.iconCache.get(url);
         const img = new Image();
         img.src = url;
-        img.onload = () => { if (Store.activeRes.size > 0 || Store.activeObs.size > 0) this.draw(); };
+        img.onload = () => { if (Store.activeRes.size > 0 || Store.activeObs.size > 0 || Store.layers.public || Store.layers.caves) this.draw(); };
         this.iconCache.set(url, img);
         return img;
     },
@@ -462,6 +397,7 @@ const MapEngine = {
 
         ctx.clearRect(0, 0, w, h);
 
+        // 1. Dinos
         if(Store.selDino && Store.data.dinos[Store.selDino]) {
             Store.data.dinos[Store.selDino].forEach(z => {
                 const x = (z.min.lon/100)*w;
@@ -476,6 +412,7 @@ const MapEngine = {
             });
         }
 
+        // 2. Resources (ICONS)
         Store.activeRes.forEach(k => {
             if(Store.data.res[k]) {
                 const iconImg = this.getResIcon(k);
@@ -498,6 +435,7 @@ const MapEngine = {
             }
         });
 
+        // 3. POIs & Caves
         if(Store.layers.public) this.drawPois(Store.data.pois, '#ff2a00', w, h); 
         if(Store.layers.caves) this.drawPois(Store.data.caves, '#a855f7', w, h);
         
@@ -523,16 +461,31 @@ const MapEngine = {
         });
     },
 
-    drawPois(list, c, w, h) { list.forEach(p => this.drawPoi(p.lon, p.lat, c, w, h)); },
+    // Updated POI Drawer to handle Icons
+    drawPois(list, c, w, h) {
+        const ctx = this.ctx; // FIX: Ensure ctx is defined
+        list.forEach(p => {
+             const cx = (p.lon/100)*w;
+             const cy = (p.lat/100)*h;
+             
+             // Check if POI has an icon (e.g. Miniboss Skull)
+             const iconImg = p.icon ? this.getImg(p.icon) : null;
+             
+             if(iconImg && iconImg.complete && iconImg.naturalWidth > 0) {
+                 const size = 32;
+                 ctx.drawImage(iconImg, cx - size/2, cy - size/2, size, size);
+             } else {
+                 this.drawPin(cx, cy, c);
+             }
+        });
+    },
 
-    drawPoi(lon, lat, c, w, h, r=5) {
+    drawPin(x, y, color) {
         const ctx = this.ctx;
-        const x = (lon/100)*w;
-        const y = (lat/100)*h;
-        ctx.fillStyle = c;
+        ctx.fillStyle = color;
         ctx.strokeStyle = '#000';
         ctx.lineWidth = 1;
-        ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+        ctx.beginPath(); ctx.arc(x, y, 6, 0, Math.PI*2); ctx.fill(); ctx.stroke();
     }
 };
 
@@ -549,7 +502,12 @@ const App = {
             
             Store.cfg = cfg;
             
-            Store.icons = { ...(ic?.Items||{}), ...(ic?.Kreaturen||{}), ...(ic?.Ressourcen||{}) };
+            Store.icons = {
+                ...(ic?.Items||{}), 
+                ...(ic?.Kreaturen||{}),
+                ...(ic?.Ressourcen||{}) 
+            };
+            
             if(tr) { Store.trans.res = tr.Ressourcen||{}; Store.trans.dinos = tr.Kreaturen||{}; }
 
             const sel = document.getElementById('map-select');
@@ -601,7 +559,56 @@ const App = {
             loader.classList.add('hidden');
             MapEngine.resize(); 
         }, 800);
-    }
+    },
+
+    // CLICK HANDLER
+    handleMapClick(e) {
+        const rect = MapEngine.el.getBoundingClientRect(); // Get Transformed World Rect
+        const relX = e.clientX - rect.left;
+        const relY = e.clientY - rect.top;
+        
+        // Calculate Game Coords (0-100) based on clicked position in scaled world
+        const lon = (relX / rect.width) * 100;
+        const lat = (relY / rect.height) * 100;
+
+        let hit = null;
+        const radius = 2.5; // Detection radius in map %
+
+        // Check Public Spots
+        if(Store.layers.public && !hit) {
+            hit = Store.data.pois.find(p => Math.sqrt((lon-p.lon)**2 + (lat-p.lat)**2) < radius);
+        }
+        
+        // Check Caves
+        if(Store.layers.caves && !hit) {
+            hit = Store.data.caves.find(p => Math.sqrt((lon-p.lon)**2 + (lat-p.lat)**2) < radius);
+        }
+
+        if(hit) this.showInfo(hit);
+    },
+
+    showInfo(data) {
+        document.getElementById('info-title').textContent = data.name;
+        
+        // Show Icon in Info Panel if available
+        let imgHtml = '';
+        if (data.icon) {
+             imgHtml = `<div class="flex justify-center mb-4"><img src="${data.icon}" class="h-16 w-16 object-contain"></div>`;
+        } else if (data.images && data.images[0]) {
+             imgHtml = `<img src="${data.images[0]}" class="w-full rounded mb-4 bg-gray-800" onerror="this.style.display='none'">`;
+        }
+
+        document.getElementById('info-body').innerHTML = `
+            ${imgHtml}
+            <div class="mb-4 text-center">
+                <span class="bg-[#222] px-2 py-1 rounded text-xs text-gray-400 border border-[#333]">Lat: ${data.lat.toFixed(1)} / Lon: ${data.lon.toFixed(1)}</span>
+            </div>
+            <p>${data.description || data.shortDescription || 'Keine weitere Beschreibung vorhanden.'}</p>
+        `;
+        document.getElementById('info-panel').classList.add('visible');
+    },
+
+    closeInfo() { document.getElementById('info-panel').classList.remove('visible'); }
 };
 
 // --- MODULES ---
@@ -610,7 +617,9 @@ const Dinos = {
         const list = document.getElementById('dino-list-root');
         list.innerHTML = '';
         const keys = Object.keys(Store.data.dinos).sort();
-        this.cache = keys.map(k => ({ key: k, name: Store.trans.dinos[k] || k, icon: Store.icons[k]?.iconUrl }));
+        this.cache = keys.map(k => ({
+            key: k, name: Store.trans.dinos[k] || k, icon: Store.icons[k]?.iconUrl
+        }));
         this.render("");
         document.getElementById('dino-search').oninput = e => this.render(e.target.value);
     },
@@ -648,8 +657,13 @@ const Resources = {
         Object.keys(Store.data.res).sort().forEach(k => {
             const div = document.createElement('div');
             div.className = 'toggle-item';
+            
+            // Try to find icon for list
             const iconUrl = Store.icons[k]?.iconUrl;
-            const iconHTML = iconUrl ? `<img src="${iconUrl}" style="width:20px;height:20px;margin-right:10px;object-fit:contain;">` : `<div class="chk"></div>`;
+            const iconHTML = iconUrl 
+                ? `<img src="${iconUrl}" style="width:20px;height:20px;margin-right:10px;object-fit:contain;">`
+                : `<div class="chk"></div>`;
+
             div.innerHTML = `${iconHTML}<span class="toggle-text">${Store.trans.res[k] || k}</span>`;
             div.onclick = () => {
                 if(Store.activeRes.has(k)) { Store.activeRes.delete(k); div.classList.remove('checked'); }
