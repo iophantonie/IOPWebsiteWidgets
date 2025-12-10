@@ -30,9 +30,10 @@
             flex-direction: column;
             align-items: center;
             width: 100%;
-            height: 100vh;
+            /* KORREKTUR: Höhe nicht mehr begrenzt, damit gescrollt werden kann */
+            min-height: 100vh; 
             box-sizing: border-box;
-            overflow: hidden; /* Kein Scrollen auf Body-Ebene */
+            overflow-y: auto; 
         }
 
         /* Hauptcontainer */
@@ -43,11 +44,13 @@
             box-shadow: 0 4px 30px rgba(0, 0, 0, 0.8);
             width: 100%;
             max-width: 1800px;
-            height: 100%; /* Füllt die Höhe */
+            /* KORREKTUR: Höhe automatisch anhand des Inhalts */
+            height: auto; 
             display: flex;
             flex-direction: column;
             overflow: hidden;
             position: relative;
+            margin-bottom: 50px; /* Platz unten zum Scrollen */
         }
 
         /* Header */
@@ -70,9 +73,8 @@
         .map-body-wrapper {
             display: flex;
             flex-direction: row;
-            flex-grow: 1;
-            height: 100%;
-            overflow: hidden; 
+            /* KORREKTUR: Stretcht den Container vertikal */
+            align-items: stretch; 
         }
 
         /* --- Sidebar --- */
@@ -82,14 +84,23 @@
             border-right: 2px solid var(--color-red);
             display: flex;
             flex-direction: column;
-            overflow-y: auto; 
+            /* Sidebar wächst mit dem Inhalt mit */
+            min-height: 800px; 
             flex-shrink: 0;
+        }
+
+        /* Sidebar Inhalt scrollbar machen, falls er zu lang wird (Sticky feeling) */
+        .sidebar-content-sticky {
+            position: sticky;
+            top: 0;
+            max-height: 100vh;
+            overflow-y: auto;
             scrollbar-width: thin;
             scrollbar-color: var(--color-red) transparent;
         }
 
-        .map-sidebar::-webkit-scrollbar { width: 6px; }
-        .map-sidebar::-webkit-scrollbar-thumb { background-color: var(--color-red); border-radius: 3px; }
+        .sidebar-content-sticky::-webkit-scrollbar { width: 6px; }
+        .sidebar-content-sticky::-webkit-scrollbar-thumb { background-color: var(--color-red); border-radius: 3px; }
 
         .sidebar-header {
             padding: 15px;
@@ -155,22 +166,24 @@
             box-shadow: 0 0 5px #4CAF50;
         }
 
-        /* --- Content Area (Split View) --- */
+        /* --- Content Area --- */
         .content-area {
             flex-grow: 1;
             display: flex;
             flex-direction: column;
-            overflow: hidden;
             background-color: #121212;
+            width: calc(100% - var(--sidebar-width)); /* Restbreite */
         }
 
-        /* 1. Map Bereich (Flexibel) */
+        /* 1. Map Bereich (FIXE GROSSE HÖHE) */
         .iframe-container {
-            flex-grow: 1; /* Nimmt den meisten Platz */
-            min-height: 40%; /* Mindesthöhe damit Map nutzbar bleibt */
+            width: 100%;
+            /* KORREKTUR: Feste Höhe für große Darstellung */
+            height: 750px; 
             position: relative;
             background-color: #000;
             border-bottom: 3px solid var(--color-red);
+            flex-shrink: 0; /* Darf nicht schrumpfen */
         }
 
         iframe {
@@ -180,22 +193,14 @@
             display: block;
         }
 
-        /* 2. POI Bereich (Unten, scrollbar wenn nötig) */
+        /* 2. POI Bereich */
         .poi-section {
-            height: auto;
-            max-height: 45%; /* Maximal 45% der Höhe */
             background-color: var(--color-light-dark);
-            overflow-y: auto; /* Vertikales Scrollen nur hier */
-            padding: 15px 20px;
+            padding: 20px;
             box-sizing: border-box;
-            
-            scrollbar-width: thin;
-            scrollbar-color: var(--color-red) #1a1a1a;
+            /* Nimmt den Platz unter der Map ein */
+            min-height: 300px; 
         }
-        
-        .poi-section::-webkit-scrollbar { width: 8px; }
-        .poi-section::-webkit-scrollbar-track { background: #1a1a1a; }
-        .poi-section::-webkit-scrollbar-thumb { background-color: var(--color-red); border-radius: 4px; }
 
         /* Kategorie Header */
         .poi-category-header {
@@ -210,40 +215,36 @@
         }
         .poi-category-header:first-child { margin-top: 0; }
 
-        /* Slider Wrapper für Pfeile */
+        /* Slider Wrapper */
         .poi-slider-wrapper {
             position: relative;
             display: flex;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
 
-        /* Horizontaler Slider Container */
+        /* Horizontaler Slider */
         .poi-slider {
             display: flex;
             gap: 15px;
             overflow-x: auto;
-            padding: 10px 5px; /* Etwas Padding für Schatten */
+            padding: 10px 5px; 
             scroll-behavior: smooth;
             width: 100%;
-            
-            /* Scrollbar ausblenden */
-            -ms-overflow-style: none;  /* IE and Edge */
-            scrollbar-width: none;  /* Firefox */
+            -ms-overflow-style: none;  
+            scrollbar-width: none; 
         }
         
-        .poi-slider::-webkit-scrollbar { 
-            display: none; 
-        }
+        .poi-slider::-webkit-scrollbar { display: none; }
 
-        /* Pfeile für Slider */
+        /* Pfeile */
         .slider-arrow {
             position: absolute;
             top: 50%;
             transform: translateY(-50%);
             width: 40px;
             height: 40px;
-            background-color: rgba(0, 0, 0, 0.7);
+            background-color: rgba(0, 0, 0, 0.8);
             border: 2px solid var(--color-red);
             border-radius: 50%;
             color: #fff;
@@ -256,24 +257,25 @@
             user-select: none;
             font-size: 1.2rem;
             font-weight: bold;
+            opacity: 0.8;
         }
 
         .slider-arrow:hover {
             background-color: var(--color-red);
             box-shadow: 0 0 10px rgba(229, 57, 53, 0.6);
+            opacity: 1;
         }
 
-        .slider-arrow.prev { left: -10px; }
-        .slider-arrow.next { right: -10px; }
+        .slider-arrow.prev { left: -15px; }
+        .slider-arrow.next { right: -15px; }
         
-        /* Damit die Pfeile bei Touch nicht stören, auf Mobile evtl. anpassen */
         @media (max-width: 768px) {
-            .slider-arrow { display: none; } /* Auf Mobile wischt man eh lieber */
+            .slider-arrow { display: none; } 
         }
 
-        /* POI Card Styling (Kompakt) */
+        /* POI Card Styling */
         .poi-card {
-            flex: 0 0 220px; /* Feste Breite */
+            flex: 0 0 240px; /* Etwas breiter */
             background-color: rgba(0, 0, 0, 0.6);
             border-radius: 6px;
             overflow: hidden;
@@ -291,13 +293,13 @@
 
         .poi-image {
             width: 100%;
-            height: 100px; /* Kompakte Höhe */
+            height: 120px;
             object-fit: cover;
             border-bottom: 1px solid var(--color-red);
         }
 
         .poi-info {
-            padding: 10px;
+            padding: 12px;
             flex-grow: 1;
             display: flex;
             flex-direction: column;
@@ -306,14 +308,14 @@
 
         .poi-title {
             font-family: var(--font-header);
-            font-size: 0.95rem;
+            font-size: 1rem;
             color: #fff;
-            margin-bottom: 3px;
+            margin-bottom: 4px;
             line-height: 1.2;
         }
 
         .poi-coords {
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             color: var(--color-gold);
             font-weight: bold;
         }
@@ -343,8 +345,10 @@
         /* Responsive */
         @media (max-width: 900px) {
             .map-body-wrapper { flex-direction: column; }
-            .map-sidebar { width: 100%; height: 180px; border-right: none; border-bottom: 3px solid var(--color-red); }
-            .poi-section { max-height: 40%; }
+            .map-sidebar { width: 100%; min-height: auto; border-right: none; border-bottom: 3px solid var(--color-red); }
+            .sidebar-content-sticky { position: static; max-height: 300px; }
+            .iframe-container { height: 500px; }
+            .content-area { width: 100%; }
         }
     </style>
 </head>
@@ -355,8 +359,10 @@
 
         <div class="map-body-wrapper">
             <!-- Sidebar Navigation -->
-            <div class="map-sidebar" id="mapSidebar">
-                <!-- Wird per JS gefüllt -->
+            <div class="map-sidebar">
+                <div class="sidebar-content-sticky" id="mapSidebar">
+                    <!-- Wird per JS gefüllt -->
+                </div>
             </div>
 
             <!-- Rechter Content Bereich -->
@@ -430,7 +436,19 @@
                         { title: "Westliche Luftkuppel", type: "Besonderer Ort", sub: "", coords: "Lat: 27.5 / Lon: 82.5", img: "https://i.postimg.cc/RVyF8vRY/Bild-2024-08-01-210633287.png" }
                     ]
                 },
-                { name: "Scorched Earth", url: "https://arkmap.axi92.at/126c63dd-17c2-4770-8b86-b1c13121e445", pois: [] },
+                { 
+                    name: "Scorched Earth", 
+                    url: "https://arkmap.axi92.at/126c63dd-17c2-4770-8b86-b1c13121e445", 
+                    pois: [
+                        { title: "Öffentliche Ölfarm", type: "Teleporter", coords: "Lat: 59.5 / Lon: 77", img: "https://i.postimg.cc/JntyW8hQ/Bild-2024-05-16-143030551.png" },
+                        { title: "Grüner Obelisk", type: "Teleporter", coords: "Lat: 50.5 / Lon: 75", img: "https://i.postimg.cc/3RDKBxRz/Bild-2024-05-16-142927878.png" },
+                        { title: "Roter Obelisk", type: "Teleporter", coords: "Lat: 72 / Lon: 39.5", img: "https://i.postimg.cc/SsDKTxbr/Bild-2024-05-16-143219050.png" },
+                        { title: "Blauer Obelisk", type: "Teleporter", coords: "Lat: 17 / Lon: 34", img: "https://i.postimg.cc/MGQXp5SC/Bild-2024-05-16-142802082.png" },
+                        { title: "Wyvern Falle Südwest", type: "Besonderer Ort", sub: "Öffentlich", coords: "Lat: 70.5 / Lon: 15.5", img: "https://i.postimg.cc/3J7znFx3/Bild-2024-05-16-143627729.png" },
+                        { title: "Wyvern Falle West", type: "Besonderer Ort", sub: "Öffentlich", coords: "Lat: 56.5 / Lon: 12.5", img: "https://i.postimg.cc/vT3RW49r/Bild-2024-05-16-143808360.png" },
+                        { title: "Wyvern Falle Nordwest", type: "Besonderer Ort", sub: "Öffentlich", coords: "Lat: 34 / Lon: 8", img: "https://i.postimg.cc/MpcTpw2P/Bild-2024-05-16-143932986.png" }
+                    ]
+                },
                 { name: "Aberration", url: "https://arkmap.axi92.at/cb9a2f61-1171-42d4-a7a3-8996f2e61640", pois: [] },
                 { name: "Extinction", url: "https://arkmap.axi92.at/f9384885-6f6e-45ac-ae2f-027f87cb0122", pois: [] },
                 { name: "Ragnarok", url: "https://arkmap.axi92.at/1e1c1f9a-283d-4e23-9505-0abe717cd2ff", pois: [] },
