@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IOP Cluster Explorer v11.4 (Popup Fix)</title>
+    <title>IOP Cluster Explorer v11.6 (Click Fix)</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <style>
         /* --- CORE --- */
@@ -85,22 +85,8 @@
         .zoom-btn { width: 40px; height: 40px; background: #111; border: 1px solid #444; color: white; border-radius: 6px; font-size: 20px; cursor: pointer; display: grid; place-items: center; }
         .zoom-btn:hover { border-color: var(--phoenix-fire); color: var(--phoenix-fire); }
 
-        /* INFO PANEL - FIXED */
-        .info-panel { 
-            position: absolute; top: 0; right: 0; bottom: 0; width: 380px; 
-            background: #111827; border-left: 1px solid var(--phoenix-fire); 
-            transform: translateX(100%); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); 
-            z-index: 100; box-shadow: -10px 0 40px rgba(0,0,0,0.9); 
-            display: flex; flex-direction: column; 
-        }
+        .info-panel { position: absolute; top: 0; right: 0; bottom: 0; width: 360px; background: #111827; border-left: 1px solid var(--phoenix-fire); transform: translateX(100%); transition: transform 0.3s; z-index: 100; box-shadow: -10px 0 30px rgba(0,0,0,0.8); display: flex; flex-direction: column; }
         .info-panel.visible { transform: translateX(0); }
-        .info-header { 
-            padding: 15px 20px; background: #0a0a0a; border-bottom: 1px solid #333; 
-            display: flex; justify-content: space-between; align-items: center; 
-        }
-        .info-title { font-size: 1.1rem; font-weight: 800; color: #fff; text-transform: uppercase; letter-spacing: 0.05em; }
-        .info-close { color: #888; cursor: pointer; font-size: 1.5rem; transition: 0.2s; line-height: 1; }
-        .info-close:hover { color: var(--phoenix-fire); }
         
         .loader { position: absolute; inset: 0; background: #000; z-index: 999; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.5s; }
         .loader.hidden { opacity: 0; pointer-events: none; }
@@ -122,7 +108,6 @@
         .hidden { display: none !important; }
         .phoenix-input { w-full: 100%; background: #050505; border: 1px solid #333; padding: 10px; border-radius: 6px; color: white; outline: none; }
         
-        /* Error Log */
         #error-log { position: absolute; top: 0; left: 0; width: 100%; background: rgba(220, 38, 38, 0.95); color: white; padding: 5px; font-size: 11px; z-index: 10000; display: none; text-align: center; }
     </style>
 </head>
@@ -193,7 +178,7 @@
                 <div class="text-xs text-gray-500 font-bold mb-2">SYSTEM</div>
                 <button onclick="MapEngine.reset()" class="w-full bg-[#222] border border-[#333] text-gray-300 p-2 rounded hover:text-white mb-4">Karte Zentrieren</button>
                 <div class="toggle-item" id="tog-players" onclick="Layers.toggle('players')"><div class="chk"></div><span>Spieler Spawns</span></div>
-                <div class="mt-8 text-center text-xs text-gray-600">v11.4 Popup Fix</div>
+                <div class="mt-8 text-center text-xs text-gray-600">v11.6 Click Fix</div>
             </div>
         </div>
     </div>
@@ -213,21 +198,19 @@
         </div>
     </div>
     
-    <!-- INFO POPUP (Fixed Structure) -->
+    <!-- INFO POPUP -->
     <div id="info-panel" class="info-panel">
-        <div class="info-header">
-            <div id="info-title" class="info-title">DETAILS</div>
-            <button onclick="window.Ui.closeInfo()" class="info-close">×</button>
+        <div class="flex justify-between items-center bg-[#111] p-4 border-b border-[#333]">
+            <h2 id="info-title" class="text-lg font-bold text-white uppercase">Info</h2>
+            <button onclick="Ui.closeInfo()" class="text-gray-400 hover:text-white text-xl">×</button>
         </div>
-        <div id="info-body" class="p-6 text-gray-300 overflow-y-auto">
-            <!-- Dynamic Content -->
-        </div>
+        <div id="info-body" class="p-4 text-sm text-gray-300 overflow-y-auto"></div>
     </div>
 </div>
 
 <script>
 /**
- * IOP WIDGET CORE v11.4
+ * IOP WIDGET CORE v11.6
  */
 
 window.CFG = {
@@ -259,7 +242,8 @@ async function fetchData(url) {
         const r = await fetch(url);
         if(!r.ok) throw new Error(`HTTP ${r.status}`);
         const t = await r.text();
-        return JSON.parse(t.replace(/^\uFEFF/, '').replace(/\/\*[\s\S]*?\*\/|([^\\:]|^)\/\/.*$/gm, '$1').replace(/\u00A0/g, ' '));
+        const cleaned = t.replace(/^\uFEFF/, '').replace(/\/\*[\s\S]*?\*\/|([^\\:]|^)\/\/.*$/gm, '$1').replace(/\u00A0/g, ' ');
+        return JSON.parse(cleaned);
     } catch(e) { console.warn("JSON Error", e); return null; }
 }
 
@@ -267,6 +251,8 @@ async function fetchData(url) {
 window.MapEngine = {
     el: null, cvs: null, ctx: null, img: null,
     iconCache: new Map(),
+    // Mouse state for drag filtering
+    isDown: false, hasMoved: false, startX: 0, startY: 0,
 
     init() {
         this.el = document.getElementById('world');
@@ -276,18 +262,38 @@ window.MapEngine = {
         Store.dom.mapImg = this.img;
         
         const input = document.getElementById('input-layer');
-        let drag=false, lx=0, ly=0;
         
-        input.onmousedown = e => { drag=true; lx=e.clientX; ly=e.clientY; input.style.cursor='grabbing'; };
-        window.onmouseup = () => { drag=false; input.style.cursor='grab'; };
+        input.onmousedown = e => { 
+            this.isDown = true; 
+            this.hasMoved = false; // RESET MOVE FLAG
+            this.startX = e.clientX; 
+            this.startY = e.clientY; 
+            input.style.cursor='grabbing'; 
+        };
+        
+        window.onmouseup = () => { 
+            this.isDown = false; 
+            input.style.cursor='grab'; 
+        };
         
         input.onmousemove = e => {
-            if(drag) {
-                Store.view.x += e.clientX - lx;
-                Store.view.y += e.clientY - ly;
-                lx = e.clientX; ly = e.clientY;
-                this.update();
+            if(this.isDown) {
+                // DRAG LOGIC
+                const dx = e.clientX - this.startX;
+                const dy = e.clientY - this.startY;
+                
+                // Only treat as drag if moved more than 3 pixels
+                if(Math.abs(dx) > 3 || Math.abs(dy) > 3) {
+                    this.hasMoved = true;
+                    Store.view.x += dx;
+                    Store.view.y += dy;
+                    this.startX = e.clientX; 
+                    this.startY = e.clientY;
+                    this.update();
+                }
             }
+            
+            // COORDS
             const r = this.el.getBoundingClientRect();
             const lat = ((e.clientY - r.top)/r.height)*100;
             const lon = ((e.clientX - r.left)/r.width)*100;
@@ -300,13 +306,17 @@ window.MapEngine = {
         input.onwheel = e => { e.preventDefault(); this.zoom(e.deltaY > 0 ? 0.9 : 1.1); };
 
         input.onclick = e => {
-            if(drag) return;
+            // Block click if it was a drag operation
+            if(this.hasMoved) return;
+
             const r = this.el.getBoundingClientRect();
-            // Calculate coords in 100x100 space
-            const cx = (e.clientX - r.left);
+            const cx = (e.clientX - r.left); // Relative to transformed element visual
             const cy = (e.clientY - r.top);
+            
+            // Normalize to 0-100 regardless of scale
             const lon = (cx / r.width) * 100;
             const lat = (cy / r.height) * 100;
+            
             this.checkClick(lon, lat);
         };
 
@@ -360,6 +370,7 @@ window.MapEngine = {
         if(!this.ctx || !this.cvs || !window.Store || !Store.data) return;
         const w = this.cvs.width, h = this.cvs.height;
         const ctx = this.ctx;
+
         ctx.clearRect(0, 0, w, h);
 
         if(Store.selDino && Store.data.dinos[Store.selDino]) {
@@ -414,11 +425,21 @@ window.MapEngine = {
         });
     },
 
+    // HIT CHECK - Pixel Tolerance for better UX
     checkClick(lon, lat) {
-        const rad = 2.5; 
+        // Map width in pixels (screen space at current zoom) is variable.
+        // We use percentage distance: 2.5% is roughly the icon size.
+        // However, if zoomed in, 2.5% is huge. We want fixed pixel radius.
+        
+        const mapW = this.el.getBoundingClientRect().width; // Visual width
+        const hitPixels = 25; // Hit radius in pixels
+        const rad = (hitPixels / mapW) * 100; // Convert to %
+        
         let hit = null;
+        // Check order: Public -> Caves
         if(Store.layers.public) hit = Store.data.pois.find(p => Math.hypot(p.lon-lon, p.lat-lat) < rad);
         if(!hit && Store.layers.caves) hit = Store.data.caves.find(p => Math.hypot(p.lon-lon, p.lat-lat) < rad);
+        
         if(hit) Ui.showInfo(hit);
     }
 };
@@ -546,36 +567,29 @@ window.Ui = {
         MapEngine.draw();
     },
 
-    // NEW: Robust Show Info Logic
+    // NEW: Robust Info Display
     showInfo(data) {
-        // 1. Title Update
         const titleEl = document.getElementById('info-title');
         if(titleEl) titleEl.textContent = data.name || "INFO";
 
-        // 2. Image Logic (Priority: Images Array -> Icon)
         let imgHtml = '';
-        if (data.images && data.images.length > 0 && data.images[0]) {
-             imgHtml = `<img src="${data.images[0]}" class="w-full rounded-lg border border-gray-700 mb-4 shadow-lg" onerror="this.style.display='none'">`;
+        if (data.images && data.images.length > 0) {
+             imgHtml = `<img src="${data.images[0]}" class="w-full rounded border border-gray-700 mb-4 bg-black" onerror="this.style.display='none'">`;
         } else if (data.icon) {
-             imgHtml = `<div class="flex justify-center mb-4"><img src="${data.icon}" class="w-24 h-24 object-contain drop-shadow-lg"></div>`;
+             imgHtml = `<div class="flex justify-center mb-4"><img src="${data.icon}" class="w-16 h-16 object-contain"></div>`;
         }
 
-        // 3. Content Construction
-        const lat = typeof data.lat === 'number' ? data.lat.toFixed(1) : data.lat;
-        const lon = typeof data.lon === 'number' ? data.lon.toFixed(1) : data.lon;
-
+        const desc = data.longDescription || data.description || data.shortDescription || 'Keine Beschreibung verfügbar.';
+        
         document.getElementById('info-body').innerHTML = `
             ${imgHtml}
-            <div class="flex justify-center space-x-4 mb-4 text-xs font-mono text-gray-400 bg-[#1a1a1a] p-2 rounded border border-[#333]">
-                <span>LAT: <span class="text-[#ff2a00]">${lat}</span></span>
-                <span>LON: <span class="text-[#ff2a00]">${lon}</span></span>
+            <div class="flex justify-center space-x-3 mb-4 text-xs font-mono text-gray-500 bg-black p-2 rounded border border-[#222]">
+                <span>LAT: <span class="text-[#ff2a00]">${data.lat.toFixed(1)}</span></span>
+                <span>LON: <span class="text-[#ff2a00]">${data.lon.toFixed(1)}</span></span>
             </div>
-            <div class="text-sm text-gray-300 leading-relaxed mb-4">
-                ${data.description || data.shortDescription || 'Keine Beschreibung verfügbar.'}
-            </div>
+            <div class="text-sm text-gray-400 leading-relaxed whitespace-pre-wrap">${desc}</div>
         `;
         
-        // 4. Show Panel
         document.getElementById('info-panel').classList.add('visible');
     },
 
