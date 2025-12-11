@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IOP Cluster Explorer v12.15 (Legend Added)</title>
+    <title>IOP Cluster Explorer v12.16 (Res Checkboxes)</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <style>
         /* --- CORE --- */
@@ -41,12 +41,11 @@
         /* --- MAP ENGINE --- */
         #viewport {
             flex: 1; position: relative; background: #050505; overflow: hidden;
-            display: block; 
+            display: flex; justify-content: center; align-items: center;
         }
 
         #world {
-            position: absolute;
-            top: 0; left: 0;
+            position: relative;
             width: 1024px; height: 1024px;
             box-shadow: 0 0 100px rgba(0,0,0,0.9);
             transform-origin: 0 0;
@@ -98,7 +97,7 @@
         .dino-item img { width: 28px; height: 28px; margin-right: 10px; }
 
         .toggle-item { display: flex; align-items: center; padding: 8px 0; cursor: pointer; user-select: none; }
-        .chk { width: 18px; height: 18px; border: 2px solid #444; border-radius: 3px; margin-right: 10px; display: flex; align-items: center; justify-content: center; }
+        .chk { width: 18px; height: 18px; border: 2px solid #444; border-radius: 3px; margin-right: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
         .toggle-item.checked .chk { background: var(--phoenix-fire); border-color: var(--phoenix-fire); }
         .toggle-item.checked .chk::after { content: '✓'; color: black; font-weight: bold; font-size: 12px; }
         .toggle-item.disabled { opacity: 0.5; cursor: not-allowed; }
@@ -108,24 +107,7 @@
         .zoom-btn { width: 40px; height: 40px; background: #111; border: 1px solid #444; color: white; border-radius: 6px; font-size: 20px; cursor: pointer; display: grid; place-items: center; }
         .zoom-btn:hover { border-color: var(--phoenix-fire); color: var(--phoenix-fire); }
 
-        /* LEGEND (NEW) */
-        .map-legend {
-            position: absolute; bottom: 30px; left: 340px; /* Offset by sidebar width */
-            margin-left: 20px;
-            background: rgba(10, 10, 10, 0.9);
-            border: 1px solid #333;
-            border-radius: 6px;
-            padding: 12px;
-            z-index: 50;
-            pointer-events: none;
-            font-size: 11px;
-            color: #ccc;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-        }
-        .legend-title { color: var(--phoenix-fire); font-weight: 800; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.05em; font-size: 10px; }
-        .leg-item { display: flex; align-items: center; margin-bottom: 4px; }
-        .leg-box { width: 12px; height: 12px; margin-right: 8px; border: 1px solid rgba(255,255,255,0.2); }
-        
+        /* INFO PANEL */
         .info-panel { 
             position: absolute; top: 0; right: 0; bottom: 0; width: 380px; 
             background: var(--bg-panel); 
@@ -205,6 +187,18 @@
             <div id="view-dinos" class="view active">
                 <input type="text" id="search-dino" placeholder="Suche..." class="phoenix-input w-full mb-2">
                 <div id="list-dinos"></div>
+                <!-- Legende für Dinos -->
+                <div class="mt-4 border-t border-gray-800 pt-4">
+                     <div class="text-xs font-bold text-gray-500 mb-2 tracking-wider">LEGENDE</div>
+                     <div class="grid grid-cols-2 gap-2 text-xs text-gray-400">
+                        <div class="flex items-center"><div class="w-3 h-3 mr-2 bg-[#22c55e] border border-[#16a34a]"></div>Sehr Häufig</div>
+                        <div class="flex items-center"><div class="w-3 h-3 mr-2 bg-[#84cc16] border border-[#65a30d]"></div>Häufig</div>
+                        <div class="flex items-center"><div class="w-3 h-3 mr-2 bg-[#eab308] border border-[#ca8a04]"></div>Gelegentlich</div>
+                        <div class="flex items-center"><div class="w-3 h-3 mr-2 bg-[#f97316] border border-[#ea580c]"></div>Selten</div>
+                        <div class="flex items-center"><div class="w-3 h-3 mr-2 bg-[#ef4444] border border-[#dc2626]"></div>Sehr Selten</div>
+                        <div class="flex items-center"><div class="w-3 h-3 mr-2 bg-[#a855f7] border border-[#9333ea]"></div>Extrem Selten</div>
+                     </div>
+                </div>
             </div>
             
             <!-- RESSOURCEN -->
@@ -219,7 +213,7 @@
                 <div id="list-res"></div>
             </div>
 
-            <!-- ORTE (Updated) -->
+            <!-- ORTE -->
             <div id="view-pois" class="view">
                 <div class="mb-6">
                     <div class="text-xs text-gray-500 font-bold mb-2 tracking-wider">ALLGEMEIN</div>
@@ -296,7 +290,7 @@
 
 <script>
 /**
- * IOP WIDGET CORE v12.15 - Legend Added
+ * IOP WIDGET CORE v12.16 - Res Checkboxes Fix
  */
 
 window.CFG = {
@@ -304,7 +298,6 @@ window.CFG = {
     urlI: 'https://raw.githubusercontent.com/iophantonie/iophantonie-IOP_Custom_Map_Explorer.github.io/refs/heads/main/Icon_Datenbank/Icondb.jsn',
     urlT: 'https://raw.githubusercontent.com/iophantonie/iophantonie-IOP_Custom_Map_Explorer.github.io/main/Translation_Datenbank/translationdb.jsn',
     col: { spawn: 'rgba(255, 42, 0, 0.4)', stroke: '#ff2a00' },
-    // RARITY COLORS (Matches Legend)
     rarity: [
         { th: 0.30, c: '#22c55e' }, // Green
         { th: 0.15, c: '#84cc16' }, // Lime
@@ -378,7 +371,7 @@ function findSpawnGroups(rawData) {
 window.MapEngine = {
     el: null, cvs: null, ctx: null, img: null, marker: null,
     iconCache: new Map(),
-    cavePattern: null, // Hatching Pattern
+    cavePattern: null,
     isDown: false, hasMoved: false, startX: 0, startY: 0,
 
     init() {
@@ -389,7 +382,7 @@ window.MapEngine = {
         this.ctx = this.cvs.getContext('2d');
         Store.dom.mapImg = this.img;
         
-        // Create Hatching Pattern
+        // Pattern
         const pCvs = document.createElement('canvas');
         pCvs.width = 10; pCvs.height = 10;
         const pCtx = pCvs.getContext('2d');
@@ -401,17 +394,12 @@ window.MapEngine = {
         const input = document.getElementById('input-layer');
         
         input.onmousedown = e => { 
-            this.isDown = true; 
-            this.hasMoved = false; 
-            this.startX = e.clientX; 
-            this.startY = e.clientY; 
+            this.isDown = true; this.hasMoved = false; 
+            this.startX = e.clientX; this.startY = e.clientY; 
             input.style.cursor='grabbing'; 
         };
         
-        window.onmouseup = () => { 
-            this.isDown = false; 
-            input.style.cursor='grab'; 
-        };
+        window.onmouseup = () => { this.isDown = false; input.style.cursor='grab'; };
         
         input.onmousemove = e => {
             if(this.isDown) {
@@ -419,10 +407,8 @@ window.MapEngine = {
                 const dy = e.clientY - this.startY;
                 if(Math.abs(dx) > 5 || Math.abs(dy) > 5) {
                     this.hasMoved = true;
-                    Store.view.x += dx;
-                    Store.view.y += dy;
-                    this.startX = e.clientX; 
-                    this.startY = e.clientY;
+                    Store.view.x += dx; Store.view.y += dy;
+                    this.startX = e.clientX; this.startY = e.clientY;
                     this.update();
                 }
             }
@@ -476,7 +462,7 @@ window.MapEngine = {
         this.img.onload = () => {
              const loader = document.getElementById('loader');
              if(loader) loader.classList.add('hidden');
-             this.fit(); // Recalc center when loaded
+             this.fit();
              this.draw();
         };
         this.setMarker(null);
@@ -492,8 +478,6 @@ window.MapEngine = {
         const relX = mx - rect.left;
         const relY = my - rect.top;
         const ratio = 1 - (newScale / oldScale);
-        const unscaledX = relX / oldScale;
-        const unscaledY = relY / oldScale;
         Store.view.x += (relX - (relX * (newScale / oldScale)));
         Store.view.y += (relY - (relY * (newScale / oldScale)));
         Store.view.scale = newScale;
@@ -528,31 +512,17 @@ window.MapEngine = {
         const ctx = this.ctx;
         ctx.clearRect(0, 0, w, h);
 
-        // --- DINOS WITH RARITY COLORS & HATCHING ---
         if(Store.selDino && Array.isArray(Store.data.dinos[Store.selDino])) {
             Store.data.dinos[Store.selDino].forEach(z => {
                 const x = (z.min.lon/100)*w, y = (z.min.lat/100)*h;
                 const zw = ((z.max.lon - z.min.lon)/100)*w, zh = ((z.max.lat - z.min.lat)/100)*h;
-                
-                // Rarity Calc
                 const score = (z.chance || 0.5) * (z.weight || 1);
-                let hex = '#22c55e'; // Default Green
-                for(let r of window.CFG.rarity) {
-                    if(score >= r.th) { hex = r.c; break; }
-                }
-                
+                let hex = '#22c55e';
+                for(let r of window.CFG.rarity) { if(score >= r.th) { hex = r.c; break; } }
                 ctx.fillStyle = hexToRgba(hex, 0.4);
                 ctx.fillRect(x, y, zw, zh);
-                
-                // Cave Hatching
-                if (z.isCave) {
-                    ctx.fillStyle = this.cavePattern;
-                    ctx.fillRect(x, y, zw, zh);
-                }
-
-                ctx.strokeStyle = hex;
-                ctx.lineWidth = 2; 
-                ctx.strokeRect(x, y, zw, zh);
+                if (z.isCave) { ctx.fillStyle = this.cavePattern; ctx.fillRect(x, y, zw, zh); }
+                ctx.strokeStyle = hex; ctx.lineWidth = 2; ctx.strokeRect(x, y, zw, zh);
             });
         }
 
@@ -563,7 +533,6 @@ window.MapEngine = {
                 Store.data.res[k].forEach(p => {
                     const cx = (p.lon/100)*w, cy = (p.lat/100)*h;
                     const sz = Math.min(32, 12 + ((p.size||1)*2));
-                    // Check strict logic for Image Drawing
                     if(img && img.complete && img.naturalWidth > 0) ctx.drawImage(img, cx-sz/2, cy-sz/2, sz, sz);
                     else { ctx.fillStyle=col; ctx.beginPath(); ctx.arc(cx,cy,sz/3,0,6.28); ctx.fill(); }
                 });
@@ -577,15 +546,11 @@ window.MapEngine = {
             const o = Store.data.obs.find(i => i.name === k);
             if(o) {
                 let img = o.icon ? this.getImg(o.icon) : null;
-                // Fallback lookup if direct icon missing
                 if(!img) img = this.getImg(Store.icons[o.name]?.iconUrl);
-
                 const cx=(o.lon/100)*w, cy=(o.lat/100)*h;
-                
                 if(img && img.complete && img.naturalWidth > 0) {
                     const ht=60, ar=img.naturalWidth/img.naturalHeight;
-                    const wt=ht*ar;
-                    ctx.drawImage(img, cx-(wt/2), cy-ht, wt, ht); 
+                    ctx.drawImage(img, cx-((ht*ar)/2), cy-ht, ht*ar, ht); 
                 } else {
                     const c = o.name.includes('Rot') ? '#ef4444' : o.name.includes('Grün') ? '#22c55e' : '#3b82f6';
                     ctx.fillStyle=c; ctx.beginPath(); ctx.arc(cx,cy,8,0,6.28); ctx.fill();
@@ -594,9 +559,8 @@ window.MapEngine = {
             }
         });
 
-        // PLAYER SPAWNS DRAWING
         if (Store.layers.players && Store.data.players) {
-            const spawns = Store.data.players; 
+            const spawns = Array.isArray(Store.data.players) ? Store.data.players : (Store.data.players.spawnPoints || []);
             const palette = ['#4ade80', '#60a5fa', '#facc15', '#f87171', '#c084fc', '#fb923c', '#2dd4bf', '#f472b6'];
             
             if (spawns.length === 0) Ui.toast("Keine Spieler-Spawns verfügbar");
@@ -608,7 +572,6 @@ window.MapEngine = {
                 ctx.lineWidth = 1.5;
 
                 const points = group.locations || group.spawnPoints || (Array.isArray(group) ? group : []);
-                
                 points.forEach(loc => {
                     if (loc.lat !== undefined) {
                          const cx = (loc.lon / 100) * w;
@@ -688,11 +651,8 @@ window.Data = {
         ];
         
         const [d, r, p, o, ca, pl] = await Promise.all(urls.map(u => fetchData(u)));
-        
-        // Diagnose
-        if(d) Ui.setStatus('dino', 'ok'); else Ui.setStatus('dino', 'err');
-        
         const processedSpawns = findSpawnGroups(pl);
+        
         if (processedSpawns.length > 0) {
             Ui.setSpawnStatus('ok', `OK (${processedSpawns.length} Zonen)`);
             document.getElementById('tog-players').classList.remove('disabled');
@@ -782,7 +742,7 @@ window.Ui = {
         const l = document.getElementById('list-res');
         if(!l) return;
         l.innerHTML = Object.keys(Store.data.res).sort().map(k => {
-            const icon = Store.icons[k]?.iconUrl ? `<img src="${Store.icons[k].iconUrl}" style="width:20px;height:20px;margin-right:8px">` : `<div class="chk"></div>`;
+            const icon = Store.icons[k]?.iconUrl ? `<img src="${Store.icons[k].iconUrl}" style="width:20px;height:20px;margin-right:8px;object-fit:contain;">` : `<div class="chk"></div>`;
             return `<div class="toggle-item" onclick="Ui.togRes('${k}', this)">
                 ${icon}<span class="toggle-text">${Store.trans.res[k]||k}</span>
             </div>`;
