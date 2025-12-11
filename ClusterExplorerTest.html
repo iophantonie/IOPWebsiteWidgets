@@ -3,14 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IOP Cluster Explorer v11.6 (Click Fix)</title>
+    <title>IOP Cluster Explorer v11.8 (Smart Zoom Fix)</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <style>
         /* --- CORE --- */
         * { box-sizing: border-box; }
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #000; overflow: hidden; font-family: 'Segoe UI', sans-serif; color: #e2e8f0; }
 
-        /* COLORS */
         :root {
             --phoenix-fire: #ff2a00;
             --bg-panel: #0a0a0a;
@@ -41,14 +40,16 @@
         /* --- MAP ENGINE --- */
         #viewport {
             flex: 1; position: relative; background: #050505; overflow: hidden;
-            display: flex; justify-content: center; align-items: center;
+            /* WICHTIG: Block statt Flex für manuelle Positionierung */
+            display: block; 
         }
 
         #world {
-            position: relative;
+            position: absolute; /* Absolute Positionierung für exakte JS-Kontrolle */
+            top: 0; left: 0;
             width: 1024px; height: 1024px;
             box-shadow: 0 0 100px rgba(0,0,0,0.9);
-            transform-origin: 0 0;
+            transform-origin: 0 0; /* Zoom vom Nullpunkt (oben links) */
             background-color: #111;
         }
 
@@ -69,7 +70,28 @@
         }
         #input-layer:active { cursor: grabbing; }
 
-        /* --- UI ELEMENTS --- */
+        /* PULSING MARKER */
+        .pulse-marker {
+            position: absolute; width: 60px; height: 60px;
+            border: 2px solid var(--phoenix-fire);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 15px var(--phoenix-fire), inset 0 0 10px var(--phoenix-fire);
+            z-index: 5; pointer-events: none;
+            animation: pulseRing 2s infinite;
+            display: none; 
+        }
+        .pulse-marker::after {
+            content: ''; position: absolute; top: 50%; left: 50%; width: 6px; height: 6px;
+            background: #fff; border-radius: 50%; transform: translate(-50%, -50%);
+            box-shadow: 0 0 5px #fff;
+        }
+        @keyframes pulseRing {
+            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(1.5); opacity: 0; }
+        }
+
+        /* --- UI --- */
         .dino-item { display: flex; align-items: center; padding: 8px; border-bottom: 1px solid #1a1a1a; cursor: pointer; transition: 0.15s; }
         .dino-item:hover { background: #151515; }
         .dino-item.selected { background: rgba(255, 42, 0, 0.1); border-left: 3px solid var(--phoenix-fire); }
@@ -85,15 +107,19 @@
         .zoom-btn { width: 40px; height: 40px; background: #111; border: 1px solid #444; color: white; border-radius: 6px; font-size: 20px; cursor: pointer; display: grid; place-items: center; }
         .zoom-btn:hover { border-color: var(--phoenix-fire); color: var(--phoenix-fire); }
 
-        .info-panel { position: absolute; top: 0; right: 0; bottom: 0; width: 360px; background: #111827; border-left: 1px solid var(--phoenix-fire); transform: translateX(100%); transition: transform 0.3s; z-index: 100; box-shadow: -10px 0 30px rgba(0,0,0,0.8); display: flex; flex-direction: column; }
+        .info-panel { position: absolute; top: 0; right: 0; bottom: 0; width: 380px; background: #111827; border-left: 1px solid var(--phoenix-fire); transform: translateX(100%); transition: transform 0.3s; z-index: 100; box-shadow: -10px 0 30px rgba(0,0,0,0.8); display: flex; flex-direction: column; }
         .info-panel.visible { transform: translateX(0); }
         
+        .related-list { margin-top: 20px; border-top: 1px solid #333; padding-top: 15px; }
+        .related-item { padding: 8px; cursor: pointer; border-radius: 4px; font-size: 0.85rem; color: #aaa; border-left: 2px solid transparent; margin-bottom: 2px; }
+        .related-item:hover { background: #1a1a1a; color: white; }
+        .related-item.active { background: rgba(255, 42, 0, 0.1); border-left-color: var(--phoenix-fire); color: var(--phoenix-fire); font-weight: bold; }
+
         .loader { position: absolute; inset: 0; background: #000; z-index: 999; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.5s; }
         .loader.hidden { opacity: 0; pointer-events: none; }
         .spinner { width: 50px; height: 50px; border: 3px solid #333; border-top-color: var(--phoenix-fire); border-radius: 50%; animation: spin 1s infinite linear; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* Chat */
         .chat-container { display: flex; flex-direction: column; height: 100%; }
         .chat-log { flex: 1; overflow-y: auto; padding: 15px; }
         .chat-msg { padding: 8px 12px; border-radius: 6px; margin-bottom: 8px; font-size: 0.9rem; max-width: 85%; }
@@ -101,13 +127,11 @@
         .chat-msg.b { align-self: flex-start; background: #111; border-left: 2px solid var(--phoenix-fire); }
         .chat-input { display: flex; padding: 10px; border-top: 1px solid #333; gap: 5px; }
         
-        /* Utility */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #0a0a0a; }
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
         .hidden { display: none !important; }
         .phoenix-input { w-full: 100%; background: #050505; border: 1px solid #333; padding: 10px; border-radius: 6px; color: white; outline: none; }
-        
         #error-log { position: absolute; top: 0; left: 0; width: 100%; background: rgba(220, 38, 38, 0.95); color: white; padding: 5px; font-size: 11px; z-index: 10000; display: none; text-align: center; }
     </style>
 </head>
@@ -141,7 +165,6 @@
                 <input type="text" id="search-dino" placeholder="Suche..." class="phoenix-input w-full mb-2">
                 <div id="list-dinos"></div>
             </div>
-            
             <div id="view-res" class="view">
                 <div class="flex justify-between mb-4 border-b border-gray-800 pb-2">
                     <span class="text-xs font-bold text-gray-500">RESSOURCEN</span>
@@ -149,7 +172,6 @@
                 </div>
                 <div id="list-res"></div>
             </div>
-
             <div id="view-pois" class="view">
                 <div class="mb-6">
                     <div class="text-xs text-gray-500 font-bold mb-2">ALLGEMEIN</div>
@@ -161,56 +183,48 @@
                     <div id="list-obelisks"></div>
                 </div>
             </div>
-
             <div id="view-ai" class="view h-full p-0">
                 <div class="chat-container">
-                    <div id="chat-log" class="chat-log">
-                        <div class="chat-msg b">Hallo! Ich bin dein Assistant.</div>
-                    </div>
-                    <div class="chat-input">
-                        <input type="text" id="ai-input" class="phoenix-input flex-1" placeholder="Frage...">
-                        <button onclick="AI.send()" class="bg-[#ff2a00] text-white px-3 rounded font-bold">➤</button>
-                    </div>
+                    <div id="chat-log" class="chat-log"><div class="chat-msg b">Hallo! Ich bin dein Assistant.</div></div>
+                    <div class="chat-input"><input type="text" id="ai-input" class="phoenix-input flex-1" placeholder="Frage..."><button onclick="AI.send()" class="bg-[#ff2a00] text-white px-3 rounded font-bold">➤</button></div>
                 </div>
             </div>
-
             <div id="view-settings" class="view">
                 <div class="text-xs text-gray-500 font-bold mb-2">SYSTEM</div>
                 <button onclick="MapEngine.reset()" class="w-full bg-[#222] border border-[#333] text-gray-300 p-2 rounded hover:text-white mb-4">Karte Zentrieren</button>
                 <div class="toggle-item" id="tog-players" onclick="Layers.toggle('players')"><div class="chk"></div><span>Spieler Spawns</span></div>
-                <div class="mt-8 text-center text-xs text-gray-600">v11.6 Click Fix</div>
+                <div class="mt-8 text-center text-xs text-gray-600">v11.8 Smart Zoom</div>
             </div>
         </div>
     </div>
 
-    <!-- MAP VIEWPORT -->
     <div id="viewport">
         <div id="world">
             <img id="map-image-layer" src="" alt="Karte" crossorigin="anonymous">
             <canvas id="data-canvas"></canvas>
+            <div id="selection-marker" class="pulse-marker"></div>
             <div id="input-layer"></div>
         </div>
         <div class="hud-top">LAT: <span id="lat">00.0</span> | LON: <span id="lon">00.0</span></div>
         <div class="hud-bot">
             <button class="zoom-btn" onclick="MapEngine.reset()">⟲</button>
-            <button class="zoom-btn" onclick="MapEngine.zoom(1.2)">+</button>
-            <button class="zoom-btn" onclick="MapEngine.zoom(0.8)">-</button>
+            <button class="zoom-btn" onclick="MapEngine.zoomIn()">+</button>
+            <button class="zoom-btn" onclick="MapEngine.zoomOut()">-</button>
         </div>
     </div>
     
-    <!-- INFO POPUP -->
     <div id="info-panel" class="info-panel">
         <div class="flex justify-between items-center bg-[#111] p-4 border-b border-[#333]">
             <h2 id="info-title" class="text-lg font-bold text-white uppercase">Info</h2>
             <button onclick="Ui.closeInfo()" class="text-gray-400 hover:text-white text-xl">×</button>
         </div>
-        <div id="info-body" class="p-4 text-sm text-gray-300 overflow-y-auto"></div>
+        <div id="info-body" class="p-4 text-sm text-gray-300 overflow-y-auto h-full"></div>
     </div>
 </div>
 
 <script>
 /**
- * IOP WIDGET CORE v11.6
+ * IOP WIDGET CORE v11.8 (Smart Zoom & Click Fix)
  */
 
 window.CFG = {
@@ -225,7 +239,8 @@ window.Store = {
     dom: { mapImg: null },
     data: { dinos:{}, res:{}, pois:[], obs:[], caves:[] },
     icons: {}, trans: {d:{}, r:{}},
-    selDino: null, activeRes: new Set(), activeObs: new Set(),
+    selDino: null, selectedPOI: null,
+    activeRes: new Set(), activeObs: new Set(),
     layers: { public: false, caves: false, players: false },
     view: { x:0, y:0, scale:1 }
 };
@@ -249,7 +264,7 @@ async function fetchData(url) {
 
 // --- MAP ENGINE ---
 window.MapEngine = {
-    el: null, cvs: null, ctx: null, img: null,
+    el: null, cvs: null, ctx: null, img: null, marker: null,
     iconCache: new Map(),
     // Mouse state for drag filtering
     isDown: false, hasMoved: false, startX: 0, startY: 0,
@@ -258,6 +273,7 @@ window.MapEngine = {
         this.el = document.getElementById('world');
         this.img = document.getElementById('map-image-layer');
         this.cvs = document.getElementById('data-canvas');
+        this.marker = document.getElementById('selection-marker');
         this.ctx = this.cvs.getContext('2d');
         Store.dom.mapImg = this.img;
         
@@ -265,7 +281,7 @@ window.MapEngine = {
         
         input.onmousedown = e => { 
             this.isDown = true; 
-            this.hasMoved = false; // RESET MOVE FLAG
+            this.hasMoved = false; 
             this.startX = e.clientX; 
             this.startY = e.clientY; 
             input.style.cursor='grabbing'; 
@@ -278,12 +294,11 @@ window.MapEngine = {
         
         input.onmousemove = e => {
             if(this.isDown) {
-                // DRAG LOGIC
                 const dx = e.clientX - this.startX;
                 const dy = e.clientY - this.startY;
                 
-                // Only treat as drag if moved more than 3 pixels
-                if(Math.abs(dx) > 3 || Math.abs(dy) > 3) {
+                // Only treat as drag if moved more than 5 pixels
+                if(Math.abs(dx) > 5 || Math.abs(dy) > 5) {
                     this.hasMoved = true;
                     Store.view.x += dx;
                     Store.view.y += dy;
@@ -293,7 +308,6 @@ window.MapEngine = {
                 }
             }
             
-            // COORDS
             const r = this.el.getBoundingClientRect();
             const lat = ((e.clientY - r.top)/r.height)*100;
             const lon = ((e.clientX - r.left)/r.width)*100;
@@ -303,20 +317,22 @@ window.MapEngine = {
             if(lonEl) lonEl.innerText = Math.max(0,Math.min(100, lon)).toFixed(1);
         };
         
-        input.onwheel = e => { e.preventDefault(); this.zoom(e.deltaY > 0 ? 0.9 : 1.1); };
+        input.onwheel = e => { 
+            e.preventDefault();
+            const delta = e.deltaY > 0 ? 0.9 : 1.1;
+            // Mouse relative to viewport
+            const rect = document.getElementById('viewport').getBoundingClientRect();
+            this.zoomAt(delta, e.clientX - rect.left, e.clientY - rect.top);
+        };
 
         input.onclick = e => {
-            // Block click if it was a drag operation
-            if(this.hasMoved) return;
-
+            if(this.hasMoved) return; // Ignore drag release
             const r = this.el.getBoundingClientRect();
-            const cx = (e.clientX - r.left); // Relative to transformed element visual
-            const cy = (e.clientY - r.top);
-            
-            // Normalize to 0-100 regardless of scale
+            // Relative click position on scaled element
+            const cx = e.clientX - r.left;
+            const cy = e.clientY - r.top;
             const lon = (cx / r.width) * 100;
             const lat = (cy / r.height) * 100;
-            
             this.checkClick(lon, lat);
         };
 
@@ -335,6 +351,7 @@ window.MapEngine = {
         this.cvs.width = size;
         this.cvs.height = size;
         
+        // Manual Centering
         this.el.style.left = (vp.clientWidth - size)/2 + 'px';
         this.el.style.top = (vp.clientHeight - size)/2 + 'px';
         
@@ -349,12 +366,89 @@ window.MapEngine = {
              if(loader) loader.classList.add('hidden');
              this.draw();
         };
+        this.setMarker(null);
     },
 
     update() { if(this.el) this.el.style.transform = `translate(${Store.view.x}px, ${Store.view.y}px) scale(${Store.view.scale})`; },
-    zoom(f) { Store.view.scale = Math.max(0.5, Math.min(10, Store.view.scale * f)); this.update(); },
+    
+    // SMART ZOOM
+    zoomAt(factor, mx, my) {
+        const oldScale = Store.view.scale;
+        const newScale = Math.max(0.5, Math.min(10, oldScale * factor));
+        if(newScale === oldScale) return;
+
+        // Element current visual position
+        const rect = this.el.getBoundingClientRect();
+        // Mouse relative to element top-left (visual)
+        const relX = mx - rect.left;
+        const relY = my - rect.top;
+        
+        // Adjust translation to keep mouse point stable
+        // Formula: NewX = MouseX - (MouseX - OldX) * (NewScale / OldScale) is for transform-origin 0 0
+        // Here we adjust Store.view.x which is the translate component
+        
+        // Simplified Logic: 
+        // We need to shift map so the point under mouse moves away/towards center
+        
+        const ratio = 1 - (newScale / oldScale);
+        
+        // Since we are translating the element itself, we adjust x/y directly
+        // Note: This logic assumes mouse relative to the element center would be easier, 
+        // but with top-left origin for transform (default), we adjust manually.
+        
+        // Actually, simplest Smart Zoom for this setup:
+        // We need to shift the map by (MouseRel * (1-Factor))
+        // But Store.view.x/y are RAW pixel offsets.
+        
+        // Correction: We just need to shift X/Y inversely proportional to scale change at mouse pos
+        // But since we use transform-origin: 0 0 in CSS (from v10.7), the math is:
+        
+        // Wait, v11.8 CSS has transform-origin: 0 0.
+        
+        // Calculate offset in unscaled coords
+        const unscaledX = relX / oldScale;
+        const unscaledY = relY / oldScale;
+        
+        // The point (unscaledX, unscaledY) should remain at (mx, my) after scale change
+        // NewPos = (unscaledX * newScale) + NewTranslateX + BaseLeft = mx
+        // BaseLeft is handled by CSS left property. We only control TranslateX (Store.view.x)
+        
+        // Current: (unscaledX * oldScale) + OldTransX = relX (relative to BaseLeft)
+        // New:     (unscaledX * newScale) + NewTransX = relX
+        
+        // NewTransX = relX - (unscaledX * newScale)
+        //           = relX - (relX / oldScale * newScale)
+        //           = relX * (1 - newScale/oldScale)
+        
+        // But wait, Store.view.x is accumulative. 
+        // NewTransX = OldTransX + (relX - relX * ratio)? No.
+        
+        // Let's use the delta approach on the view coordinates:
+        Store.view.x += (relX - (relX * (newScale / oldScale)));
+        Store.view.y += (relY - (relY * (newScale / oldScale)));
+        
+        Store.view.scale = newScale;
+        this.update();
+    },
+
+    zoomIn() { 
+        const vp = document.getElementById('viewport');
+        this.zoomAt(1.2, vp.clientWidth/2, vp.clientHeight/2); 
+    },
+    zoomOut() { 
+        const vp = document.getElementById('viewport');
+        this.zoomAt(0.8, vp.clientWidth/2, vp.clientHeight/2); 
+    },
+
     reset() { Store.view.scale = 1; Store.view.x = 0; Store.view.y = 0; this.update(); this.fit(); },
     
+    setMarker(data) {
+        if(!data) { this.marker.style.display = 'none'; return; }
+        this.marker.style.left = data.lon + '%';
+        this.marker.style.top = data.lat + '%';
+        this.marker.style.display = 'block';
+    },
+
     getImg(url) {
         if(!url) return null;
         if(this.iconCache.has(url)) return this.iconCache.get(url);
@@ -363,14 +457,12 @@ window.MapEngine = {
         this.iconCache.set(url, i);
         return i;
     },
-    
     getResIcon(key) { return this.getImg(Store.icons[key]?.iconUrl); },
 
     draw() {
         if(!this.ctx || !this.cvs || !window.Store || !Store.data) return;
         const w = this.cvs.width, h = this.cvs.height;
         const ctx = this.ctx;
-
         ctx.clearRect(0, 0, w, h);
 
         if(Store.selDino && Store.data.dinos[Store.selDino]) {
@@ -425,26 +517,26 @@ window.MapEngine = {
         });
     },
 
-    // HIT CHECK - Pixel Tolerance for better UX
     checkClick(lon, lat) {
-        // Map width in pixels (screen space at current zoom) is variable.
-        // We use percentage distance: 2.5% is roughly the icon size.
-        // However, if zoomed in, 2.5% is huge. We want fixed pixel radius.
-        
-        const mapW = this.el.getBoundingClientRect().width; // Visual width
-        const hitPixels = 25; // Hit radius in pixels
-        const rad = (hitPixels / mapW) * 100; // Convert to %
-        
+        // Radius in map percent (approx icon size)
+        const rad = 2.5; 
         let hit = null;
-        // Check order: Public -> Caves
-        if(Store.layers.public) hit = Store.data.pois.find(p => Math.hypot(p.lon-lon, p.lat-lat) < rad);
-        if(!hit && Store.layers.caves) hit = Store.data.caves.find(p => Math.hypot(p.lon-lon, p.lat-lat) < rad);
+        let type = '';
+
+        if(Store.layers.public) {
+            hit = Store.data.pois.find(p => Math.hypot(p.lon-lon, p.lat-lat) < rad);
+            if(hit) type = 'public';
+        }
+        if(!hit && Store.layers.caves) {
+            hit = Store.data.caves.find(p => Math.hypot(p.lon-lon, p.lat-lat) < rad);
+            if(hit) type = 'caves';
+        }
         
-        if(hit) Ui.showInfo(hit);
+        if(hit) Ui.showInfo(hit, type);
     }
 };
 
-// --- DATA ---
+// --- DATA & UI ---
 window.Data = {
     async init() {
         try {
@@ -488,7 +580,6 @@ window.Data = {
     }
 };
 
-// --- UI ---
 window.Ui = {
     initSelector(cfg) {
         const s = document.getElementById('map-select');
@@ -567,10 +658,11 @@ window.Ui = {
         MapEngine.draw();
     },
 
-    // NEW: Robust Info Display
-    showInfo(data) {
-        const titleEl = document.getElementById('info-title');
-        if(titleEl) titleEl.textContent = data.name || "INFO";
+    showInfo(data, type) {
+        Store.selectedPOI = data;
+        MapEngine.setMarker(data);
+
+        document.getElementById('info-title').textContent = data.name || "INFO";
 
         let imgHtml = '';
         if (data.images && data.images.length > 0) {
@@ -581,6 +673,21 @@ window.Ui = {
 
         const desc = data.longDescription || data.description || data.shortDescription || 'Keine Beschreibung verfügbar.';
         
+        let listHtml = '';
+        if (type) {
+            const listTitle = type === 'public' ? 'ANDERE SPOTS' : 'ANDERE HÖHLEN';
+            const sourceList = type === 'public' ? Store.data.pois : Store.data.caves;
+            
+            const listItems = sourceList.map(item => {
+                const isActive = item === data ? 'active' : '';
+                const idx = sourceList.indexOf(item);
+                const fn = `Ui.selectFromList('${type}', ${idx})`;
+                return `<div class="related-item ${isActive}" onclick="${fn}">${item.name}</div>`;
+            }).join('');
+            
+            listHtml = `<div class="text-xs font-bold text-gray-500 mt-6 mb-2 tracking-wider">${listTitle}</div><div class="flex flex-col gap-1">${listItems}</div>`;
+        }
+
         document.getElementById('info-body').innerHTML = `
             ${imgHtml}
             <div class="flex justify-center space-x-3 mb-4 text-xs font-mono text-gray-500 bg-black p-2 rounded border border-[#222]">
@@ -588,13 +695,28 @@ window.Ui = {
                 <span>LON: <span class="text-[#ff2a00]">${data.lon.toFixed(1)}</span></span>
             </div>
             <div class="text-sm text-gray-400 leading-relaxed whitespace-pre-wrap">${desc}</div>
+            ${listHtml}
         `;
         
-        document.getElementById('info-panel').classList.add('visible');
+        const panel = document.getElementById('info-panel');
+        panel.classList.add('visible');
+        
+        setTimeout(() => {
+            const activeEl = panel.querySelector('.related-item.active');
+            if(activeEl) activeEl.scrollIntoView({behavior: "smooth", block: "center"});
+        }, 100);
+    },
+    
+    selectFromList(type, index) {
+        const sourceList = type === 'public' ? Store.data.pois : Store.data.caves;
+        const item = sourceList[index];
+        if(item) this.showInfo(item, type);
     },
 
     closeInfo() { 
-        document.getElementById('info-panel').classList.remove('visible'); 
+        document.getElementById('info-panel').classList.remove('visible');
+        MapEngine.setMarker(null);
+        Store.selectedPOI = null;
     }
 };
 
@@ -614,18 +736,15 @@ window.Res = {
     }
 };
 
-// --- START ---
 document.getElementById('search-dino').oninput = e => Ui.renderDinos(e.target.value);
 window.AI = {
     async send() {
         const i = document.getElementById('ai-input');
         const t = i.value.trim();
         if(!t) return;
-        const l = document.getElementById('chat-log');
-        l.innerHTML += `<div class="chat-msg u">${t}</div>`;
+        document.getElementById('chat-log').innerHTML += `<div class="chat-msg u">${t}</div>`;
         i.value='';
-        // DEMO
-        setTimeout(() => l.innerHTML += `<div class="chat-msg b">Ich bin bereit, aber der API Key fehlt.</div>`, 500);
+        setTimeout(() => document.getElementById('chat-log').innerHTML += `<div class="chat-msg b">API Key fehlt.</div>`, 500);
     }
 };
 
