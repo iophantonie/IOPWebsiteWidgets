@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IOP Cluster Explorer v12.1 (Image State Fix)</title>
+    <title>IOP Cluster Explorer v12.3 (Aspect Ratio & Center Fix)</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <style>
         /* --- CORE --- */
@@ -41,11 +41,13 @@
         /* --- MAP ENGINE --- */
         #viewport {
             flex: 1; position: relative; background: #050505; overflow: hidden;
-            display: flex; justify-content: center; align-items: center;
+            /* WICHTIG: Block Display für absolute Positionierung der Kinder */
+            display: block; 
         }
 
         #world {
-            position: relative;
+            position: absolute; /* Absolute Positionierung ist essenziell für JS-Zentrierung */
+            top: 0; left: 0;
             width: 1024px; height: 1024px;
             box-shadow: 0 0 100px rgba(0,0,0,0.9);
             transform-origin: 0 0;
@@ -90,7 +92,7 @@
             100% { transform: translate(-50%, -50%) scale(1.5); opacity: 0; }
         }
 
-        /* --- UI --- */
+        /* --- UI ELEMENTS --- */
         .dino-item { display: flex; align-items: center; padding: 8px; border-bottom: 1px solid #1a1a1a; cursor: pointer; transition: 0.15s; }
         .dino-item:hover { background: #151515; }
         .dino-item.selected { background: rgba(255, 42, 0, 0.1); border-left: 3px solid var(--phoenix-fire); }
@@ -118,7 +120,16 @@
         .loader.hidden { opacity: 0; pointer-events: none; }
         .spinner { width: 50px; height: 50px; border: 3px solid #333; border-top-color: var(--phoenix-fire); border-radius: 50%; animation: spin 1s infinite linear; }
         @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Chat */
+        .chat-container { display: flex; flex-direction: column; height: 100%; }
+        .chat-log { flex: 1; overflow-y: auto; padding: 15px; }
+        .chat-msg { padding: 8px 12px; border-radius: 6px; margin-bottom: 8px; font-size: 0.9rem; max-width: 85%; }
+        .chat-msg.u { align-self: flex-end; background: #333; margin-left: auto; }
+        .chat-msg.b { align-self: flex-start; background: #111; border-left: 2px solid var(--phoenix-fire); }
+        .chat-input { display: flex; padding: 10px; border-top: 1px solid #333; gap: 5px; }
         
+        /* Utility */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #0a0a0a; }
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
@@ -145,7 +156,6 @@
             <select id="map-select" class="phoenix-input mt-3 w-full text-sm"><option disabled selected>Karte...</option></select>
         </div>
 
-        <!-- BEREINIGTES MENÜ -->
         <nav class="tabs">
             <button class="tab-btn active" onclick="Ui.tab('dinos')">DINOS</button>
             <button class="tab-btn" onclick="Ui.tab('res')">RES.</button>
@@ -168,7 +178,7 @@
                 <div id="list-res"></div>
             </div>
 
-            <!-- ORTE (ZUSAMMENGEFASST) -->
+            <!-- ORTE -->
             <div id="view-pois" class="view">
                 <div class="mb-6">
                     <div class="text-xs text-gray-500 font-bold mb-2 tracking-wider">ALLGEMEIN</div>
@@ -223,7 +233,7 @@
 
 <script>
 /**
- * IOP WIDGET CORE v12.1 - Robust Image Drawing
+ * IOP WIDGET CORE v12.3 - Aspect Ratio & Spawn Fix
  */
 
 window.CFG = {
@@ -338,12 +348,16 @@ window.MapEngine = {
         const vp = document.getElementById('viewport');
         const s = Math.min(vp.clientWidth, vp.clientHeight) - 40;
         const size = Math.max(100, s);
+        
         this.el.style.width = size+'px';
         this.el.style.height = size+'px';
         this.cvs.width = size;
         this.cvs.height = size;
+        
+        // Manual Absolute Centering
         this.el.style.left = (vp.clientWidth - size)/2 + 'px';
         this.el.style.top = (vp.clientHeight - size)/2 + 'px';
+        
         this.draw();
     },
 
@@ -353,6 +367,7 @@ window.MapEngine = {
         this.img.onload = () => {
              const loader = document.getElementById('loader');
              if(loader) loader.classList.add('hidden');
+             this.fit(); // Recalc center when loaded
              this.draw();
         };
         this.setMarker(null);
@@ -392,11 +407,11 @@ window.MapEngine = {
         if(this.iconCache.has(url)) return this.iconCache.get(url);
         const i = new Image(); i.src = url;
         i.onload = () => this.draw();
-        // Prevent broken images from crashing
         i.onerror = () => { console.warn("Broken Icon:", url); };
         this.iconCache.set(url, i);
         return i;
     },
+    
     getResIcon(key) { return this.getImg(Store.icons[key]?.iconUrl); },
 
     draw() {
@@ -422,7 +437,7 @@ window.MapEngine = {
                 Store.data.res[k].forEach(p => {
                     const cx = (p.lon/100)*w, cy = (p.lat/100)*h;
                     const sz = Math.min(32, 12 + ((p.size||1)*2));
-                    // SAFE DRAW IMAGE
+                    // Check strict logic for Image Drawing
                     if(img && img.complete && img.naturalWidth > 0) ctx.drawImage(img, cx-sz/2, cy-sz/2, sz, sz);
                     else { ctx.fillStyle=col; ctx.beginPath(); ctx.arc(cx,cy,sz/3,0,6.28); ctx.fill(); }
                 });
@@ -436,11 +451,19 @@ window.MapEngine = {
             const o = Store.data.obs.find(i => i.name === k);
             if(o) {
                 const img = o.icon ? this.getImg(o.icon) : null;
+                // Fallback lookup if direct icon missing
+                const fallbackImg = img ? null : this.getImg(Store.icons[o.name]?.iconUrl);
+                const finalImg = img || fallbackImg;
+
                 const cx=(o.lon/100)*w, cy=(o.lat/100)*h;
-                // SAFE DRAW IMAGE
-                if(img && img.complete && img.naturalWidth > 0) {
-                    const ht=60, ar=img.naturalWidth/img.naturalHeight || 1;
-                    ctx.drawImage(img, cx-(ht*ar)/2, cy-ht, ht*ar, ht);
+                
+                if(finalImg && finalImg.complete && finalImg.naturalWidth > 0) {
+                    // Aspect Ratio Fix for Obelisks
+                    const ht=60;
+                    const ratio = finalImg.naturalWidth / finalImg.naturalHeight;
+                    const wt = ht * ratio;
+                    // Draw bottom-center aligned
+                    ctx.drawImage(finalImg, cx-(wt/2), cy-ht, wt, ht);
                 } else {
                     const c = o.name.includes('Rot') ? '#ef4444' : o.name.includes('Grün') ? '#22c55e' : '#3b82f6';
                     ctx.fillStyle=c; ctx.beginPath(); ctx.arc(cx,cy,8,0,6.28); ctx.fill();
@@ -449,7 +472,7 @@ window.MapEngine = {
             }
         });
 
-        // PLAYER SPAWNS SAFE DRAW
+        // PLAYER SPAWNS (Deep Check Fix)
         if (Store.layers.players && Store.data.players) {
             const spawns = Array.isArray(Store.data.players) ? Store.data.players : (Store.data.players.spawnPoints || []);
             spawns.forEach((region, index) => {
@@ -460,10 +483,10 @@ window.MapEngine = {
                         const cx = (loc.lon / 100) * w;
                         const cy = (loc.lat / 100) * h;
                         ctx.beginPath();
-                        ctx.arc(cx, cy, 6, 0, Math.PI * 2);
+                        ctx.arc(cx, cy, 8, 0, Math.PI * 2); // Bigger radius
                         ctx.fill();
-                        ctx.strokeStyle = '#000';
-                        ctx.lineWidth = 1;
+                        ctx.strokeStyle = '#fff';
+                        ctx.lineWidth = 2;
                         ctx.stroke();
                     });
                 }
@@ -477,7 +500,6 @@ window.MapEngine = {
         list.forEach(p => {
             const cx=(p.lon/100)*w, cy=(p.lat/100)*h;
             const img = p.icon ? this.getImg(p.icon) : null;
-            // SAFE DRAW IMAGE
             if(img && img.complete && img.naturalWidth > 0) ctx.drawImage(img, cx-16, cy-16, 32, 32);
             else { ctx.fillStyle=c; ctx.beginPath(); ctx.arc(cx,cy,6,0,6.28); ctx.fill(); ctx.stroke(); }
         });
@@ -538,8 +560,10 @@ window.Data = {
             c.caveSpotsDataUrl,
             c.playerSpawnDataUrl 
         ];
+        // Safe fetch all
         const [d, r, p, o, ca, pl] = await Promise.all(urls.map(u => fetchData(u)));
         
+        // Ensure valid objects/arrays even if null
         Store.data = {
             dinos: d?.dinoSpawns||{}, res: r?.resources||{}, 
             pois: p?.publicSpots||[], obs: o?.obelisks||[], caves: ca?.caveSpots||[],
