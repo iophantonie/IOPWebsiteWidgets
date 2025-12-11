@@ -3,18 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IOP Cluster Explorer (Fire Edition v10.11)</title>
+    <title>IOP Cluster Explorer v11.4 (Popup Fix)</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <style>
         /* --- CORE --- */
         * { box-sizing: border-box; }
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #000; overflow: hidden; font-family: 'Segoe UI', 'Roboto', sans-serif; color: #e2e8f0; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #000; overflow: hidden; font-family: 'Segoe UI', sans-serif; color: #e2e8f0; }
 
-        /* PHOENIX COLORS */
+        /* COLORS */
         :root {
             --phoenix-fire: #ff2a00;
-            --phoenix-glow: #ff5500;
-            --bg-dark: #050505;
             --bg-panel: #0a0a0a;
             --border-color: #2a2a2a;
         }
@@ -27,14 +25,11 @@
             display: flex; flex-direction: column; z-index: 50; flex-shrink: 0;
             box-shadow: 5px 0 20px rgba(0,0,0,0.9);
         }
-
         .sb-header { padding: 20px; background: #000; border-bottom: 2px solid var(--phoenix-fire); }
-        .sb-sub { font-size: 0.7rem; color: #666; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 2px; }
-        .sb-title { font-size: 1.1rem; font-weight: 900; color: var(--phoenix-fire); letter-spacing: 0.05em; text-transform: uppercase; text-shadow: 0 0 15px rgba(255, 42, 0, 0.4); }
+        .sb-title { font-size: 1.1rem; font-weight: 900; color: var(--phoenix-fire); letter-spacing: 0.05em; }
         
-        /* Stylized Tabs */
         .tabs { display: flex; background: #111; border-bottom: 1px solid var(--border-color); }
-        .tab-btn { flex: 1; padding: 12px 5px; color: #777; background: none; border: none; cursor: pointer; border-bottom: 3px solid transparent; font-size: 0.8rem; font-weight: 700; transition: 0.2s; letter-spacing: 0.05em; }
+        .tab-btn { flex: 1; padding: 12px 5px; color: #777; background: none; border: none; cursor: pointer; border-bottom: 3px solid transparent; font-weight: 700; transition: 0.2s; font-size: 0.8rem; }
         .tab-btn:hover { color: white; background: #1a1a1a; }
         .tab-btn.active { color: var(--phoenix-fire); border-color: var(--phoenix-fire); background: linear-gradient(to top, rgba(255, 42, 0, 0.15), transparent); }
 
@@ -43,207 +38,173 @@
         .view.active { display: block; animation: fadeIn 0.3s; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* --- LIST ITEMS --- */
-        .dino-item { 
-            display: flex; align-items: center; padding: 10px; 
-            border-bottom: 1px solid #1a1a1a; cursor: pointer; transition: 0.15s; border-left: 3px solid transparent;
-        }
-        .dino-item:hover { background: #151515; border-left-color: #444; }
-        .dino-item.active { background: rgba(255, 42, 0, 0.1); border-left-color: var(--phoenix-fire); }
-        .dino-icon { width: 32px; height: 32px; object-fit: contain; margin-right: 12px; filter: drop-shadow(0 0 2px rgba(0,0,0,0.5)); }
-        .dino-name { font-size: 0.9rem; color: #ddd; font-weight: 500; }
-
-        .toggle-item { display: flex; align-items: center; padding: 8px 0; cursor: pointer; user-select: none; }
-        .chk { width: 18px; height: 18px; border: 2px solid #444; border-radius: 3px; margin-right: 10px; display: flex; align-items: center; justify-content: center; transition: 0.2s; background: #000; }
-        .toggle-item:hover .chk { border-color: #888; }
-        .toggle-item.checked .chk { background: var(--phoenix-fire); border-color: var(--phoenix-fire); box-shadow: 0 0 8px var(--phoenix-fire); }
-        .toggle-item.checked .chk::after { content: '✓'; color: black; font-size: 12px; font-weight: bold; }
-        .toggle-text { color: #aaa; font-size: 0.9rem; }
-        .toggle-item.checked .toggle-text { color: white; }
-
         /* --- MAP ENGINE --- */
         #viewport {
-            flex: 1; position: relative; background: #020202; overflow: hidden;
-            display: block; 
+            flex: 1; position: relative; background: #050505; overflow: hidden;
+            display: flex; justify-content: center; align-items: center;
         }
 
         #world {
-            position: absolute;
-            top: 0; left: 0;
+            position: relative;
             width: 1024px; height: 1024px;
             box-shadow: 0 0 100px rgba(0,0,0,0.9);
             transform-origin: 0 0;
-            background-color: #050505;
+            background-color: #111;
         }
 
-        #layer-image {
-            position: absolute; inset: 0; z-index: 1;
-            background-size: 100% 100%;
-            background-repeat: no-repeat;
-            background-position: center;
-            pointer-events: none;
-            backface-visibility: hidden;
-            transform: translateZ(0);
+        #map-image-layer {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            object-fit: fill; z-index: 1; pointer-events: none;
+            will-change: transform;
         }
 
-        #layer-data {
-            position: absolute; inset: 0; z-index: 2;
-            width: 100%; height: 100%;
-            pointer-events: none;
+        #data-canvas {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 2; pointer-events: none;
         }
 
-        #layer-input {
-            position: absolute; inset: 0; z-index: 10;
-            width: 100%; height: 100%;
-            cursor: grab;
+        #input-layer {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 10; cursor: grab;
         }
-        #layer-input:active { cursor: grabbing; }
+        #input-layer:active { cursor: grabbing; }
 
-        /* --- HUD --- */
-        .hud-top { position: absolute; top: 20px; right: 20px; background: rgba(0,0,0,0.9); padding: 8px 15px; border-radius: 4px; color: var(--phoenix-fire); font-family: monospace; font-size: 13px; z-index: 50; pointer-events: none; border: 1px solid #333; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
-        .hud-bot { position: absolute; bottom: 30px; right: 30px; display: flex; gap: 10px; z-index: 50; }
-        .zoom-btn { width: 42px; height: 42px; background: #111; border: 1px solid #444; color: white; border-radius: 6px; font-size: 22px; cursor: pointer; display: grid; place-items: center; transition: 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
-        .zoom-btn:hover { border-color: var(--phoenix-fire); color: var(--phoenix-fire); background: #222; box-shadow: 0 0 10px rgba(255, 42, 0, 0.2); }
+        /* --- UI ELEMENTS --- */
+        .dino-item { display: flex; align-items: center; padding: 8px; border-bottom: 1px solid #1a1a1a; cursor: pointer; transition: 0.15s; }
+        .dino-item:hover { background: #151515; }
+        .dino-item.selected { background: rgba(255, 42, 0, 0.1); border-left: 3px solid var(--phoenix-fire); }
+        .dino-item img { width: 28px; height: 28px; margin-right: 10px; }
 
-        .loader { position: absolute; inset: 0; background: #000; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.5s; }
+        .toggle-item { display: flex; align-items: center; padding: 8px 0; cursor: pointer; user-select: none; }
+        .chk { width: 18px; height: 18px; border: 2px solid #444; border-radius: 3px; margin-right: 10px; display: flex; align-items: center; justify-content: center; }
+        .toggle-item.checked .chk { background: var(--phoenix-fire); border-color: var(--phoenix-fire); }
+        .toggle-item.checked .chk::after { content: '✓'; color: black; font-weight: bold; font-size: 12px; }
+
+        .hud-top { position: absolute; top: 20px; right: 20px; background: rgba(0,0,0,0.9); padding: 8px 12px; border-radius: 4px; color: var(--phoenix-fire); font-family: monospace; z-index: 50; border: 1px solid #333; pointer-events: none; }
+        .hud-bot { position: absolute; bottom: 30px; right: 30px; display: flex; gap: 8px; z-index: 50; }
+        .zoom-btn { width: 40px; height: 40px; background: #111; border: 1px solid #444; color: white; border-radius: 6px; font-size: 20px; cursor: pointer; display: grid; place-items: center; }
+        .zoom-btn:hover { border-color: var(--phoenix-fire); color: var(--phoenix-fire); }
+
+        /* INFO PANEL - FIXED */
+        .info-panel { 
+            position: absolute; top: 0; right: 0; bottom: 0; width: 380px; 
+            background: #111827; border-left: 1px solid var(--phoenix-fire); 
+            transform: translateX(100%); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); 
+            z-index: 100; box-shadow: -10px 0 40px rgba(0,0,0,0.9); 
+            display: flex; flex-direction: column; 
+        }
+        .info-panel.visible { transform: translateX(0); }
+        .info-header { 
+            padding: 15px 20px; background: #0a0a0a; border-bottom: 1px solid #333; 
+            display: flex; justify-content: space-between; align-items: center; 
+        }
+        .info-title { font-size: 1.1rem; font-weight: 800; color: #fff; text-transform: uppercase; letter-spacing: 0.05em; }
+        .info-close { color: #888; cursor: pointer; font-size: 1.5rem; transition: 0.2s; line-height: 1; }
+        .info-close:hover { color: var(--phoenix-fire); }
+        
+        .loader { position: absolute; inset: 0; background: #000; z-index: 999; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.5s; }
         .loader.hidden { opacity: 0; pointer-events: none; }
-        .spinner { width: 50px; height: 50px; border: 3px solid #333; border-top-color: var(--phoenix-fire); border-radius: 50%; animation: spin 1s infinite linear; margin-bottom: 20px; box-shadow: 0 0 20px rgba(255, 42, 0, 0.3); }
+        .spinner { width: 50px; height: 50px; border: 3px solid #333; border-top-color: var(--phoenix-fire); border-radius: 50%; animation: spin 1s infinite linear; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
         /* Chat */
         .chat-container { display: flex; flex-direction: column; height: 100%; }
-        .chat-log { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
-        .chat-msg { padding: 10px 14px; border-radius: 8px; font-size: 0.9rem; max-width: 85%; line-height: 1.5; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
-        .chat-msg.u { align-self: flex-end; background: #333; color: white; border: 1px solid #555; }
-        .chat-msg.b { align-self: flex-start; background: #111; color: #ccc; border-left: 3px solid var(--phoenix-fire); }
-        .chat-input { display: flex; padding: 15px; border-top: 1px solid #333; gap: 10px; background: #050505; }
-        .chat-field { flex: 1; background: #1a1a1a; border: 1px solid #333; color: white; padding: 10px; border-radius: 6px; outline: none; transition: 0.2s; }
-        .chat-field:focus { border-color: var(--phoenix-fire); }
-        .chat-send { background: var(--phoenix-fire); color: white; border: none; padding: 0 20px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.2s; }
-        .chat-send:hover { background: var(--phoenix-glow); transform: translateY(-1px); box-shadow: 0 0 10px rgba(255, 42, 0, 0.4); }
-
-        /* Scrollbar */
+        .chat-log { flex: 1; overflow-y: auto; padding: 15px; }
+        .chat-msg { padding: 8px 12px; border-radius: 6px; margin-bottom: 8px; font-size: 0.9rem; max-width: 85%; }
+        .chat-msg.u { align-self: flex-end; background: #333; margin-left: auto; }
+        .chat-msg.b { align-self: flex-start; background: #111; border-left: 2px solid var(--phoenix-fire); }
+        .chat-input { display: flex; padding: 10px; border-top: 1px solid #333; gap: 5px; }
+        
+        /* Utility */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #0a0a0a; }
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--phoenix-fire); }
-        
         .hidden { display: none !important; }
+        .phoenix-input { w-full: 100%; background: #050505; border: 1px solid #333; padding: 10px; border-radius: 6px; color: white; outline: none; }
         
-        /* Inputs */
-        .phoenix-input { w-full: 100%; background: #050505; border: 1px solid #333; padding: 10px; border-radius: 6px; color: white; outline: none; font-size: 0.9rem; transition: 0.2s; }
-        .phoenix-input:focus { border-color: var(--phoenix-fire); box-shadow: 0 0 10px rgba(255, 42, 0, 0.15); }
-        
-        .phoenix-btn { width: 100%; background: #1f1f1f; border: 1px solid #333; color: #ccc; padding: 10px; border-radius: 6px; cursor: pointer; transition: 0.2s; text-transform: uppercase; font-size: 0.8rem; font-weight: bold; letter-spacing: 0.05em; }
-        .phoenix-btn:hover { border-color: var(--phoenix-fire); color: var(--phoenix-fire); background: #252525; }
+        /* Error Log */
+        #error-log { position: absolute; top: 0; left: 0; width: 100%; background: rgba(220, 38, 38, 0.95); color: white; padding: 5px; font-size: 11px; z-index: 10000; display: none; text-align: center; }
     </style>
 </head>
 <body>
 
-<!-- LOADER -->
+<div id="error-log"></div>
+
 <div id="loader" class="loader">
-    <div class="spinner"></div>
-    <div id="loader-msg" class="text-white font-bold text-sm tracking-widest uppercase" style="color: var(--phoenix-fire)">Lade IOP Explorer...</div>
+    <div class="spinner mb-4"></div>
+    <div id="loader-msg" class="text-white font-bold text-sm tracking-widest uppercase" style="color: var(--phoenix-fire)">Lade System...</div>
 </div>
 
 <div id="app">
-    <!-- SIDEBAR -->
     <div id="sidebar">
         <div class="sb-header">
-            <div class="sb-sub">INFINITY OF PHOENIX</div>
+            <div class="text-xs text-gray-500 font-bold tracking-widest mb-1">INFINITY OF PHOENIX</div>
             <div class="sb-title">CLUSTER EXPLORER</div>
-            <select id="map-select" class="phoenix-input mt-3 w-full text-sm">
-                <option disabled selected>Karte wählen...</option>
-            </select>
+            <select id="map-select" class="phoenix-input mt-3 w-full text-sm"><option disabled selected>Karte...</option></select>
         </div>
 
         <nav class="tabs">
-            <button class="tab-btn active" onclick="Tabs.open('dinos')">DINOS</button>
-            <button class="tab-btn" onclick="Tabs.open('res')">RES.</button>
-            <button class="tab-btn" onclick="Tabs.open('pois')">ORTE</button>
-            <button class="tab-btn" onclick="Tabs.open('ai')">✨ AI</button>
-            <button class="tab-btn" onclick="Tabs.open('settings')">⚙</button>
+            <button class="tab-btn active" onclick="Ui.tab('dinos')">DINOS</button>
+            <button class="tab-btn" onclick="Ui.tab('res')">RES.</button>
+            <button class="tab-btn" onclick="Ui.tab('pois')">ORTE</button>
+            <button class="tab-btn" onclick="Ui.tab('ai')">✨ AI</button>
+            <button class="tab-btn" onclick="Ui.tab('settings')">⚙</button>
         </nav>
 
         <div class="sb-content custom-scrollbar">
-            
-            <!-- VIEW: DINOS -->
             <div id="view-dinos" class="view active">
-                <div class="sticky top-0 bg-[#0a0a0a] z-10 pb-4">
-                    <input type="text" id="dino-search" placeholder="Dino suchen..." class="phoenix-input w-full">
-                </div>
-                <div id="dino-list-root"></div>
+                <input type="text" id="search-dino" placeholder="Suche..." class="phoenix-input w-full mb-2">
+                <div id="list-dinos"></div>
             </div>
-
-            <!-- VIEW: RESOURCES -->
+            
             <div id="view-res" class="view">
-                <div class="flex justify-between items-center mb-6 border-b border-gray-800 pb-2">
-                    <span class="text-xs font-bold text-gray-500 tracking-wider">RESSOURCEN</span>
-                    <button onclick="Resources.clear()" class="text-xs hover:text-white transition" style="color: var(--phoenix-fire)">Reset</button>
+                <div class="flex justify-between mb-4 border-b border-gray-800 pb-2">
+                    <span class="text-xs font-bold text-gray-500">RESSOURCEN</span>
+                    <button onclick="Res.clear()" class="text-xs text-amber-500">Reset</button>
                 </div>
-                <div id="res-list-root"></div>
+                <div id="list-res"></div>
             </div>
 
-            <!-- VIEW: POIS -->
             <div id="view-pois" class="view">
-                <div class="text-xs font-bold text-gray-500 mb-3 mt-2 tracking-wider">ALLGEMEIN</div>
-                <div class="toggle-item" id="tog-public" onclick="Layers.toggle('public')">
-                    <div class="chk"></div><span>Public Spots</span>
+                <div class="mb-6">
+                    <div class="text-xs text-gray-500 font-bold mb-2">ALLGEMEIN</div>
+                    <div class="toggle-item" id="tog-public" onclick="Layers.toggle('public')"><div class="chk"></div><span>Public Spots</span></div>
+                    <div class="toggle-item" id="tog-caves" onclick="Layers.toggle('caves')"><div class="chk"></div><span>Höhlen</span></div>
                 </div>
-                <div class="toggle-item" id="tog-caves" onclick="Layers.toggle('caves')">
-                    <div class="chk"></div><span>Höhlen</span>
+                <div>
+                    <div class="text-xs text-gray-500 font-bold mb-2">OBELISKEN</div>
+                    <div id="list-obelisks"></div>
                 </div>
-
-                <div class="text-xs font-bold text-gray-500 mb-3 mt-8 tracking-wider">OBELISKEN</div>
-                <div id="obelisk-list-root"></div>
             </div>
 
-            <!-- VIEW: AI -->
             <div id="view-ai" class="view h-full p-0">
                 <div class="chat-container">
-                    <div id="chat-log" class="chat-log custom-scrollbar">
-                        <div class="chat-msg b">Willkommen beim <span style="color: var(--phoenix-fire)">IOP Explorer</span>! Ich kenne die aktuelle Karte. Frag mich etwas!</div>
+                    <div id="chat-log" class="chat-log">
+                        <div class="chat-msg b">Hallo! Ich bin dein Assistant.</div>
                     </div>
                     <div class="chat-input">
-                        <input type="text" id="ai-input" class="chat-field" placeholder="Deine Frage...">
-                        <button onclick="AI.send()" class="chat-send">SENDEN</button>
+                        <input type="text" id="ai-input" class="phoenix-input flex-1" placeholder="Frage...">
+                        <button onclick="AI.send()" class="bg-[#ff2a00] text-white px-3 rounded font-bold">➤</button>
                     </div>
                 </div>
             </div>
 
-            <!-- VIEW: SETTINGS -->
             <div id="view-settings" class="view">
-                <div class="text-xs font-bold text-gray-500 mb-3 tracking-wider">ANSICHT</div>
-                <button onclick="MapEngine.reset()" class="phoenix-btn mb-6">Karte zentrieren</button>
-                
-                <div class="text-xs font-bold text-gray-500 mb-3 tracking-wider">LAYER</div>
-                <div class="toggle-item" id="tog-players" onclick="Layers.toggle('players')">
-                    <div class="chk"></div><span>Spieler Spawns</span>
-                </div>
-                
-                <div class="mt-12 text-center text-xs text-gray-600 font-mono">
-                    Infinity of Phoenix<br>Cluster Explorer v10.11
-                </div>
+                <div class="text-xs text-gray-500 font-bold mb-2">SYSTEM</div>
+                <button onclick="MapEngine.reset()" class="w-full bg-[#222] border border-[#333] text-gray-300 p-2 rounded hover:text-white mb-4">Karte Zentrieren</button>
+                <div class="toggle-item" id="tog-players" onclick="Layers.toggle('players')"><div class="chk"></div><span>Spieler Spawns</span></div>
+                <div class="mt-8 text-center text-xs text-gray-600">v11.4 Popup Fix</div>
             </div>
-
         </div>
     </div>
 
     <!-- MAP VIEWPORT -->
     <div id="viewport">
-        <!-- WORLD CONTAINER (Movable) -->
         <div id="world">
-            <!-- LAYER 1: IMAGE (CSS Background) -->
-            <div id="layer-image"></div>
-            
-            <!-- LAYER 2: DATA (Canvas) -->
-            <canvas id="layer-data"></canvas>
-            
-            <!-- LAYER 3: INPUT (Invisible) -->
-            <div id="layer-input"></div>
+            <img id="map-image-layer" src="" alt="Karte" crossorigin="anonymous">
+            <canvas id="data-canvas"></canvas>
+            <div id="input-layer"></div>
         </div>
-
-        <!-- HUD -->
         <div class="hud-top">LAT: <span id="lat">00.0</span> | LON: <span id="lon">00.0</span></div>
         <div class="hud-bot">
             <button class="zoom-btn" onclick="MapEngine.reset()">⟲</button>
@@ -251,448 +212,379 @@
             <button class="zoom-btn" onclick="MapEngine.zoom(0.8)">-</button>
         </div>
     </div>
-
-    <!-- SLIDE-OUT INFO PANEL -->
+    
+    <!-- INFO POPUP (Fixed Structure) -->
     <div id="info-panel" class="info-panel">
         <div class="info-header">
-            <h2 id="info-title" class="text-xl font-bold text-white uppercase tracking-wider">Titel</h2>
-            <button class="close-btn" onclick="App.closeInfo()">×</button>
+            <div id="info-title" class="info-title">DETAILS</div>
+            <button onclick="window.Ui.closeInfo()" class="info-close">×</button>
         </div>
-        <div id="info-body" class="info-body custom-scrollbar text-gray-300 text-sm leading-relaxed"></div>
+        <div id="info-body" class="p-6 text-gray-300 overflow-y-auto">
+            <!-- Dynamic Content -->
+        </div>
     </div>
 </div>
 
 <script>
 /**
- * IOP WIDGET CORE v10.11 (Fix App vs app)
+ * IOP WIDGET CORE v11.4
  */
 
-// CONFIG
-const CONFIG = {
-    cfg: 'https://raw.githubusercontent.com/iophantonie/iophantonie-IOP_Custom_Map_Explorer.github.io/main/MapConfigs/MapConfigs.jsn',
-    ico: 'https://raw.githubusercontent.com/iophantonie/iophantonie-IOP_Custom_Map_Explorer.github.io/refs/heads/main/Icon_Datenbank/Icondb.jsn',
-    txt: 'https://raw.githubusercontent.com/iophantonie/iophantonie-IOP_Custom_Map_Explorer.github.io/main/Translation_Datenbank/translationdb.jsn',
-    colors: { spawn: 'rgba(255, 42, 0, 0.4)', border: '#ff2a00' }
+window.CFG = {
+    urlC: 'https://raw.githubusercontent.com/iophantonie/iophantonie-IOP_Custom_Map_Explorer.github.io/main/MapConfigs/MapConfigs.jsn',
+    urlI: 'https://raw.githubusercontent.com/iophantonie/iophantonie-IOP_Custom_Map_Explorer.github.io/refs/heads/main/Icon_Datenbank/Icondb.jsn',
+    urlT: 'https://raw.githubusercontent.com/iophantonie/iophantonie-IOP_Custom_Map_Explorer.github.io/main/Translation_Datenbank/translationdb.jsn',
+    col: { spawn: 'rgba(255, 42, 0, 0.4)', stroke: '#ff2a00' }
 };
 
-// STORE
-const Store = {
-    cfg: {},
-    map: null,
-    data: { dinos: {}, res: {}, pois: [], obs: [], caves: [] },
-    icons: {},
-    trans: { dinos: {}, res: {} },
-    // State
-    selDino: null,
-    activeRes: new Set(),
-    activeObs: new Set(),
+window.Store = {
+    cfg: {}, map: null,
+    dom: { mapImg: null },
+    data: { dinos:{}, res:{}, pois:[], obs:[], caves:[] },
+    icons: {}, trans: {d:{}, r:{}},
+    selDino: null, activeRes: new Set(), activeObs: new Set(),
     layers: { public: false, caves: false, players: false },
-    // View
-    scale: 1, x: 0, y: 0
+    view: { x:0, y:0, scale:1 }
 };
+
+function logError(msg) {
+    const el = document.getElementById('error-log');
+    if(el) { el.style.display='block'; el.textContent=`ERROR: ${msg}`; }
+    console.error(msg);
+}
+window.onerror = (m,u,l) => logError(`${m} (Line ${l})`);
+
+async function fetchData(url) {
+    try {
+        const r = await fetch(url);
+        if(!r.ok) throw new Error(`HTTP ${r.status}`);
+        const t = await r.text();
+        return JSON.parse(t.replace(/^\uFEFF/, '').replace(/\/\*[\s\S]*?\*\/|([^\\:]|^)\/\/.*$/gm, '$1').replace(/\u00A0/g, ' '));
+    } catch(e) { console.warn("JSON Error", e); return null; }
+}
 
 // --- MAP ENGINE ---
-const MapEngine = {
-    el: null,
-    bg: null,
-    cvs: null,
-    ctx: null,
-    vp: null,
+window.MapEngine = {
+    el: null, cvs: null, ctx: null, img: null,
     iconCache: new Map(),
 
     init() {
-        this.vp = document.getElementById('viewport');
         this.el = document.getElementById('world');
-        this.bg = document.getElementById('layer-image');
-        this.cvs = document.getElementById('layer-data');
+        this.img = document.getElementById('map-image-layer');
+        this.cvs = document.getElementById('data-canvas');
         this.ctx = this.cvs.getContext('2d');
+        Store.dom.mapImg = this.img;
         
-        const input = document.getElementById('layer-input');
-        let isDrag = false, lx = 0, ly = 0;
-
-        input.addEventListener('mousedown', e => { isDrag = true; lx = e.clientX; ly = e.clientY; input.style.cursor = 'grabbing'; });
-        window.addEventListener('mouseup', () => { isDrag = false; input.style.cursor = 'grab'; });
+        const input = document.getElementById('input-layer');
+        let drag=false, lx=0, ly=0;
         
-        input.addEventListener('mousemove', e => {
-            if(isDrag) {
-                Store.x += e.clientX - lx;
-                Store.y += e.clientY - ly;
+        input.onmousedown = e => { drag=true; lx=e.clientX; ly=e.clientY; input.style.cursor='grabbing'; };
+        window.onmouseup = () => { drag=false; input.style.cursor='grab'; };
+        
+        input.onmousemove = e => {
+            if(drag) {
+                Store.view.x += e.clientX - lx;
+                Store.view.y += e.clientY - ly;
                 lx = e.clientX; ly = e.clientY;
                 this.update();
             }
-            // Coords
             const r = this.el.getBoundingClientRect();
-            const lat = ((e.clientY - r.top) / r.height) * 100;
-            const lon = ((e.clientX - r.left) / r.width) * 100;
-            document.getElementById('lat').textContent = Math.max(0, Math.min(100, lat)).toFixed(1);
-            document.getElementById('lon').textContent = Math.max(0, Math.min(100, lon)).toFixed(1);
-        });
+            const lat = ((e.clientY - r.top)/r.height)*100;
+            const lon = ((e.clientX - r.left)/r.width)*100;
+            const latEl = document.getElementById('lat');
+            const lonEl = document.getElementById('lon');
+            if(latEl) latEl.innerText = Math.max(0,Math.min(100, lat)).toFixed(1);
+            if(lonEl) lonEl.innerText = Math.max(0,Math.min(100, lon)).toFixed(1);
+        };
+        
+        input.onwheel = e => { e.preventDefault(); this.zoom(e.deltaY > 0 ? 0.9 : 1.1); };
 
-        input.addEventListener('wheel', e => {
-            e.preventDefault();
-            this.zoom(e.deltaY > 0 ? 0.9 : 1.1);
-        });
+        input.onclick = e => {
+            if(drag) return;
+            const r = this.el.getBoundingClientRect();
+            // Calculate coords in 100x100 space
+            const cx = (e.clientX - r.left);
+            const cy = (e.clientY - r.top);
+            const lon = (cx / r.width) * 100;
+            const lat = (cy / r.height) * 100;
+            this.checkClick(lon, lat);
+        };
 
-        // CLICK HANDLING for POIS
-        input.addEventListener('click', e => {
-            if(isDrag) return;
-            App.handleMapClick(e);
-        });
-
-        window.addEventListener('resize', () => this.resize());
-        setTimeout(() => this.resize(), 100);
+        window.onresize = () => this.fit();
+        setTimeout(()=>this.fit(), 100);
     },
 
-    resize() {
-        const margin = 40;
-        const s = Math.min(this.vp.clientWidth, this.vp.clientHeight) - margin;
+    fit() {
+        if(!this.el) return;
+        const vp = document.getElementById('viewport');
+        const s = Math.min(vp.clientWidth, vp.clientHeight) - 40;
         const size = Math.max(100, s);
-
-        this.el.style.width = size + 'px';
-        this.el.style.height = size + 'px';
+        
+        this.el.style.width = size+'px';
+        this.el.style.height = size+'px';
         this.cvs.width = size;
         this.cvs.height = size;
         
-        this.el.style.left = (this.vp.clientWidth - size) / 2 + 'px';
-        this.el.style.top = (this.vp.clientHeight - size) / 2 + 'px';
-
-        this.draw(); 
+        this.el.style.left = (vp.clientWidth - size)/2 + 'px';
+        this.el.style.top = (vp.clientHeight - size)/2 + 'px';
+        
+        this.draw();
     },
 
-    setImage(url) {
-        this.bg.style.backgroundImage = `url('${url}')`;
+    load(url) {
+        if(!this.img) return;
+        this.img.src = url;
+        this.img.onload = () => {
+             const loader = document.getElementById('loader');
+             if(loader) loader.classList.add('hidden');
+             this.draw();
+        };
     },
 
-    update() {
-        this.el.style.transform = `translate(${Store.x}px, ${Store.y}px) scale(${Store.scale})`;
-    },
-
-    zoom(f) {
-        Store.scale = Math.max(0.5, Math.min(10, Store.scale * f));
-        this.update();
-    },
-
-    reset() {
-        Store.scale = 1; Store.x = 0; Store.y = 0;
-        this.update();
-        this.resize(); 
-    },
+    update() { if(this.el) this.el.style.transform = `translate(${Store.view.x}px, ${Store.view.y}px) scale(${Store.view.scale})`; },
+    zoom(f) { Store.view.scale = Math.max(0.5, Math.min(10, Store.view.scale * f)); this.update(); },
+    reset() { Store.view.scale = 1; Store.view.x = 0; Store.view.y = 0; this.update(); this.fit(); },
     
     getImg(url) {
-        if (!url) return null;
-        if (this.iconCache.has(url)) return this.iconCache.get(url);
-        const img = new Image();
-        img.src = url;
-        img.onload = () => { if (Store.activeRes.size > 0 || Store.activeObs.size > 0 || Store.layers.public || Store.layers.caves) this.draw(); };
-        this.iconCache.set(url, img);
-        return img;
+        if(!url) return null;
+        if(this.iconCache.has(url)) return this.iconCache.get(url);
+        const i = new Image(); i.src = url;
+        i.onload = () => this.draw();
+        this.iconCache.set(url, i);
+        return i;
     },
     
     getResIcon(key) { return this.getImg(Store.icons[key]?.iconUrl); },
 
     draw() {
-        const w = this.cvs.width;
-        const h = this.cvs.height;
+        if(!this.ctx || !this.cvs || !window.Store || !Store.data) return;
+        const w = this.cvs.width, h = this.cvs.height;
         const ctx = this.ctx;
-
         ctx.clearRect(0, 0, w, h);
 
-        // 1. Dinos
         if(Store.selDino && Store.data.dinos[Store.selDino]) {
             Store.data.dinos[Store.selDino].forEach(z => {
-                const x = (z.min.lon/100)*w;
-                const y = (z.min.lat/100)*h;
-                const zw = ((z.max.lon - z.min.lon)/100)*w;
-                const zh = ((z.max.lat - z.min.lat)/100)*h;
-                ctx.fillStyle = CONFIG.colors.spawn;
-                ctx.fillRect(x, y, zw, zh);
-                ctx.strokeStyle = CONFIG.colors.border;
-                ctx.lineWidth = 2;
-                ctx.strokeRect(x, y, zw, zh);
+                const x = (z.min.lon/100)*w, y = (z.min.lat/100)*h;
+                const zw = ((z.max.lon - z.min.lon)/100)*w, zh = ((z.max.lat - z.min.lat)/100)*h;
+                ctx.fillStyle = CFG.col.spawn; ctx.fillRect(x, y, zw, zh);
+                ctx.strokeStyle = CFG.col.stroke; ctx.lineWidth = 2; ctx.strokeRect(x, y, zw, zh);
             });
         }
 
-        // 2. Resources (ICONS)
         Store.activeRes.forEach(k => {
             if(Store.data.res[k]) {
-                const iconImg = this.getResIcon(k);
-                const c = {'Metal':'#b87333','Crystal':'#a5f3fc', 'Obsidian':'#000', 'Oil':'#111'}[k]||'#fff';
-                
+                const img = this.getResIcon(k);
+                const col = {'Metal':'#b87333'}[k] || '#fff';
                 Store.data.res[k].forEach(p => {
-                    const cx = (p.lon/100)*w;
-                    const cy = (p.lat/100)*h;
-                    
-                    const scaleFactor = (p.size || 1) * 1.0; 
-                    const size = Math.min(32, 10 + (scaleFactor * 2)); 
-
-                    if (iconImg && iconImg.complete && iconImg.naturalWidth > 0) {
-                        ctx.drawImage(iconImg, cx - size/2, cy - size/2, size, size);
-                    } else {
-                        ctx.fillStyle = c;
-                        ctx.beginPath(); ctx.arc(cx, cy, size/4, 0, Math.PI*2); ctx.fill();
-                    }
+                    const cx = (p.lon/100)*w, cy = (p.lat/100)*h;
+                    const sz = Math.min(32, 12 + ((p.size||1)*2));
+                    if(img && img.complete) ctx.drawImage(img, cx-sz/2, cy-sz/2, sz, sz);
+                    else { ctx.fillStyle=col; ctx.beginPath(); ctx.arc(cx,cy,sz/3,0,6.28); ctx.fill(); }
                 });
             }
         });
 
-        // 3. POIs & Caves
-        if(Store.layers.public) this.drawPois(Store.data.pois, '#ff2a00', w, h); 
+        if(Store.layers.public) this.drawPois(Store.data.pois, '#ff2a00', w, h);
         if(Store.layers.caves) this.drawPois(Store.data.caves, '#a855f7', w, h);
         
         Store.activeObs.forEach(k => {
             const o = Store.data.obs.find(i => i.name === k);
             if(o) {
-                const obImg = o.icon ? this.getImg(o.icon) : null;
-                const cx = (o.lon/100)*w;
-                const cy = (o.lat/100)*h;
-
-                if (obImg && obImg.complete && obImg.naturalWidth > 0) {
-                     const height = 60;
-                     const ratio = obImg.naturalWidth / obImg.naturalHeight;
-                     const width = height * ratio;
-                     ctx.drawImage(obImg, cx - width/2, cy - height, width, height);
+                const img = o.icon ? this.getImg(o.icon) : null;
+                const cx=(o.lon/100)*w, cy=(o.lat/100)*h;
+                if(img && img.complete) {
+                    const ht=60, ar=img.naturalWidth/img.naturalHeight || 1;
+                    ctx.drawImage(img, cx-(ht*ar)/2, cy-ht, ht*ar, ht);
                 } else {
-                    const color = o.name.includes('Rot') ? '#ef4444' : o.name.includes('Grün') ? '#22c55e' : '#3b82f6';
-                    ctx.beginPath(); ctx.arc(cx, cy, 8, 0, Math.PI*2);
-                    ctx.fillStyle = color; ctx.fill();
-                    ctx.lineWidth = 2; ctx.strokeStyle = '#fff'; ctx.stroke();
+                    const c = o.name.includes('Rot') ? '#ef4444' : o.name.includes('Grün') ? '#22c55e' : '#3b82f6';
+                    ctx.fillStyle=c; ctx.beginPath(); ctx.arc(cx,cy,8,0,6.28); ctx.fill();
+                    ctx.lineWidth=2; ctx.strokeStyle='#fff'; ctx.stroke();
                 }
             }
         });
     },
 
-    // Updated POI Drawer to handle Icons
     drawPois(list, c, w, h) {
         const ctx = this.ctx;
         list.forEach(p => {
-             const cx = (p.lon/100)*w;
-             const cy = (p.lat/100)*h;
-             
-             const iconImg = p.icon ? this.getImg(p.icon) : null;
-             
-             if(iconImg && iconImg.complete && iconImg.naturalWidth > 0) {
-                 const size = 32;
-                 ctx.drawImage(iconImg, cx - size/2, cy - size/2, size, size);
-             } else {
-                 this.drawPin(cx, cy, c);
-             }
+            const cx=(p.lon/100)*w, cy=(p.lat/100)*h;
+            const img = p.icon ? this.getImg(p.icon) : null;
+            if(img && img.complete) ctx.drawImage(img, cx-16, cy-16, 32, 32);
+            else { ctx.fillStyle=c; ctx.beginPath(); ctx.arc(cx,cy,6,0,6.28); ctx.fill(); ctx.stroke(); }
         });
     },
 
-    drawPin(x, y, color) {
-        const ctx = this.ctx;
-        ctx.fillStyle = color;
-        ctx.strokeStyle = '#000';
-        ctx.lineWidth = 1;
-        ctx.beginPath(); ctx.arc(x, y, 6, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+    checkClick(lon, lat) {
+        const rad = 2.5; 
+        let hit = null;
+        if(Store.layers.public) hit = Store.data.pois.find(p => Math.hypot(p.lon-lon, p.lat-lat) < rad);
+        if(!hit && Store.layers.caves) hit = Store.data.caves.find(p => Math.hypot(p.lon-lon, p.lat-lat) < rad);
+        if(hit) Ui.showInfo(hit);
     }
 };
 
-// --- LOGIC ---
-const App = {
+// --- DATA ---
+window.Data = {
     async init() {
-        MapEngine.init();
         try {
-            const [cfg, ic, tr] = await Promise.all([
-                fetchData(CONFIG.cfg), fetchData(CONFIG.ico), fetchData(CONFIG.txt)
+            const [c, i, t] = await Promise.all([
+                fetchData(CFG.urlC), fetchData(CFG.urlI), fetchData(CFG.urlT)
             ]);
             
-            if(!cfg) throw new Error("Config Error");
-            
-            Store.cfg = cfg;
-            
-            Store.icons = {
-                ...(ic?.Items||{}), 
-                ...(ic?.Kreaturen||{}),
-                ...(ic?.Ressourcen||{}) 
-            };
-            
-            if(tr) { Store.trans.res = tr.Ressourcen||{}; Store.trans.dinos = tr.Kreaturen||{}; }
+            if(!c) throw new Error("Config Error");
+            Store.cfg = c;
+            Store.icons = {...(i?.Items||{}), ...(i?.Kreaturen||{}), ...(i?.Ressourcen||{})};
+            if(t) { Store.trans.dinos = t.Kreaturen||{}; Store.trans.res = t.Ressourcen||{}; }
 
-            const sel = document.getElementById('map-select');
-            Object.keys(cfg).forEach(k => {
-                if(cfg[k].activated) {
-                    const o = document.createElement('option');
-                    o.value = k; o.textContent = cfg[k].displayName;
-                    sel.appendChild(o);
-                }
-            });
-            sel.onchange = e => this.loadMap(e.target.value);
-
+            Ui.initSelector(c);
             this.loadMap('TheIsland');
 
-        } catch(e) { 
-            console.error(e);
-            document.getElementById('loader-msg').innerText = "FEHLER BEIM LADEN";
-            document.getElementById('loader-msg').classList.add('text-red-500');
-        }
+        } catch(e) { console.error(e); logError("Init Failed"); }
     },
 
-    async loadMap(key) {
-        const loader = document.getElementById('loader');
-        loader.classList.remove('hidden');
-        document.getElementById('loader-msg').textContent = `LADE ${Store.cfg[key].displayName}...`;
-
-        const c = Store.cfg[key];
-        Store.map = c;
+    async loadMap(k) {
+        const l = document.getElementById('loader');
+        if(l) l.classList.remove('hidden');
         
+        const c = Store.cfg[k];
+        Store.map = c;
         Store.selDino = null; Store.activeRes.clear(); Store.activeObs.clear();
         MapEngine.reset();
-        MapEngine.setImage(c.mapImageUrl);
+        MapEngine.load(c.mapImageUrl);
 
         const urls = [c.creatureDataUrl, c.resourceDataUrl, c.publicSpotsDataUrl, c.obeliskDataUrl, c.caveSpotsDataUrl];
-        const [d, r, p, o, ca] = await Promise.all(urls.map(u => fetchData(u).catch(()=>({}))));
+        const [d, r, p, o, ca] = await Promise.all(urls.map(u => fetchData(u)));
+        
+        Store.data = {
+            dinos: d?.dinoSpawns||{}, res: r?.resources||{}, 
+            pois: p?.publicSpots||[], obs: o?.obelisks||[], caves: ca?.caveSpots||[]
+        };
 
-        Store.data.dinos = d?.dinoSpawns || {};
-        Store.data.res = r?.resources || {};
-        Store.data.pois = p?.publicSpots || [];
-        Store.data.obs = o?.obelisks || [];
-        Store.data.caves = ca?.caveSpots || [];
-
-        Dinos.init();
-        Resources.init();
-        Layers.initObs();
+        Ui.renderDinos();
+        Ui.renderRes();
+        Ui.renderObs();
         MapEngine.draw();
-        
-        setTimeout(() => {
-            loader.classList.add('hidden');
-            MapEngine.resize(); 
-        }, 800);
+    }
+};
+
+// --- UI ---
+window.Ui = {
+    initSelector(cfg) {
+        const s = document.getElementById('map-select');
+        Object.keys(cfg).forEach(k => {
+            if(cfg[k].activated) {
+                const o = document.createElement('option');
+                o.value = k; o.textContent = cfg[k].displayName;
+                s.appendChild(o);
+            }
+        });
+        s.onchange = e => Data.loadMap(e.target.value);
     },
 
-    // CLICK HANDLER
-    handleMapClick(e) {
-        const rect = MapEngine.el.getBoundingClientRect(); 
-        const relX = e.clientX - rect.left;
-        const relY = e.clientY - rect.top;
-        
-        const lon = (relX / rect.width) * 100;
-        const lat = (relY / rect.height) * 100;
-
-        let hit = null;
-        const radius = 2.5;
-
-        // Check Public Spots
-        if(Store.layers.public && !hit) {
-            hit = Store.data.pois.find(p => Math.sqrt((lon-p.lon)**2 + (lat-p.lat)**2) < radius);
-        }
-        
-        // Check Caves
-        if(Store.layers.caves && !hit) {
-            hit = Store.data.caves.find(p => Math.sqrt((lon-p.lon)**2 + (lat-p.lat)**2) < radius);
-        }
-
-        if(hit) this.showInfo(hit);
+    tab(id) {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+        const idx = ['dinos','res','pois','ai','settings'].indexOf(id);
+        document.querySelectorAll('.tab-btn')[idx].classList.add('active');
+        document.getElementById('view-'+id).classList.add('active');
+        setTimeout(()=>MapEngine.fit(), 10);
     },
 
+    renderDinos(term="") {
+        const l = document.getElementById('list-dinos');
+        if(!l) return;
+        const t = term.toLowerCase();
+        const keys = Object.keys(Store.data.dinos).sort();
+        const show = keys.filter(k => (Store.trans.dinos[k]||k).toLowerCase().includes(t));
+        
+        const items = (t ? show : show.slice(0, 50)).map(k => {
+            const name = Store.trans.dinos[k]||k;
+            const icon = Store.icons[k]?.iconUrl || 'https://placehold.co/24';
+            const cls = Store.selDino === k ? 'selected' : '';
+            return `<div class="dino-item ${cls}" onclick="Ui.togDino('${k}')">
+                <img src="${icon}"><span class="dino-name">${name}</span>
+            </div>`;
+        }).join('');
+        l.innerHTML = items + (show.length > 50 && !t ? `<div class="text-xs text-center text-gray-500 p-2">... ${show.length-50} weitere ...</div>` : '');
+    },
+
+    togDino(k) {
+        Store.selDino = Store.selDino === k ? null : k;
+        this.renderDinos(document.getElementById('search-dino').value);
+        MapEngine.draw();
+    },
+
+    renderRes() {
+        const l = document.getElementById('list-res');
+        if(!l) return;
+        l.innerHTML = Object.keys(Store.data.res).sort().map(k => {
+            const icon = Store.icons[k]?.iconUrl ? `<img src="${Store.icons[k].iconUrl}" style="width:20px;height:20px;margin-right:8px">` : `<div class="chk"></div>`;
+            return `<div class="toggle-item" onclick="Ui.togRes('${k}', this)">
+                ${icon}<span class="toggle-text">${Store.trans.res[k]||k}</span>
+            </div>`;
+        }).join('');
+    },
+
+    togRes(k, el) {
+        if(Store.activeRes.has(k)) { Store.activeRes.delete(k); el.classList.remove('checked'); }
+        else { Store.activeRes.add(k); el.classList.add('checked'); }
+        MapEngine.draw();
+    },
+
+    renderObs() {
+        const l = document.getElementById('obelisk-list-root');
+        if(!l) return;
+        l.innerHTML = Store.data.obs.map(o => `
+            <div class="toggle-item" onclick="Ui.togObs('${o.name}', this)">
+                <div class="chk"></div><span class="toggle-text">${o.name}</span>
+            </div>`).join('');
+    },
+
+    togObs(k, el) {
+        if(Store.activeObs.has(k)) { Store.activeObs.delete(k); el.classList.remove('checked'); }
+        else { Store.activeObs.add(k); el.classList.add('checked'); }
+        MapEngine.draw();
+    },
+
+    // NEW: Robust Show Info Logic
     showInfo(data) {
-        document.getElementById('info-title').textContent = data.name;
-        
+        // 1. Title Update
+        const titleEl = document.getElementById('info-title');
+        if(titleEl) titleEl.textContent = data.name || "INFO";
+
+        // 2. Image Logic (Priority: Images Array -> Icon)
         let imgHtml = '';
-        if (data.icon) {
-             imgHtml = `<div class="flex justify-center mb-4"><img src="${data.icon}" class="h-16 w-16 object-contain"></div>`;
-        } else if (data.images && data.images[0]) {
-             imgHtml = `<img src="${data.images[0]}" class="w-full rounded mb-4 bg-gray-800" onerror="this.style.display='none'">`;
+        if (data.images && data.images.length > 0 && data.images[0]) {
+             imgHtml = `<img src="${data.images[0]}" class="w-full rounded-lg border border-gray-700 mb-4 shadow-lg" onerror="this.style.display='none'">`;
+        } else if (data.icon) {
+             imgHtml = `<div class="flex justify-center mb-4"><img src="${data.icon}" class="w-24 h-24 object-contain drop-shadow-lg"></div>`;
         }
+
+        // 3. Content Construction
+        const lat = typeof data.lat === 'number' ? data.lat.toFixed(1) : data.lat;
+        const lon = typeof data.lon === 'number' ? data.lon.toFixed(1) : data.lon;
 
         document.getElementById('info-body').innerHTML = `
             ${imgHtml}
-            <div class="mb-4 text-center">
-                <span class="bg-[#222] px-2 py-1 rounded text-xs text-gray-400 border border-[#333]">Lat: ${data.lat.toFixed(1)} / Lon: ${data.lon.toFixed(1)}</span>
+            <div class="flex justify-center space-x-4 mb-4 text-xs font-mono text-gray-400 bg-[#1a1a1a] p-2 rounded border border-[#333]">
+                <span>LAT: <span class="text-[#ff2a00]">${lat}</span></span>
+                <span>LON: <span class="text-[#ff2a00]">${lon}</span></span>
             </div>
-            <p>${data.description || data.shortDescription || 'Keine weitere Beschreibung vorhanden.'}</p>
+            <div class="text-sm text-gray-300 leading-relaxed mb-4">
+                ${data.description || data.shortDescription || 'Keine Beschreibung verfügbar.'}
+            </div>
         `;
+        
+        // 4. Show Panel
         document.getElementById('info-panel').classList.add('visible');
     },
 
-    closeInfo() { document.getElementById('info-panel').classList.remove('visible'); }
-};
-
-// --- MODULES ---
-const Dinos = {
-    init() {
-        const list = document.getElementById('dino-list-root');
-        list.innerHTML = '';
-        const keys = Object.keys(Store.data.dinos).sort();
-        this.cache = keys.map(k => ({
-            key: k, name: Store.trans.dinos[k] || k, icon: Store.icons[k]?.iconUrl
-        }));
-        this.render("");
-        document.getElementById('dino-search').oninput = e => this.render(e.target.value);
-    },
-
-    render(term) {
-        const list = document.getElementById('dino-list-root');
-        const search = term.toLowerCase();
-        const filtered = this.cache.filter(i => i.name.toLowerCase().includes(search));
-        const show = search ? filtered : filtered.slice(0, 50);
-        
-        list.innerHTML = show.map(d => `
-            <div class="dino-item ${Store.selDino === d.key ? 'active' : ''}" onclick="Dinos.toggle('${d.key}')">
-                <img src="${d.icon || 'https://placehold.co/24'}" class="dino-icon">
-                <span class="dino-name">${d.name}</span>
-            </div>
-        `).join('');
-        
-        if(!search && filtered.length > 50) {
-            list.innerHTML += `<div class="text-xs text-center text-gray-600 p-3 italic">... ${filtered.length - 50} weitere ...</div>`;
-        }
-    },
-
-    toggle(key) {
-        if(Store.selDino === key) Store.selDino = null;
-        else Store.selDino = key;
-        this.render(document.getElementById('dino-search').value);
-        MapEngine.draw();
+    closeInfo() { 
+        document.getElementById('info-panel').classList.remove('visible'); 
     }
 };
 
-const Resources = {
-    init() {
-        const list = document.getElementById('res-list-root');
-        list.innerHTML = '';
-        Object.keys(Store.data.res).sort().forEach(k => {
-            const div = document.createElement('div');
-            div.className = 'toggle-item';
-            
-            // Try to find icon for list
-            const iconUrl = Store.icons[k]?.iconUrl;
-            const iconHTML = iconUrl 
-                ? `<img src="${iconUrl}" style="width:20px;height:20px;margin-right:10px;object-fit:contain;">`
-                : `<div class="chk"></div>`;
-
-            div.innerHTML = `${iconHTML}<span class="toggle-text">${Store.trans.res[k] || k}</span>`;
-            div.onclick = () => {
-                if(Store.activeRes.has(k)) { Store.activeRes.delete(k); div.classList.remove('checked'); }
-                else { Store.activeRes.add(k); div.classList.add('checked'); }
-                MapEngine.draw();
-            };
-            list.appendChild(div);
-        });
-    },
-    clear() {
-        Store.activeRes.clear();
-        document.querySelectorAll('#res-list-root .toggle-item').forEach(e => e.classList.remove('checked'));
-        MapEngine.draw();
-    }
-};
-
-const Layers = {
-    initObs() {
-        const list = document.getElementById('obelisk-list-root');
-        list.innerHTML = '';
-        Store.data.obs.forEach(o => {
-            const div = document.createElement('div');
-            div.className = 'toggle-item';
-            div.innerHTML = `<div class="chk"></div><span class="toggle-text">${o.name}</span>`;
-            div.onclick = () => {
-                if(Store.activeObs.has(o.name)) { Store.activeObs.delete(o.name); div.classList.remove('checked'); }
-                else { Store.activeObs.add(o.name); div.classList.add('checked'); }
-                MapEngine.draw();
-            };
-            list.appendChild(div);
-        });
-    },
+window.Layers = {
     toggle(key) {
         Store.layers[key] = !Store.layers[key];
         document.getElementById('tog-'+key).classList.toggle('checked');
@@ -700,53 +592,33 @@ const Layers = {
     }
 };
 
-const Tabs = {
-    open(id) {
-        document.querySelectorAll('.tab-btn').forEach(e => e.classList.remove('active'));
-        document.querySelectorAll('.view').forEach(e => e.classList.remove('active'));
-        const idx = ['dinos','res','pois','ai','settings'].indexOf(id);
-        if(idx>=0) document.querySelectorAll('.tab-btn')[idx].classList.add('active');
-        document.getElementById('view-'+id).classList.add('active');
-        setTimeout(() => MapEngine.resize(), 10);
+window.Res = {
+    clear() {
+        Store.activeRes.clear();
+        document.querySelectorAll('#list-res .toggle-item').forEach(e => e.classList.remove('checked'));
+        MapEngine.draw();
     }
 };
 
-async function fetchData(url) {
-    try {
-        const r = await fetch(url);
-        const t = await r.text();
-        return JSON.parse(t.replace(/^\uFEFF/, '').replace(/\u00A0/g, ' '));
-    } catch { return null; }
-}
-
-const AI = {
+// --- START ---
+document.getElementById('search-dino').oninput = e => Ui.renderDinos(e.target.value);
+window.AI = {
     async send() {
-        const inp = document.getElementById('ai-input');
-        const txt = inp.value.trim();
-        if(!txt) return;
-        const log = document.getElementById('chat-log');
-        log.innerHTML += `<div class="chat-msg u">${txt}</div>`;
-        inp.value = '';
-        const apiKey = ""; 
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
-        const context = `Map: ${Store.map?.displayName}. Selected Dino: ${Store.selDino || 'None'}.`;
-        try {
-            const res = await fetch(url, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({contents:[{parts:[{text:txt}]}], systemInstruction: { parts: [{ text: `ARK Survival Expert. German. Context: ${context}` }] }})});
-            const d = await res.json();
-            log.innerHTML += `<div class="chat-msg b">${d.candidates[0].content.parts[0].text}</div>`;
-        } catch { log.innerHTML += `<div class="chat-msg b text-red-500">Error</div>`; }
+        const i = document.getElementById('ai-input');
+        const t = i.value.trim();
+        if(!t) return;
+        const l = document.getElementById('chat-log');
+        l.innerHTML += `<div class="chat-msg u">${t}</div>`;
+        i.value='';
+        // DEMO
+        setTimeout(() => l.innerHTML += `<div class="chat-msg b">Ich bin bereit, aber der API Key fehlt.</div>`, 500);
     }
 };
 
-// EXPOSE TO WINDOW TO PREVENT REFERENCE ERRORS
-window.App = App;
-window.MapEngine = MapEngine;
-window.Tabs = Tabs;
-window.Resources = Resources;
-window.Layers = Layers;
-window.AI = AI;
-
-document.addEventListener("DOMContentLoaded", () => App.init());
+document.addEventListener("DOMContentLoaded", () => {
+    MapEngine.init(); 
+    Data.init();
+});
 
 </script>
 </body>
