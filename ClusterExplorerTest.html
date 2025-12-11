@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IOP Cluster Explorer v12.10 (Color Fix)</title>
+    <title>IOP Cluster Explorer v12.11 (Group Toggles)</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <style>
         /* --- CORE --- */
@@ -98,8 +98,9 @@
         .dino-item img { width: 28px; height: 28px; margin-right: 10px; }
 
         .toggle-item { display: flex; align-items: center; padding: 8px 0; cursor: pointer; user-select: none; }
-        .chk { width: 18px; height: 18px; border: 2px solid #444; border-radius: 3px; margin-right: 10px; display: flex; align-items: center; justify-content: center; }
-        .toggle-item.checked .chk { background: var(--phoenix-fire); border-color: var(--phoenix-fire); }
+        .chk { width: 18px; height: 18px; border: 2px solid #444; border-radius: 3px; margin-right: 10px; display: flex; align-items: center; justify-content: center; transition: 0.15s; }
+        .toggle-item:hover .chk { border-color: #666; }
+        .toggle-item.checked .chk { background: var(--phoenix-fire); border-color: var(--phoenix-fire); box-shadow: 0 0 8px rgba(255, 42, 0, 0.4); }
         .toggle-item.checked .chk::after { content: '✓'; color: black; font-weight: bold; font-size: 12px; }
         .toggle-item.disabled { opacity: 0.5; cursor: not-allowed; }
 
@@ -108,15 +109,7 @@
         .zoom-btn { width: 40px; height: 40px; background: #111; border: 1px solid #444; color: white; border-radius: 6px; font-size: 20px; cursor: pointer; display: grid; place-items: center; }
         .zoom-btn:hover { border-color: var(--phoenix-fire); color: var(--phoenix-fire); }
 
-        /* INFO PANEL - FIXED BACKGROUND */
-        .info-panel { 
-            position: absolute; top: 0; right: 0; bottom: 0; width: 380px; 
-            /* Hier war vorher #111827 (Dunkelblau) - Jetzt korrigiert auf Panel-Hintergrund */
-            background: var(--bg-panel); 
-            border-left: 1px solid var(--phoenix-fire); 
-            transform: translateX(100%); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); 
-            z-index: 100; box-shadow: -10px 0 30px rgba(0,0,0,0.8); display: flex; flex-direction: column; 
-        }
+        .info-panel { position: absolute; top: 0; right: 0; bottom: 0; width: 380px; background: #111827; border-left: 1px solid var(--phoenix-fire); transform: translateX(100%); transition: transform 0.3s; z-index: 100; box-shadow: -10px 0 30px rgba(0,0,0,0.8); display: flex; flex-direction: column; }
         .info-panel.visible { transform: translateX(0); }
         
         .related-list { margin-top: 20px; border-top: 1px solid #333; padding-top: 15px; }
@@ -191,24 +184,36 @@
                 <div id="list-dinos"></div>
             </div>
             
-            <!-- RESSOURCEN -->
+            <!-- RESSOURCEN (Updated) -->
             <div id="view-res" class="view">
-                <div class="flex justify-between mb-4 border-b border-gray-800 pb-2">
-                    <span class="text-xs font-bold text-gray-500">RESSOURCEN</span>
-                    <button onclick="Res.clear()" class="text-xs text-amber-500">Reset</button>
+                <div class="mb-4 border-b border-gray-800 pb-2">
+                    <!-- Master Toggle for Resources -->
+                    <div class="toggle-item" id="tog-all-res" onclick="Res.toggleAll()">
+                        <div class="chk"></div>
+                        <span class="text-xs font-bold text-gray-500 tracking-wider">ALLE RESSOURCEN</span>
+                    </div>
                 </div>
                 <div id="list-res"></div>
             </div>
 
-            <!-- ORTE -->
+            <!-- ORTE (Updated) -->
             <div id="view-pois" class="view">
                 <div class="mb-6">
                     <div class="text-xs text-gray-500 font-bold mb-2 tracking-wider">ALLGEMEIN</div>
-                    <div class="toggle-item" id="tog-public" onclick="Layers.toggle('public')">
-                        <div class="chk"></div><span>Public Spots</span>
+                    
+                    <!-- Master Toggle for Locations -->
+                    <div class="toggle-item mb-2" id="tog-all-pois" onclick="Layers.toggleAllPois()">
+                        <div class="chk"></div><span class="text-amber-500 text-sm font-bold">Alle Orte einblenden</span>
                     </div>
-                    <div class="toggle-item" id="tog-caves" onclick="Layers.toggle('caves')">
-                        <div class="chk"></div><span>Höhlen</span>
+
+                    <!-- Indented Items -->
+                    <div class="pl-4 border-l-2 border-[#1a1a1a] ml-1">
+                        <div class="toggle-item" id="tog-public" onclick="Layers.toggle('public')">
+                            <div class="chk"></div><span>Public Spots</span>
+                        </div>
+                        <div class="toggle-item" id="tog-caves" onclick="Layers.toggle('caves')">
+                            <div class="chk"></div><span>Höhlen</span>
+                        </div>
                     </div>
                 </div>
 
@@ -258,7 +263,7 @@
 
 <script>
 /**
- * IOP WIDGET CORE v12.10
+ * IOP WIDGET CORE v12.11 - Group Toggles
  */
 
 window.CFG = {
@@ -392,7 +397,6 @@ window.MapEngine = {
         this.el.style.height = size+'px';
         this.cvs.width = size;
         this.cvs.height = size;
-        // Manual Center
         this.el.style.left = (vp.clientWidth - size)/2 + 'px';
         this.el.style.top = (vp.clientHeight - size)/2 + 'px';
         this.draw();
@@ -404,7 +408,7 @@ window.MapEngine = {
         this.img.onload = () => {
              const loader = document.getElementById('loader');
              if(loader) loader.classList.add('hidden');
-             this.fit(); // Recalc center
+             this.fit();
              this.draw();
         };
         this.setMarker(null);
@@ -420,6 +424,8 @@ window.MapEngine = {
         const relX = mx - rect.left;
         const relY = my - rect.top;
         const ratio = 1 - (newScale / oldScale);
+        const unscaledX = relX / oldScale;
+        const unscaledY = relY / oldScale;
         Store.view.x += (relX - (relX * (newScale / oldScale)));
         Store.view.y += (relY - (relY * (newScale / oldScale)));
         Store.view.scale = newScale;
@@ -499,7 +505,7 @@ window.MapEngine = {
         });
 
         if (Store.layers.players && Store.data.players) {
-            const spawns = Array.isArray(Store.data.players) ? Store.data.players : (Store.data.players.spawnPoints || []);
+            const spawns = Store.data.players; 
             const palette = ['#4ade80', '#60a5fa', '#facc15', '#f87171', '#c084fc', '#fb923c', '#2dd4bf', '#f472b6'];
             
             if (spawns.length === 0) Ui.toast("Keine Spieler-Spawns verfügbar");
@@ -511,15 +517,11 @@ window.MapEngine = {
                 ctx.lineWidth = 1.5;
 
                 const points = group.locations || group.spawnPoints || (Array.isArray(group) ? group : []);
-                
                 points.forEach(loc => {
                     if (loc.lat !== undefined) {
                          const cx = (loc.lon / 100) * w;
                          const cy = (loc.lat / 100) * h;
-                         ctx.beginPath();
-                         ctx.arc(cx, cy, 8, 0, Math.PI * 2);
-                         ctx.fill();
-                         ctx.stroke();
+                         ctx.beginPath(); ctx.arc(cx, cy, 8, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
                     }
                 });
             });
@@ -541,7 +543,6 @@ window.MapEngine = {
         const rad = 2.5; 
         let hit = null;
         let type = '';
-
         if(Store.layers.public && Array.isArray(Store.data.pois)) {
             hit = Store.data.pois.find(p => Math.hypot(p.lon-lon, p.lat-lat) < rad);
             if(hit) type = 'public';
@@ -550,7 +551,6 @@ window.MapEngine = {
             hit = Store.data.caves.find(p => Math.hypot(p.lon-lon, p.lat-lat) < rad);
             if(hit) type = 'caves';
         }
-        
         if(hit) Ui.showInfo(hit, type);
     }
 };
@@ -591,11 +591,8 @@ window.Data = {
         ];
         
         const [d, r, p, o, ca, pl] = await Promise.all(urls.map(u => fetchData(u)));
-        
-        // Diagnose
-        if(d) Ui.setStatus('dino', 'ok'); else Ui.setStatus('dino', 'err');
-        
         const processedSpawns = findSpawnGroups(pl);
+        
         if (processedSpawns.length > 0) {
             Ui.setSpawnStatus('ok', `OK (${processedSpawns.length} Zonen)`);
             document.getElementById('tog-players').classList.remove('disabled');
@@ -613,6 +610,8 @@ window.Data = {
         Ui.renderDinos();
         Ui.renderRes();
         Ui.renderObs();
+        // Reset toggles visual state to match logic defaults
+        Ui.resetToggles();
         MapEngine.draw();
     }
 };
@@ -647,6 +646,12 @@ window.Ui = {
         if(idx !== -1) document.querySelectorAll('.tab-btn')[idx].classList.add('active');
         document.getElementById('view-'+id).classList.add('active');
         setTimeout(()=>MapEngine.fit(), 10);
+    },
+
+    // Reset visual toggle states when loading map
+    resetToggles() {
+        Store.layers = { public: false, caves: false, players: false };
+        document.querySelectorAll('.toggle-item').forEach(el => el.classList.remove('checked'));
     },
 
     renderDinos(term="") {
@@ -769,6 +774,21 @@ window.Layers = {
         Store.layers[key] = !Store.layers[key];
         document.getElementById('tog-'+key).classList.toggle('checked');
         MapEngine.draw();
+    },
+    
+    // MASTER TOGGLES
+    toggleAllPois() {
+        const on = !Store.layers.public; // Toggle based on public state
+        Store.layers.public = on;
+        Store.layers.caves = on;
+        
+        // Update UI Visuals
+        ['tog-public', 'tog-caves', 'tog-all-pois'].forEach(id => {
+            const el = document.getElementById(id);
+            if(on) el.classList.add('checked'); else el.classList.remove('checked');
+        });
+        
+        MapEngine.draw();
     }
 };
 
@@ -776,7 +796,24 @@ window.Res = {
     clear() {
         Store.activeRes.clear();
         document.querySelectorAll('#list-res .toggle-item').forEach(e => e.classList.remove('checked'));
+        document.getElementById('tog-all-res').classList.remove('checked');
         MapEngine.draw();
+    },
+    
+    toggleAll() {
+        const allKeys = Object.keys(Store.data.res);
+        if (allKeys.length === 0) return;
+        
+        const allActive = Store.activeRes.size === allKeys.length;
+        
+        if (allActive) {
+            this.clear();
+        } else {
+            allKeys.forEach(k => Store.activeRes.add(k));
+            document.querySelectorAll('#list-res .toggle-item').forEach(e => e.classList.add('checked'));
+            document.getElementById('tog-all-res').classList.add('checked');
+            MapEngine.draw();
+        }
     }
 };
 
