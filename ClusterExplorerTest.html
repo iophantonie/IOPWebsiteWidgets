@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IOP Cluster Explorer v12.13 (Color Regression Fix)</title>
+    <title>IOP Cluster Explorer v12.15 (Legend Added)</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <style>
         /* --- CORE --- */
@@ -98,7 +98,7 @@
         .dino-item img { width: 28px; height: 28px; margin-right: 10px; }
 
         .toggle-item { display: flex; align-items: center; padding: 8px 0; cursor: pointer; user-select: none; }
-        .chk { width: 18px; height: 18px; border: 2px solid #444; border-radius: 3px; margin-right: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .chk { width: 18px; height: 18px; border: 2px solid #444; border-radius: 3px; margin-right: 10px; display: flex; align-items: center; justify-content: center; }
         .toggle-item.checked .chk { background: var(--phoenix-fire); border-color: var(--phoenix-fire); }
         .toggle-item.checked .chk::after { content: '✓'; color: black; font-weight: bold; font-size: 12px; }
         .toggle-item.disabled { opacity: 0.5; cursor: not-allowed; }
@@ -108,10 +108,26 @@
         .zoom-btn { width: 40px; height: 40px; background: #111; border: 1px solid #444; color: white; border-radius: 6px; font-size: 20px; cursor: pointer; display: grid; place-items: center; }
         .zoom-btn:hover { border-color: var(--phoenix-fire); color: var(--phoenix-fire); }
 
-        /* INFO PANEL - FIXED BACKGROUND */
+        /* LEGEND (NEW) */
+        .map-legend {
+            position: absolute; bottom: 30px; left: 340px; /* Offset by sidebar width */
+            margin-left: 20px;
+            background: rgba(10, 10, 10, 0.9);
+            border: 1px solid #333;
+            border-radius: 6px;
+            padding: 12px;
+            z-index: 50;
+            pointer-events: none;
+            font-size: 11px;
+            color: #ccc;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+        .legend-title { color: var(--phoenix-fire); font-weight: 800; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.05em; font-size: 10px; }
+        .leg-item { display: flex; align-items: center; margin-bottom: 4px; }
+        .leg-box { width: 12px; height: 12px; margin-right: 8px; border: 1px solid rgba(255,255,255,0.2); }
+        
         .info-panel { 
             position: absolute; top: 0; right: 0; bottom: 0; width: 380px; 
-            /* Hier war der Fehler - Jetzt wieder #0a0a0a */
             background: var(--bg-panel); 
             border-left: 1px solid var(--phoenix-fire); 
             transform: translateX(100%); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); 
@@ -191,7 +207,7 @@
                 <div id="list-dinos"></div>
             </div>
             
-            <!-- RESSOURCEN (Updated) -->
+            <!-- RESSOURCEN -->
             <div id="view-res" class="view">
                 <div class="mb-4 border-b border-gray-800 pb-2">
                     <!-- Master Toggle for Resources -->
@@ -208,12 +224,10 @@
                 <div class="mb-6">
                     <div class="text-xs text-gray-500 font-bold mb-2 tracking-wider">ALLGEMEIN</div>
                     
-                    <!-- Master Toggle for Locations -->
                     <div class="toggle-item mb-2" id="tog-all-pois" onclick="Layers.toggleAllPois()">
                         <div class="chk"></div><span class="text-amber-500 text-sm font-bold">Alle Orte einblenden</span>
                     </div>
 
-                    <!-- Indented Items -->
                     <div class="pl-4 border-l-2 border-[#1a1a1a] ml-1">
                         <div class="toggle-item" id="tog-public" onclick="Layers.toggle('public')">
                             <div class="chk"></div><span>Public Spots</span>
@@ -244,6 +258,18 @@
 
     <!-- MAP VIEWPORT -->
     <div id="viewport">
+        <!-- THE LEGEND -->
+        <div class="map-legend">
+            <div class="legend-title">Spawn Raten</div>
+            <div class="leg-item"><div class="leg-box" style="background: rgba(34, 197, 94, 0.8)"></div>Sehr Häufig</div>
+            <div class="leg-item"><div class="leg-box" style="background: rgba(132, 204, 22, 0.8)"></div>Häufig</div>
+            <div class="leg-item"><div class="leg-box" style="background: rgba(234, 179, 8, 0.8)"></div>Gelegentlich</div>
+            <div class="leg-item"><div class="leg-box" style="background: rgba(249, 115, 22, 0.8)"></div>Selten</div>
+            <div class="leg-item"><div class="leg-box" style="background: rgba(239, 68, 68, 0.8)"></div>Sehr Selten</div>
+            <div class="leg-item"><div class="leg-box" style="background: rgba(168, 85, 247, 0.8)"></div>Extrem Selten</div>
+            <div class="leg-item mt-2"><div class="leg-box" style="background: repeating-linear-gradient(45deg, rgba(255,255,255,0.1), rgba(255,255,255,0.1) 2px, transparent 2px, transparent 4px); border: 1px solid #555"></div>Höhle</div>
+        </div>
+
         <div id="world">
             <img id="map-image-layer" src="" alt="Karte" crossorigin="anonymous">
             <canvas id="data-canvas"></canvas>
@@ -270,15 +296,33 @@
 
 <script>
 /**
- * IOP WIDGET CORE v12.13 - Colors & Checkboxes
+ * IOP WIDGET CORE v12.15 - Legend Added
  */
 
 window.CFG = {
     urlC: 'https://raw.githubusercontent.com/iophantonie/iophantonie-IOP_Custom_Map_Explorer.github.io/main/MapConfigs/MapConfigs.jsn',
     urlI: 'https://raw.githubusercontent.com/iophantonie/iophantonie-IOP_Custom_Map_Explorer.github.io/refs/heads/main/Icon_Datenbank/Icondb.jsn',
     urlT: 'https://raw.githubusercontent.com/iophantonie/iophantonie-IOP_Custom_Map_Explorer.github.io/main/Translation_Datenbank/translationdb.jsn',
-    col: { spawn: 'rgba(255, 42, 0, 0.4)', stroke: '#ff2a00' }
+    col: { spawn: 'rgba(255, 42, 0, 0.4)', stroke: '#ff2a00' },
+    // RARITY COLORS (Matches Legend)
+    rarity: [
+        { th: 0.30, c: '#22c55e' }, // Green
+        { th: 0.15, c: '#84cc16' }, // Lime
+        { th: 0.07, c: '#eab308' }, // Yellow
+        { th: 0.03, c: '#f97316' }, // Orange
+        { th: 0.01, c: '#ef4444' }, // Red
+        { th: 0.00, c: '#a855f7' }  // Purple
+    ]
 };
+
+// HELPER: Color Hex to RGBA
+function hexToRgba(hex, alpha) {
+    if(!hex) return `rgba(255, 255, 255, ${alpha})`;
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
 
 window.Store = {
     cfg: {}, map: null,
@@ -303,7 +347,7 @@ async function fetchData(url) {
         const r = await fetch(url);
         if(!r.ok) throw new Error(`HTTP ${r.status}`);
         const t = await r.text();
-        const cleaned = t.replace(/^\uFEFF/, '').replace(/\u00A0/g, ' ');
+        const cleaned = t.replace(/^\uFEFF/, '').replace(/\/\*[\s\S]*?\*\/|([^\\:]|^)\/\/.*$/gm, '$1').replace(/\u00A0/g, ' ');
         return JSON.parse(cleaned);
     } catch(e) { console.warn("JSON Error", e); return null; }
 }
@@ -334,6 +378,7 @@ function findSpawnGroups(rawData) {
 window.MapEngine = {
     el: null, cvs: null, ctx: null, img: null, marker: null,
     iconCache: new Map(),
+    cavePattern: null, // Hatching Pattern
     isDown: false, hasMoved: false, startX: 0, startY: 0,
 
     init() {
@@ -343,6 +388,15 @@ window.MapEngine = {
         this.marker = document.getElementById('selection-marker');
         this.ctx = this.cvs.getContext('2d');
         Store.dom.mapImg = this.img;
+        
+        // Create Hatching Pattern
+        const pCvs = document.createElement('canvas');
+        pCvs.width = 10; pCvs.height = 10;
+        const pCtx = pCvs.getContext('2d');
+        pCtx.strokeStyle = 'rgba(255,255,255,0.4)';
+        pCtx.lineWidth = 1;
+        pCtx.beginPath(); pCtx.moveTo(0, 10); pCtx.lineTo(10, 0); pCtx.stroke();
+        this.cavePattern = this.ctx.createPattern(pCvs, 'repeat');
         
         const input = document.getElementById('input-layer');
         
@@ -474,12 +528,31 @@ window.MapEngine = {
         const ctx = this.ctx;
         ctx.clearRect(0, 0, w, h);
 
+        // --- DINOS WITH RARITY COLORS & HATCHING ---
         if(Store.selDino && Array.isArray(Store.data.dinos[Store.selDino])) {
             Store.data.dinos[Store.selDino].forEach(z => {
                 const x = (z.min.lon/100)*w, y = (z.min.lat/100)*h;
                 const zw = ((z.max.lon - z.min.lon)/100)*w, zh = ((z.max.lat - z.min.lat)/100)*h;
-                ctx.fillStyle = CFG.col.spawn; ctx.fillRect(x, y, zw, zh);
-                ctx.strokeStyle = CFG.col.stroke; ctx.lineWidth = 2; ctx.strokeRect(x, y, zw, zh);
+                
+                // Rarity Calc
+                const score = (z.chance || 0.5) * (z.weight || 1);
+                let hex = '#22c55e'; // Default Green
+                for(let r of window.CFG.rarity) {
+                    if(score >= r.th) { hex = r.c; break; }
+                }
+                
+                ctx.fillStyle = hexToRgba(hex, 0.4);
+                ctx.fillRect(x, y, zw, zh);
+                
+                // Cave Hatching
+                if (z.isCave) {
+                    ctx.fillStyle = this.cavePattern;
+                    ctx.fillRect(x, y, zw, zh);
+                }
+
+                ctx.strokeStyle = hex;
+                ctx.lineWidth = 2; 
+                ctx.strokeRect(x, y, zw, zh);
             });
         }
 
@@ -490,6 +563,7 @@ window.MapEngine = {
                 Store.data.res[k].forEach(p => {
                     const cx = (p.lon/100)*w, cy = (p.lat/100)*h;
                     const sz = Math.min(32, 12 + ((p.size||1)*2));
+                    // Check strict logic for Image Drawing
                     if(img && img.complete && img.naturalWidth > 0) ctx.drawImage(img, cx-sz/2, cy-sz/2, sz, sz);
                     else { ctx.fillStyle=col; ctx.beginPath(); ctx.arc(cx,cy,sz/3,0,6.28); ctx.fill(); }
                 });
@@ -503,6 +577,7 @@ window.MapEngine = {
             const o = Store.data.obs.find(i => i.name === k);
             if(o) {
                 let img = o.icon ? this.getImg(o.icon) : null;
+                // Fallback lookup if direct icon missing
                 if(!img) img = this.getImg(Store.icons[o.name]?.iconUrl);
 
                 const cx=(o.lon/100)*w, cy=(o.lat/100)*h;
@@ -519,6 +594,7 @@ window.MapEngine = {
             }
         });
 
+        // PLAYER SPAWNS DRAWING
         if (Store.layers.players && Store.data.players) {
             const spawns = Store.data.players; 
             const palette = ['#4ade80', '#60a5fa', '#facc15', '#f87171', '#c084fc', '#fb923c', '#2dd4bf', '#f472b6'];
@@ -612,8 +688,11 @@ window.Data = {
         ];
         
         const [d, r, p, o, ca, pl] = await Promise.all(urls.map(u => fetchData(u)));
-        const processedSpawns = findSpawnGroups(pl);
         
+        // Diagnose
+        if(d) Ui.setStatus('dino', 'ok'); else Ui.setStatus('dino', 'err');
+        
+        const processedSpawns = findSpawnGroups(pl);
         if (processedSpawns.length > 0) {
             Ui.setSpawnStatus('ok', `OK (${processedSpawns.length} Zonen)`);
             document.getElementById('tog-players').classList.remove('disabled');
