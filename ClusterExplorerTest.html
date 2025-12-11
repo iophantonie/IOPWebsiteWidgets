@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IOP Cluster Explorer v12.7 (Color Fix)</title>
+    <title>IOP Cluster Explorer v12.10 (Color Fix)</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <style>
         /* --- CORE --- */
@@ -41,11 +41,12 @@
         /* --- MAP ENGINE --- */
         #viewport {
             flex: 1; position: relative; background: #050505; overflow: hidden;
-            display: flex; justify-content: center; align-items: center;
+            display: block; 
         }
 
         #world {
-            position: relative;
+            position: absolute;
+            top: 0; left: 0;
             width: 1024px; height: 1024px;
             box-shadow: 0 0 100px rgba(0,0,0,0.9);
             transform-origin: 0 0;
@@ -100,16 +101,18 @@
         .chk { width: 18px; height: 18px; border: 2px solid #444; border-radius: 3px; margin-right: 10px; display: flex; align-items: center; justify-content: center; }
         .toggle-item.checked .chk { background: var(--phoenix-fire); border-color: var(--phoenix-fire); }
         .toggle-item.checked .chk::after { content: '✓'; color: black; font-weight: bold; font-size: 12px; }
+        .toggle-item.disabled { opacity: 0.5; cursor: not-allowed; }
 
         .hud-top { position: absolute; top: 20px; right: 20px; background: rgba(0,0,0,0.9); padding: 8px 12px; border-radius: 4px; color: var(--phoenix-fire); font-family: monospace; z-index: 50; border: 1px solid #333; pointer-events: none; }
         .hud-bot { position: absolute; bottom: 30px; right: 30px; display: flex; gap: 8px; z-index: 50; }
         .zoom-btn { width: 40px; height: 40px; background: #111; border: 1px solid #444; color: white; border-radius: 6px; font-size: 20px; cursor: pointer; display: grid; place-items: center; }
         .zoom-btn:hover { border-color: var(--phoenix-fire); color: var(--phoenix-fire); }
 
-        /* INFO PANEL - BACKGROUND COLOR FIXED */
+        /* INFO PANEL - FIXED BACKGROUND */
         .info-panel { 
             position: absolute; top: 0; right: 0; bottom: 0; width: 380px; 
-            background: var(--bg-panel); /* FIXED: Uses same color as sidebar now */
+            /* Hier war vorher #111827 (Dunkelblau) - Jetzt korrigiert auf Panel-Hintergrund */
+            background: var(--bg-panel); 
             border-left: 1px solid var(--phoenix-fire); 
             transform: translateX(100%); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); 
             z-index: 100; box-shadow: -10px 0 30px rgba(0,0,0,0.8); display: flex; flex-direction: column; 
@@ -197,7 +200,7 @@
                 <div id="list-res"></div>
             </div>
 
-            <!-- ORTE (ZUSAMMENGEFASST) -->
+            <!-- ORTE -->
             <div id="view-pois" class="view">
                 <div class="mb-6">
                     <div class="text-xs text-gray-500 font-bold mb-2 tracking-wider">ALLGEMEIN</div>
@@ -255,7 +258,7 @@
 
 <script>
 /**
- * IOP WIDGET CORE v12.7 - JSON Fix & Universal Spawns
+ * IOP WIDGET CORE v12.10
  */
 
 window.CFG = {
@@ -296,17 +299,11 @@ async function fetchData(url) {
 function findSpawnGroups(rawData) {
     if (!rawData) return [];
     if (rawData.spawnPoints && Array.isArray(rawData.spawnPoints)) return rawData.spawnPoints; 
-    
-    // Deep Search for "locations" or "spawnPoints" array
     let found = [];
     const search = (obj) => {
         if (!obj || typeof obj !== 'object') return;
         if (Array.isArray(obj)) {
-             // Check if array items look like spawn groups
-             if(obj.length > 0 && (obj[0].locations || obj[0].lat !== undefined)) {
-                 found = obj;
-                 return;
-             }
+             if(obj.length > 0 && (obj[0].locations || obj[0].lat !== undefined)) { found = obj; return; }
              obj.forEach(search);
         } else {
              if(obj.spawnPoints) { found = obj.spawnPoints; return; }
@@ -314,14 +311,10 @@ function findSpawnGroups(rawData) {
         }
     };
     search(rawData);
-    
     if (found.length > 0) return found;
-
-    // Fallback if rawData IS an array of points
     if (Array.isArray(rawData) && rawData.length > 0 && rawData[0].lat !== undefined) {
          return [{ name: "Spawns", color: "#4ade80", locations: rawData }];
     }
-
     return [];
 }
 
@@ -342,17 +335,12 @@ window.MapEngine = {
         const input = document.getElementById('input-layer');
         
         input.onmousedown = e => { 
-            this.isDown = true; 
-            this.hasMoved = false; 
-            this.startX = e.clientX; 
-            this.startY = e.clientY; 
+            this.isDown = true; this.hasMoved = false; 
+            this.startX = e.clientX; this.startY = e.clientY; 
             input.style.cursor='grabbing'; 
         };
         
-        window.onmouseup = () => { 
-            this.isDown = false; 
-            input.style.cursor='grab'; 
-        };
+        window.onmouseup = () => { this.isDown = false; input.style.cursor='grab'; };
         
         input.onmousemove = e => {
             if(this.isDown) {
@@ -360,10 +348,8 @@ window.MapEngine = {
                 const dy = e.clientY - this.startY;
                 if(Math.abs(dx) > 5 || Math.abs(dy) > 5) {
                     this.hasMoved = true;
-                    Store.view.x += dx;
-                    Store.view.y += dy;
-                    this.startX = e.clientX; 
-                    this.startY = e.clientY;
+                    Store.view.x += dx; Store.view.y += dy;
+                    this.startX = e.clientX; this.startY = e.clientY;
                     this.update();
                 }
             }
@@ -406,6 +392,7 @@ window.MapEngine = {
         this.el.style.height = size+'px';
         this.cvs.width = size;
         this.cvs.height = size;
+        // Manual Center
         this.el.style.left = (vp.clientWidth - size)/2 + 'px';
         this.el.style.top = (vp.clientHeight - size)/2 + 'px';
         this.draw();
@@ -417,7 +404,7 @@ window.MapEngine = {
         this.img.onload = () => {
              const loader = document.getElementById('loader');
              if(loader) loader.classList.add('hidden');
-             this.fit(); // Recalc center when loaded
+             this.fit(); // Recalc center
              this.draw();
         };
         this.setMarker(null);
@@ -433,8 +420,6 @@ window.MapEngine = {
         const relX = mx - rect.left;
         const relY = my - rect.top;
         const ratio = 1 - (newScale / oldScale);
-        const unscaledX = relX / oldScale;
-        const unscaledY = relY / oldScale;
         Store.view.x += (relX - (relX * (newScale / oldScale)));
         Store.view.y += (relY - (relY * (newScale / oldScale)));
         Store.view.scale = newScale;
@@ -469,7 +454,6 @@ window.MapEngine = {
         const ctx = this.ctx;
         ctx.clearRect(0, 0, w, h);
 
-        // SAFE LOOPS
         if(Store.selDino && Array.isArray(Store.data.dinos[Store.selDino])) {
             Store.data.dinos[Store.selDino].forEach(z => {
                 const x = (z.min.lon/100)*w, y = (z.min.lat/100)*h;
@@ -486,7 +470,6 @@ window.MapEngine = {
                 Store.data.res[k].forEach(p => {
                     const cx = (p.lon/100)*w, cy = (p.lat/100)*h;
                     const sz = Math.min(32, 12 + ((p.size||1)*2));
-                    // Check strict logic for Image Drawing
                     if(img && img.complete && img.naturalWidth > 0) ctx.drawImage(img, cx-sz/2, cy-sz/2, sz, sz);
                     else { ctx.fillStyle=col; ctx.beginPath(); ctx.arc(cx,cy,sz/3,0,6.28); ctx.fill(); }
                 });
@@ -500,15 +483,13 @@ window.MapEngine = {
             const o = Store.data.obs.find(i => i.name === k);
             if(o) {
                 let img = o.icon ? this.getImg(o.icon) : null;
-                // Fallback to global icon DB by name
                 if(!img) img = this.getImg(Store.icons[o.name]?.iconUrl);
 
                 const cx=(o.lon/100)*w, cy=(o.lat/100)*h;
-                
                 if(img && img.complete && img.naturalWidth > 0) {
                     const ht=60, ar=img.naturalWidth/img.naturalHeight;
                     const wt=ht*ar;
-                    ctx.drawImage(img, cx-(wt/2), cy-ht, wt, ht); // Draw bottom-center
+                    ctx.drawImage(img, cx-(wt/2), cy-ht, wt, ht); 
                 } else {
                     const c = o.name.includes('Rot') ? '#ef4444' : o.name.includes('Grün') ? '#22c55e' : '#3b82f6';
                     ctx.fillStyle=c; ctx.beginPath(); ctx.arc(cx,cy,8,0,6.28); ctx.fill();
@@ -517,9 +498,8 @@ window.MapEngine = {
             }
         });
 
-        // PLAYER SPAWNS DRAWING
         if (Store.layers.players && Store.data.players) {
-            const spawns = Store.data.players; // findSpawnGroups already normalizes this
+            const spawns = Array.isArray(Store.data.players) ? Store.data.players : (Store.data.players.spawnPoints || []);
             const palette = ['#4ade80', '#60a5fa', '#facc15', '#f87171', '#c084fc', '#fb923c', '#2dd4bf', '#f472b6'];
             
             if (spawns.length === 0) Ui.toast("Keine Spieler-Spawns verfügbar");
@@ -530,7 +510,6 @@ window.MapEngine = {
                 ctx.strokeStyle = '#fff';
                 ctx.lineWidth = 1.5;
 
-                // Handle group.locations
                 const points = group.locations || group.spawnPoints || (Array.isArray(group) ? group : []);
                 
                 points.forEach(loc => {
@@ -659,7 +638,7 @@ window.Ui = {
         if(txt) txt.textContent = msg;
     },
     
-    setStatus(id, type) {}, // Stub for compatibility
+    setStatus(id, type) {}, 
 
     tab(id) {
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
