@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IOP Cluster Explorer v12.17 (Checkbox & Legend Fix)</title>
+    <title>IOP Cluster Explorer v12.18 (Load Fix)</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <style>
         /* --- CORE --- */
@@ -98,15 +98,7 @@
         .dino-item img { width: 28px; height: 28px; margin-right: 10px; }
 
         .toggle-item { display: flex; align-items: center; padding: 8px 0; cursor: pointer; user-select: none; }
-        /* Checkbox fest definiert */
-        .chk { 
-            width: 18px; height: 18px; 
-            border: 2px solid #444; border-radius: 3px; 
-            margin-right: 10px; 
-            display: flex; align-items: center; justify-content: center; flex-shrink: 0; 
-            background: #000;
-        }
-        .toggle-item:hover .chk { border-color: #888; }
+        .chk { width: 18px; height: 18px; border: 2px solid #444; border-radius: 3px; margin-right: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
         .toggle-item.checked .chk { background: var(--phoenix-fire); border-color: var(--phoenix-fire); }
         .toggle-item.checked .chk::after { content: '✓'; color: black; font-weight: bold; font-size: 12px; }
         .toggle-item.disabled { opacity: 0.5; cursor: not-allowed; }
@@ -308,7 +300,7 @@
 
 <script>
 /**
- * IOP WIDGET CORE v12.17 - Checkbox & Legend Fix
+ * IOP WIDGET CORE v12.18 - Image Load Fix
  */
 
 window.CFG = {
@@ -483,13 +475,24 @@ window.MapEngine = {
 
     load(url) {
         if(!this.img) return;
-        this.img.src = url;
+        
+        // Show loader initially
+        const loader = document.getElementById('loader');
+        if(loader) loader.classList.remove('hidden');
+
+        // FIX: Handle error gracefully
         this.img.onload = () => {
-             const loader = document.getElementById('loader');
              if(loader) loader.classList.add('hidden');
              this.fit();
              this.draw();
         };
+        this.img.onerror = () => {
+            console.warn("Map Image Load Failed: " + url);
+            // Hide loader anyway so UI is usable
+            if(loader) loader.classList.add('hidden');
+        };
+        
+        this.img.src = url;
         this.setMarker(null);
     },
 
