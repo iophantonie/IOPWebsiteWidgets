@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IOP Cluster Explorer v12.8 (Centering Fix)</title>
+    <title>IOP Cluster Explorer v12.6 (Center Fix)</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <style>
         /* --- CORE --- */
@@ -41,17 +41,16 @@
         /* --- MAP ENGINE --- */
         #viewport {
             flex: 1; position: relative; background: #050505; overflow: hidden;
-            /* FIX: Block display allows absolute positioning of children correctly */
-            display: block; 
+            /* FLEXBOX CENTERING - THE FIX */
+            display: flex; justify-content: center; align-items: center;
         }
 
         #world {
-            /* FIX: Absolute positioning for manual centering via JS */
-            position: absolute;
-            top: 0; left: 0;
+            position: relative; /* Relative works best with flexbox centering */
             width: 1024px; height: 1024px;
             box-shadow: 0 0 100px rgba(0,0,0,0.9);
-            transform-origin: 0 0;
+            /* Transform Origin Center for cleaner zooming from middle */
+            transform-origin: 0 0; 
             background-color: #111;
         }
 
@@ -103,9 +102,7 @@
         .chk { width: 18px; height: 18px; border: 2px solid #444; border-radius: 3px; margin-right: 10px; display: flex; align-items: center; justify-content: center; }
         .toggle-item.checked .chk { background: var(--phoenix-fire); border-color: var(--phoenix-fire); }
         .toggle-item.checked .chk::after { content: '✓'; color: black; font-weight: bold; font-size: 12px; }
-
         .toggle-item.disabled { opacity: 0.5; cursor: not-allowed; }
-        .toggle-item.disabled .chk { border-color: #333; background: #222; }
 
         .hud-top { position: absolute; top: 20px; right: 20px; background: rgba(0,0,0,0.9); padding: 8px 12px; border-radius: 4px; color: var(--phoenix-fire); font-family: monospace; z-index: 50; border: 1px solid #333; pointer-events: none; }
         .hud-bot { position: absolute; bottom: 30px; right: 30px; display: flex; gap: 8px; z-index: 50; }
@@ -124,15 +121,6 @@
         .loader.hidden { opacity: 0; pointer-events: none; }
         .spinner { width: 50px; height: 50px; border: 3px solid #333; border-top-color: var(--phoenix-fire); border-radius: 50%; animation: spin 1s infinite linear; }
         @keyframes spin { to { transform: rotate(360deg); } }
-
-        /* Notification Toast */
-        #toast {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            background: rgba(0,0,0,0.9); border: 1px solid var(--phoenix-fire); color: white;
-            padding: 15px 25px; border-radius: 8px; z-index: 200; pointer-events: none;
-            opacity: 0; transition: opacity 0.3s;
-        }
-        #toast.visible { opacity: 1; }
 
         /* Chat */
         .chat-container { display: flex; flex-direction: column; height: 100%; }
@@ -196,7 +184,7 @@
                 <div id="list-res"></div>
             </div>
 
-            <!-- ORTE (ZUSAMMENGEFASST) -->
+            <!-- ORTE -->
             <div id="view-pois" class="view">
                 <div class="mb-6">
                     <div class="text-xs text-gray-500 font-bold mb-2 tracking-wider">ALLGEMEIN</div>
@@ -254,7 +242,7 @@
 
 <script>
 /**
- * IOP WIDGET CORE v12.8 - Centering Fix
+ * IOP WIDGET CORE v12.6 - Center Fix
  */
 
 window.CFG = {
@@ -287,22 +275,40 @@ async function fetchData(url) {
         const r = await fetch(url);
         if(!r.ok) throw new Error(`HTTP ${r.status}`);
         const t = await r.text();
-        const cleaned = t.replace(/^\uFEFF/, '').replace(/\u00A0/g, ' ');
+        const cleaned = t.replace(/^\uFEFF/, '').replace(/\/\*[\s\S]*?\*\/|([^\\:]|^)\/\/.*$/gm, '$1').replace(/\u00A0/g, ' ');
         return JSON.parse(cleaned);
     } catch(e) { console.warn("JSON Error", e); return null; }
 }
 
-// --- UTILS: UNIVERSAL DATA FINDER ---
 function findSpawnGroups(rawData) {
     if (!rawData) return [];
     if (rawData.spawnPoints && Array.isArray(rawData.spawnPoints)) return rawData.spawnPoints; 
-    if (Array.isArray(rawData)) {
-        if (rawData.length > 0) {
-            if (rawData[0].locations || rawData[0].spawnPoints) return rawData; 
-            if (rawData[0].lat !== undefined) return [{ name: "Spawns", color: "#4ade80", locations: rawData }];
+    
+    // Deep Search for "locations" or "spawnPoints" array
+    let found = [];
+    const search = (obj) => {
+        if (!obj || typeof obj !== 'object') return;
+        if (Array.isArray(obj)) {
+             // Check if array items look like spawn groups
+             if(obj.length > 0 && (obj[0].locations || obj[0].lat !== undefined)) {
+                 found = obj;
+                 return;
+             }
+             obj.forEach(search);
+        } else {
+             if(obj.spawnPoints) { found = obj.spawnPoints; return; }
+             Object.values(obj).forEach(search);
         }
-        return rawData;
+    };
+    search(rawData);
+    
+    if (found.length > 0) return found;
+
+    // Fallback if rawData IS an array of points
+    if (Array.isArray(rawData) && rawData.length > 0 && rawData[0].lat !== undefined) {
+         return [{ name: "Spawns", color: "#4ade80", locations: rawData }];
     }
+
     return [];
 }
 
@@ -389,9 +395,9 @@ window.MapEngine = {
         this.cvs.width = size;
         this.cvs.height = size;
         
-        // Manual Centering - Now reliable with absolute positioning
-        this.el.style.left = (vp.clientWidth - size)/2 + 'px';
-        this.el.style.top = (vp.clientHeight - size)/2 + 'px';
+        // CSS Flexbox handles centering now, but we ensure left/top are cleared
+        this.el.style.left = '';
+        this.el.style.top = '';
         
         this.draw();
     },
@@ -402,7 +408,7 @@ window.MapEngine = {
         this.img.onload = () => {
              const loader = document.getElementById('loader');
              if(loader) loader.classList.add('hidden');
-             this.fit();
+             this.fit(); // Recalc center when loaded
              this.draw();
         };
         this.setMarker(null);
@@ -418,6 +424,8 @@ window.MapEngine = {
         const relX = mx - rect.left;
         const relY = my - rect.top;
         const ratio = 1 - (newScale / oldScale);
+        const unscaledX = relX / oldScale;
+        const unscaledY = relY / oldScale;
         Store.view.x += (relX - (relX * (newScale / oldScale)));
         Store.view.y += (relY - (relY * (newScale / oldScale)));
         Store.view.scale = newScale;
@@ -452,6 +460,7 @@ window.MapEngine = {
         const ctx = this.ctx;
         ctx.clearRect(0, 0, w, h);
 
+        // SAFE LOOPS
         if(Store.selDino && Array.isArray(Store.data.dinos[Store.selDino])) {
             Store.data.dinos[Store.selDino].forEach(z => {
                 const x = (z.min.lon/100)*w, y = (z.min.lat/100)*h;
@@ -468,6 +477,7 @@ window.MapEngine = {
                 Store.data.res[k].forEach(p => {
                     const cx = (p.lon/100)*w, cy = (p.lat/100)*h;
                     const sz = Math.min(32, 12 + ((p.size||1)*2));
+                    // Check strict logic for Image Drawing
                     if(img && img.complete && img.naturalWidth > 0) ctx.drawImage(img, cx-sz/2, cy-sz/2, sz, sz);
                     else { ctx.fillStyle=col; ctx.beginPath(); ctx.arc(cx,cy,sz/3,0,6.28); ctx.fill(); }
                 });
@@ -480,15 +490,16 @@ window.MapEngine = {
         Store.activeObs.forEach(k => {
             const o = Store.data.obs.find(i => i.name === k);
             if(o) {
-                const img = o.icon ? this.getImg(o.icon) : null;
-                const fallbackImg = img ? null : this.getImg(Store.icons[o.name]?.iconUrl);
-                const finalImg = img || fallbackImg;
+                let img = o.icon ? this.getImg(o.icon) : null;
+                // Fallback to global icon DB by name
+                if(!img) img = this.getImg(Store.icons[o.name]?.iconUrl);
 
                 const cx=(o.lon/100)*w, cy=(o.lat/100)*h;
                 
-                if(finalImg && finalImg.complete && finalImg.naturalWidth > 0) {
-                    const ht=60, ar=finalImg.naturalWidth/finalImg.naturalHeight;
-                    ctx.drawImage(finalImg, cx-((ht*ar)/2), cy-ht, ht*ar, ht);
+                if(img && img.complete && img.naturalWidth > 0) {
+                    const ht=60, ar=img.naturalWidth/img.naturalHeight;
+                    const wt=ht*ar;
+                    ctx.drawImage(img, cx-(wt/2), cy-ht, wt, ht); // Draw bottom-center
                 } else {
                     const c = o.name.includes('Rot') ? '#ef4444' : o.name.includes('Grün') ? '#22c55e' : '#3b82f6';
                     ctx.fillStyle=c; ctx.beginPath(); ctx.arc(cx,cy,8,0,6.28); ctx.fill();
@@ -497,8 +508,9 @@ window.MapEngine = {
             }
         });
 
+        // PLAYER SPAWNS DRAWING
         if (Store.layers.players && Store.data.players) {
-            const spawns = Store.data.players; 
+            const spawns = Store.data.players; // findSpawnGroups already normalizes this
             const palette = ['#4ade80', '#60a5fa', '#facc15', '#f87171', '#c084fc', '#fb923c', '#2dd4bf', '#f472b6'];
             
             if (spawns.length === 0) Ui.toast("Keine Spieler-Spawns verfügbar");
@@ -509,13 +521,17 @@ window.MapEngine = {
                 ctx.strokeStyle = '#fff';
                 ctx.lineWidth = 1.5;
 
+                // Handle group.locations
                 const points = group.locations || group.spawnPoints || (Array.isArray(group) ? group : []);
                 
                 points.forEach(loc => {
                     if (loc.lat !== undefined) {
                          const cx = (loc.lon / 100) * w;
                          const cy = (loc.lat / 100) * h;
-                         ctx.beginPath(); ctx.arc(cx, cy, 8, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+                         ctx.beginPath();
+                         ctx.arc(cx, cy, 8, 0, Math.PI * 2);
+                         ctx.fill();
+                         ctx.stroke();
                     }
                 });
             });
