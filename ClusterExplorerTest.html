@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IOP Cluster Explorer v11.8 (Smart Zoom Fix)</title>
+    <title>IOP Cluster Explorer v12.1 (Image State Fix)</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <style>
         /* --- CORE --- */
         * { box-sizing: border-box; }
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #000; overflow: hidden; font-family: 'Segoe UI', sans-serif; color: #e2e8f0; }
 
+        /* COLORS */
         :root {
             --phoenix-fire: #ff2a00;
             --bg-panel: #0a0a0a;
@@ -40,16 +41,14 @@
         /* --- MAP ENGINE --- */
         #viewport {
             flex: 1; position: relative; background: #050505; overflow: hidden;
-            /* WICHTIG: Block statt Flex für manuelle Positionierung */
-            display: block; 
+            display: flex; justify-content: center; align-items: center;
         }
 
         #world {
-            position: absolute; /* Absolute Positionierung für exakte JS-Kontrolle */
-            top: 0; left: 0;
+            position: relative;
             width: 1024px; height: 1024px;
             box-shadow: 0 0 100px rgba(0,0,0,0.9);
-            transform-origin: 0 0; /* Zoom vom Nullpunkt (oben links) */
+            transform-origin: 0 0;
             background-color: #111;
         }
 
@@ -119,19 +118,13 @@
         .loader.hidden { opacity: 0; pointer-events: none; }
         .spinner { width: 50px; height: 50px; border: 3px solid #333; border-top-color: var(--phoenix-fire); border-radius: 50%; animation: spin 1s infinite linear; }
         @keyframes spin { to { transform: rotate(360deg); } }
-
-        .chat-container { display: flex; flex-direction: column; height: 100%; }
-        .chat-log { flex: 1; overflow-y: auto; padding: 15px; }
-        .chat-msg { padding: 8px 12px; border-radius: 6px; margin-bottom: 8px; font-size: 0.9rem; max-width: 85%; }
-        .chat-msg.u { align-self: flex-end; background: #333; margin-left: auto; }
-        .chat-msg.b { align-self: flex-start; background: #111; border-left: 2px solid var(--phoenix-fire); }
-        .chat-input { display: flex; padding: 10px; border-top: 1px solid #333; gap: 5px; }
         
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #0a0a0a; }
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
         .hidden { display: none !important; }
         .phoenix-input { w-full: 100%; background: #050505; border: 1px solid #333; padding: 10px; border-radius: 6px; color: white; outline: none; }
+        
         #error-log { position: absolute; top: 0; left: 0; width: 100%; background: rgba(220, 38, 38, 0.95); color: white; padding: 5px; font-size: 11px; z-index: 10000; display: none; text-align: center; }
     </style>
 </head>
@@ -152,19 +145,21 @@
             <select id="map-select" class="phoenix-input mt-3 w-full text-sm"><option disabled selected>Karte...</option></select>
         </div>
 
+        <!-- BEREINIGTES MENÜ -->
         <nav class="tabs">
             <button class="tab-btn active" onclick="Ui.tab('dinos')">DINOS</button>
             <button class="tab-btn" onclick="Ui.tab('res')">RES.</button>
             <button class="tab-btn" onclick="Ui.tab('pois')">ORTE</button>
-            <button class="tab-btn" onclick="Ui.tab('ai')">✨ AI</button>
-            <button class="tab-btn" onclick="Ui.tab('settings')">⚙</button>
         </nav>
 
         <div class="sb-content custom-scrollbar">
+            <!-- DINOS -->
             <div id="view-dinos" class="view active">
                 <input type="text" id="search-dino" placeholder="Suche..." class="phoenix-input w-full mb-2">
                 <div id="list-dinos"></div>
             </div>
+            
+            <!-- RESSOURCEN -->
             <div id="view-res" class="view">
                 <div class="flex justify-between mb-4 border-b border-gray-800 pb-2">
                     <span class="text-xs font-bold text-gray-500">RESSOURCEN</span>
@@ -172,32 +167,35 @@
                 </div>
                 <div id="list-res"></div>
             </div>
+
+            <!-- ORTE (ZUSAMMENGEFASST) -->
             <div id="view-pois" class="view">
                 <div class="mb-6">
-                    <div class="text-xs text-gray-500 font-bold mb-2">ALLGEMEIN</div>
-                    <div class="toggle-item" id="tog-public" onclick="Layers.toggle('public')"><div class="chk"></div><span>Public Spots</span></div>
-                    <div class="toggle-item" id="tog-caves" onclick="Layers.toggle('caves')"><div class="chk"></div><span>Höhlen</span></div>
+                    <div class="text-xs text-gray-500 font-bold mb-2 tracking-wider">ALLGEMEIN</div>
+                    <div class="toggle-item" id="tog-public" onclick="Layers.toggle('public')">
+                        <div class="chk"></div><span>Public Spots</span>
+                    </div>
+                    <div class="toggle-item" id="tog-caves" onclick="Layers.toggle('caves')">
+                        <div class="chk"></div><span>Höhlen</span>
+                    </div>
                 </div>
+
+                <div class="mb-6">
+                    <div class="text-xs text-gray-500 font-bold mb-2 tracking-wider">SPAWNS</div>
+                    <div class="toggle-item" id="tog-players" onclick="Layers.toggle('players')">
+                        <div class="chk"></div><span>Spieler Spawns</span>
+                    </div>
+                </div>
+
                 <div>
-                    <div class="text-xs text-gray-500 font-bold mb-2">OBELISKEN</div>
+                    <div class="text-xs text-gray-500 font-bold mb-2 tracking-wider">OBELISKEN</div>
                     <div id="list-obelisks"></div>
                 </div>
-            </div>
-            <div id="view-ai" class="view h-full p-0">
-                <div class="chat-container">
-                    <div id="chat-log" class="chat-log"><div class="chat-msg b">Hallo! Ich bin dein Assistant.</div></div>
-                    <div class="chat-input"><input type="text" id="ai-input" class="phoenix-input flex-1" placeholder="Frage..."><button onclick="AI.send()" class="bg-[#ff2a00] text-white px-3 rounded font-bold">➤</button></div>
-                </div>
-            </div>
-            <div id="view-settings" class="view">
-                <div class="text-xs text-gray-500 font-bold mb-2">SYSTEM</div>
-                <button onclick="MapEngine.reset()" class="w-full bg-[#222] border border-[#333] text-gray-300 p-2 rounded hover:text-white mb-4">Karte Zentrieren</button>
-                <div class="toggle-item" id="tog-players" onclick="Layers.toggle('players')"><div class="chk"></div><span>Spieler Spawns</span></div>
-                <div class="mt-8 text-center text-xs text-gray-600">v11.8 Smart Zoom</div>
             </div>
         </div>
     </div>
 
+    <!-- MAP VIEWPORT -->
     <div id="viewport">
         <div id="world">
             <img id="map-image-layer" src="" alt="Karte" crossorigin="anonymous">
@@ -208,11 +206,12 @@
         <div class="hud-top">LAT: <span id="lat">00.0</span> | LON: <span id="lon">00.0</span></div>
         <div class="hud-bot">
             <button class="zoom-btn" onclick="MapEngine.reset()">⟲</button>
-            <button class="zoom-btn" onclick="MapEngine.zoomIn()">+</button>
-            <button class="zoom-btn" onclick="MapEngine.zoomOut()">-</button>
+            <button class="zoom-btn" onclick="MapEngine.zoom(1.2)">+</button>
+            <button class="zoom-btn" onclick="MapEngine.zoom(0.8)">-</button>
         </div>
     </div>
     
+    <!-- INFO POPUP -->
     <div id="info-panel" class="info-panel">
         <div class="flex justify-between items-center bg-[#111] p-4 border-b border-[#333]">
             <h2 id="info-title" class="text-lg font-bold text-white uppercase">Info</h2>
@@ -224,7 +223,7 @@
 
 <script>
 /**
- * IOP WIDGET CORE v11.8 (Smart Zoom & Click Fix)
+ * IOP WIDGET CORE v12.1 - Robust Image Drawing
  */
 
 window.CFG = {
@@ -237,7 +236,7 @@ window.CFG = {
 window.Store = {
     cfg: {}, map: null,
     dom: { mapImg: null },
-    data: { dinos:{}, res:{}, pois:[], obs:[], caves:[] },
+    data: { dinos:{}, res:{}, pois:[], obs:[], caves:[], players:[] },
     icons: {}, trans: {d:{}, r:{}},
     selDino: null, selectedPOI: null,
     activeRes: new Set(), activeObs: new Set(),
@@ -266,7 +265,6 @@ async function fetchData(url) {
 window.MapEngine = {
     el: null, cvs: null, ctx: null, img: null, marker: null,
     iconCache: new Map(),
-    // Mouse state for drag filtering
     isDown: false, hasMoved: false, startX: 0, startY: 0,
 
     init() {
@@ -296,8 +294,6 @@ window.MapEngine = {
             if(this.isDown) {
                 const dx = e.clientX - this.startX;
                 const dy = e.clientY - this.startY;
-                
-                // Only treat as drag if moved more than 5 pixels
                 if(Math.abs(dx) > 5 || Math.abs(dy) > 5) {
                     this.hasMoved = true;
                     Store.view.x += dx;
@@ -307,7 +303,6 @@ window.MapEngine = {
                     this.update();
                 }
             }
-            
             const r = this.el.getBoundingClientRect();
             const lat = ((e.clientY - r.top)/r.height)*100;
             const lon = ((e.clientX - r.left)/r.width)*100;
@@ -320,15 +315,13 @@ window.MapEngine = {
         input.onwheel = e => { 
             e.preventDefault();
             const delta = e.deltaY > 0 ? 0.9 : 1.1;
-            // Mouse relative to viewport
             const rect = document.getElementById('viewport').getBoundingClientRect();
             this.zoomAt(delta, e.clientX - rect.left, e.clientY - rect.top);
         };
 
         input.onclick = e => {
-            if(this.hasMoved) return; // Ignore drag release
+            if(this.hasMoved) return;
             const r = this.el.getBoundingClientRect();
-            // Relative click position on scaled element
             const cx = e.clientX - r.left;
             const cy = e.clientY - r.top;
             const lon = (cx / r.width) * 100;
@@ -345,16 +338,12 @@ window.MapEngine = {
         const vp = document.getElementById('viewport');
         const s = Math.min(vp.clientWidth, vp.clientHeight) - 40;
         const size = Math.max(100, s);
-        
         this.el.style.width = size+'px';
         this.el.style.height = size+'px';
         this.cvs.width = size;
         this.cvs.height = size;
-        
-        // Manual Centering
         this.el.style.left = (vp.clientWidth - size)/2 + 'px';
         this.el.style.top = (vp.clientHeight - size)/2 + 'px';
-        
         this.draw();
     },
 
@@ -371,75 +360,24 @@ window.MapEngine = {
 
     update() { if(this.el) this.el.style.transform = `translate(${Store.view.x}px, ${Store.view.y}px) scale(${Store.view.scale})`; },
     
-    // SMART ZOOM
     zoomAt(factor, mx, my) {
         const oldScale = Store.view.scale;
         const newScale = Math.max(0.5, Math.min(10, oldScale * factor));
         if(newScale === oldScale) return;
-
-        // Element current visual position
         const rect = this.el.getBoundingClientRect();
-        // Mouse relative to element top-left (visual)
         const relX = mx - rect.left;
         const relY = my - rect.top;
-        
-        // Adjust translation to keep mouse point stable
-        // Formula: NewX = MouseX - (MouseX - OldX) * (NewScale / OldScale) is for transform-origin 0 0
-        // Here we adjust Store.view.x which is the translate component
-        
-        // Simplified Logic: 
-        // We need to shift map so the point under mouse moves away/towards center
-        
         const ratio = 1 - (newScale / oldScale);
-        
-        // Since we are translating the element itself, we adjust x/y directly
-        // Note: This logic assumes mouse relative to the element center would be easier, 
-        // but with top-left origin for transform (default), we adjust manually.
-        
-        // Actually, simplest Smart Zoom for this setup:
-        // We need to shift the map by (MouseRel * (1-Factor))
-        // But Store.view.x/y are RAW pixel offsets.
-        
-        // Correction: We just need to shift X/Y inversely proportional to scale change at mouse pos
-        // But since we use transform-origin: 0 0 in CSS (from v10.7), the math is:
-        
-        // Wait, v11.8 CSS has transform-origin: 0 0.
-        
-        // Calculate offset in unscaled coords
         const unscaledX = relX / oldScale;
         const unscaledY = relY / oldScale;
-        
-        // The point (unscaledX, unscaledY) should remain at (mx, my) after scale change
-        // NewPos = (unscaledX * newScale) + NewTranslateX + BaseLeft = mx
-        // BaseLeft is handled by CSS left property. We only control TranslateX (Store.view.x)
-        
-        // Current: (unscaledX * oldScale) + OldTransX = relX (relative to BaseLeft)
-        // New:     (unscaledX * newScale) + NewTransX = relX
-        
-        // NewTransX = relX - (unscaledX * newScale)
-        //           = relX - (relX / oldScale * newScale)
-        //           = relX * (1 - newScale/oldScale)
-        
-        // But wait, Store.view.x is accumulative. 
-        // NewTransX = OldTransX + (relX - relX * ratio)? No.
-        
-        // Let's use the delta approach on the view coordinates:
         Store.view.x += (relX - (relX * (newScale / oldScale)));
         Store.view.y += (relY - (relY * (newScale / oldScale)));
-        
         Store.view.scale = newScale;
         this.update();
     },
 
-    zoomIn() { 
-        const vp = document.getElementById('viewport');
-        this.zoomAt(1.2, vp.clientWidth/2, vp.clientHeight/2); 
-    },
-    zoomOut() { 
-        const vp = document.getElementById('viewport');
-        this.zoomAt(0.8, vp.clientWidth/2, vp.clientHeight/2); 
-    },
-
+    zoomIn() { const vp = document.getElementById('viewport'); this.zoomAt(1.2, vp.clientWidth/2, vp.clientHeight/2); },
+    zoomOut() { const vp = document.getElementById('viewport'); this.zoomAt(0.8, vp.clientWidth/2, vp.clientHeight/2); },
     reset() { Store.view.scale = 1; Store.view.x = 0; Store.view.y = 0; this.update(); this.fit(); },
     
     setMarker(data) {
@@ -454,6 +392,8 @@ window.MapEngine = {
         if(this.iconCache.has(url)) return this.iconCache.get(url);
         const i = new Image(); i.src = url;
         i.onload = () => this.draw();
+        // Prevent broken images from crashing
+        i.onerror = () => { console.warn("Broken Icon:", url); };
         this.iconCache.set(url, i);
         return i;
     },
@@ -465,7 +405,8 @@ window.MapEngine = {
         const ctx = this.ctx;
         ctx.clearRect(0, 0, w, h);
 
-        if(Store.selDino && Store.data.dinos[Store.selDino]) {
+        // SAFE LOOPS
+        if(Store.selDino && Array.isArray(Store.data.dinos[Store.selDino])) {
             Store.data.dinos[Store.selDino].forEach(z => {
                 const x = (z.min.lon/100)*w, y = (z.min.lat/100)*h;
                 const zw = ((z.max.lon - z.min.lon)/100)*w, zh = ((z.max.lat - z.min.lat)/100)*h;
@@ -475,27 +416,29 @@ window.MapEngine = {
         }
 
         Store.activeRes.forEach(k => {
-            if(Store.data.res[k]) {
+            if(Array.isArray(Store.data.res[k])) {
                 const img = this.getResIcon(k);
                 const col = {'Metal':'#b87333'}[k] || '#fff';
                 Store.data.res[k].forEach(p => {
                     const cx = (p.lon/100)*w, cy = (p.lat/100)*h;
                     const sz = Math.min(32, 12 + ((p.size||1)*2));
-                    if(img && img.complete) ctx.drawImage(img, cx-sz/2, cy-sz/2, sz, sz);
+                    // SAFE DRAW IMAGE
+                    if(img && img.complete && img.naturalWidth > 0) ctx.drawImage(img, cx-sz/2, cy-sz/2, sz, sz);
                     else { ctx.fillStyle=col; ctx.beginPath(); ctx.arc(cx,cy,sz/3,0,6.28); ctx.fill(); }
                 });
             }
         });
 
-        if(Store.layers.public) this.drawPois(Store.data.pois, '#ff2a00', w, h);
-        if(Store.layers.caves) this.drawPois(Store.data.caves, '#a855f7', w, h);
+        if(Store.layers.public && Array.isArray(Store.data.pois)) this.drawPois(Store.data.pois, '#ff2a00', w, h);
+        if(Store.layers.caves && Array.isArray(Store.data.caves)) this.drawPois(Store.data.caves, '#a855f7', w, h);
         
         Store.activeObs.forEach(k => {
             const o = Store.data.obs.find(i => i.name === k);
             if(o) {
                 const img = o.icon ? this.getImg(o.icon) : null;
                 const cx=(o.lon/100)*w, cy=(o.lat/100)*h;
-                if(img && img.complete) {
+                // SAFE DRAW IMAGE
+                if(img && img.complete && img.naturalWidth > 0) {
                     const ht=60, ar=img.naturalWidth/img.naturalHeight || 1;
                     ctx.drawImage(img, cx-(ht*ar)/2, cy-ht, ht*ar, ht);
                 } else {
@@ -505,29 +448,51 @@ window.MapEngine = {
                 }
             }
         });
+
+        // PLAYER SPAWNS SAFE DRAW
+        if (Store.layers.players && Store.data.players) {
+            const spawns = Array.isArray(Store.data.players) ? Store.data.players : (Store.data.players.spawnPoints || []);
+            spawns.forEach((region, index) => {
+                const color = region.color || ['#34D399', '#60A5FA', '#FBBF24'][index % 3];
+                ctx.fillStyle = color;
+                if (Array.isArray(region.locations)) {
+                    region.locations.forEach(loc => {
+                        const cx = (loc.lon / 100) * w;
+                        const cy = (loc.lat / 100) * h;
+                        ctx.beginPath();
+                        ctx.arc(cx, cy, 6, 0, Math.PI * 2);
+                        ctx.fill();
+                        ctx.strokeStyle = '#000';
+                        ctx.lineWidth = 1;
+                        ctx.stroke();
+                    });
+                }
+            });
+        }
     },
 
     drawPois(list, c, w, h) {
+        if (!Array.isArray(list)) return;
         const ctx = this.ctx;
         list.forEach(p => {
             const cx=(p.lon/100)*w, cy=(p.lat/100)*h;
             const img = p.icon ? this.getImg(p.icon) : null;
-            if(img && img.complete) ctx.drawImage(img, cx-16, cy-16, 32, 32);
+            // SAFE DRAW IMAGE
+            if(img && img.complete && img.naturalWidth > 0) ctx.drawImage(img, cx-16, cy-16, 32, 32);
             else { ctx.fillStyle=c; ctx.beginPath(); ctx.arc(cx,cy,6,0,6.28); ctx.fill(); ctx.stroke(); }
         });
     },
 
     checkClick(lon, lat) {
-        // Radius in map percent (approx icon size)
         const rad = 2.5; 
         let hit = null;
         let type = '';
 
-        if(Store.layers.public) {
+        if(Store.layers.public && Array.isArray(Store.data.pois)) {
             hit = Store.data.pois.find(p => Math.hypot(p.lon-lon, p.lat-lat) < rad);
             if(hit) type = 'public';
         }
-        if(!hit && Store.layers.caves) {
+        if(!hit && Store.layers.caves && Array.isArray(Store.data.caves)) {
             hit = Store.data.caves.find(p => Math.hypot(p.lon-lon, p.lat-lat) < rad);
             if(hit) type = 'caves';
         }
@@ -536,7 +501,7 @@ window.MapEngine = {
     }
 };
 
-// --- DATA & UI ---
+// --- DATA ---
 window.Data = {
     async init() {
         try {
@@ -565,12 +530,20 @@ window.Data = {
         MapEngine.reset();
         MapEngine.load(c.mapImageUrl);
 
-        const urls = [c.creatureDataUrl, c.resourceDataUrl, c.publicSpotsDataUrl, c.obeliskDataUrl, c.caveSpotsDataUrl];
-        const [d, r, p, o, ca] = await Promise.all(urls.map(u => fetchData(u)));
+        const urls = [
+            c.creatureDataUrl, 
+            c.resourceDataUrl, 
+            c.publicSpotsDataUrl, 
+            c.obeliskDataUrl, 
+            c.caveSpotsDataUrl,
+            c.playerSpawnDataUrl 
+        ];
+        const [d, r, p, o, ca, pl] = await Promise.all(urls.map(u => fetchData(u)));
         
         Store.data = {
             dinos: d?.dinoSpawns||{}, res: r?.resources||{}, 
-            pois: p?.publicSpots||[], obs: o?.obelisks||[], caves: ca?.caveSpots||[]
+            pois: p?.publicSpots||[], obs: o?.obelisks||[], caves: ca?.caveSpots||[],
+            players: pl || [] 
         };
 
         Ui.renderDinos();
@@ -580,6 +553,7 @@ window.Data = {
     }
 };
 
+// --- UI ---
 window.Ui = {
     initSelector(cfg) {
         const s = document.getElementById('map-select');
@@ -596,8 +570,8 @@ window.Ui = {
     tab(id) {
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-        const idx = ['dinos','res','pois','ai','settings'].indexOf(id);
-        document.querySelectorAll('.tab-btn')[idx].classList.add('active');
+        const idx = ['dinos','res','pois'].indexOf(id);
+        if(idx !== -1) document.querySelectorAll('.tab-btn')[idx].classList.add('active');
         document.getElementById('view-'+id).classList.add('active');
         setTimeout(()=>MapEngine.fit(), 10);
     },
@@ -644,7 +618,7 @@ window.Ui = {
     },
 
     renderObs() {
-        const l = document.getElementById('obelisk-list-root');
+        const l = document.getElementById('list-obelisks');
         if(!l) return;
         l.innerHTML = Store.data.obs.map(o => `
             <div class="toggle-item" onclick="Ui.togObs('${o.name}', this)">
@@ -737,16 +711,6 @@ window.Res = {
 };
 
 document.getElementById('search-dino').oninput = e => Ui.renderDinos(e.target.value);
-window.AI = {
-    async send() {
-        const i = document.getElementById('ai-input');
-        const t = i.value.trim();
-        if(!t) return;
-        document.getElementById('chat-log').innerHTML += `<div class="chat-msg u">${t}</div>`;
-        i.value='';
-        setTimeout(() => document.getElementById('chat-log').innerHTML += `<div class="chat-msg b">API Key fehlt.</div>`, 500);
-    }
-};
 
 document.addEventListener("DOMContentLoaded", () => {
     MapEngine.init(); 
