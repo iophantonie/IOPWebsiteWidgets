@@ -10,9 +10,10 @@
         /* Farben und Schriftarten */
         :root {
             --color-red: #E53935; /* Feuerrot */
-            --color-dark: rgba(20, 20, 20, 0.95);
+            /* Hintergrund jetzt transparenter für den gewünschten Effekt */
+            --color-dark-transparent: rgba(20, 20, 20, 0.85); 
             --color-text: #f7f7f7;
-            --color-light-dark: rgba(30, 30, 30, 0.95);
+            --color-light-dark: rgba(30, 30, 30, 0.6); /* Auch hier transparenter */
             --color-gold: #FFEB3B;
             --sidebar-width: 260px;
             
@@ -25,7 +26,7 @@
             font-family: var(--font-main);
             color: var(--color-text);
             margin: 0;
-            padding: 20px;
+            padding: 0; /* Kein Padding mehr für Full-Width */
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -33,23 +34,32 @@
             min-height: 100vh; 
             box-sizing: border-box;
             overflow-y: auto; 
-            position: relative; /* Wichtig für absolute Positionierung des Modals */
+            position: relative;
         }
 
         /* Hauptcontainer */
         .map-widget-container {
-            background-color: var(--color-dark);
-            border-radius: 12px;
+            background-color: var(--color-dark-transparent);
+            /* Border Radius oben entfernt, falls es direkt an den Header anschließt, 
+               sonst kannst du es auf 12px lassen */
+            border-radius: 12px; 
             border: 3px solid var(--color-red);
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.8);
+            /* Schatten für Tiefe, aber nicht zu hart */
+            box-shadow: 0 0 20px rgba(229, 57, 53, 0.2);
+            
+            /* VOLLE BREITE */
             width: 100%;
-            max-width: 1800px;
+            max-width: 100%; 
+            
             height: auto; 
             display: flex;
             flex-direction: column;
             overflow: hidden;
             position: relative;
             margin-bottom: 50px; 
+            /* Optional: Etwas Abstand an den Seiten, falls gewünscht. 
+               Wenn es randlos sein soll, setze margin auf 0 */
+            /* margin: 20px; width: calc(100% - 40px); */
         }
 
         /* Header */
@@ -60,11 +70,11 @@
             font-family: var(--font-header);
             text-transform: uppercase;
             text-align: center;
-            padding: 10px 0;
+            padding: 15px 0;
             margin: 0;
-            text-shadow: 0 0 20px rgba(229, 57, 53, 0.4);
+            text-shadow: 0 0 20px rgba(229, 57, 53, 0.6);
             border-bottom: 2px solid var(--color-red);
-            background-color: rgba(0, 0, 0, 0.3);
+            background-color: rgba(0, 0, 0, 0.4); /* Transparenter Header */
             flex-shrink: 0;
         }
 
@@ -78,12 +88,13 @@
         /* --- Sidebar --- */
         .map-sidebar {
             width: var(--sidebar-width);
-            background-color: rgba(0, 0, 0, 0.4);
+            background-color: rgba(0, 0, 0, 0.3); /* Transparente Sidebar */
             border-right: 2px solid var(--color-red);
             display: flex;
             flex-direction: column;
             min-height: 800px; 
             flex-shrink: 0;
+            backdrop-filter: blur(5px); /* Optional: Blur Effekt für Lesbarkeit */
         }
 
         .sidebar-content-sticky {
@@ -144,13 +155,13 @@
         }
 
         .map-btn:hover {
-            background-color: rgba(255, 255, 255, 0.05);
+            background-color: rgba(255, 255, 255, 0.1);
             color: #fff;
             padding-left: 20px; 
         }
 
         .map-btn.active {
-            background-color: rgba(229, 57, 53, 0.15);
+            background-color: rgba(229, 57, 53, 0.2);
             color: #fff;
             border-left-color: var(--color-red);
             font-weight: 600;
@@ -170,18 +181,18 @@
             flex-grow: 1;
             display: flex;
             flex-direction: column;
-            background-color: #121212;
+            /* Hintergrund transparent machen, damit das Widget-BG wirkt */
+            background-color: transparent; 
             width: calc(100% - var(--sidebar-width)); 
         }
 
-        /* 1. Map Bereich (ANGESPASST) */
+        /* 1. Map Bereich */
         .iframe-container {
             width: 100%;
-            /* KORREKTUR: Höhe reduziert auf 65vh für weniger schwarzen Rand */
             height: 65vh; 
             min-height: 500px;
             position: relative;
-            background-color: #000;
+            background-color: rgba(0, 0, 0, 0.5); /* Halbtransparentes Schwarz hinter Map */
             border-bottom: 3px solid var(--color-red);
             flex-shrink: 0; 
         }
@@ -195,7 +206,8 @@
 
         /* 2. POI Bereich */
         .poi-section {
-            background-color: var(--color-light-dark);
+            /* Transparenter Hintergrund für den Bereich */
+            background-color: transparent; 
             padding: 20px;
             box-sizing: border-box;
             min-height: 300px; 
@@ -211,6 +223,10 @@
             padding-left: 10px;
             border-left: 4px solid var(--color-red);
             text-transform: uppercase;
+            /* Leichter Hintergrund für Lesbarkeit */
+            background: linear-gradient(90deg, rgba(229, 57, 53, 0.2) 0%, transparent 100%);
+            padding: 5px 10px;
+            border-radius: 0 4px 4px 0;
         }
         .poi-category-header:first-child { margin-top: 0; }
 
@@ -243,7 +259,7 @@
             transform: translateY(-50%);
             width: 40px;
             height: 40px;
-            background-color: rgba(0, 0, 0, 0.8);
+            background-color: rgba(20, 20, 20, 0.9);
             border: 2px solid var(--color-red);
             border-radius: 50%;
             color: #fff;
@@ -256,13 +272,13 @@
             user-select: none;
             font-size: 1.2rem;
             font-weight: bold;
-            opacity: 0.8;
+            opacity: 0.9;
             display: none; 
         }
 
         .slider-arrow:hover {
             background-color: var(--color-red);
-            box-shadow: 0 0 10px rgba(229, 57, 53, 0.6);
+            box-shadow: 0 0 15px rgba(229, 57, 53, 0.8);
             opacity: 1;
         }
 
@@ -276,11 +292,12 @@
         /* POI Card Styling */
         .poi-card {
             flex: 0 0 240px; 
-            background-color: rgba(0, 0, 0, 0.6);
+            /* Transparenter Hintergrund für die Cards */
+            background-color: rgba(40, 40, 40, 0.7);
             border-radius: 6px;
             overflow: hidden;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: transform 0.2s, border-color 0.2s;
+            transition: transform 0.2s, border-color 0.2s, background-color 0.2s;
             display: flex;
             flex-direction: column;
             cursor: pointer; 
@@ -289,6 +306,7 @@
         .poi-card:hover {
             transform: translateY(-3px);
             border-color: var(--color-red);
+            background-color: rgba(50, 50, 50, 0.9);
             box-shadow: 0 4px 15px rgba(229, 57, 53, 0.3);
         }
 
@@ -327,23 +345,20 @@
              margin-top: 2px;
         }
 
-        /* MODAL (LIGHTBOX) STYLES - ANGEPASST */
+        /* MODAL (LIGHTBOX) STYLES */
         .modal-overlay {
-            /* KORREKTUR: Absolute Positionierung statt Fixed */
             position: absolute;
             left: 0;
             width: 100%;
-            /* Höhe des Viewports, um sichtbar zu sein */
             height: 100vh;
-            background-color: rgba(0, 0, 0, 0.9);
+            background-color: rgba(0, 0, 0, 0.85); /* Etwas transparenter */
             z-index: 1000;
             display: none; 
             justify-content: center;
             align-items: center;
-            backdrop-filter: blur(5px);
+            backdrop-filter: blur(8px); /* Stärkerer Blur */
             opacity: 0;
             transition: opacity 0.3s ease;
-            /* Wichtig: Verhindert, dass es über den Body hinausragt */
             top: 0; 
         }
 
@@ -353,14 +368,14 @@
         }
 
         .modal-content {
-            background-color: var(--color-light-dark);
+            background-color: rgba(30, 30, 30, 0.95); /* Fast opak für Lesbarkeit */
             border: 2px solid var(--color-red);
             border-radius: 12px;
             max-width: 90%;
-            max-height: 80vh; /* Etwas kleiner damit es gut passt */
+            max-height: 80vh; 
             overflow-y: auto;
             position: relative;
-            box-shadow: 0 0 30px rgba(229, 57, 53, 0.5);
+            box-shadow: 0 0 40px rgba(229, 57, 53, 0.6);
             display: flex;
             flex-direction: column;
             transform: scale(0.9);
@@ -462,7 +477,7 @@
 </head>
 <body>
 
-    <!-- MODAL OVERLAY (Lightbox) - Wird dynamisch platziert -->
+    <!-- MODAL OVERLAY (Lightbox) -->
     <div id="poiModal" class="modal-overlay" onclick="closeModal(event)">
         <div class="modal-content" onclick="event.stopPropagation()">
             <button class="modal-close-btn" onclick="closeModal(event)">×</button>
@@ -679,47 +694,8 @@
                 { name: "IOP Adventures", url: "https://arkmap.axi92.at/1f471511-0845-400b-a547-8b2053784c20", pois: [] }
             ],
             "overhaul": [
-                { 
-                    name: "Primal Nemesis", 
-                    url: "https://arkmap.axi92.at/1c2177f1-635c-478d-bbee-08359416beef", 
-                    // Kopie der Valguero POIs, da Primal Nemesis auf Valguero läuft
-                    pois: [
-                        { title: "Blauer Obelisk", type: "Teleporter", coords: "Lat: 11 / Lon: 19", img: "https://i.postimg.cc/pdndxQLW/image.png" },
-                        { title: "Roter Obelisk", type: "Teleporter", coords: "Lat: 75 / Lon: 17", img: "https://i.postimg.cc/CdyNPs5v/image.png" },
-                        { title: "Grüner Obelisk", type: "Teleporter", coords: "Lat: 50.6 / Lon: 76", img: "https://i.postimg.cc/DZxfPxCc/image.png" },
-                        { title: "Öffentliche Harzfarm", type: "Teleporter", coords: "Lat: 83.3 / Lon: 50.2", img: "https://i.postimg.cc/VL5fwyg2/image.png" },
-                        { title: "Öffentliche Ölfarm", type: "Teleporter", coords: "Lat: 49 / Lon: 19.5", img: "https://i.postimg.cc/02CBVr71/image.png" },
-                        { title: "Whitecliff Caverns", type: "Artefakt", sub: "Himmelsherren/Skylord", coords: "Lat: 78.2 / Lon: 90.4", img: "https://i.postimg.cc/k58C066H/image.jpg" },
-                        { title: "Boreal Forest Cave", type: "Artefakt", sub: "Felsens/Crag", coords: "Lat: 35 / Lon: 52.2", img: "https://i.postimg.cc/fT9htSC2/image.jpg" },
-                        { title: "Lost Temple", type: "Artefakt", sub: "Brutalen & Fressers", coords: "Lat: 46.8 / Lon: 87.4", img: "https://i.postimg.cc/sDdZZ7yQ/image-1.jpg" },
-                        { title: "Snow Mountains Cave", type: "Artefakt", sub: "List & Zerstörers", coords: "Lat: 15.6 / Lon: 27.5", img: "https://i.postimg.cc/wvtZn3WB/image-1.jpg" },
-                        { title: "The Liar", type: "Artefakt", sub: "Rudels, Stärke, Immunen", coords: "Lat: 73.8 / Lon: 41.8", img: "https://i.postimg.cc/XNHBQmwH/image-2.jpg" },
-                        { title: "The Emerald Forest", type: "Artefakt", sub: "Torwächters/Gatekeeper", coords: "Lat: 37.9 / Lon: 57.8", img: "https://i.postimg.cc/2yVQ0DyH/image.jpg" },
-                        { title: "Brutmutter Lystrix", type: "Worldboss", coords: "Lat: 74 / Lon: 42.5", img: "https://i.postimg.cc/hGMKKJbN/image.png" }
-                    ]
-                },
-                { 
-                    name: "Primal Chaos", 
-                    url: "https://arkmap.axi92.at/ada947db-fa4c-48ec-9477-185808943b8f", 
-                    // Kopie der The Island POIs, da Primal Chaos oft auf Island gespielt wird (als Platzhalter)
-                    pois: [
-                        { title: "Öffentliche Harzfarm", type: "Teleporter", coords: "Lat: 61 / Lon: 49.5", img: "https://i.postimg.cc/xTv4jhTV/Bild-2024-05-16-133412340.png" },
-                        { title: "Grüner Obelisk", type: "Teleporter", coords: "Lat: 59.5 / Lon: 77.5", img: "https://i.postimg.cc/QxRFgPjn/Bild-2024-05-16-130443256.png" },
-                        { title: "Roter Obelisk", type: "Teleporter", coords: "Lat: 85.5 / Lon: 13", img: "https://i.postimg.cc/hvzhbVvV/Bild-2024-05-16-133733722.png" },
-                        { title: "Blauer Obelisk", type: "Teleporter", coords: "Lat: 22 / Lon: 21", img: "https://i.postimg.cc/DzCbFvbp/Bild-2024-05-16-132500159.png" },
-                        { title: "Lava Cave", type: "Artefakt", sub: "Gewaltigen/Massive", coords: "Lat: 74 / Lon: 92", img: "https://i.postimg.cc/Fsfddxfy/Bild-2024-06-30-171335914.png" },
-                        { title: "Lower South Cave", type: "Artefakt", sub: "Jägers/Hunter", coords: "Lat: 85 / Lon: 54", img: "https://i.postimg.cc/1tWM08Mp/Bild-2024-06-30-171919385.png" },
-                        { title: "Swamp Cave", type: "Artefakt", sub: "Immunen/Immune", coords: "Lat: 65 / Lon: 35", img: "https://i.postimg.cc/cHG4DrS6/Bild-2024-06-30-175803492.png" },
-                        { title: "Snow Cave", type: "Artefakt", sub: "Stärke/Strong", coords: "Lat: 26 / Lon: 29", img: "https://i.postimg.cc/MKQKV7RV/Bild-2024-06-30-181533870.png" },
-                        { title: "North West Cave", type: "Artefakt", sub: "Himmelsherren/Skylord", coords: "Lat: 14 / Lon: 14", img: "https://i.postimg.cc/zfCjdz2p/Bild-2024-06-30-190654637.png" },
-                        { title: "North East Cave", type: "Artefakt", sub: "Fressers/Devourer", coords: "Lat: 9 / Lon: 91", img: "https://i.postimg.cc/SQnHQ8nM/Bild-2024-06-30-185632249.png" },
-                        { title: "Upper South Cave", type: "Artefakt", sub: "Rudels/Pack", coords: "Lat: 71 / Lon: 57", img: "https://i.postimg.cc/brjVqq3F/Bild-2024-06-30-193806399.png" },
-                        { title: "Caverns of Lost Hope", type: "Artefakt", sub: "List/Devious", coords: "Lat: 45 / Lon: 98", img: "https://i.postimg.cc/hv9qbSC9/Bild-2024-06-30-194923321.png" },
-                        { title: "Caverns of Lost Faith", type: "Artefakt", sub: "Brute", coords: "Lat: 53 / Lon: 3", img: "https://i.postimg.cc/4yrQZGZF/Bild-2024-06-30-195311581.png" },
-                        { title: "Central Cave", type: "Artefakt", sub: "Schlauen/Clever", coords: "Lat: 40.5 / Lon: 46", img: "https://i.postimg.cc/Y9xK2yW6/Bild-2024-07-01-204126849.png" },
-                        { title: "Tek Cave", type: "Boss Arena", sub: "Terminal", coords: "Lat: 42 / Lon: 37", img: "https://i.postimg.cc/Sxrsxcw4/Bild-2024-06-30-184412268.png" }
-                    ]
-                }
+                { name: "Primal Nemesis", url: "https://arkmap.axi92.at/1c2177f1-635c-478d-bbee-08359416beef", pois: [] },
+                { name: "Primal Chaos", url: "https://arkmap.axi92.at/ada947db-fa4c-48ec-9477-185808943b8f", pois: [] }
             ]
         };
 
@@ -886,7 +862,9 @@
         }
 
         function closeModal(event) {
-            document.getElementById('poiModal').classList.remove('active');
+            const modal = document.getElementById('poiModal');
+            modal.classList.remove('active');
+            // document.body.style.overflow = ''; // Scrollen wieder aktivieren
         }
 
         // Global Resize Listener
