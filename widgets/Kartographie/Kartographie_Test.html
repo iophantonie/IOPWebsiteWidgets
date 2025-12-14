@@ -10,10 +10,9 @@
         /* Farben und Schriftarten */
         :root {
             --color-red: #E53935; /* Feuerrot */
-            /* Hintergrund jetzt transparenter für den gewünschten Effekt */
-            --color-dark-transparent: rgba(20, 20, 20, 0.85); 
+            --color-dark: rgba(20, 20, 20, 0.95);
             --color-text: #f7f7f7;
-            --color-light-dark: rgba(30, 30, 30, 0.6); /* Auch hier transparenter */
+            --color-light-dark: rgba(30, 30, 30, 0.95);
             --color-gold: #FFEB3B;
             --sidebar-width: 260px;
             
@@ -21,45 +20,38 @@
             --font-header: 'Acme', var(--font-main);
         }
 
+        /* GLOBALES RESET */
+        * {
+            box-sizing: border-box; /* WICHTIG: Verhindert, dass Padding die Breite vergrößert */
+        }
+
         body {
             background-color: transparent;
             font-family: var(--font-main);
             color: var(--color-text);
             margin: 0;
-            padding: 0; /* Kein Padding mehr für Full-Width */
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            padding: 10px; /* Kleinerer Abstand zum Rand */
             width: 100%;
-            min-height: 100vh; 
-            box-sizing: border-box;
-            overflow-y: auto; 
-            position: relative;
+            height: auto; /* Höhe passt sich Inhalt an */
+            overflow-x: hidden; /* Verhindert horizontales Scrollen */
+            overflow-y: auto;
         }
 
         /* Hauptcontainer */
         .map-widget-container {
-            background-color: var(--color-dark-transparent);
-            /* Border Radius oben entfernt, falls es direkt an den Header anschließt, 
-               sonst kannst du es auf 12px lassen */
-            border-radius: 12px; 
+            background-color: rgba(20, 20, 20, 0.85); /* Transparenter Hintergrund */
+            border-radius: 12px;
             border: 3px solid var(--color-red);
-            /* Schatten für Tiefe, aber nicht zu hart */
-            box-shadow: 0 0 20px rgba(229, 57, 53, 0.2);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
             
-            /* VOLLE BREITE */
-            width: 100%;
-            max-width: 100%; 
+            width: 100%; /* Füllt den verfügbaren Platz */
+            max-width: 100%; /* Keine künstliche Begrenzung */
             
-            height: auto; 
             display: flex;
             flex-direction: column;
             overflow: hidden;
             position: relative;
-            margin-bottom: 50px; 
-            /* Optional: Etwas Abstand an den Seiten, falls gewünscht. 
-               Wenn es randlos sein soll, setze margin auf 0 */
-            /* margin: 20px; width: calc(100% - 40px); */
+            /* Kein riesiges Margin unten mehr nötig, da Höhe automatisch */
         }
 
         /* Header */
@@ -72,9 +64,9 @@
             text-align: center;
             padding: 15px 0;
             margin: 0;
-            text-shadow: 0 0 20px rgba(229, 57, 53, 0.6);
+            text-shadow: 0 0 20px rgba(229, 57, 53, 0.4);
             border-bottom: 2px solid var(--color-red);
-            background-color: rgba(0, 0, 0, 0.4); /* Transparenter Header */
+            background-color: rgba(0, 0, 0, 0.3);
             flex-shrink: 0;
         }
 
@@ -82,25 +74,25 @@
         .map-body-wrapper {
             display: flex;
             flex-direction: row;
-            align-items: stretch; 
+            align-items: stretch;
+            min-height: 800px; /* Mindesthöhe für das Layout */
         }
 
         /* --- Sidebar --- */
         .map-sidebar {
             width: var(--sidebar-width);
-            background-color: rgba(0, 0, 0, 0.3); /* Transparente Sidebar */
+            background-color: rgba(0, 0, 0, 0.3);
             border-right: 2px solid var(--color-red);
             display: flex;
             flex-direction: column;
-            min-height: 800px; 
             flex-shrink: 0;
-            backdrop-filter: blur(5px); /* Optional: Blur Effekt für Lesbarkeit */
         }
 
+        /* Sidebar Sticky Content */
         .sidebar-content-sticky {
             position: sticky;
             top: 0;
-            max-height: 100vh;
+            max-height: 100%; /* Passt sich der Container-Höhe an */
             overflow-y: auto;
             scrollbar-width: thin;
             scrollbar-color: var(--color-red) transparent;
@@ -151,17 +143,16 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-sizing: border-box; 
         }
 
         .map-btn:hover {
-            background-color: rgba(255, 255, 255, 0.1);
+            background-color: rgba(255, 255, 255, 0.05);
             color: #fff;
             padding-left: 20px; 
         }
 
         .map-btn.active {
-            background-color: rgba(229, 57, 53, 0.2);
+            background-color: rgba(229, 57, 53, 0.15);
             color: #fff;
             border-left-color: var(--color-red);
             font-weight: 600;
@@ -181,18 +172,18 @@
             flex-grow: 1;
             display: flex;
             flex-direction: column;
-            /* Hintergrund transparent machen, damit das Widget-BG wirkt */
-            background-color: transparent; 
+            background-color: transparent;
+            /* WICHTIG: Breite berechnen um Overflow zu verhindern */
             width: calc(100% - var(--sidebar-width)); 
         }
 
         /* 1. Map Bereich */
         .iframe-container {
             width: 100%;
-            height: 65vh; 
+            height: 65vh; /* 65% der Bildschirmhöhe */
             min-height: 500px;
             position: relative;
-            background-color: rgba(0, 0, 0, 0.5); /* Halbtransparentes Schwarz hinter Map */
+            background-color: rgba(0, 0, 0, 0.5);
             border-bottom: 3px solid var(--color-red);
             flex-shrink: 0; 
         }
@@ -206,11 +197,10 @@
 
         /* 2. POI Bereich */
         .poi-section {
-            /* Transparenter Hintergrund für den Bereich */
-            background-color: transparent; 
+            background-color: transparent;
             padding: 20px;
-            box-sizing: border-box;
-            min-height: 300px; 
+            /* Nimmt den Platz unter der Map ein */
+            height: auto; 
         }
 
         /* Kategorie Header */
@@ -223,7 +213,6 @@
             padding-left: 10px;
             border-left: 4px solid var(--color-red);
             text-transform: uppercase;
-            /* Leichter Hintergrund für Lesbarkeit */
             background: linear-gradient(90deg, rgba(229, 57, 53, 0.2) 0%, transparent 100%);
             padding: 5px 10px;
             border-radius: 0 4px 4px 0;
@@ -236,6 +225,7 @@
             display: flex;
             align-items: center;
             margin-bottom: 25px;
+            width: 100%; /* Stellt sicher, dass Slider nicht breiter als Container ist */
         }
 
         /* Horizontaler Slider */
@@ -282,8 +272,8 @@
             opacity: 1;
         }
 
-        .slider-arrow.prev { left: -15px; }
-        .slider-arrow.next { right: -15px; }
+        .slider-arrow.prev { left: -10px; } /* Etwas weiter rein */
+        .slider-arrow.next { right: -10px; }
         
         @media (max-width: 768px) {
             .slider-arrow { display: none; } 
@@ -292,7 +282,6 @@
         /* POI Card Styling */
         .poi-card {
             flex: 0 0 240px; 
-            /* Transparenter Hintergrund für die Cards */
             background-color: rgba(40, 40, 40, 0.7);
             border-radius: 6px;
             overflow: hidden;
@@ -350,13 +339,13 @@
             position: absolute;
             left: 0;
             width: 100%;
-            height: 100vh;
-            background-color: rgba(0, 0, 0, 0.85); /* Etwas transparenter */
+            height: 100%; /* Volle Höhe des Widgets */
+            background-color: rgba(0, 0, 0, 0.85); 
             z-index: 1000;
             display: none; 
             justify-content: center;
             align-items: center;
-            backdrop-filter: blur(8px); /* Stärkerer Blur */
+            backdrop-filter: blur(8px); 
             opacity: 0;
             transition: opacity 0.3s ease;
             top: 0; 
@@ -368,7 +357,7 @@
         }
 
         .modal-content {
-            background-color: rgba(30, 30, 30, 0.95); /* Fast opak für Lesbarkeit */
+            background-color: rgba(30, 30, 30, 0.95); 
             border: 2px solid var(--color-red);
             border-radius: 12px;
             max-width: 90%;
@@ -380,7 +369,13 @@
             flex-direction: column;
             transform: scale(0.9);
             transition: transform 0.3s ease;
+            /* Scrollbar im Modal */
+            scrollbar-width: thin;
+            scrollbar-color: var(--color-red) transparent;
         }
+        .modal-content::-webkit-scrollbar { width: 6px; }
+        .modal-content::-webkit-scrollbar-thumb { background-color: var(--color-red); border-radius: 3px; }
+
 
         .modal-overlay.active .modal-content {
             transform: scale(1);
@@ -857,14 +852,12 @@
                 const modal = document.getElementById('poiModal');
                 modal.style.top = window.scrollY + 'px'; // Position at current scroll
                 modal.classList.add('active');
-                // document.body.style.overflow = 'hidden'; // Optional: Scrollen des Hintergrunds verhindern
             }
         }
 
         function closeModal(event) {
             const modal = document.getElementById('poiModal');
             modal.classList.remove('active');
-            // document.body.style.overflow = ''; // Scrollen wieder aktivieren
         }
 
         // Global Resize Listener
