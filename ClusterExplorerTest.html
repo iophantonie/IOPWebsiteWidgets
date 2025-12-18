@@ -2,73 +2,100 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IOP Cluster Explorer v13.0 (Transparent & Fluid)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>IOP Cluster Explorer v13.4 (Iframe Locked)</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <style>
-        /* --- CORE --- */
+        /* --- CORE IFRAME RESET --- */
         * { box-sizing: border-box; }
         
-        /* TRANSPARENT BACKGROUNDS */
         body, html { 
+            /* Fixiert das Fenster auf exakt 100% der Iframe-Größe */
+            position: fixed; 
+            top: 0; left: 0; right: 0; bottom: 0;
             margin: 0; padding: 0; 
             width: 100%; height: 100%; 
-            background: transparent; /* WICHTIG: Transparenz */
+            background: transparent; 
             overflow: hidden; 
+            overscroll-behavior: none;
             font-family: 'Segoe UI', 'Roboto', sans-serif; 
             color: #e2e8f0; 
+            -webkit-font-smoothing: antialiased;
         }
 
         /* COLORS */
         :root {
             --phoenix-fire: #ff2a00;
-            --bg-panel: #0a0a0a; /* Sidebar bleibt dunkel für Lesbarkeit */
+            --bg-panel: #0a0a0a;
             --border-color: #2a2a2a;
+            --sidebar-width: 320px; /* Etwas schmaler für kleine Iframes */
         }
 
-        #app { position: absolute; inset: 0; display: flex; width: 100%; height: 100%; }
+        #app { 
+            position: absolute; 
+            inset: 0; 
+            display: flex; 
+            width: 100%; 
+            height: 100%; 
+        }
 
         /* --- SIDEBAR --- */
         #sidebar {
-            width: 340px; height: 100%; background: var(--bg-panel); border-right: 1px solid var(--border-color);
-            display: flex; flex-direction: column; z-index: 50; flex-shrink: 0;
+            width: var(--sidebar-width); 
+            height: 100%; 
+            background: var(--bg-panel); 
+            border-right: 1px solid var(--border-color);
+            display: flex; 
+            flex-direction: column; 
+            z-index: 50; 
+            flex-shrink: 0; 
             box-shadow: 5px 0 20px rgba(0,0,0,0.9);
         }
-        .sb-header { padding: 20px; background: rgba(0,0,0,0.5); border-bottom: 2px solid var(--phoenix-fire); }
-        .sb-title { font-size: 1.1rem; font-weight: 900; color: var(--phoenix-fire); letter-spacing: 0.05em; }
+        .sb-header { padding: 15px; background: rgba(0,0,0,0.5); border-bottom: 2px solid var(--phoenix-fire); flex-shrink: 0; }
+        .sb-title { font-size: 1.0rem; font-weight: 900; color: var(--phoenix-fire); letter-spacing: 0.05em; }
         
-        .tabs { display: flex; background: rgba(17, 17, 17, 0.8); border-bottom: 1px solid var(--border-color); }
-        .tab-btn { flex: 1; padding: 12px 5px; color: #777; background: none; border: none; cursor: pointer; border-bottom: 3px solid transparent; font-weight: 700; transition: 0.2s; font-size: 0.8rem; }
+        .tabs { display: flex; background: rgba(17, 17, 17, 0.8); border-bottom: 1px solid var(--border-color); flex-shrink: 0; }
+        .tab-btn { flex: 1; padding: 10px 5px; color: #777; background: none; border: none; cursor: pointer; border-bottom: 3px solid transparent; font-weight: 700; transition: 0.2s; font-size: 0.75rem; }
         .tab-btn:hover { color: white; background: rgba(255,255,255,0.05); }
         .tab-btn.active { color: var(--phoenix-fire); border-color: var(--phoenix-fire); background: linear-gradient(to top, rgba(255, 42, 0, 0.15), transparent); }
 
-        .sb-content { flex: 1; overflow-y: auto; position: relative; }
-        .view { display: none; padding: 15px; }
+        .sb-content { 
+            flex: 1; 
+            /* WICHTIG: min-height: 0 verhindert, dass Flex-Items aus dem Container wachsen */
+            min-height: 0; 
+            overflow-y: auto; 
+            overflow-x: hidden;
+            position: relative; 
+            scrollbar-width: thin;
+            scrollbar-color: #333 #0a0a0a;
+        }
+        .view { display: none; padding: 12px; }
         .view.active { display: block; animation: fadeIn 0.3s; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
         /* --- MAP ENGINE --- */
         #viewport {
-            flex: 1; position: relative; 
-            background: transparent; /* Transparenter Hintergrund für die Karte */
+            flex: 1; 
+            position: relative; 
+            background: transparent; 
             overflow: hidden;
             display: block; 
+            min-width: 0; /* Flexbox Fix */
         }
 
         #world {
             position: absolute;
             top: 0; left: 0;
             width: 1024px; height: 1024px;
-            /* Leichter Schatten damit sich die Karte vom Website-HG abhebt */
             box-shadow: 0 0 100px rgba(0,0,0,0.5); 
-            transform-origin: 0 0;
+            transform-origin: 0 0; 
             background-color: transparent;
+            will-change: transform;
         }
 
         #map-image-layer {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             object-fit: fill; z-index: 1; pointer-events: none;
-            will-change: transform;
         }
 
         #data-canvas {
@@ -103,21 +130,26 @@
             100% { transform: translate(-50%, -50%) scale(1.5); opacity: 0; }
         }
 
-        /* --- UI ELEMENTS --- */
-        .dino-item { display: flex; align-items: center; padding: 8px; border-bottom: 1px solid #1a1a1a; cursor: pointer; transition: 0.15s; }
+        /* --- UI ELEMENTS (Kompakter) --- */
+        .dino-item { 
+            display: flex; align-items: center; padding: 6px 10px; /* Kompakter */
+            border-bottom: 1px solid #1a1a1a; cursor: pointer; transition: 0.15s; 
+        }
         .dino-item:hover { background: #151515; }
         .dino-item.selected { background: rgba(255, 42, 0, 0.1); border-left: 3px solid var(--phoenix-fire); }
-        .dino-item img { width: 28px; height: 28px; margin-right: 10px; }
+        .dino-item img { width: 24px; height: 24px; margin-right: 10px; object-fit: contain; }
+        .dino-item span { font-size: 0.85rem; }
 
-        .toggle-item { display: flex; align-items: center; padding: 8px 0; cursor: pointer; user-select: none; }
-        .chk { width: 18px; height: 18px; border: 2px solid #444; border-radius: 3px; margin-right: 10px; display: flex; align-items: center; justify-content: center; }
+        .toggle-item { display: flex; align-items: center; padding: 6px 0; cursor: pointer; user-select: none; }
+        .chk { width: 16px; height: 16px; border: 2px solid #444; border-radius: 3px; margin-right: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; background: #000; }
+        .toggle-item:hover .chk { border-color: #888; }
         .toggle-item.checked .chk { background: var(--phoenix-fire); border-color: var(--phoenix-fire); }
-        .toggle-item.checked .chk::after { content: '✓'; color: black; font-weight: bold; font-size: 12px; }
+        .toggle-item.checked .chk::after { content: '✓'; color: black; font-weight: bold; font-size: 10px; }
         .toggle-item.disabled { opacity: 0.5; cursor: not-allowed; }
 
         .hud-top { position: absolute; top: 20px; right: 20px; background: rgba(0,0,0,0.9); padding: 8px 12px; border-radius: 4px; color: var(--phoenix-fire); font-family: monospace; z-index: 50; border: 1px solid #333; pointer-events: none; }
         .hud-bot { position: absolute; bottom: 30px; right: 30px; display: flex; gap: 8px; z-index: 50; }
-        .zoom-btn { width: 40px; height: 40px; background: rgba(17, 17, 17, 0.8); border: 1px solid #444; color: white; border-radius: 6px; font-size: 20px; cursor: pointer; display: grid; place-items: center; backdrop-filter: blur(4px); }
+        .zoom-btn { width: 36px; height: 36px; background: rgba(17, 17, 17, 0.8); border: 1px solid #444; color: white; border-radius: 6px; font-size: 18px; cursor: pointer; display: grid; place-items: center; backdrop-filter: blur(4px); }
         .zoom-btn:hover { border-color: var(--phoenix-fire); color: var(--phoenix-fire); }
 
         /* LEGEND VERTICAL FIXED */
@@ -127,38 +159,40 @@
             background: rgba(10, 10, 10, 0.95);
             border: 1px solid #333;
             border-left: 3px solid var(--phoenix-fire);
-            padding: 15px;
+            padding: 12px;
             z-index: 50;
             pointer-events: none;
             box-shadow: 0 5px 20px rgba(0,0,0,0.8);
             font-size: 11px; color: #ccc;
-            display: flex; 
-            flex-direction: column;
-            gap: 6px;
+            display: flex; flex-direction: column; gap: 4px;
         }
         .legend-title { color: var(--phoenix-fire); font-weight: 800; text-transform: uppercase; margin-bottom: 5px; letter-spacing: 0.05em; font-size: 10px; border-bottom: 1px solid #333; padding-bottom: 5px; }
         .leg-item { display: flex; align-items: center; }
-        .leg-box { width: 14px; height: 14px; margin-right: 10px; border-radius: 2px; border: 1px solid rgba(255,255,255,0.1); }
+        .leg-box { width: 12px; height: 12px; margin-right: 8px; border-radius: 2px; border: 1px solid rgba(255,255,255,0.1); }
 
         /* INFO PANEL */
         .info-panel { 
-            position: absolute; top: 0; right: 0; bottom: 0; width: 380px; 
+            position: absolute; top: 0; right: 0; bottom: 0; width: 320px; /* Etwas schmaler */
             background: var(--bg-panel); 
             border-left: 1px solid var(--phoenix-fire); 
             transform: translateX(100%); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); 
             z-index: 100; box-shadow: -10px 0 30px rgba(0,0,0,0.8); display: flex; flex-direction: column; 
         }
         .info-panel.visible { transform: translateX(0); }
+        .info-header { padding: 15px; background: #000; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center; }
+        .info-title { font-size: 1.0rem; font-weight: 800; color: #fff; text-transform: uppercase; letter-spacing: 0.05em; }
+        .info-close { color: #888; cursor: pointer; font-size: 1.5rem; transition: 0.2s; line-height: 1; }
+        .info-close:hover { color: var(--phoenix-fire); }
         
         .related-list { margin-top: 20px; border-top: 1px solid #333; padding-top: 15px; }
-        .related-item { padding: 8px; cursor: pointer; border-radius: 4px; font-size: 0.85rem; color: #aaa; border-left: 2px solid transparent; margin-bottom: 2px; }
+        .related-item { padding: 6px 8px; cursor: pointer; border-radius: 4px; font-size: 0.8rem; color: #aaa; border-left: 2px solid transparent; margin-bottom: 2px; }
         .related-item:hover { background: #1a1a1a; color: white; }
         .related-item.active { background: rgba(255, 42, 0, 0.1); border-left-color: var(--phoenix-fire); color: var(--phoenix-fire); font-weight: bold; }
 
         /* Transparent Loader */
         .loader { 
             position: absolute; inset: 0; 
-            background: rgba(0,0,0,0.8); /* Semi-Transparent */
+            background: rgba(0,0,0,0.8); 
             z-index: 999; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.5s; 
             backdrop-filter: blur(5px);
         }
@@ -174,21 +208,13 @@
             opacity: 0; transition: opacity 0.3s;
         }
         #toast.visible { opacity: 1; }
-
-        /* Chat */
-        .chat-container { display: flex; flex-direction: column; height: 100%; }
-        .chat-log { flex: 1; overflow-y: auto; padding: 15px; }
-        .chat-msg { padding: 8px 12px; border-radius: 6px; margin-bottom: 8px; font-size: 0.9rem; max-width: 85%; }
-        .chat-msg.u { align-self: flex-end; background: #333; margin-left: auto; }
-        .chat-msg.b { align-self: flex-start; background: #111; border-left: 2px solid var(--phoenix-fire); }
-        .chat-input { display: flex; padding: 10px; border-top: 1px solid #333; gap: 5px; }
         
         /* Utility */
-        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-track { background: #0a0a0a; }
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
         .hidden { display: none !important; }
-        .phoenix-input { w-full: 100%; background: #050505; border: 1px solid #333; padding: 10px; border-radius: 6px; color: white; outline: none; }
+        .phoenix-input { w-full: 100%; background: #050505; border: 1px solid #333; padding: 8px; border-radius: 6px; color: white; outline: none; font-size: 0.9rem; }
         
         #error-log { position: absolute; top: 0; left: 0; width: 100%; background: rgba(220, 38, 38, 0.95); color: white; padding: 5px; font-size: 11px; z-index: 10000; display: none; text-align: center; }
         .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 6px; }
@@ -226,21 +252,9 @@
             <div id="view-dinos" class="view active">
                 <input type="text" id="search-dino" placeholder="Suche..." class="phoenix-input w-full mb-2">
                 <div id="list-dinos"></div>
-                <!-- Legende für Dinos -->
-                <div class="mt-4 border-t border-gray-800 pt-4">
-                     <div class="text-xs font-bold text-gray-500 mb-2 tracking-wider">LEGENDE</div>
-                     <div class="grid grid-cols-2 gap-2 text-xs text-gray-400">
-                        <div class="flex items-center"><div class="w-3 h-3 mr-2 bg-[#22c55e] border border-[#16a34a]"></div>Sehr Häufig</div>
-                        <div class="flex items-center"><div class="w-3 h-3 mr-2 bg-[#84cc16] border border-[#65a30d]"></div>Häufig</div>
-                        <div class="flex items-center"><div class="w-3 h-3 mr-2 bg-[#eab308] border border-[#ca8a04]"></div>Gelegentlich</div>
-                        <div class="flex items-center"><div class="w-3 h-3 mr-2 bg-[#f97316] border border-[#ea580c]"></div>Selten</div>
-                        <div class="flex items-center"><div class="w-3 h-3 mr-2 bg-[#ef4444] border border-[#dc2626]"></div>Sehr Selten</div>
-                        <div class="flex items-center"><div class="w-3 h-3 mr-2 bg-[#a855f7] border border-[#9333ea]"></div>Extrem Selten</div>
-                     </div>
-                </div>
             </div>
             
-            <!-- RESSOURCEN -->
+            <!-- RESSOURCEN (Updated) -->
             <div id="view-res" class="view">
                 <div class="mb-4 border-b border-gray-800 pb-2">
                     <!-- Master Toggle for Resources -->
@@ -312,6 +326,7 @@
         </div>
         <div class="hud-top">LAT: <span id="lat">00.0</span> | LON: <span id="lon">00.0</span></div>
         <div class="hud-bot">
+            <button class="zoom-btn" onclick="Ui.toggleFullscreen()" title="Vollbild">⛶</button>
             <button class="zoom-btn" onclick="MapEngine.reset()">⟲</button>
             <button class="zoom-btn" onclick="MapEngine.zoom(1.2)">+</button>
             <button class="zoom-btn" onclick="MapEngine.zoom(0.8)">-</button>
@@ -330,7 +345,7 @@
 
 <script>
 /**
- * IOP WIDGET CORE v13.0 - Transparent Backgrounds
+ * IOP WIDGET CORE v13.4 - Iframe & Sidebar Optimization
  */
 
 window.CFG = {
@@ -413,6 +428,7 @@ window.MapEngine = {
     iconCache: new Map(),
     cavePattern: null,
     isDown: false, hasMoved: false, startX: 0, startY: 0,
+    resizeObserver: null,
 
     init() {
         this.el = document.getElementById('world');
@@ -485,21 +501,26 @@ window.MapEngine = {
             this.checkClick(lon, lat);
         };
 
-        window.onresize = () => this.fit();
+        // ROBUST RESIZE OBSERVER
+        this.resizeObserver = new ResizeObserver(() => this.fit());
+        this.resizeObserver.observe(document.getElementById('viewport'));
+        
         setTimeout(()=>this.fit(), 100);
     },
 
     fit() {
         if(!this.el) return;
         const vp = document.getElementById('viewport');
-        const s = Math.min(vp.clientWidth, vp.clientHeight) - 40;
+        // Use full available space
+        const s = Math.min(vp.clientWidth, vp.clientHeight); 
         const size = Math.max(100, s);
+        
         this.el.style.width = size+'px';
         this.el.style.height = size+'px';
         this.cvs.width = size;
         this.cvs.height = size;
         
-        // MANUAL CENTERING
+        // Manual Center
         this.el.style.left = (vp.clientWidth - size)/2 + 'px';
         this.el.style.top = (vp.clientHeight - size)/2 + 'px';
         
@@ -508,22 +529,13 @@ window.MapEngine = {
 
     load(url) {
         if(!this.img) return;
-        
-        const loader = document.getElementById('loader');
-        if(loader) loader.classList.remove('hidden');
-
-        // FIX: Handle error gracefully
+        this.img.src = url;
         this.img.onload = () => {
+             const loader = document.getElementById('loader');
              if(loader) loader.classList.add('hidden');
              this.fit();
              this.draw();
         };
-        this.img.onerror = () => {
-            console.warn("Map Image Load Failed: " + url);
-            if(loader) loader.classList.add('hidden');
-        };
-        
-        this.img.src = url;
         this.setMarker(null);
     },
 
@@ -754,6 +766,16 @@ window.Ui = {
             }
         });
         s.onchange = e => Data.loadMap(e.target.value);
+    },
+    
+    toggleFullscreen() {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen();
+        } else {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            }
+        }
     },
     
     setSpawnStatus(type, msg) {
