@@ -3,20 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>IOP Cluster Explorer v13.5 (Loader Fix)</title>
+    <title>IOP Cluster Explorer v13.0 (Compact UI)</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <style>
-        /* --- CORE IFRAME RESET --- */
+        /* --- CORE --- */
         * { box-sizing: border-box; }
         
         body, html { 
-            position: fixed; 
-            top: 0; left: 0; right: 0; bottom: 0;
             margin: 0; padding: 0; 
             width: 100%; height: 100%; 
             background: transparent; 
             overflow: hidden; 
-            overscroll-behavior: none;
             font-family: 'Segoe UI', 'Roboto', sans-serif; 
             color: #e2e8f0; 
             -webkit-font-smoothing: antialiased;
@@ -27,7 +24,7 @@
             --phoenix-fire: #ff2a00;
             --bg-panel: #0a0a0a;
             --border-color: #2a2a2a;
-            --sidebar-width: 320px;
+            --sidebar-width: 300px; /* Etwas schmaler für kompaktes Design */
         }
 
         #app { 
@@ -44,19 +41,64 @@
         .sb-title { font-size: 1.0rem; font-weight: 900; color: var(--phoenix-fire); letter-spacing: 0.05em; }
         
         .tabs { display: flex; background: rgba(17, 17, 17, 0.8); border-bottom: 1px solid var(--border-color); flex-shrink: 0; }
-        .tab-btn { flex: 1; padding: 10px 5px; color: #777; background: none; border: none; cursor: pointer; border-bottom: 3px solid transparent; font-weight: 700; transition: 0.2s; font-size: 0.75rem; }
+        .tab-btn { flex: 1; padding: 10px 2px; color: #777; background: none; border: none; cursor: pointer; border-bottom: 3px solid transparent; font-weight: 700; transition: 0.2s; font-size: 0.75rem; text-align: center; }
         .tab-btn:hover { color: white; background: rgba(255,255,255,0.05); }
         .tab-btn.active { color: var(--phoenix-fire); border-color: var(--phoenix-fire); background: linear-gradient(to top, rgba(255, 42, 0, 0.15), transparent); }
 
         .sb-content { 
             flex: 1; min-height: 0; 
             overflow-y: auto; overflow-x: hidden;
-            position: relative; 
+            position: relative; padding: 15px;
             scrollbar-width: thin; scrollbar-color: #333 #0a0a0a;
         }
-        .view { display: none; padding: 12px; }
+        .view { display: none; }
         .view.active { display: block; animation: fadeIn 0.3s; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* --- CUSTOM DROPDOWN (DINO SELECTOR) --- */
+        .custom-select {
+            position: relative;
+            width: 100%;
+        }
+        .select-trigger {
+            display: flex; align-items: center; justify-content: space-between;
+            width: 100%; padding: 10px;
+            background: #151515; border: 1px solid #444; border-radius: 6px;
+            color: #ddd; cursor: pointer; font-size: 0.9rem;
+            transition: 0.2s;
+        }
+        .select-trigger:hover { border-color: #666; }
+        .select-trigger.active { border-color: var(--phoenix-fire); }
+        
+        .select-dropdown {
+            position: absolute; top: 100%; left: 0; width: 100%;
+            background: #111; border: 1px solid #444; border-top: none;
+            border-radius: 0 0 6px 6px;
+            max-height: 300px; overflow-y: auto;
+            z-index: 100; display: none;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+        }
+        .select-dropdown.open { display: block; }
+        
+        .select-search {
+            position: sticky; top: 0;
+            background: #111; padding: 8px;
+            border-bottom: 1px solid #333;
+        }
+        .select-search input {
+            width: 100%; background: #222; border: 1px solid #444;
+            padding: 6px; border-radius: 4px; color: white; font-size: 0.85rem; outline: none;
+        }
+        .select-search input:focus { border-color: var(--phoenix-fire); }
+
+        .select-item {
+            display: flex; align-items: center; padding: 8px 10px;
+            cursor: pointer; border-bottom: 1px solid #1a1a1a;
+            transition: 0.15s; font-size: 0.85rem;
+        }
+        .select-item:hover { background: #222; }
+        .select-item.selected { background: rgba(255, 42, 0, 0.15); color: var(--phoenix-fire); }
+        .select-item img { width: 24px; height: 24px; margin-right: 10px; object-fit: contain; }
 
         /* --- MAP ENGINE --- */
         #viewport {
@@ -104,12 +146,6 @@
         }
 
         /* --- UI ELEMENTS --- */
-        .dino-item { display: flex; align-items: center; padding: 6px 10px; border-bottom: 1px solid #1a1a1a; cursor: pointer; transition: 0.15s; }
-        .dino-item:hover { background: #151515; }
-        .dino-item.selected { background: rgba(255, 42, 0, 0.1); border-left: 3px solid var(--phoenix-fire); }
-        .dino-item img { width: 24px; height: 24px; margin-right: 10px; object-fit: contain; }
-        .dino-item span { font-size: 0.85rem; }
-
         .toggle-item { display: flex; align-items: center; padding: 6px 0; cursor: pointer; user-select: none; }
         .chk { width: 16px; height: 16px; border: 2px solid #444; border-radius: 3px; margin-right: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; background: #000; }
         .toggle-item:hover .chk { border-color: #888; }
@@ -119,22 +155,22 @@
 
         .hud-top { position: absolute; top: 20px; right: 20px; background: rgba(0,0,0,0.9); padding: 8px 12px; border-radius: 4px; color: var(--phoenix-fire); font-family: monospace; z-index: 50; border: 1px solid #333; pointer-events: none; }
         .hud-bot { position: absolute; bottom: 30px; right: 30px; display: flex; gap: 8px; z-index: 50; }
-        .zoom-btn { width: 36px; height: 36px; background: rgba(17, 17, 17, 0.8); border: 1px solid #444; color: white; border-radius: 6px; font-size: 18px; cursor: pointer; display: grid; place-items: center; backdrop-filter: blur(4px); }
+        .zoom-btn { width: 40px; height: 40px; background: rgba(17, 17, 17, 0.8); border: 1px solid #444; color: white; border-radius: 6px; font-size: 18px; cursor: pointer; display: grid; place-items: center; backdrop-filter: blur(4px); }
         .zoom-btn:hover { border-color: var(--phoenix-fire); color: var(--phoenix-fire); }
 
         /* LEGEND */
         .map-legend {
             position: absolute; bottom: 20px; left: 20px; 
-            width: 180px; background: rgba(10, 10, 10, 0.95);
+            width: 160px; background: rgba(10, 10, 10, 0.95);
             border: 1px solid #333; border-left: 3px solid var(--phoenix-fire);
-            padding: 12px; z-index: 50; pointer-events: none;
+            padding: 10px; z-index: 50; pointer-events: none;
             box-shadow: 0 5px 20px rgba(0,0,0,0.8);
-            font-size: 11px; color: #ccc;
-            display: flex; flex-direction: column; gap: 4px;
+            font-size: 10px; color: #ccc;
+            display: flex; flex-direction: column; gap: 3px;
         }
-        .legend-title { color: var(--phoenix-fire); font-weight: 800; text-transform: uppercase; margin-bottom: 5px; letter-spacing: 0.05em; font-size: 10px; border-bottom: 1px solid #333; padding-bottom: 5px; }
+        .legend-title { color: var(--phoenix-fire); font-weight: 800; text-transform: uppercase; margin-bottom: 4px; letter-spacing: 0.05em; font-size: 9px; border-bottom: 1px solid #333; padding-bottom: 3px; }
         .leg-item { display: flex; align-items: center; }
-        .leg-box { width: 12px; height: 12px; margin-right: 8px; border-radius: 2px; border: 1px solid rgba(255,255,255,0.1); }
+        .leg-box { width: 10px; height: 10px; margin-right: 8px; border-radius: 2px; border: 1px solid rgba(255,255,255,0.1); }
 
         /* INFO PANEL */
         .info-panel { 
@@ -173,6 +209,14 @@
             opacity: 0; transition: opacity 0.3s;
         }
         #toast.visible { opacity: 1; }
+
+        /* Chat */
+        .chat-container { display: flex; flex-direction: column; height: 100%; }
+        .chat-log { flex: 1; overflow-y: auto; padding: 15px; }
+        .chat-msg { padding: 8px 12px; border-radius: 6px; margin-bottom: 8px; font-size: 0.9rem; max-width: 85%; }
+        .chat-msg.u { align-self: flex-end; background: #333; margin-left: auto; }
+        .chat-msg.b { align-self: flex-start; background: #111; border-left: 2px solid var(--phoenix-fire); }
+        .chat-input { display: flex; padding: 10px; border-top: 1px solid #333; gap: 5px; }
         
         /* Utility */
         ::-webkit-scrollbar { width: 5px; }
@@ -213,21 +257,23 @@
         </nav>
 
         <div class="sb-content custom-scrollbar">
-            <!-- DINOS -->
+            <!-- DINOS (COMPACT MODE) -->
             <div id="view-dinos" class="view active">
-                <input type="text" id="search-dino" placeholder="Suche..." class="phoenix-input w-full mb-2">
-                <div id="list-dinos"></div>
+                <div class="text-xs font-bold text-gray-500 mb-2 tracking-wider">KREATUREN</div>
                 
-                <div class="mt-4 border-t border-gray-800 pt-4">
-                     <div class="text-xs font-bold text-gray-500 mb-2 tracking-wider">LEGENDE</div>
-                     <div class="grid grid-cols-2 gap-2 text-xs text-gray-400">
-                        <div class="flex items-center"><div class="w-3 h-3 mr-2 bg-[#22c55e] border border-[#16a34a]"></div>Sehr Häufig</div>
-                        <div class="flex items-center"><div class="w-3 h-3 mr-2 bg-[#84cc16] border border-[#65a30d]"></div>Häufig</div>
-                        <div class="flex items-center"><div class="w-3 h-3 mr-2 bg-[#eab308] border border-[#ca8a04]"></div>Gelegentlich</div>
-                        <div class="flex items-center"><div class="w-3 h-3 mr-2 bg-[#f97316] border border-[#ea580c]"></div>Selten</div>
-                        <div class="flex items-center"><div class="w-3 h-3 mr-2 bg-[#ef4444] border border-[#dc2626]"></div>Sehr Selten</div>
-                        <div class="flex items-center"><div class="w-3 h-3 mr-2 bg-[#a855f7] border border-[#9333ea]"></div>Extrem Selten</div>
-                     </div>
+                <!-- CUSTOM DROPDOWN -->
+                <div class="custom-select" id="dino-dropdown">
+                    <div class="select-trigger" onclick="Ui.toggleDinoDropdown()">
+                        <span id="dino-trigger-text">Wähle Dino...</span>
+                        <span class="text-xs text-gray-500">▼</span>
+                    </div>
+                    
+                    <div id="dino-dropdown-content" class="select-dropdown">
+                        <div class="select-search">
+                            <input type="text" id="search-dino" placeholder="Suche..." autocomplete="off">
+                        </div>
+                        <div id="dino-list-root"></div>
+                    </div>
                 </div>
             </div>
             
@@ -281,6 +327,7 @@
 
     <!-- MAP VIEWPORT -->
     <div id="viewport">
+        <!-- THE VERTICAL LEGEND -->
         <div class="map-legend">
             <div class="legend-title">Spawn Raten</div>
             <div class="leg-item"><div class="leg-box" style="background: rgba(34, 197, 94, 0.9)"></div>Sehr Häufig</div>
@@ -309,17 +356,17 @@
     
     <!-- INFO POPUP -->
     <div id="info-panel" class="info-panel">
-        <div class="info-header">
-            <h2 id="info-title" class="info-title">DETAILS</h2>
-            <button onclick="Ui.closeInfo()" class="info-close">×</button>
+        <div class="flex justify-between items-center bg-[#0a0a0a] p-4 border-b border-[#333]">
+            <h2 id="info-title" class="text-lg font-bold text-white uppercase">Info</h2>
+            <button onclick="Ui.closeInfo()" class="text-gray-400 hover:text-white text-xl">×</button>
         </div>
-        <div id="info-body" class="p-6 text-gray-300 overflow-y-auto"></div>
+        <div id="info-body" class="p-4 text-sm text-gray-300 overflow-y-auto h-full"></div>
     </div>
 </div>
 
 <script>
 /**
- * IOP WIDGET CORE v13.5 - Infinite Load Fix
+ * IOP WIDGET CORE v13.0
  */
 
 window.CFG = {
@@ -328,12 +375,12 @@ window.CFG = {
     urlT: 'https://raw.githubusercontent.com/iophantonie/iophantonie-IOP_Custom_Map_Explorer.github.io/main/Translation_Datenbank/translationdb.jsn',
     col: { spawn: 'rgba(255, 42, 0, 0.4)', stroke: '#ff2a00' },
     rarity: [
-        { th: 0.30, c: '#22c55e' }, // Green
-        { th: 0.15, c: '#84cc16' }, // Lime
-        { th: 0.07, c: '#eab308' }, // Yellow
-        { th: 0.03, c: '#f97316' }, // Orange
-        { th: 0.01, c: '#ef4444' }, // Red
-        { th: 0.00, c: '#a855f7' }  // Purple
+        { th: 0.30, c: '#22c55e' }, 
+        { th: 0.15, c: '#84cc16' }, 
+        { th: 0.07, c: '#eab308' }, 
+        { th: 0.03, c: '#f97316' }, 
+        { th: 0.01, c: '#ef4444' }, 
+        { th: 0.00, c: '#a855f7' }
     ]
 };
 
@@ -364,8 +411,6 @@ function logError(msg) {
 window.onerror = (m,u,l) => logError(`${m} (Line ${l})`);
 
 async function fetchData(url) {
-    // FIX: Check if URL exists
-    if (!url) return null;
     try {
         const r = await fetch(url);
         if(!r.ok) throw new Error(`HTTP ${r.status}`);
@@ -476,7 +521,7 @@ window.MapEngine = {
     fit() {
         if(!this.el) return;
         const vp = document.getElementById('viewport');
-        const s = Math.min(vp.clientWidth, vp.clientHeight); 
+        const s = Math.min(vp.clientWidth, vp.clientHeight) - 100; // Extra Margin for Map
         const size = Math.max(100, s);
         this.el.style.width = size+'px';
         this.el.style.height = size+'px';
@@ -490,11 +535,9 @@ window.MapEngine = {
     load(url) {
         if(!this.img) return;
         this.img.src = url;
-        
         const loader = document.getElementById('loader');
         if(loader) loader.classList.remove('hidden');
 
-        // FIX: Handle error gracefully to prevent infinite loading
         this.img.onload = () => {
              if(loader) loader.classList.add('hidden');
              this.fit();
@@ -502,12 +545,9 @@ window.MapEngine = {
         };
         this.img.onerror = () => {
             console.warn("Map Image Load Failed: " + url);
-            // Hide loader anyway
             if(loader) loader.classList.add('hidden');
-            // Force draw (will show fallback text if implemented or just data)
             this.draw();
         };
-        
         this.setMarker(null);
     },
 
@@ -557,13 +597,9 @@ window.MapEngine = {
         const ctx = this.ctx;
         ctx.clearRect(0, 0, w, h);
         
-        // Draw visual error if map failed loading
         if (this.img.naturalWidth === 0 && this.img.src) {
-             ctx.fillStyle = '#1a1a1a';
-             ctx.fillRect(0,0,w,h);
-             ctx.fillStyle = '#ff2a00';
-             ctx.font = '20px sans-serif';
-             ctx.textAlign = 'center';
+             ctx.fillStyle = '#1a1a1a'; ctx.fillRect(0,0,w,h);
+             ctx.fillStyle = '#ff2a00'; ctx.font = '20px sans-serif'; ctx.textAlign = 'center';
              ctx.fillText("Bild konnte nicht geladen werden", w/2, h/2);
         }
 
@@ -574,8 +610,7 @@ window.MapEngine = {
                 const score = (z.chance || 0.5) * (z.weight || 1);
                 let hex = '#22c55e';
                 for(let r of window.CFG.rarity) { if(score >= r.th) { hex = r.c; break; } }
-                ctx.fillStyle = hexToRgba(hex, 0.4);
-                ctx.fillRect(x, y, zw, zh);
+                ctx.fillStyle = hexToRgba(hex, 0.4); ctx.fillRect(x, y, zw, zh);
                 if (z.isCave) { ctx.fillStyle = this.cavePattern; ctx.fillRect(x, y, zw, zh); }
                 ctx.strokeStyle = hex; ctx.lineWidth = 2; ctx.strokeRect(x, y, zw, zh);
             });
@@ -602,9 +637,7 @@ window.MapEngine = {
             if(o) {
                 let img = o.icon ? this.getImg(o.icon) : null;
                 if(!img) img = this.getImg(Store.icons[o.name]?.iconUrl);
-
                 const cx=(o.lon/100)*w, cy=(o.lat/100)*h;
-                
                 if(img && img.complete && img.naturalWidth > 0) {
                     const ht=60, ar=img.naturalWidth/img.naturalHeight;
                     const wt=ht*ar;
@@ -630,15 +663,11 @@ window.MapEngine = {
                 ctx.lineWidth = 1.5;
 
                 const points = group.locations || group.spawnPoints || (Array.isArray(group) ? group : []);
-                
                 points.forEach(loc => {
                     if (loc.lat !== undefined) {
                          const cx = (loc.lon / 100) * w;
                          const cy = (loc.lat / 100) * h;
-                         ctx.beginPath();
-                         ctx.arc(cx, cy, 8, 0, Math.PI * 2);
-                         ctx.fill();
-                         ctx.stroke();
+                         ctx.beginPath(); ctx.arc(cx, cy, 8, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
                     }
                 });
             });
@@ -674,6 +703,7 @@ window.MapEngine = {
     }
 };
 
+// --- DATA ---
 window.Data = {
     async init() {
         try {
@@ -733,6 +763,7 @@ window.Data = {
     }
 };
 
+// --- UI ---
 window.Ui = {
     initSelector(cfg) {
         const s = document.getElementById('map-select');
@@ -790,16 +821,26 @@ window.Ui = {
             const name = Store.trans.dinos[k]||k;
             const icon = Store.icons[k]?.iconUrl || 'https://placehold.co/24';
             const cls = Store.selDino === k ? 'selected' : '';
-            return `<div class="dino-item ${cls}" onclick="Ui.togDino('${k}')">
-                <img src="${icon}"><span class="dino-name">${name}</span>
+            return `<div class="select-item ${cls}" onclick="Ui.selectDino('${k}', '${name}')">
+                <img src="${icon}"><span>${name}</span>
             </div>`;
         }).join('');
         l.innerHTML = items + (show.length > 50 && !t ? `<div class="text-xs text-center text-gray-500 p-2">... ${show.length-50} weitere ...</div>` : '');
     },
 
-    togDino(k) {
-        Store.selDino = Store.selDino === k ? null : k;
-        this.renderDinos(document.getElementById('search-dino').value);
+    // NEW: Dropdown Toggle Logic
+    toggleDinoDropdown() {
+        const dd = document.getElementById('dino-dropdown-content');
+        const trig = document.querySelector('.select-trigger');
+        dd.classList.toggle('open');
+        trig.classList.toggle('active');
+        if(dd.classList.contains('open')) document.getElementById('search-dino').focus();
+    },
+
+    selectDino(key, name) {
+        Store.selDino = key;
+        document.getElementById('dino-trigger-text').textContent = name;
+        this.toggleDinoDropdown(); // Close
         MapEngine.draw();
     },
 
