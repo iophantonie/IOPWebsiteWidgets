@@ -30,26 +30,22 @@
             font-family: var(--font-main);
             color: var(--color-text);
             margin: 0;
-            padding: 0; /* Randlos für Fullscreen-Effekt */
+            padding: 0;
             width: 100%;
-            height: 100vh; /* Exakt Bildschirmhöhe */
-            overflow: hidden; /* Verhindert Scrollen der ganzen Seite */
-            display: flex;
-            flex-direction: column;
+            height: 100vh; /* Füllt das Iframe */
+            overflow: hidden; /* Kein Scrollen am Body */
         }
 
         /* Hauptcontainer */
         .map-widget-container {
             background-color: rgba(20, 20, 20, 0.9); 
+            border: none; 
             width: 100%;
-            height: 100%; /* Füllt Body komplett aus */
+            height: 100%; 
             display: flex;
             flex-direction: column;
             overflow: hidden;
             position: relative;
-            border: 3px solid var(--color-red); /* Rahmen außen */
-            /* Optional: Border Radius entfernen, wenn es Fullscreen sein soll */
-             border-radius: 0; 
         }
 
         /* Header */
@@ -65,15 +61,15 @@
             text-shadow: 0 0 20px rgba(229, 57, 53, 0.4);
             border-bottom: 2px solid var(--color-red);
             background-color: rgba(0, 0, 0, 0.4);
-            flex-shrink: 0; /* Feste Höhe, schrumpft nicht */
+            flex-shrink: 0;
         }
 
-        /* Layout Wrapper (Sidebar + Content) */
+        /* Layout Wrapper */
         .map-body-wrapper {
             display: flex;
             flex-direction: row;
-            flex: 1; /* Füllt den Rest der Höhe nach dem Header */
-            overflow: hidden; /* Wichtig! */
+            flex: 1; /* Füllt den Rest der Höhe */
+            overflow: hidden; 
         }
 
         /* --- Sidebar --- */
@@ -84,14 +80,13 @@
             display: flex;
             flex-direction: column;
             flex-shrink: 0;
-            height: 100%; /* Volle Höhe des Wrappers */
             overflow: hidden;
         }
 
-        /* Sidebar Inhalt Scrollbar */
+        /* Sidebar Sticky Content */
         .sidebar-content-scroll {
             flex: 1;
-            overflow-y: auto; /* Scrollen nur hier drinnen */
+            overflow-y: auto;
             scrollbar-width: thin;
             scrollbar-color: var(--color-red) transparent;
         }
@@ -173,17 +168,16 @@
             display: flex;
             flex-direction: column;
             background-color: transparent;
-            overflow: hidden; /* Verhindert Überlauf */
-            height: 100%;
+            overflow: hidden;
         }
 
         /* 1. Map Bereich (FLEXIBEL) */
         .iframe-container {
-            flex: 1; /* Füllt AUTOMATISCH den Platz zwischen Header und POIs */
+            flex: 1; /* Füllt AUTOMATISCH den Platz */
             position: relative;
             background-color: rgba(0, 0, 0, 0.5);
             border-bottom: 3px solid var(--color-red);
-            min-height: 0; /* Wichtig für Flexbox, damit es schrumpfen kann wenn nötig */
+            min-height: 0; 
         }
 
         iframe {
@@ -193,18 +187,26 @@
             display: block;
         }
 
-        /* 2. POI Bereich (FESTE HÖHE UNTEN) */
+        /* 2. POI Bereich (UNTEN) */
         .poi-section {
-            background-color: rgba(20, 20, 20, 0.8); /* Etwas dunkler für Kontrast */
+            background-color: rgba(20, 20, 20, 0.8);
             padding: 10px 20px;
-            height: 240px; /* Feste Höhe für die Info-Leiste */
+            height: 240px; /* Basis-Höhe */
             flex-shrink: 0; /* Darf nicht schrumpfen */
             border-top: 1px solid rgba(255, 255, 255, 0.1);
             display: flex;
             flex-direction: column;
-            justify-content: center;
-            overflow: hidden;
+            
+            /* WICHTIG: Erlaubt vertikales Scrollen durch die Kategorien */
+            overflow-y: auto; 
+            justify-content: flex-start; /* Inhalt oben ausrichten */
+            
+            scrollbar-width: thin;
+            scrollbar-color: var(--color-red) transparent;
         }
+        
+        .poi-section::-webkit-scrollbar { width: 6px; }
+        .poi-section::-webkit-scrollbar-thumb { background-color: var(--color-red); border-radius: 3px; }
 
         /* Kategorie Header */
         .poi-category-header {
@@ -212,19 +214,22 @@
             font-size: 1rem;
             color: var(--color-gold);
             margin-bottom: 5px;
+            margin-top: 15px; /* Abstand zwischen Kategorien */
             padding-left: 10px;
             border-left: 3px solid var(--color-red);
             text-transform: uppercase;
         }
+        .poi-category-header:first-child { margin-top: 0; }
 
         /* Slider Wrapper */
         .poi-slider-wrapper {
             position: relative;
             display: flex;
             align-items: center;
+            margin-bottom: 10px; /* Abstand nach Slider */
             width: 100%;
-            height: 100%;
-            overflow: hidden;
+            /* Flex-Shrink verhindern damit Slider sichtbar bleiben */
+            flex-shrink: 0; 
         }
 
         /* Horizontaler Slider */
@@ -235,9 +240,7 @@
             padding: 5px; 
             scroll-behavior: smooth;
             width: 100%;
-            height: 100%;
             align-items: center;
-            /* Scrollbar verstecken */
             -ms-overflow-style: none;  
             scrollbar-width: none; 
         }
@@ -272,8 +275,8 @@
             transform: translateY(-50%) scale(1.1);
         }
 
-        .slider-arrow.prev { left: 0px; } 
-        .slider-arrow.next { right: 0px; }
+        .slider-arrow.prev { left: -10px; } 
+        .slider-arrow.next { right: -10px; }
         
         @media (max-width: 768px) {
             .slider-arrow { display: none !important; } 
@@ -287,7 +290,7 @@
             border-radius: 6px;
             overflow: hidden;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: transform 0.2s, border-color 0.2s;
+            transition: transform 0.2s, border-color 0.2s, background-color 0.2s;
             display: flex;
             flex-direction: column;
             cursor: pointer; 
@@ -297,7 +300,8 @@
         .poi-card:hover {
             transform: translateY(-3px);
             border-color: var(--color-red);
-            box-shadow: 0 4px 10px rgba(229, 57, 53, 0.3);
+            background-color: rgba(50, 50, 50, 0.9);
+            box-shadow: 0 4px 15px rgba(229, 57, 53, 0.3);
         }
 
         .poi-image {
@@ -339,9 +343,9 @@
 
         /* MODAL (LIGHTBOX) STYLES */
         .modal-overlay {
-            position: fixed; /* Fixed damit es immer im Viewport ist */
-            top: 0;
+            position: absolute;
             left: 0;
+            top: 0;
             width: 100%;
             height: 100%; 
             background-color: rgba(0, 0, 0, 0.85); 
@@ -349,7 +353,7 @@
             display: none; 
             justify-content: center;
             align-items: center;
-            backdrop-filter: blur(5px); 
+            backdrop-filter: blur(8px); 
             opacity: 0;
             transition: opacity 0.3s ease;
         }
@@ -372,7 +376,13 @@
             flex-direction: column;
             transform: scale(0.9);
             transition: transform 0.3s ease;
+            /* Scrollbar im Modal */
+            scrollbar-width: thin;
+            scrollbar-color: var(--color-red) transparent;
         }
+        .modal-content::-webkit-scrollbar { width: 6px; }
+        .modal-content::-webkit-scrollbar-thumb { background-color: var(--color-red); border-radius: 3px; }
+
 
         .modal-overlay.active .modal-content {
             transform: scale(1);
@@ -450,7 +460,7 @@
             display: none; 
         }
 
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes spin { 0% { transform: translate(-50%, -50%) rotate(0deg); } 100% { transform: translate(-50%, -50%) rotate(360deg); } }
 
         /* Responsive */
         @media (max-width: 900px) {
@@ -507,7 +517,7 @@
     </div>
 
     <script>
-        // DATENBANK
+        // DATENBANK (Enthält ALLE Daten aus vorherigen Schritten)
         const mapData = {
             "official": [
                 {
@@ -840,8 +850,9 @@
                 document.getElementById('modalTitle').textContent = poi.title;
                 document.getElementById('modalCoords').textContent = poi.coords;
                 
-                // Modal öffnen
+                // Modal öffnen an aktueller Scrollposition
                 const modal = document.getElementById('poiModal');
+                modal.style.top = window.scrollY + 'px'; // Position at current scroll
                 modal.classList.add('active');
             }
         }
