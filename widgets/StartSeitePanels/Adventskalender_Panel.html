@@ -232,7 +232,7 @@
         <h3 class="calendar-header">Infinity of Phoenix - Adventskalender</h3>
         
         <!-- NEU: Haupt-Überschrift (Oben) -->
-        <div class="timer-pre-label">NÄCHSTES TÜRCHEN IN:</div>
+        <div id="pre-label" class="timer-pre-label">NÄCHSTES TÜRCHEN IN:</div>
 
         <div class="info-row">
             
@@ -254,6 +254,7 @@
     <script>
         const timerElement = document.getElementById('calendar-timer');
         const statusElement = document.getElementById('calendar-status');
+        const preLabelElement = document.getElementById('pre-label');
         const barElement = document.querySelector('.calendar-bar');
         const visualsContainer = document.getElementById('calendar-visuals');
 
@@ -340,13 +341,6 @@
                  visualsContainer.dataset.lastDoor = currentDoor;
             }
 
-            // 3. Finde das nächste Ziel (00:00 Uhr am nächsten Tag)
-            const nextDay = new Date(now);
-            nextDay.setDate(now.getDate() + 1);
-            nextDay.setHours(0, 0, 0, 0); // 00:00 Uhr des nächsten Tages
-
-            let timeUntilNextDoor = nextDay.getTime() - now.getTime();
-            
             // 4. Prüfe auf Sonderstatus (Special Box oder Weihnachtsbox)
             let statusMessage = `TÜRCHEN ${currentDoor} IST HEUTE AKTIV!`;
             
@@ -360,18 +354,33 @@
                 }
             }
 
-            // 5. Formatiere den Countdown
-            const totalSeconds = Math.floor(timeUntilNextDoor / 1000);
-            const hours = Math.floor(totalSeconds / 3600);
-            const minutes = Math.floor((totalSeconds % 3600) / 60);
-            const seconds = totalSeconds % 60;
+            // SONDERFALL 24. DEZEMBER (Stoppt Timer)
+            if (currentDoor === 24) {
+                preLabelElement.textContent = "ES IST SOWEIT!";
+                timerElement.textContent = "FROHE WEIHNACHTEN!";
+                // Kein Countdown mehr berechnen
+            } else {
+                // 3. Finde das nächste Ziel (00:00 Uhr am nächsten Tag)
+                const nextDay = new Date(now);
+                nextDay.setDate(now.getDate() + 1);
+                nextDay.setHours(0, 0, 0, 0); // 00:00 Uhr des nächsten Tages
+                let timeUntilNextDoor = nextDay.getTime() - now.getTime();
 
-            const formattedTime = [hours, minutes, seconds]
-                .map(t => t.toString().padStart(2, '0'))
-                .join(':');
+                preLabelElement.textContent = "NÄCHSTES TÜRCHEN IN:";
 
-            // Aktualisiere die Anzeige
-            timerElement.textContent = formattedTime;
+                // 5. Formatiere den Countdown
+                const totalSeconds = Math.floor(timeUntilNextDoor / 1000);
+                const hours = Math.floor(totalSeconds / 3600);
+                const minutes = Math.floor((totalSeconds % 3600) / 60);
+                const seconds = totalSeconds % 60;
+
+                const formattedTime = [hours, minutes, seconds]
+                    .map(t => t.toString().padStart(2, '0'))
+                    .join(':');
+
+                // Aktualisiere die Anzeige
+                timerElement.textContent = formattedTime;
+            }
             
             // 6. Setze den Status (Unten)
             if (currentDoor <= 24) {
