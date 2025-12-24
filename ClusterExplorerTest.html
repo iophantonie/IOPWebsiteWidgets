@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>IOP Cluster Widget v14.1 (Toggle Fix)</title>
+    <title>IOP Cluster Widget v14.2 (Toggle Fix)</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <style>
         /* --- CORE RESET & LAYOUT --- */
@@ -42,9 +42,6 @@
         @media (max-width: 768px) {
             #sidebar { position: absolute; left: 0; top: 0; bottom: 0; transform: translateX(-100%); width: 280px; }
             #sidebar.open { transform: translateX(0); }
-            /* Hide Desktop Toggle on Mobile */
-            #sidebar-toggle { display: none !important; }
-            /* Show Mobile Toggle */
             #mobile-toggle { display: flex !important; }
         }
 
@@ -64,10 +61,10 @@
         .view.active { display: block; animation: fadeIn 0.3s; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* --- DESKTOP TOGGLE BUTTON (FIXED POSITIONING) --- */
+        /* --- DESKTOP TOGGLE BUTTON (OUTSIDE SIDEBAR NOW) --- */
         #sidebar-toggle {
             position: absolute; 
-            left: var(--sidebar-width); /* Initiale Position */
+            left: var(--sidebar-width); /* Klebt am rechten Rand der Sidebar */
             top: 50%; transform: translateY(-50%);
             width: 24px; height: 48px; 
             background: #111; 
@@ -79,12 +76,13 @@
         }
         #sidebar-toggle:hover { color: var(--phoenix-fire); }
         
-        /* Wenn Sidebar eingeklappt ist, rutscht der Button nach links */
+        /* Magic CSS: Wenn Sidebar collapsed ist, rutscht der Button nach links auf 0 */
         #sidebar.collapsed + #sidebar-toggle {
             left: 0;
-            border-left: 1px solid #444; /* Rahmen wieder herstellen */
-            border-radius: 0 6px 6px 0;
+            border-left: 1px solid #444; 
         }
+
+        @media (max-width: 768px) { #sidebar-toggle { display: none; } }
 
         /* --- MOBILE TOGGLE --- */
         #mobile-toggle {
@@ -207,6 +205,14 @@
         }
         #toast.visible { opacity: 1; }
 
+        /* Chat */
+        .chat-container { display: flex; flex-direction: column; height: 100%; }
+        .chat-log { flex: 1; overflow-y: auto; padding: 15px; }
+        .chat-msg { padding: 8px 12px; border-radius: 6px; margin-bottom: 8px; font-size: 0.9rem; max-width: 85%; }
+        .chat-msg.u { align-self: flex-end; background: #333; margin-left: auto; }
+        .chat-msg.b { align-self: flex-start; background: #111; border-left: 2px solid var(--phoenix-fire); }
+        .chat-input { display: flex; padding: 10px; border-top: 1px solid #333; gap: 5px; }
+        
         /* Utility */
         ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-track { background: #0a0a0a; }
@@ -236,9 +242,6 @@
     <div id="mobile-toggle" onclick="Ui.toggleSidebar()">☰</div>
 
     <div id="sidebar">
-        <!-- DESKTOP TOGGLE (Sibling to sidebar content, but visually outside) -->
-        <div id="sidebar-toggle" onclick="Ui.toggleSidebar()">◀</div>
-
         <div class="sb-header">
             <div class="text-xs text-gray-500 font-bold tracking-widest mb-1">INFINITY OF PHOENIX</div>
             <div class="sb-title">CLUSTER EXPLORER</div>
@@ -319,6 +322,9 @@
             </div>
         </div>
     </div>
+    
+    <!-- DESKTOP TOGGLE BUTTON (MOVED OUTSIDE) -->
+    <div id="sidebar-toggle" onclick="Ui.toggleSidebar()">◀</div>
 
     <!-- MAP VIEWPORT -->
     <div id="viewport">
@@ -361,7 +367,7 @@
 
 <script>
 /**
- * IOP WIDGET CORE v14.1 - Sidebar Toggle Fix
+ * IOP WIDGET CORE v14.2 - Toggle Fix
  */
 
 window.CFG = {
@@ -763,6 +769,7 @@ window.Data = {
         Ui.renderDinos();
         Ui.renderRes();
         Ui.renderObs();
+        // Reset toggles visual state to match logic defaults
         Ui.resetToggles();
         MapEngine.draw();
     }
@@ -828,6 +835,7 @@ window.Ui = {
         document.querySelectorAll('.toggle-item').forEach(el => el.classList.remove('checked'));
     },
 
+    // --- NEW: RENDER DINOS WITH DROPDOWN FIX ---
     renderDinos(term="") {
         const l = document.getElementById('dino-list-root'); // CORRECT ID
         if(!l) return;
@@ -865,13 +873,10 @@ window.Ui = {
         const l = document.getElementById('list-res');
         if(!l) return;
         l.innerHTML = Object.keys(Store.data.res).sort().map(k => {
-            const iconUrl = Store.icons[k]?.iconUrl;
-            // Always show checkbox container, insert icon if available
-            const iconHtml = iconUrl ? `<img src="${iconUrl}" style="width:20px;height:20px;margin-right:8px;object-fit:contain;">` : '';
-            
+            const icon = Store.icons[k]?.iconUrl ? `<img src="${Store.icons[k].iconUrl}" style="width:20px;height:20px;margin-right:8px;object-fit:contain;">` : `<div class="chk"></div>`;
             return `<div class="toggle-item" onclick="Ui.togRes('${k}', this)">
                 <div class="chk"></div>
-                ${iconHtml}
+                ${icon}
                 <span class="toggle-text">${Store.trans.res[k]||k}</span>
             </div>`;
         }).join('');
