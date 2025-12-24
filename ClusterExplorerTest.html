@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>IOP Cluster Widget v14.2 (Toggle Fix)</title>
+    <title>IOP Cluster Widget v14.3 (No Zoom Buttons)</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <style>
         /* --- CORE RESET & LAYOUT --- */
@@ -242,6 +242,9 @@
     <div id="mobile-toggle" onclick="Ui.toggleSidebar()">☰</div>
 
     <div id="sidebar">
+        <!-- DESKTOP TOGGLE (Sibling to sidebar content, but visually outside) -->
+        <div id="sidebar-toggle" onclick="Ui.toggleSidebar()">◀</div>
+
         <div class="sb-header">
             <div class="text-xs text-gray-500 font-bold tracking-widest mb-1">INFINITY OF PHOENIX</div>
             <div class="sb-title">CLUSTER EXPLORER</div>
@@ -322,9 +325,6 @@
             </div>
         </div>
     </div>
-    
-    <!-- DESKTOP TOGGLE BUTTON (MOVED OUTSIDE) -->
-    <div id="sidebar-toggle" onclick="Ui.toggleSidebar()">◀</div>
 
     <!-- MAP VIEWPORT -->
     <div id="viewport">
@@ -350,8 +350,6 @@
         <div class="hud-bot">
             <button class="zoom-btn" onclick="Ui.toggleFullscreen()" title="Vollbild">⛶</button>
             <button class="zoom-btn" onclick="MapEngine.reset()">⟲</button>
-            <button class="zoom-btn" onclick="MapEngine.zoom(1.2)">+</button>
-            <button class="zoom-btn" onclick="MapEngine.zoom(0.8)">-</button>
         </div>
     </div>
     
@@ -367,7 +365,7 @@
 
 <script>
 /**
- * IOP WIDGET CORE v14.2 - Toggle Fix
+ * IOP WIDGET CORE v14.3 - No Zoom Buttons
  */
 
 window.CFG = {
@@ -580,6 +578,7 @@ window.MapEngine = {
         this.update();
     },
 
+    // zoomIn/zoomOut removed as requested, leaving these for potential future use if needed, but not bound in HTML
     zoomIn() { const vp = document.getElementById('viewport'); this.zoomAt(1.2, vp.clientWidth/2, vp.clientHeight/2); },
     zoomOut() { const vp = document.getElementById('viewport'); this.zoomAt(0.8, vp.clientWidth/2, vp.clientHeight/2); },
     reset() { Store.view.scale = 1; Store.view.x = 0; Store.view.y = 0; this.update(); this.fit(); },
