@@ -3,142 +3,144 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>IOP Cluster Explorer v13.5 (Dino List Fix)</title>
+    <title>IOP Cluster Widget v14.1 (Toggle Fix)</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <style>
-        /* --- CORE IFRAME RESET --- */
-        * { box-sizing: border-box; }
+        /* --- CORE RESET & LAYOUT --- */
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         
         body, html { 
-            position: fixed; 
-            top: 0; left: 0; right: 0; bottom: 0;
-            margin: 0; padding: 0; 
-            width: 100%; height: 100%; 
-            background: transparent; 
-            overflow: hidden; 
+            margin: 0; padding: 0; width: 100%; height: 100%; 
+            background: transparent; overflow: hidden; 
+            font-family: 'Segoe UI', 'Roboto', sans-serif; color: #e2e8f0; 
             overscroll-behavior: none;
-            font-family: 'Segoe UI', 'Roboto', sans-serif; 
-            color: #e2e8f0; 
-            -webkit-font-smoothing: antialiased;
         }
 
-        /* COLORS */
         :root {
             --phoenix-fire: #ff2a00;
+            --bg-dark: #050505;
             --bg-panel: #0a0a0a;
             --border-color: #2a2a2a;
             --sidebar-width: 320px;
         }
 
-        #app { 
-            position: absolute; inset: 0; display: flex; width: 100%; height: 100%; 
-        }
+        #app { position: absolute; inset: 0; display: flex; overflow: hidden; width: 100%; height: 100%; }
 
         /* --- SIDEBAR --- */
         #sidebar {
-            width: var(--sidebar-width); height: 100%; background: var(--bg-panel); border-right: 1px solid var(--border-color);
+            width: var(--sidebar-width); height: 100%; 
+            background: var(--bg-panel); border-right: 1px solid var(--border-color);
             display: flex; flex-direction: column; z-index: 50; flex-shrink: 0;
-            box-shadow: 5px 0 20px rgba(0,0,0,0.9);
+            transition: width 0.3s ease, transform 0.3s ease;
+            position: relative;
         }
-        .sb-header { padding: 15px; background: rgba(0,0,0,0.5); border-bottom: 2px solid var(--phoenix-fire); flex-shrink: 0; }
+
+        /* Collapsed State for Desktop */
+        #sidebar.collapsed { width: 0; overflow: hidden; border-right: none; }
+
+        /* Responsive Sidebar: Overlay on small screens */
+        @media (max-width: 768px) {
+            #sidebar { position: absolute; left: 0; top: 0; bottom: 0; transform: translateX(-100%); width: 280px; }
+            #sidebar.open { transform: translateX(0); }
+            /* Hide Desktop Toggle on Mobile */
+            #sidebar-toggle { display: none !important; }
+            /* Show Mobile Toggle */
+            #mobile-toggle { display: flex !important; }
+        }
+
+        .sb-header { padding: 15px; background: rgba(0,0,0,0.5); border-bottom: 2px solid var(--phoenix-fire); flex-shrink: 0; white-space: nowrap; overflow: hidden; }
         .sb-title { font-size: 1.0rem; font-weight: 900; color: var(--phoenix-fire); letter-spacing: 0.05em; }
         
-        .tabs { display: flex; background: rgba(17, 17, 17, 0.8); border-bottom: 1px solid var(--border-color); flex-shrink: 0; }
+        .tabs { display: flex; background: rgba(17, 17, 17, 0.8); border-bottom: 1px solid var(--border-color); flex-shrink: 0; overflow: hidden; }
         .tab-btn { flex: 1; padding: 10px 5px; color: #777; background: none; border: none; cursor: pointer; border-bottom: 3px solid transparent; font-weight: 700; transition: 0.2s; font-size: 0.75rem; text-align: center; }
         .tab-btn:hover { color: white; background: rgba(255,255,255,0.05); }
         .tab-btn.active { color: var(--phoenix-fire); border-color: var(--phoenix-fire); background: linear-gradient(to top, rgba(255, 42, 0, 0.15), transparent); }
 
         .sb-content { 
-            flex: 1; min-height: 0; 
-            overflow-y: auto; overflow-x: hidden;
-            position: relative; padding: 15px;
+            flex: 1; min-height: 0; overflow-y: auto; overflow-x: hidden; position: relative; padding: 15px;
             scrollbar-width: thin; scrollbar-color: #333 #0a0a0a;
         }
         .view { display: none; }
         .view.active { display: block; animation: fadeIn 0.3s; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
+        /* --- DESKTOP TOGGLE BUTTON (FIXED POSITIONING) --- */
+        #sidebar-toggle {
+            position: absolute; 
+            left: var(--sidebar-width); /* Initiale Position */
+            top: 50%; transform: translateY(-50%);
+            width: 24px; height: 48px; 
+            background: #111; 
+            border: 1px solid #444; border-left: none;
+            border-radius: 0 6px 6px 0; 
+            cursor: pointer; z-index: 60;
+            display: flex; align-items: center; justify-content: center; color: #888;
+            transition: left 0.3s ease, color 0.2s;
+        }
+        #sidebar-toggle:hover { color: var(--phoenix-fire); }
+        
+        /* Wenn Sidebar eingeklappt ist, rutscht der Button nach links */
+        #sidebar.collapsed + #sidebar-toggle {
+            left: 0;
+            border-left: 1px solid #444; /* Rahmen wieder herstellen */
+            border-radius: 0 6px 6px 0;
+        }
+
+        /* --- MOBILE TOGGLE --- */
+        #mobile-toggle {
+            position: absolute; top: 15px; left: 15px; z-index: 60;
+            width: 40px; height: 40px; background: rgba(0,0,0,0.8); border-radius: 4px; border: 1px solid #444;
+            display: none; align-items: center; justify-content: center; color: var(--phoenix-fire); font-size: 20px; cursor: pointer;
+        }
+
         /* --- CUSTOM DROPDOWN (DINO SELECTOR) --- */
         .custom-select { position: relative; width: 100%; }
         .select-trigger {
             display: flex; align-items: center; justify-content: space-between;
-            width: 100%; padding: 10px;
-            background: #151515; border: 1px solid #444; border-radius: 6px;
-            color: #ddd; cursor: pointer; font-size: 0.9rem;
-            transition: 0.2s;
+            width: 100%; padding: 10px; background: #151515; border: 1px solid #444; border-radius: 6px;
+            color: #ddd; cursor: pointer; font-size: 0.9rem; transition: 0.2s;
         }
         .select-trigger:hover { border-color: #666; }
         .select-trigger.active { border-color: var(--phoenix-fire); }
         
         .select-dropdown {
             position: absolute; top: 100%; left: 0; width: 100%;
-            background: #111; border: 1px solid #444; border-top: none;
-            border-radius: 0 0 6px 6px;
-            max-height: 350px; overflow-y: auto;
-            z-index: 100; display: none;
+            background: #111; border: 1px solid #444; border-top: none; border-radius: 0 0 6px 6px;
+            max-height: 350px; overflow-y: auto; z-index: 100; display: none;
             box-shadow: 0 10px 20px rgba(0,0,0,0.5);
         }
         .select-dropdown.open { display: block; }
         
-        .select-search {
-            position: sticky; top: 0;
-            background: #111; padding: 8px;
-            border-bottom: 1px solid #333; z-index: 10;
-        }
-        .select-search input {
-            width: 100%; background: #222; border: 1px solid #444;
-            padding: 6px; border-radius: 4px; color: white; font-size: 0.85rem; outline: none;
-        }
+        .select-search { position: sticky; top: 0; background: #111; padding: 8px; border-bottom: 1px solid #333; z-index: 10; }
+        .select-search input { width: 100%; background: #222; border: 1px solid #444; padding: 6px; border-radius: 4px; color: white; font-size: 0.85rem; outline: none; }
         .select-search input:focus { border-color: var(--phoenix-fire); }
 
-        .select-item {
-            display: flex; align-items: center; padding: 8px 10px;
-            cursor: pointer; border-bottom: 1px solid #1a1a1a;
-            transition: 0.15s; font-size: 0.85rem;
-        }
+        .select-item { display: flex; align-items: center; padding: 8px 10px; cursor: pointer; border-bottom: 1px solid #1a1a1a; transition: 0.15s; font-size: 0.85rem; }
         .select-item:hover { background: #222; }
         .select-item.selected { background: rgba(255, 42, 0, 0.15); color: var(--phoenix-fire); }
         .select-item img { width: 24px; height: 24px; margin-right: 10px; object-fit: contain; }
 
         /* --- MAP ENGINE --- */
         #viewport {
-            flex: 1; position: relative; background: transparent; overflow: hidden;
-            display: block; min-width: 0;
+            flex: 1; position: relative; background: transparent; overflow: hidden; display: block; min-width: 0;
         }
 
         #world {
-            position: absolute; top: 0; left: 0;
-            width: 1024px; height: 1024px;
-            box-shadow: 0 0 100px rgba(0,0,0,0.5); 
-            transform-origin: 0 0; 
-            background-color: transparent;
+            position: absolute; top: 0; left: 0; width: 1024px; height: 1024px;
+            box-shadow: 0 0 100px rgba(0,0,0,0.5); transform-origin: 0 0; background-color: transparent;
             will-change: transform;
         }
 
-        #map-image-layer {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            object-fit: fill; z-index: 1; pointer-events: none;
-        }
-
-        #data-canvas {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 2; pointer-events: none;
-        }
-
-        #input-layer {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 10; cursor: grab;
-        }
+        #map-image-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: fill; z-index: 1; pointer-events: none; }
+        #data-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; pointer-events: none; }
+        #input-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; cursor: grab; }
         #input-layer:active { cursor: grabbing; }
 
         /* PULSING MARKER */
         .pulse-marker {
-            position: absolute; width: 60px; height: 60px;
-            border: 2px solid var(--phoenix-fire); border-radius: 50%;
-            transform: translate(-50%, -50%);
-            box-shadow: 0 0 15px var(--phoenix-fire), inset 0 0 10px var(--phoenix-fire);
-            z-index: 5; pointer-events: none;
-            animation: pulseRing 2s infinite; display: none; 
+            position: absolute; width: 60px; height: 60px; border: 2px solid var(--phoenix-fire); border-radius: 50%;
+            transform: translate(-50%, -50%); box-shadow: 0 0 15px var(--phoenix-fire), inset 0 0 10px var(--phoenix-fire);
+            z-index: 5; pointer-events: none; animation: pulseRing 2s infinite; display: none; 
         }
         @keyframes pulseRing {
             0% { transform: translate(-50%, -50%) scale(0.5); opacity: 1; }
@@ -191,12 +193,7 @@
         .related-item.active { background: rgba(255, 42, 0, 0.1); border-left-color: var(--phoenix-fire); color: var(--phoenix-fire); font-weight: bold; }
 
         /* Loader */
-        .loader { 
-            position: absolute; inset: 0; 
-            background: rgba(0,0,0,0.8); 
-            z-index: 999; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.5s; 
-            backdrop-filter: blur(5px);
-        }
+        .loader { position: absolute; inset: 0; background: rgba(0,0,0,0.8); z-index: 999; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.5s; backdrop-filter: blur(5px); }
         .loader.hidden { opacity: 0; pointer-events: none; }
         .spinner { width: 50px; height: 50px; border: 3px solid #333; border-top-color: var(--phoenix-fire); border-radius: 50%; animation: spin 1s infinite linear; }
         @keyframes spin { to { transform: rotate(360deg); } }
@@ -210,20 +207,12 @@
         }
         #toast.visible { opacity: 1; }
 
-        /* Chat */
-        .chat-container { display: flex; flex-direction: column; height: 100%; }
-        .chat-log { flex: 1; overflow-y: auto; padding: 15px; }
-        .chat-msg { padding: 8px 12px; border-radius: 6px; margin-bottom: 8px; font-size: 0.9rem; max-width: 85%; }
-        .chat-msg.u { align-self: flex-end; background: #333; margin-left: auto; }
-        .chat-msg.b { align-self: flex-start; background: #111; border-left: 2px solid var(--phoenix-fire); }
-        .chat-input { display: flex; padding: 10px; border-top: 1px solid #333; gap: 5px; }
-        
         /* Utility */
         ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-track { background: #0a0a0a; }
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
         .hidden { display: none !important; }
-        .phoenix-input { w-full: 100%; background: #050505; border: 1px solid #333; padding: 10px; border-radius: 6px; color: white; outline: none; font-size: 0.9rem; }
+        .phoenix-input { w-full: 100%; background: #050505; border: 1px solid #333; padding: 8px; border-radius: 6px; color: white; outline: none; font-size: 0.9rem; }
         
         #error-log { position: absolute; top: 0; left: 0; width: 100%; background: rgba(220, 38, 38, 0.95); color: white; padding: 5px; font-size: 11px; z-index: 10000; display: none; text-align: center; }
         .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 6px; }
@@ -243,7 +232,13 @@
 </div>
 
 <div id="app">
+    <!-- MOBILE TOGGLE (Visible only on small screens) -->
+    <div id="mobile-toggle" onclick="Ui.toggleSidebar()">☰</div>
+
     <div id="sidebar">
+        <!-- DESKTOP TOGGLE (Sibling to sidebar content, but visually outside) -->
+        <div id="sidebar-toggle" onclick="Ui.toggleSidebar()">◀</div>
+
         <div class="sb-header">
             <div class="text-xs text-gray-500 font-bold tracking-widest mb-1">INFINITY OF PHOENIX</div>
             <div class="sb-title">CLUSTER EXPLORER</div>
@@ -366,7 +361,7 @@
 
 <script>
 /**
- * IOP WIDGET CORE v13.5 - Dino List Fix
+ * IOP WIDGET CORE v14.1 - Sidebar Toggle Fix
  */
 
 window.CFG = {
@@ -400,7 +395,8 @@ window.Store = {
     selDino: null, selectedPOI: null,
     activeRes: new Set(), activeObs: new Set(),
     layers: { public: false, caves: false, players: false },
-    view: { x:0, y:0, scale:1 }
+    view: { x:0, y:0, scale:1 },
+    sidebarOpen: true
 };
 
 function logError(msg) {
@@ -517,7 +513,6 @@ window.MapEngine = {
         
         setTimeout(()=>this.fit(), 100);
         
-        // Close dropdown when clicking on map
         input.addEventListener('mousedown', () => {
              const dd = document.getElementById('dino-dropdown-content');
              const trig = document.querySelector('.select-trigger');
@@ -768,7 +763,6 @@ window.Data = {
         Ui.renderDinos();
         Ui.renderRes();
         Ui.renderObs();
-        // Reset toggles visual state to match logic defaults
         Ui.resetToggles();
         MapEngine.draw();
     }
@@ -798,6 +792,18 @@ window.Ui = {
         }
     },
     
+    // SIDEBAR TOGGLE
+    toggleSidebar() {
+        const sb = document.getElementById('sidebar');
+        const toggler = document.getElementById('sidebar-toggle');
+        const isCollapsed = sb.classList.toggle('collapsed');
+        
+        toggler.innerHTML = isCollapsed ? '▶' : '◀';
+        
+        // Force Map Resize
+        setTimeout(() => MapEngine.fit(), 310);
+    },
+    
     setSpawnStatus(type, msg) {
         const el = document.getElementById('st-spawn');
         const txt = document.getElementById('spawn-status');
@@ -822,7 +828,6 @@ window.Ui = {
         document.querySelectorAll('.toggle-item').forEach(el => el.classList.remove('checked'));
     },
 
-    // --- NEW: RENDER DINOS WITH DROPDOWN FIX ---
     renderDinos(term="") {
         const l = document.getElementById('dino-list-root'); // CORRECT ID
         if(!l) return;
@@ -860,10 +865,13 @@ window.Ui = {
         const l = document.getElementById('list-res');
         if(!l) return;
         l.innerHTML = Object.keys(Store.data.res).sort().map(k => {
-            const icon = Store.icons[k]?.iconUrl ? `<img src="${Store.icons[k].iconUrl}" style="width:20px;height:20px;margin-right:8px;object-fit:contain;">` : `<div class="chk"></div>`;
+            const iconUrl = Store.icons[k]?.iconUrl;
+            // Always show checkbox container, insert icon if available
+            const iconHtml = iconUrl ? `<img src="${iconUrl}" style="width:20px;height:20px;margin-right:8px;object-fit:contain;">` : '';
+            
             return `<div class="toggle-item" onclick="Ui.togRes('${k}', this)">
                 <div class="chk"></div>
-                ${icon}
+                ${iconHtml}
                 <span class="toggle-text">${Store.trans.res[k]||k}</span>
             </div>`;
         }).join('');
