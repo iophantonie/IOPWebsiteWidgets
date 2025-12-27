@@ -11,8 +11,6 @@
             font-family: sans-serif;
             color: #ffffff;
             margin: 0;
-            padding: 0;
-            /* Extra Padding für den Box-Shadow */
             padding: 20px; 
             display: flex;
             justify-content: center;
@@ -39,19 +37,37 @@
         .stat-card:hover {
             transform: translateY(-3px);
             box-shadow: 0 8px 15px rgba(0, 0, 0, 0.6), 
-                        /* FEUERROT GLOW */
                         0 0 15px rgba(229, 57, 53, 0.7); 
+        }
+
+        /* Container für Zahl und Pfeil */
+        .value-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px; /* Abstand zwischen Zahl und Pfeil */
+            margin-bottom: 0.25rem;
         }
 
         /* Obere Zahl/Wert */
         .stat-value {
             font-size: 2.25rem;
             font-weight: 800;
-            /* FEUERROT ZAHL */
-            color: #E53935;
+            color: #E53935; /* FEUERROT ZAHL */
             line-height: 1.1;
-            margin-bottom: 0.25rem;
         }
+
+        /* Der Pfeil */
+        .stat-arrow {
+            font-size: 1.2rem; /* Etwas kleiner als die Zahl */
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+
+        /* Farben für die Pfeile */
+        .arrow-up { color: #4CAF50; } /* Grün */
+        .arrow-down { color: #E53935; } /* Rot (passend zum Theme) */
+        .arrow-neutral { color: #888; } /* Grau (falls gleichbleibend) */
 
         /* Untere Beschreibung */
         .stat-label {
@@ -67,60 +83,71 @@
 <body>
 
     <div class="stat-card">
-        <!-- Anzeige des Ladestatus -->
-        <div id="stat-mitglieder" class="stat-value">...</div>
+        <div class="value-container">
+            <div id="stat-mitglieder" class="stat-value">390</div>
+            <div id="stat-arrow" class="stat-arrow arrow-neutral">−</div>
+        </div>
         <div class="stat-label">Mitglieder</div>
     </div>
 
     <script>
+        // Konfiguration
+        const MIN_MEMBERS = 390;
+        const MAX_MEMBERS = 405;
+        const UPDATE_INTERVAL_MS = 3000; // Alle 3 Sekunden aktualisieren
+
         const memberCountElement = document.getElementById('stat-mitglieder');
-        // Ihre Discord Server ID
-        const DISCORD_GUILD_ID = '811710111725912085';
-        // Die korrekte API URL
-        const API_URL = `https://discordapp.com/api/guilds/${DISCORD_GUILD_ID}/widget.json`;
+        const arrowElement = document.getElementById('stat-arrow');
 
-        // Die gewünschte Gesamtzahl als Fallback
-        const FALLBACK_MEMBER_COUNT = 360; 
+        // Startwert setzen (zufällig im Bereich)
+        let currentMembers = Math.floor(Math.random() * (MAX_MEMBERS - MIN_MEMBERS + 1)) + MIN_MEMBERS;
+        
+        // Initial einmal anzeigen
+        memberCountElement.textContent = `+${currentMembers}`;
 
-        async function updateMemberCount() {
-            try {
-                memberCountElement.textContent = '...'; 
+        function simulateActivity() {
+            // Alte Anzahl speichern
+            const previousMembers = currentMembers;
 
-                const response = await fetch(API_URL);
-                
-                if (!response.ok) {
-                    // Falls API fehlschlägt, den Fallback-Wert verwenden
-                    memberCountElement.textContent = `+${FALLBACK_MEMBER_COUNT}`;
-                    throw new Error(`API error: ${response.status} ${response.statusText}`);
-                }
-                
-                const data = await response.json();
-                
-                // Wir verwenden die Gesamtzahl (approximate_member_count). 
-                // Wenn die Gesamtzahl 0 ist oder fehlt (Discord blockiert), 
-                // wird der Fallback verwendet, um die 360 anzuzeigen.
-                let memberCount = data.approximate_member_count || data.presence_count || 0;
-                
-                if (memberCount < FALLBACK_MEMBER_COUNT && memberCount > 0) {
-                    // Wenn die API nur die kleine Online-Zahl (86) liefert, 
-                    // verwenden wir den Fallback-Wert, um die 360 anzuzeigen.
-                    memberCount = FALLBACK_MEMBER_COUNT;
-                }
-                
-                memberCountElement.textContent = `+${memberCount}`;
+            // Neue zufällige Anzahl generieren
+            // Wir lassen die Zahl nicht komplett zufällig springen, sondern verändern sie leicht,
+            // damit es realistischer wirkt (meistens +/- 1 oder 2, aber im Limit bleiben)
+            
+            // Zufällige Änderung zwischen -2 und +3
+            let change = Math.floor(Math.random() * 6) - 2; 
+            
+            let newMembers = currentMembers + change;
 
-            } catch (error) {
-                console.error('Error fetching Discord data:', error);
-                // Im Fehlerfall trotzdem den Fallback anzeigen
-                memberCountElement.textContent = `+${FALLBACK_MEMBER_COUNT}`;
+            // Sicherstellen, dass wir im Bereich 390-405 bleiben
+            if (newMembers < MIN_MEMBERS) newMembers = MIN_MEMBERS;
+            if (newMembers > MAX_MEMBERS) newMembers = MAX_MEMBERS;
+
+            // Update der globalen Variable
+            currentMembers = newMembers;
+
+            // UI Update: Zahl
+            memberCountElement.textContent = `+${currentMembers}`;
+
+            // UI Update: Pfeil
+            arrowElement.classList.remove('arrow-up', 'arrow-down', 'arrow-neutral');
+
+            if (currentMembers > previousMembers) {
+                // Zahl gestiegen -> Pfeil hoch (Grün)
+                arrowElement.textContent = '▲';
+                arrowElement.classList.add('arrow-up');
+            } else if (currentMembers < previousMembers) {
+                // Zahl gefallen -> Pfeil runter (Rot)
+                arrowElement.textContent = '▼';
+                arrowElement.classList.add('arrow-down');
+            } else {
+                // Zahl gleich -> Neutral
+                arrowElement.textContent = '−'; // oder '•'
+                arrowElement.classList.add('arrow-neutral');
             }
         }
-        
-        // Executes the function once to load the starting value
-        updateMemberCount();
 
-        // Sets the update interval (every 5 minutes)
-        setInterval(updateMemberCount, 300000); 
+        // Intervall starten
+        setInterval(simulateActivity, UPDATE_INTERVAL_MS);
 
     </script>
 </body>
