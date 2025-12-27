@@ -11,11 +11,14 @@
             font-family: sans-serif;
             color: #ffffff;
             margin: 0;
-            padding: 0;
-            /* Extra Padding für den Box-Shadow */
-            padding: 20px; 
+            
+            /* ÄNDERUNG: Padding reduziert und Ausrichtung nach OBEN */
+            padding: 10px; 
             display: flex;
             justify-content: center;
+            align-items: flex-start; /* Wichtig: Oben bündig */
+            height: auto;            /* Nimmt nur so viel Platz wie nötig */
+            overflow: hidden;        /* Keine Scrollbalken */
         }
 
         /* Stil für die einzelne Statistik-Card */
@@ -33,13 +36,15 @@
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
             transition: all 0.3s ease-in-out;
             cursor: default;
+            
+            /* Sicherstellen, dass oben kein Rand ist */
+            margin-top: 0;
         }
         
         /* Hover-Effekt: Leichter Lift und Glow */
         .stat-card:hover {
             transform: translateY(-3px);
             box-shadow: 0 8px 15px rgba(0, 0, 0, 0.6), 
-                        /* FEUERROT GLOW */
                         0 0 15px rgba(229, 57, 53, 0.7); 
         }
 
@@ -87,7 +92,7 @@
 <body>
 
     <div class="stat-card">
-        <!-- NEU: Platzhalter für den Pfeil -->
+        <!-- Platzhalter für den Pfeil -->
         <div class="stat-value">
             <span id="uptime-value">99,85 %</span>
             <span id="stat-indicator"></span>
