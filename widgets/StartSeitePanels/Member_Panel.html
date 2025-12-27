@@ -11,11 +11,14 @@
             font-family: sans-serif;
             color: #ffffff;
             margin: 0;
-            padding: 20px; 
+            
+            /* ÄNDERUNG: Padding reduziert und Ausrichtung nach OBEN */
+            padding: 10px; 
             display: flex;
             justify-content: center;
-            align-items: center; /* Zentriert auch vertikal im Preview */
-            min-height: 200px;   /* Platzhalter-Höhe für Preview */
+            align-items: flex-start; /* Wichtig: Oben bündig, nicht zentriert */
+            height: auto;            /* Nimmt nur so viel Platz wie nötig */
+            overflow: hidden;        /* Keine Scrollbalken */
         }
 
         /* Stil für die einzelne Statistik-Card */
@@ -30,9 +33,13 @@
             width: 100%;
             max-width: 250px;
             
+            /* Schatten */
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
             transition: all 0.3s ease-in-out;
             cursor: default;
+            
+            /* Sicherstellen, dass oben kein Rand ist */
+            margin-top: 0;
         }
         
         /* Hover-Effekt: Leichter Lift und Glow */
@@ -61,7 +68,7 @@
 
         /* Der Pfeil */
         .stat-arrow {
-            font-size: 1.5rem; /* Etwas kleiner als die Zahl */
+            font-size: 1.5rem; 
             font-weight: bold;
             transition: color 0.3s ease;
             line-height: 1;
@@ -69,8 +76,8 @@
 
         /* Farben für die Pfeile */
         .arrow-up { color: #4CAF50; } /* Grün */
-        .arrow-down { color: #E53935; } /* Rot (passend zum Theme) */
-        .arrow-neutral { color: #888; } /* Grau (falls gleichbleibend) */
+        .arrow-down { color: #E53935; } /* Rot */
+        .arrow-neutral { color: #888; } /* Grau */
 
         /* Untere Beschreibung */
         .stat-label {
@@ -115,17 +122,15 @@
             const previousMembers = currentMembers;
 
             // Zufällige Änderung zwischen -2 und +3 (simuliert leichte Schwankung)
-            // Die Logik erlaubt auch 0 (keine Änderung)
             let change = Math.floor(Math.random() * 6) - 2; 
             
-            // Damit es dynamischer wirkt, erzwingen wir ab und zu größere Sprünge, 
-            // wenn wir nah an den Grenzen sind, um nicht dort "festzukleben".
+            // Verhindern, dass wir an den Grenzen "kleben" bleiben
             if (currentMembers <= MIN_MEMBERS + 1) change = Math.abs(change) + 1;
             if (currentMembers >= MAX_MEMBERS - 1) change = -Math.abs(change) - 1;
 
             let newMembers = currentMembers + change;
 
-            // Sicherstellen, dass wir im Bereich 390-405 bleiben (Hartes Limit)
+            // Sicherstellen, dass wir im Bereich bleiben
             if (newMembers < MIN_MEMBERS) newMembers = MIN_MEMBERS;
             if (newMembers > MAX_MEMBERS) newMembers = MAX_MEMBERS;
 
@@ -140,15 +145,15 @@
 
             if (currentMembers > previousMembers) {
                 // Zahl gestiegen -> Pfeil hoch (Grün)
-                arrowElement.innerHTML = '&#9650;'; // Dreieck hoch
+                arrowElement.innerHTML = '&#9650;'; 
                 arrowElement.classList.add('arrow-up');
             } else if (currentMembers < previousMembers) {
                 // Zahl gefallen -> Pfeil runter (Rot)
-                arrowElement.innerHTML = '&#9660;'; // Dreieck runter
+                arrowElement.innerHTML = '&#9660;'; 
                 arrowElement.classList.add('arrow-down');
             } else {
                 // Zahl gleich -> Neutral
-                arrowElement.innerHTML = '&minus;'; // Minus
+                arrowElement.innerHTML = '&minus;'; 
                 arrowElement.classList.add('arrow-neutral');
             }
         }
