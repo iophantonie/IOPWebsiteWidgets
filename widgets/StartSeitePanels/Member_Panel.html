@@ -14,6 +14,8 @@
             padding: 20px; 
             display: flex;
             justify-content: center;
+            align-items: center; /* Zentriert auch vertikal im Preview */
+            min-height: 200px;   /* Platzhalter-Höhe für Preview */
         }
 
         /* Stil für die einzelne Statistik-Card */
@@ -59,9 +61,10 @@
 
         /* Der Pfeil */
         .stat-arrow {
-            font-size: 1.2rem; /* Etwas kleiner als die Zahl */
+            font-size: 1.5rem; /* Etwas kleiner als die Zahl */
             font-weight: bold;
             transition: color 0.3s ease;
+            line-height: 1;
         }
 
         /* Farben für die Pfeile */
@@ -84,7 +87,9 @@
 
     <div class="stat-card">
         <div class="value-container">
+            <!-- Die Zahl -->
             <div id="stat-mitglieder" class="stat-value">390</div>
+            <!-- Der Pfeil -->
             <div id="stat-arrow" class="stat-arrow arrow-neutral">−</div>
         </div>
         <div class="stat-label">Mitglieder</div>
@@ -94,7 +99,7 @@
         // Konfiguration
         const MIN_MEMBERS = 390;
         const MAX_MEMBERS = 405;
-        const UPDATE_INTERVAL_MS = 3000; // Alle 3 Sekunden aktualisieren
+        const UPDATE_INTERVAL_MS = 30000; // Alle 30 Sekunden aktualisieren
 
         const memberCountElement = document.getElementById('stat-mitglieder');
         const arrowElement = document.getElementById('stat-arrow');
@@ -109,16 +114,18 @@
             // Alte Anzahl speichern
             const previousMembers = currentMembers;
 
-            // Neue zufällige Anzahl generieren
-            // Wir lassen die Zahl nicht komplett zufällig springen, sondern verändern sie leicht,
-            // damit es realistischer wirkt (meistens +/- 1 oder 2, aber im Limit bleiben)
-            
-            // Zufällige Änderung zwischen -2 und +3
+            // Zufällige Änderung zwischen -2 und +3 (simuliert leichte Schwankung)
+            // Die Logik erlaubt auch 0 (keine Änderung)
             let change = Math.floor(Math.random() * 6) - 2; 
             
+            // Damit es dynamischer wirkt, erzwingen wir ab und zu größere Sprünge, 
+            // wenn wir nah an den Grenzen sind, um nicht dort "festzukleben".
+            if (currentMembers <= MIN_MEMBERS + 1) change = Math.abs(change) + 1;
+            if (currentMembers >= MAX_MEMBERS - 1) change = -Math.abs(change) - 1;
+
             let newMembers = currentMembers + change;
 
-            // Sicherstellen, dass wir im Bereich 390-405 bleiben
+            // Sicherstellen, dass wir im Bereich 390-405 bleiben (Hartes Limit)
             if (newMembers < MIN_MEMBERS) newMembers = MIN_MEMBERS;
             if (newMembers > MAX_MEMBERS) newMembers = MAX_MEMBERS;
 
@@ -133,15 +140,15 @@
 
             if (currentMembers > previousMembers) {
                 // Zahl gestiegen -> Pfeil hoch (Grün)
-                arrowElement.textContent = '▲';
+                arrowElement.innerHTML = '&#9650;'; // Dreieck hoch
                 arrowElement.classList.add('arrow-up');
             } else if (currentMembers < previousMembers) {
                 // Zahl gefallen -> Pfeil runter (Rot)
-                arrowElement.textContent = '▼';
+                arrowElement.innerHTML = '&#9660;'; // Dreieck runter
                 arrowElement.classList.add('arrow-down');
             } else {
                 // Zahl gleich -> Neutral
-                arrowElement.textContent = '−'; // oder '•'
+                arrowElement.innerHTML = '&minus;'; // Minus
                 arrowElement.classList.add('arrow-neutral');
             }
         }
