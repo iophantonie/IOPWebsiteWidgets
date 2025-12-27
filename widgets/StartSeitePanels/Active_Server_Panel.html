@@ -11,11 +11,11 @@
             font-family: sans-serif;
             color: #ffffff;
             margin: 0;
-            padding: 0;
-            /* Extra Padding für den Box-Shadow */
             padding: 20px; 
             display: flex;
             justify-content: center;
+            align-items: center;
+            min-height: 200px;
         }
 
         /* Stil für die einzelne Statistik-Card */
@@ -39,8 +39,18 @@
         .stat-card:hover {
             transform: translateY(-3px);
             box-shadow: 0 8px 15px rgba(0, 0, 0, 0.6), 
-                        /* FEUERROT GLOW */
                         0 0 15px rgba(229, 57, 53, 0.7); 
+        }
+
+        /* Container für den Inhalt für weiche Übergänge */
+        .content-wrapper {
+            transition: opacity 0.5s ease-in-out;
+            opacity: 1;
+        }
+        
+        /* Klasse zum Ausblenden */
+        .content-wrapper.fade-out {
+            opacity: 0;
         }
 
         /* Obere Zahl/Wert */
@@ -68,13 +78,47 @@
 <body>
 
     <div class="stat-card">
-        <div class="stat-value">27</div>
-        <!-- NEU: Angepasste Bezeichnung -->
-        <div class="stat-label">
-            Ark Ascended Server<br>
-            <span style="font-size: 0.75em; opacity: 0.6;"></span>
+        <!-- Wrapper für den Fade-Effekt -->
+        <div id="content-container" class="content-wrapper">
+            <div id="stat-value" class="stat-value">27+</div>
+            <div id="stat-label" class="stat-label">Ark Ascended Server</div>
         </div>
     </div>
 
+    <script>
+        const valueElement = document.getElementById('stat-value');
+        const labelElement = document.getElementById('stat-label');
+        const containerElement = document.getElementById('content-container');
+
+        // Die Daten, zwischen denen gewechselt wird
+        const stats = [
+            { value: "27+", label: "Ark Ascended Server" },
+            { value: "9+", label: "Weitere Spielserver" }
+        ];
+
+        let currentIndex = 0;
+
+        function rotateStats() {
+            // 1. Ausblenden
+            containerElement.classList.add('fade-out');
+
+            // 2. Warten bis ausgeblendet (500ms passend zur CSS transition)
+            setTimeout(() => {
+                // Index weiterschalten
+                currentIndex = (currentIndex + 1) % stats.length;
+                
+                // Neue Daten setzen
+                valueElement.textContent = stats[currentIndex].value;
+                labelElement.textContent = stats[currentIndex].label;
+
+                // 3. Einblenden
+                containerElement.classList.remove('fade-out');
+            }, 500); 
+        }
+
+        // Alle 5 Sekunden (5000ms) die Rotation starten
+        setInterval(rotateStats, 5000);
+
+    </script>
 </body>
 </html>
