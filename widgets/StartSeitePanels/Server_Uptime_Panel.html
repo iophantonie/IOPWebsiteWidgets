@@ -12,13 +12,13 @@
             color: #ffffff;
             margin: 0;
             
-            /* ÄNDERUNG: Padding reduziert und Ausrichtung nach OBEN */
+            /* KORREKTUR: Exakt wie beim Mitglieder-Widget */
             padding: 10px; 
             display: flex;
             justify-content: center;
-            align-items: flex-start; /* Wichtig: Oben bündig */
-            height: auto;            /* Nimmt nur so viel Platz wie nötig */
-            overflow: hidden;        /* Keine Scrollbalken */
+            align-items: flex-start; /* Oben bündig */
+            height: auto;
+            overflow: hidden;
         }
 
         /* Stil für die einzelne Statistik-Card */
@@ -48,6 +48,15 @@
                         0 0 15px rgba(229, 57, 53, 0.7); 
         }
 
+        /* NEU: Container Struktur wie beim Mitglieder-Widget */
+        .value-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 5px; /* Abstand Zahl zu Pfeil */
+            margin-bottom: 0.25rem;
+        }
+
         /* Obere Zahl/Wert */
         .stat-value {
             font-size: 2.25rem;
@@ -55,19 +64,14 @@
             /* FEUERROT ZAHL */
             color: #E53935;
             line-height: 1.1;
-            margin-bottom: 0.25rem;
-            /* Setzt das Layout für den Pfeil */
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
 
         /* Stil für den Pfeil-Indikator */
         #stat-indicator {
-            font-size: 0.6em; /* Kleiner als die Hauptzahl */
-            font-weight: 900;
-            margin-left: 5px;
-            padding-top: 5px; /* Korrigiert die vertikale Ausrichtung des Pfeils */
+            font-size: 1.5rem; /* Gleiche Größe wie Pfeil beim Mitglieder-Widget */
+            font-weight: bold;
+            line-height: 1;
+            padding-top: 0; 
         }
         
         .indicator-up {
@@ -92,10 +96,10 @@
 <body>
 
     <div class="stat-card">
-        <!-- Platzhalter für den Pfeil -->
-        <div class="stat-value">
-            <span id="uptime-value">99,85 %</span>
-            <span id="stat-indicator"></span>
+        <!-- STRUKTUR ANGEPASST: Jetzt mit value-container wie beim Mitglieder Widget -->
+        <div class="value-container">
+            <div id="uptime-value" class="stat-value">99,85 %</div>
+            <div id="stat-indicator"></div>
         </div>
         <div class="stat-label">Server Uptime</div>
     </div>
@@ -110,34 +114,27 @@
 
         function updateUptime() {
             // 1. Generiere einen neuen Uptime-Wert
-            // Zufallszahl zwischen MIN_UPTIME (99.30) und MAX_UPTIME (99.99)
             const newUptime = (Math.random() * (MAX_UPTIME - MIN_UPTIME) + MIN_UPTIME);
             const formattedUptime = newUptime.toFixed(2);
             
             // 2. Bestimme die Richtung der Änderung
             if (newUptime > lastUptime) {
-                // Wert ist gestiegen
                 indicatorElement.textContent = '▲'; 
                 indicatorElement.className = 'indicator-up';
             } else if (newUptime < lastUptime) {
-                // Wert ist gesunken
                 indicatorElement.textContent = '▼'; 
                 indicatorElement.className = 'indicator-down';
             } else {
-                // Wert hat sich nicht geändert
                 indicatorElement.textContent = ''; 
                 indicatorElement.className = '';
             }
             
-            // 3. Aktualisiere den angezeigten Wert und speichere den neuen Wert
+            // 3. Aktualisiere Wert
             uptimeValueElement.textContent = `${formattedUptime.replace('.', ',')} %`;
             lastUptime = newUptime;
         }
 
-        // Führt die Funktion einmal aus, um den Startwert zu festigen und den ersten Pfeil zu setzen
         updateUptime();
-
-        // Stellt den Aktualisierungs-Intervall ein (alle 60 Sekunden)
         setInterval(updateUptime, 60000); 
     </script>
 </body>
