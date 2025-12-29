@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>IOP Cluster Explorer v14.9 (Artifact Gold & Toggle Fix)</title>
+    <title>IOP Cluster Explorer v15.1 (Toggle & Icon Fix)</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <style>
         /* --- CORE RESET & LAYOUT --- */
@@ -66,10 +66,10 @@
         .view.active { display: block; animation: fadeIn 0.3s; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* --- DESKTOP TOGGLE BUTTON (CRITICAL FIX: OUTSIDE SIDEBAR) --- */
+        /* --- DESKTOP TOGGLE BUTTON (OUTSIDE SIDEBAR) --- */
         #sidebar-toggle {
             position: absolute; 
-            left: var(--sidebar-width); /* Starts next to sidebar */
+            left: var(--sidebar-width); 
             top: 50%; transform: translateY(-50%);
             width: 24px; height: 48px; 
             background: #111; 
@@ -81,9 +81,9 @@
         }
         #sidebar-toggle:hover { color: var(--phoenix-fire); }
         
-        /* Magic CSS: When previous element (#sidebar) has class .collapsed */
+        /* WICHTIG: Wenn Sidebar collapsed ist, rutscht dieser Button nach links */
         #sidebar.collapsed + #sidebar-toggle {
-            left: 0; /* Move to left edge */
+            left: 0; 
             border-left: 1px solid #444; 
         }
 
@@ -193,20 +193,22 @@
         .related-item:hover { background: #1a1a1a; color: white; }
         .related-item.active { background: rgba(255, 42, 0, 0.1); border-left-color: var(--phoenix-fire); color: var(--phoenix-fire); font-weight: bold; }
 
-        /* ARTIFACT STYLING (NEW) */
+        /* ARTIFACT STYLING */
         @keyframes borderPulse {
             0% { border-color: #333; box-shadow: none; }
             50% { border-color: var(--phoenix-gold); box-shadow: 0 0 10px rgba(251, 191, 36, 0.4); }
             100% { border-color: #333; box-shadow: none; }
         }
         .artifact-row { 
-            display: flex; align-items: center; margin-bottom: 5px; 
-            background: #111; padding: 8px; border-radius: 4px; 
-            border: 1px solid #333; 
-            color: var(--phoenix-gold); font-weight: bold; font-size: 0.85rem;
-            animation: borderPulse 2s infinite; /* Blinking Border */
+            display: flex; align-items: center; margin-bottom: 8px; 
+            background: rgba(17, 17, 17, 0.9); padding: 12px; border-radius: 6px; 
+            border: 1px solid #444; 
+            color: var(--phoenix-gold); font-weight: 800; font-size: 0.95rem;
+            animation: borderPulse 2s infinite;
+            transition: transform 0.2s;
         }
-        .artifact-icon { width: 24px; height: 24px; margin-right: 10px; object-fit: contain; }
+        .artifact-row:hover { transform: translateX(5px); background: #1a1a1a; }
+        .artifact-icon { width: 36px; height: 36px; margin-right: 15px; object-fit: contain; filter: drop-shadow(0 0 3px rgba(251, 191, 36, 0.5)); }
 
         /* Loader */
         .loader { position: absolute; inset: 0; background: rgba(0,0,0,0.9); z-index: 999; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.5s; backdrop-filter: blur(5px); }
@@ -344,7 +346,7 @@
             </div>
         </div>
     </div>
-
+    
     <!-- DESKTOP TOGGLE BUTTON (Sibling to Sidebar - OUTSIDE) -->
     <div id="sidebar-toggle" onclick="Ui.toggleSidebar()">◀</div>
 
@@ -371,7 +373,7 @@
         </div>
         <div class="hud-top">LAT: <span id="lat">00.0</span> | LON: <span id="lon">00.0</span></div>
         <div class="hud-bot">
-            <!-- NO ZOOM BUTTONS -->
+            <button class="zoom-btn" onclick="Ui.toggleFullscreen()" title="Vollbild">⛶</button>
             <button class="zoom-btn" onclick="MapEngine.reset()">⟲</button>
         </div>
     </div>
@@ -388,7 +390,7 @@
 
 <script>
 /**
- * IOP WIDGET CORE v14.9 - Artifact Styling & Toggle Fix
+ * IOP WIDGET CORE v15.1 - Final Polished Version
  */
 
 window.CFG = {
@@ -406,9 +408,12 @@ window.CFG = {
     ]
 };
 
+// --- URL FIXER ---
 function fixGitHubUrl(url) {
     if (!url) return '';
-    if (url.includes('github.com') && url.includes('/blob/')) return url.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/');
+    if (url.includes('github.com') && url.includes('/blob/')) {
+        return url.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/');
+    }
     return url;
 }
 
@@ -602,12 +607,16 @@ window.MapEngine = {
         const relX = mx - rect.left;
         const relY = my - rect.top;
         const ratio = 1 - (newScale / oldScale);
+        const unscaledX = relX / oldScale;
+        const unscaledY = relY / oldScale;
         Store.view.x += (relX - (relX * (newScale / oldScale)));
         Store.view.y += (relY - (relY * (newScale / oldScale)));
         Store.view.scale = newScale;
         this.update();
     },
 
+    zoomIn() { const vp = document.getElementById('viewport'); this.zoomAt(1.2, vp.clientWidth/2, vp.clientHeight/2); },
+    zoomOut() { const vp = document.getElementById('viewport'); this.zoomAt(0.8, vp.clientWidth/2, vp.clientHeight/2); },
     reset() { Store.view.scale = 1; Store.view.x = 0; Store.view.y = 0; this.update(); this.fit(); },
     
     setMarker(data) {
@@ -619,6 +628,7 @@ window.MapEngine = {
 
     getImg(url) {
         if(!url) return null;
+        // Fix: Use fixGitHubUrl here as well for icons
         const safeUrl = fixGitHubUrl(url);
         if(this.iconCache.has(safeUrl)) return this.iconCache.get(safeUrl);
         const i = new Image(); i.src = safeUrl;
@@ -828,6 +838,16 @@ window.Ui = {
         s.onchange = e => Data.loadMap(e.target.value);
     },
     
+    toggleFullscreen() {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen();
+        } else {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            }
+        }
+    },
+    
     // SIDEBAR TOGGLE
     toggleSidebar() {
         const sb = document.getElementById('sidebar');
@@ -863,7 +883,6 @@ window.Ui = {
         document.querySelectorAll('.toggle-item').forEach(el => el.classList.remove('checked'));
     },
 
-    // --- NEW: RENDER DINOS WITH DROPDOWN FIX ---
     renderDinos(term="") {
         const l = document.getElementById('dino-list-root'); 
         if(!l) return;
@@ -955,17 +974,22 @@ window.Ui = {
         const desc = data.longDescription || data.description || data.shortDescription || 'Keine Beschreibung verfügbar.';
         
         let listHtml = '';
-        // CAVES & ARTIFACTS
+        
+        // FIX: ARTIFACTS LOADING & DISPLAY
         if (type === 'caves' && data.artifacts) {
              const arts = data.artifacts.map(a => {
-                 const aIconUrl = Store.icons[a.name]?.iconUrl || a.icon;
-                 const aImg = aIconUrl ? `<img src="${aIconUrl}" class="artifact-icon">` : '';
+                 let aIconUrl = Store.icons[a.name]?.iconUrl || a.icon;
+                 if (aIconUrl) aIconUrl = fixGitHubUrl(aIconUrl); // Safe URL
+                 
+                 const aImg = aIconUrl 
+                    ? `<img src="${aIconUrl}" class="artifact-icon" onerror="this.style.display='none'">` 
+                    : '<div class="w-6 h-6 mr-3 bg-gray-700 rounded-full"></div>'; // Fallback circle
+                 
                  return `<div class="artifact-row">${aImg}<span>${a.name}</span></div>`;
              }).join('');
              listHtml = `<div class="text-xs font-bold text-gray-500 mt-4 mb-2 tracking-wider">ARTEFAKTE</div>${arts}`;
         }
         
-        // PUBLIC SPOTS LIST
         if (type) {
             const listTitle = type === 'public' ? 'ANDERE SPOTS' : (type === 'caves' ? 'ANDERE HÖHLEN' : '');
             if (listTitle) {
