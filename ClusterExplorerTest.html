@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>IOP Cluster Explorer v29.2 (No Green Dot)</title>
+    <title>IOP Cluster Explorer v30.0 (Map Info System)</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <style>
         /* --- CORE RESET --- */
@@ -142,6 +142,12 @@
         .img-overlay-btn:hover { background: var(--phoenix-gold); color: black; }
         .modal-artifact-row { display: inline-block; margin: 5px; background: rgba(251,191,36,0.1); padding: 6px 12px; border: 1px solid var(--phoenix-gold); border-radius: 4px; color: var(--phoenix-gold); font-weight: bold; font-size: 0.9rem; }
 
+        /* MAP INFO STYLES */
+        .info-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; margin-top: 15px; }
+        .info-card { background: #161616; padding: 10px; border-radius: 4px; border: 1px solid #333; }
+        .info-card h4 { color: var(--phoenix-gold); font-size: 0.8rem; text-transform: uppercase; font-weight: bold; margin-bottom: 5px; border-bottom: 1px solid #444; padding-bottom: 2px; }
+        .info-tag { display: inline-block; background: rgba(255,255,255,0.05); padding: 2px 6px; border-radius: 3px; font-size: 0.8rem; margin: 2px; color: #ccc; }
+        
         .loader { position: absolute; inset: 0; background: #000; z-index: 200; display: flex; justify-content: center; align-items: center; flex-direction: column; transition: opacity 0.5s; backdrop-filter: blur(5px); }
         .loader.hidden { opacity: 0; pointer-events: none; }
         .spinner { width: 50px; height: 50px; border: 3px solid #333; border-top-color: var(--phoenix-fire); border-radius: 50%; animation: spin 1s infinite linear; }
@@ -184,7 +190,10 @@
         <div class="sb-header">
             <div class="flex items-center justify-between mb-1">
                 <div><div class="text-xs text-gray-500 font-bold tracking-widest mb-1">INFINITY OF PHOENIX</div><div class="sb-title">CLUSTER EXPLORER</div></div>
-                <img src="https://raw.githubusercontent.com/iophantonie/iophantonie-IOP_Custom_Map_Explorer.github.io/main/IOPCOM_Logo.png" class="w-12 h-12 object-contain ml-2" alt="Logo">
+                <div class="flex items-center">
+                    <button id="map-info-btn" onclick="Ui.showMapInfo()" class="text-gray-400 hover:text-white mr-2 hidden" title="Karten Infos">ℹ️</button>
+                    <img src="https://raw.githubusercontent.com/iophantonie/iophantonie-IOP_Custom_Map_Explorer.github.io/main/IOPCOM_Logo.png" class="w-12 h-12 object-contain" alt="Logo">
+                </div>
             </div>
             <select id="map-select" class="phoenix-input mt-3 text-sm"><option>Lade Karten...</option></select>
         </div>
@@ -237,9 +246,7 @@
                 <div class="mb-6">
                     <div class="text-xs text-gray-500 font-bold mb-2 tracking-wider">SPAWNS</div>
                     <div class="toggle-item" id="tog-players" onclick="Layers.toggle('players')"><div class="chk"></div><span>Spieler Spawns</span></div>
-                    <div class="text-xs text-gray-600 ml-8 mt-1 italic flex items-center">
-                        <span id="spawn-msg">Status: Prüfe...</span>
-                    </div>
+                    <div class="text-xs text-gray-600 ml-8 mt-1 italic flex items-center"><span id="st-spawn" class="status-dot wait"></span><span id="spawn-msg">Status: Prüfe...</span></div>
                 </div>
                 <div><div class="text-xs text-gray-500 font-bold mb-2 tracking-wider">OBELISKEN</div><div class="toggle-item mb-2" id="tog-all-obs" onclick="Obs.toggleAll()"><div class="chk"></div><span class="text-xs font-bold text-gray-400">Alle Obelisken</span></div><div id="list-obelisks"></div></div>
             </div>
@@ -305,6 +312,17 @@
                 </div>
                 <div id="detail-desc" class="text-gray-300 leading-relaxed mb-6 whitespace-pre-wrap"></div>
                 <div id="detail-artifacts"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAP INFO MODAL -->
+    <div id="map-info-modal" class="modal-overlay" onclick="if(event.target===this) Ui.closeMapInfo()">
+        <div class="modal-card" style="max-width: 800px; height: auto; max-height: 90%;">
+            <button class="modal-close" onclick="Ui.closeMapInfo()">×</button>
+            <div class="p-6 bg-[#0a0a0a] overflow-y-auto">
+                <h2 class="text-2xl font-black text-white uppercase mb-4 border-b border-gray-800 pb-2">Karten Informationen</h2>
+                <div id="map-info-content"></div>
             </div>
         </div>
     </div>
@@ -375,7 +393,7 @@ function isBlocked(z, mapId) {
 
 const Store = {
     cfg: {}, map: null, dom: { mapImg: null },
-    data: { dinos:{}, res:{}, pois:[], obs:[], caves:[], players:[], regions:[] },
+    data: { dinos:{}, res:{}, pois:[], obs:[], caves:[], players:[], regions:[], mapInfo: null },
     icons: {}, trans: {d:{}, r:{}}, sharing: {}, blocked: {}, alphas: {},
     selDino: null, selectedPOI: null, activeRes: new Set(), activeObs: new Set(), activeRegions: new Set(),
     layers: { public: false, caves: false, players: false },
@@ -621,8 +639,12 @@ window.Ui = {
     renderRegions() {
         const l = document.getElementById('list-regions'); const c = document.getElementById('region-container');
         if(!l || !c) return;
-        // FIX: Ensure regions is an array
-        const regs = Array.isArray(Store.data.regions) ? Store.data.regions : [];
+        // FIX: Handle both array and object {regions:[]}
+        let regs = Store.data.regions;
+        if(regs && regs.regions && Array.isArray(regs.regions)) regs = regs.regions;
+        if(!Array.isArray(regs)) regs = [];
+
+        Store.data.regions = regs; // Normalize
         
         console.log("Region Check: ", regs); // Debug
 
@@ -635,6 +657,49 @@ window.Ui = {
         l.innerHTML = regs.map(r => `<div class="toggle-item" onclick="Ui.togRegion('${r.id}', this)"><div class="chk"></div><span class="text-xs text-gray-300">${r.name}</span></div>`).join('');
     },
     togRegion(id, el) { if(Store.activeRegions.has(id)) { Store.activeRegions.delete(id); el.classList.remove('checked'); } else { Store.activeRegions.add(id); el.classList.add('checked'); } MapEngine.draw(); },
+    
+    // NEW: MAP INFO MODAL
+    showMapInfo() {
+        const info = Store.data.mapInfo;
+        if(!info) return;
+
+        let content = '';
+        
+        // General Info
+        if(info.generalInfo && Array.isArray(info.generalInfo)) {
+            content += `<div class="text-gray-300 mb-6 text-sm leading-relaxed">${info.generalInfo.join('<br><br>')}</div>`;
+        }
+
+        // Info Badges (Grid)
+        if(info.infoBadges) {
+             content += `<div class="info-grid">`;
+             Object.entries(info.infoBadges).forEach(([key, val]) => {
+                 let valHtml = '';
+                 if(Array.isArray(val)) valHtml = val.map(v => `<span class="info-tag">${v}</span>`).join('');
+                 else valHtml = `<span class="text-gray-400 text-sm">${val}</span>`;
+                 content += `<div class="info-card"><h4>${key}</h4><div>${valHtml}</div></div>`;
+             });
+             content += `</div>`;
+        }
+
+        // Special Info
+        if(info.specialInfo) {
+             const si = info.specialInfo;
+             content += `<div class="mt-8 border-t border-gray-800 pt-4">
+                 <h3 class="text-phoenix-gold font-bold uppercase mb-3 text-sm tracking-widest">${si.Kategorie || 'Special Info'}</h3>
+                 <div class="flex flex-wrap gap-2">
+                     ${(si.Liste || []).map(l => `<span class="bg-red-900/40 text-red-200 px-2 py-1 rounded text-xs border border-red-900">${l}</span>`).join('')}
+                 </div>
+             </div>`;
+        }
+
+        document.getElementById('map-info-content').innerHTML = content;
+        document.getElementById('map-info-modal').classList.add('visible');
+    },
+
+    closeMapInfo() {
+        document.getElementById('map-info-modal').classList.remove('visible');
+    },
 
     showInfo(d, type) {
         Store.selectedPOI = d; MapEngine.setMarker(d);
@@ -808,16 +873,17 @@ const Data = {
             // CONFIG KEYS FIX: Check ALL variants for regions
             const regUrl = c.regionDataUrl || c.RegionDataUrl || c.regionsDataUrl || c.RegionsDataUrl;
             if(regUrl) console.log("Region URL: " + regUrl);
+            const infoUrl = c.infoBadgeUrl || c.InfoBadgeUrl;
 
             // Fixed Array with Null fallbacks to ensure index stability
             const reqs = [
                 c.creatureDataUrl, c.resourceDataUrl, c.publicSpotsDataUrl, 
                 c.obeliskDataUrl, c.caveSpotsDataUrl, c.playerSpawnDataUrl,
-                c.alphaDataUrl, regUrl // Correct Slot for Regions
+                c.alphaDataUrl, regUrl, infoUrl
             ];
             
             const res = await Promise.all(reqs.map(u => u ? fetchJson(u) : null));
-            const [d,r,p,o,ca,pl,al,regData] = res; // Destructuring fixed indices
+            const [d,r,p,o,ca,pl,al,regData, infoData] = res; // Destructuring fixed indices
 
             // Robust Region Parsing
             let regionsList = [];
@@ -826,10 +892,15 @@ const Data = {
                 else if(regData.regions && Array.isArray(regData.regions)) regionsList = regData.regions;
             }
             console.log("Regions Loaded: " + regionsList.length);
-            // Debugging Output to UI removed as requested
-
-            Store.data = { dinos: d?.dinoSpawns||{}, res: r?.resources||{}, pois: p?.publicSpots||[], obs: o?.obelisks||[], caves: ca?.caveSpots||[], players: findSpawns(pl), regions: regionsList };
             
+            Store.data = { dinos: d?.dinoSpawns||{}, res: r?.resources||{}, pois: p?.publicSpots||[], obs: o?.obelisks||[], caves: ca?.caveSpots||[], players: findSpawns(pl), regions: regionsList, mapInfo: infoData };
+            
+            // Toggle Info Button
+            const infoBtn = document.getElementById('map-info-btn');
+            if(infoBtn) {
+                if(infoData) infoBtn.classList.remove('hidden'); else infoBtn.classList.add('hidden');
+            }
+
             // ALPHA FIX
             if(c.alphaVariantKey && Store.alphas[c.alphaVariantKey]) {
                 const variants = Store.alphas[c.alphaVariantKey];
