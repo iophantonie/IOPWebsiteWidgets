@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>IOP Cluster Explorer v32.0 (Live & Cave Fix)</title>
+    <title>IOP Cluster Explorer v33.0 (Live Persistence)</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <style>
         /* --- CORE RESET --- */
@@ -132,7 +132,7 @@
         .info-close { color: #888; cursor: pointer; font-size: 1.5rem; transition: 0.2s; line-height: 1; }
         .info-close:hover { color: var(--phoenix-fire); }
 
-        /* RELATED LIST */
+        /* RELATED LIST STYLING */
         .related-list { margin-top: 20px; border-top: 1px solid #333; padding-top: 15px; display: flex; flex-direction: column; gap: 4px; }
         .related-item { padding: 8px 10px; cursor: pointer; border-radius: 4px; font-size: 0.85rem; color: #ccc; border: 1px solid #222; border-left: 3px solid transparent; background: #161616; transition: all 0.2s; }
         .related-item:hover { background: #222; color: white; border-left-color: #666; transform: translateX(2px); }
@@ -266,7 +266,8 @@
                 <div class="mb-6">
                     <div class="text-xs text-gray-500 font-bold mb-2 tracking-wider">SPAWNS</div>
                     <div class="toggle-item" id="tog-players" onclick="Layers.toggle('players')"><div class="chk"></div><span>Spieler Spawns</span></div>
-                    <div class="text-xs text-gray-600 ml-8 mt-1 italic flex items-center"><span id="spawn-msg"></span></div>
+                    <!-- REMOVED DOT HERE -->
+                    <div class="text-xs text-red-500 ml-8 mt-1 italic flex items-center"><span id="spawn-msg"></span></div>
                 </div>
                 <div><div class="text-xs text-gray-500 font-bold mb-2 tracking-wider">OBELISKEN</div><div class="toggle-item mb-2" id="tog-all-obs" onclick="Obs.toggleAll()"><div class="chk"></div><span class="text-xs font-bold text-gray-400">Alle Obelisken</span></div><div id="list-obelisks"></div></div>
             </div>
@@ -425,7 +426,7 @@ const Store = {
 };
 
 window.MapEngine = {
-    el: null, cvs: null, ctx: null, img: null, marker: null, iconCache: new Map(), pattern: null, cavePattern: null,
+    el: null, cvs: null, ctx: null, img: null, marker: null, iconCache: new Map(), pattern: null,
     isDown: false, startX: 0, startY: 0, moved: false, resizeObserver: null,
     init() {
         this.el = document.getElementById('world');
@@ -439,7 +440,7 @@ window.MapEngine = {
         const pc = p.getContext('2d');
         pc.strokeStyle='rgba(255,255,255,0.3)'; pc.lineWidth=1;
         pc.beginPath(); pc.moveTo(0,10); pc.lineTo(10,0); pc.stroke();
-        this.cavePattern = this.ctx.createPattern(p, 'repeat'); // FIX: Correct variable name
+        this.pattern = this.ctx.createPattern(p, 'repeat');
         
         const input = document.getElementById('input-layer');
         input.onmousedown = e => { 
@@ -541,16 +542,8 @@ window.MapEngine = {
                 const x=(z.min.lon/100)*w, y=(z.min.lat/100)*h, zw=((z.max.lon-z.min.lon)/100)*w, zh=((z.max.lat-z.min.lat)/100)*h;
                 let col = '#22c55e'; const sc = (parseFloat(z.chance)||0.5)*(parseFloat(z.weight)||1);
                 for(let r of CFG.rarity) if(sc>=r.th) { col=r.c; break; }
-                
-                // CAVE PATTERN FIX
-                if(z.isCave) { 
-                    ctx.fillStyle = this.cavePattern; 
-                    ctx.fillRect(x, y, zw, zh); 
-                } else {
-                    ctx.fillStyle = hexToRgba(col, 0.4); 
-                    ctx.fillRect(x, y, zw, zh);
-                }
-                
+                ctx.fillStyle = hexToRgba(col, 0.4); ctx.fillRect(x,y,zw,zh);
+                if(z.isCave) { ctx.fillStyle=this.cavePattern; ctx.fillRect(x,y,zw,zh); }
                 ctx.strokeStyle=col; ctx.lineWidth=2; ctx.strokeRect(x,y,zw,zh);
             });
         }
@@ -652,7 +645,9 @@ window.Ui = {
             btn.classList.add('live-active');
             body.classList.add('live-mode-active');
             frame.classList.remove('hidden'); // SHOW FRAME
-            frame.src = Store.map.liveMapDataUrl || Store.map.LiveMapDataUrl || Store.map.iframeUrl || ""; 
+            // Use current Map live URL or fallback if just switched
+            const url = Store.map.liveMapDataUrl || Store.map.LiveMapDataUrl || Store.map.iframeUrl;
+            if(url) frame.src = url; 
         } else {
             btn.classList.remove('live-active');
             body.classList.remove('live-mode-active');
@@ -709,6 +704,58 @@ window.Ui = {
         l.innerHTML = regs.map(r => `<div class="toggle-item" onclick="Ui.togRegion('${r.id}', this)"><div class="chk"></div><span class="text-xs text-gray-300">${r.name}</span></div>`).join('');
     },
     togRegion(id, el) { if(Store.activeRegions.has(id)) { Store.activeRegions.delete(id); el.classList.remove('checked'); } else { Store.activeRegions.add(id); el.classList.add('checked'); } MapEngine.draw(); },
+    
+    // NEW: MAP INFO MODAL
+    showMapInfo() {
+        const info = Store.data.mapInfo;
+        if(!info) return;
+
+        let content = '';
+        
+        // General Info
+        if(info.generalInfo && Array.isArray(info.generalInfo)) {
+            content += `<div class="text-gray-300 mb-6 text-sm leading-relaxed">${info.generalInfo.join('<br><br>')}</div>`;
+        }
+
+        // Info Badges (Grid)
+        if(info.infoBadges) {
+             content += `<div class="info-grid">`;
+             Object.entries(info.infoBadges).forEach(([key, val]) => {
+                 let valHtml = '';
+                 if(Array.isArray(val)) valHtml = val.map(v => `<span class="info-tag">${v}</span>`).join('');
+                 else valHtml = `<span class="text-gray-400 text-sm">${val}</span>`;
+                 content += `<div class="info-card"><h4>${key}</h4><div>${valHtml}</div></div>`;
+             });
+             content += `</div>`;
+        }
+
+        // Special Info
+        if(info.specialInfo) {
+             const si = info.specialInfo;
+             content += `<div class="mt-8 border-t border-gray-800 pt-4">
+                 <h3 class="text-phoenix-gold font-bold uppercase mb-3 text-sm tracking-widest">${si.Kategorie || 'Special Info'}</h3>
+                 
+                 <!-- Map Specific S-Dinos (Blue) -->
+                 <div class="flex flex-wrap gap-2 mb-3">
+                     ${(si.Liste || []).map(l => `<span class="bg-blue-900/40 text-blue-200 px-2 py-1 rounded text-xs border border-blue-900">${l}</span>`).join('')}
+                 </div>
+
+                 <!-- Global S-Dinos (Different Blue/Indigo) -->
+                 ${si.OnEachMap_Liste && si.OnEachMap_Liste.length ? `
+                 <div class="text-xs text-gray-500 font-bold mb-2 uppercase tracking-wide mt-4">Auf jeder Karte:</div>
+                 <div class="flex flex-wrap gap-2">
+                     ${si.OnEachMap_Liste.map(l => `<span class="bg-cyan-900/40 text-cyan-200 px-2 py-1 rounded text-xs border border-cyan-900">${l}</span>`).join('')}
+                 </div>` : ''}
+             </div>`;
+        }
+
+        document.getElementById('map-info-content').innerHTML = content;
+        document.getElementById('map-info-modal').classList.add('visible');
+    },
+
+    closeMapInfo() {
+        document.getElementById('map-info-modal').classList.remove('visible');
+    },
 
     showInfo(d, type) {
         Store.selectedPOI = d; MapEngine.setMarker(d);
@@ -914,6 +961,23 @@ const Data = {
             
             const liveBtn = document.getElementById('live-map-btn');
             if(liveBtn) { if(liveUrl) liveBtn.classList.remove('hidden'); else liveBtn.classList.add('hidden'); }
+
+            // Handle Live Mode Persistence
+            const frame = document.getElementById('live-map-frame');
+            if(Store.liveMode) {
+                if(liveUrl) {
+                     frame.src = liveUrl;
+                     frame.classList.remove('hidden');
+                     document.body.classList.add('live-mode-active');
+                } else {
+                     // Auto-disable if new map has no live mode
+                     Store.liveMode = false;
+                     document.getElementById('live-map-btn').classList.remove('live-active');
+                     document.body.classList.remove('live-mode-active');
+                     frame.classList.add('hidden');
+                     frame.src = "";
+                }
+            }
 
             // ALPHA FIX
             if(c.alphaVariantKey && Store.alphas[c.alphaVariantKey]) {
