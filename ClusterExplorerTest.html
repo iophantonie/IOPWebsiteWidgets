@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>IOP Cluster Explorer v18.3 (String Block Parser)</title>
+    <title>IOP Cluster Explorer v18.4 (Sharing Logic Fix)</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <style>
         /* --- CORE RESET --- */
@@ -60,6 +60,7 @@
             display: none; align-items: center; justify-content: center; color: var(--phoenix-fire); font-size: 20px; cursor: pointer;
         }
         @media (max-width: 768px) { #mobile-toggle { display: flex; } #sidebar-toggle { display: none; } }
+
 
         /* --- MAP AREA --- */
         #viewport { flex: 1; position: relative; background: #050505; overflow: hidden; display: block; }
@@ -217,7 +218,6 @@
                     <div class="toggle-item" id="tog-players" onclick="Layers.toggle('players')">
                         <div class="chk"></div><span>Spieler Spawns</span>
                     </div>
-                    <!-- FIX: IDs für sicheren Zugriff -->
                     <div class="text-xs text-gray-600 ml-8 mt-1 italic flex items-center">
                          <span id="st-spawn" class="status-dot wait"></span> 
                          <span id="spawn-msg">Status: Prüfe...</span>
@@ -281,8 +281,8 @@ const CFG = {
     urlC: 'https://raw.githubusercontent.com/iophantonie/iophantonie-IOP_Custom_Map_Explorer.github.io/main/MapConfigs/MapConfigs.jsn',
     urlI: 'https://raw.githubusercontent.com/iophantonie/iophantonie-IOP_Custom_Map_Explorer.github.io/refs/heads/main/Icon_Datenbank/Icondb.jsn',
     urlT: 'https://raw.githubusercontent.com/iophantonie/iophantonie-IOP_Custom_Map_Explorer.github.io/main/Translation_Datenbank/translationdb.jsn',
-    urlShare: 'https://raw.githubusercontent.com/iophantonie/iophantonie-IOP_Custom_Map_Explorer.github.io/main/SpawnSharingConfig/spawnsharing.jsn',
-    urlBlock: 'https://raw.githubusercontent.com/iophantonie/iophantonie-IOP_Custom_Map_Explorer.github.io/main/Blocked_Zones_Datenbank/blockedzonesdb.jsn',
+    urlShare: 'https://raw.githubusercontent.com/iophantonie/iophantonie-IOP_Custom_Map_Explorer.github.io/refs/heads/main/SpawnSharingConfig/spawnsharing.jsn',
+    urlBlock: 'https://raw.githubusercontent.com/iophantonie/iophantonie-IOP_Custom_Map_Explorer.github.io/refs/heads/main/Blocked_Zones_Datenbank/blockedzonesdb.jsn',
     urlAlpha: 'https://raw.githubusercontent.com/iophantonie/iophantonie-IOP_Custom_Map_Explorer.github.io/main/Alpha_Listen_Datenbank/alphalistdb.jsn',
     col: { spawn: 'rgba(255, 42, 0, 0.4)', stroke: '#ff2a00' },
     rarity: [{th:0.3,c:'#22c55e'},{th:0.15,c:'#84cc16'},{th:0.07,c:'#eab308'},{th:0.03,c:'#f97316'},{th:0.01,c:'#ef4444'},{th:0,c:'#a855f7'}]
@@ -306,7 +306,6 @@ async function fetchJson(url) {
         return JSON.parse(t.replace(/^\uFEFF/,'').replace(/\u00A0/g,' '));
     } catch(e) { console.warn("Fetch Error", e); return null; }
 }
-
 // Universal Finder
 function findSpawns(data) {
     if(!data) return [];
@@ -326,30 +325,23 @@ function findSpawns(data) {
     return found.length>0 ? found : (Array.isArray(data) && data[0]?.lat ? [{color:'#4ade80', locations:data}] : []);
 }
 
-// --- NEW STRING-BASED BLOCK PARSER ---
 function isBlocked(z, mapId) {
-    const list = Store.blocked[mapId]; // Expects Array of Strings like "lat17-53_lon15-49"
+    const list = Store.blocked[mapId];
     if(!list || !Array.isArray(list)) return false;
-
-    // Current Zone
-    const zMinLat = z.min.lat; const zMaxLat = z.max.lat;
-    const zMinLon = z.min.lon; const zMaxLon = z.max.lon;
-
-    // Check intersection with any block rectangle
-    return list.some(blockStr => {
-        // Parse "latMIN-MAX_lonMIN-MAX"
-        const match = blockStr.match(/lat([\d\.]+)-([\d\.]+)_lon([\d\.]+)-([\d\.]+)/);
-        if (!match) return false;
-
-        const bMinLat = parseFloat(match[1]);
-        const bMaxLat = parseFloat(match[2]);
-        const bMinLon = parseFloat(match[3]);
-        const bMaxLon = parseFloat(match[4]);
-
-        // AABB Intersection Test
-        // Return TRUE if they overlap (meaning blocking applies)
-        return (zMinLon < bMaxLon && zMaxLon > bMinLon &&
-                zMinLat < bMaxLat && zMaxLat > bMinLat);
+    const cx = (z.min.lon+z.max.lon)/2;
+    const cy = (z.min.lat+z.max.lat)/2;
+    return list.some(b => {
+        // String Format "lat17.57-53.99_lon15.90-49.99"
+        if(typeof b === 'string') {
+            const m = b.match(/lat([\d\.]+)-([\d\.]+)_lon([\d\.]+)-([\d\.]+)/);
+            if(m) {
+                const latMin=parseFloat(m[1]), latMax=parseFloat(m[2]);
+                const lonMin=parseFloat(m[3]), lonMax=parseFloat(m[4]);
+                // Check if spawn center is inside blocked rect
+                return (cx >= lonMin && cx <= lonMax && cy >= latMin && cy <= latMax);
+            }
+        }
+        return false;
     });
 }
 
@@ -499,9 +491,7 @@ window.MapEngine = {
         // Dinos
         if(Store.selDino && Store.data.dinos[Store.selDino]) {
             Store.data.dinos[Store.selDino].forEach(z => {
-                // IMPORTANT: Block Check using Strings
                 if(isBlocked(z, Store.mapKey)) return;
-                
                 const x=(z.min.lon/100)*w, y=(z.min.lat/100)*h, zw=((z.max.lon-z.min.lon)/100)*w, zh=((z.max.lat-z.min.lat)/100)*h;
                 let col = '#22c55e';
                 const sc = (z.chance||0.5)*(z.weight||1);
@@ -564,11 +554,9 @@ window.MapEngine = {
     },
 
     drawList(list, w, h, c) {
-        // FIX: Defined ctx variable
         const ctx = this.ctx;
         list.forEach(p => {
             const cx=(p.lon/100)*w, cy=(p.lat/100)*h;
-            // FIX: Try local icon first, then global
             const img = this.getIcon(p.icon) || this.getIcon(p.name);
             if(img && img.complete) ctx.drawImage(img, cx-16, cy-16, 32, 32);
             else { this.ctx.fillStyle=c; this.ctx.beginPath(); this.ctx.arc(cx,cy,6,0,7); this.ctx.fill(); this.ctx.stroke(); }
@@ -694,6 +682,7 @@ window.Ui = {
         if(type === 'caves' && d.artifacts) {
             extra = `<div class="text-xs font-bold text-amber-500 mt-4 mb-2 tracking-wider">ARTEFAKTE</div>` +
             d.artifacts.map(a => {
+                // FIX: Look in a.icon first, then global
                 const url = fixUrl(a.icon || Store.icons[a.name]?.iconUrl);
                 const img = url ? `<img src="${url}" class="artifact-icon">` : '';
                 return `<div class="artifact-row">${img}<span>${a.name}</span></div>`;
@@ -732,6 +721,11 @@ window.Ui = {
     },
 
     closeInfo() { document.getElementById('info-panel').classList.remove('visible'); MapEngine.setMarker(null); },
+    
+    resetToggles() {
+        Store.layers = { public: false, caves: false, players: false };
+        document.querySelectorAll('.toggle-item').forEach(el => el.classList.remove('checked'));
+    },
 
     setSpawnStatus(type, msg) {
         const dot = document.getElementById('st-spawn');
@@ -743,16 +737,12 @@ window.Ui = {
 
 window.Layers = {
     toggle(k) { Store.layers[k]=!Store.layers[k]; document.getElementById('tog-'+k).classList.toggle('checked'); MapEngine.draw(); },
+    
     toggleAllPois() {
-        // FIX: Toggle Check for All Pois (if button exists)
-        const btn = document.getElementById('tog-all-pois');
-        const on = !Store.layers.public; // base on public
-        
-        Store.layers.public = on; Store.layers.caves = on;
-        
-        if(btn) { if(on) btn.classList.add('checked'); else btn.classList.remove('checked'); }
-        
-        ['tog-public','tog-caves'].forEach(id => {
+        const on = !Store.layers.public; 
+        Store.layers.public = on;
+        Store.layers.caves = on;
+        ['tog-public', 'tog-caves', 'tog-all-pois'].forEach(id => {
             const el = document.getElementById(id);
             if(el) { if(on) el.classList.add('checked'); else el.classList.remove('checked'); }
         });
@@ -823,11 +813,15 @@ const Data = {
             }
             
             if(Store.sharing) {
-                Object.keys(Store.sharing).forEach(target => {
-                    const source = Store.sharing[target];
-                    if(Store.data.dinos[source] && !Store.data.dinos[target]) {
-                        Store.data.dinos[target] = Store.data.dinos[source];
-                        if(!Store.trans.dinos[target]) Store.trans.dinos[target] = target;
+                Object.keys(Store.sharing).forEach(sourceName => {
+                    const targets = Store.sharing[sourceName];
+                    if (Array.isArray(targets) && Store.data.dinos[sourceName]) {
+                        targets.forEach(targetName => {
+                            if (!Store.data.dinos[targetName]) {
+                                Store.data.dinos[targetName] = Store.data.dinos[sourceName];
+                                if (!Store.trans.dinos[targetName]) Store.trans.dinos[targetName] = targetName;
+                            }
+                        });
                     }
                 });
             }
