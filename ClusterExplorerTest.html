@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>IOP Cluster Explorer v33.0 (Live Persistence)</title>
+    <title>IOP Cluster Explorer v33.2 (Header Layout Fix)</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <style>
         /* --- CORE RESET --- */
@@ -125,7 +125,7 @@
         .leg-box { width: 10px; height: 10px; margin-right: 8px; }
 
         /* INFO PANEL */
-        .info-panel { position: absolute; top: 0; right: 0; bottom: 0; width: 320px; background: var(--bg-panel); border-left: 1px solid var(--phoenix-fire); transform: translateX(100%); transition: transform 0.3s; z-index: 100; box-shadow: -10px 0 30px rgba(0,0,0,0.9); display: flex; flex-direction: column; }
+        .info-panel { position: absolute; top: 0; right: 0; bottom: 0; width: 320px; background: var(--bg-panel); border-left: 1px solid var(--phoenix-fire); transform: translateX(100%); transition: transform 0.3s; z-index: 100; box-shadow: -10px 0 30px rgba(0,0,0,0.8); display: flex; flex-direction: column; }
         .info-panel.visible { transform: translateX(0); }
         .info-header { padding: 15px; background: #000; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center; }
         .info-title { font-size: 1.0rem; font-weight: 800; color: #fff; text-transform: uppercase; letter-spacing: 0.05em; }
@@ -206,16 +206,21 @@
 <div id="app">
     <div id="mobile-toggle" onclick="Ui.toggleSidebar()">☰</div>
     <div id="sidebar">
+        <!-- HEADER LAYOUT CHANGED HERE -->
         <div class="sb-header">
-            <div class="flex items-center justify-between mb-1">
-                <div><div class="text-xs text-gray-500 font-bold tracking-widest mb-1">INFINITY OF PHOENIX</div><div class="sb-title">CLUSTER EXPLORER</div></div>
-                <div class="flex items-center gap-2">
-                    <button id="live-map-btn" onclick="Ui.toggleLiveMode()" class="hidden px-2 py-1 rounded border border-gray-600 bg-gray-900 text-xs font-bold tracking-wider btn-live">LIVE</button>
-                    <button id="map-info-btn" onclick="Ui.showMapInfo()" class="hidden px-2 py-1 rounded border border-gray-600 bg-gray-800 text-xs text-gray-300 hover:border-phoenix-fire hover:text-phoenix-fire transition-colors uppercase font-bold tracking-wider">MAP INFO</button>
-                    <img src="https://raw.githubusercontent.com/iophantonie/iophantonie-IOP_Custom_Map_Explorer.github.io/main/IOPCOM_Logo.png" class="w-10 h-10 object-contain" alt="Logo">
+            <div class="flex items-center justify-between mb-3">
+                <div>
+                    <div class="text-xs text-gray-500 font-bold tracking-widest mb-1">INFINITY OF PHOENIX</div>
+                    <div class="sb-title">CLUSTER EXPLORER</div>
                 </div>
+                <img src="https://raw.githubusercontent.com/iophantonie/iophantonie-IOP_Custom_Map_Explorer.github.io/main/IOPCOM_Logo.png" class="w-12 h-12 object-contain ml-2" alt="Logo">
             </div>
-            <select id="map-select" class="phoenix-input mt-3 text-sm"><option>Lade Karten...</option></select>
+            
+            <div class="flex items-center gap-2">
+                <select id="map-select" class="phoenix-input text-sm flex-1"><option>Lade Karten...</option></select>
+                <button id="live-map-btn" onclick="Ui.toggleLiveMode()" class="hidden px-2 py-2 rounded border border-gray-600 bg-gray-900 text-xs font-bold tracking-wider btn-live h-full whitespace-nowrap">LIVE</button>
+                <button id="map-info-btn" onclick="Ui.showMapInfo()" class="hidden px-2 py-2 rounded border border-gray-600 bg-gray-800 text-xs text-gray-300 hover:border-phoenix-fire hover:text-phoenix-fire transition-colors uppercase font-bold tracking-wider h-full whitespace-nowrap">INFO</button>
+            </div>
         </div>
 
         <nav class="tabs">
@@ -426,7 +431,7 @@ const Store = {
 };
 
 window.MapEngine = {
-    el: null, cvs: null, ctx: null, img: null, marker: null, iconCache: new Map(), pattern: null,
+    el: null, cvs: null, ctx: null, img: null, marker: null, iconCache: new Map(), pattern: null, cavePattern: null,
     isDown: false, startX: 0, startY: 0, moved: false, resizeObserver: null,
     init() {
         this.el = document.getElementById('world');
@@ -440,7 +445,7 @@ window.MapEngine = {
         const pc = p.getContext('2d');
         pc.strokeStyle='rgba(255,255,255,0.3)'; pc.lineWidth=1;
         pc.beginPath(); pc.moveTo(0,10); pc.lineTo(10,0); pc.stroke();
-        this.pattern = this.ctx.createPattern(p, 'repeat');
+        this.cavePattern = this.ctx.createPattern(p, 'repeat');
         
         const input = document.getElementById('input-layer');
         input.onmousedown = e => { 
@@ -542,8 +547,16 @@ window.MapEngine = {
                 const x=(z.min.lon/100)*w, y=(z.min.lat/100)*h, zw=((z.max.lon-z.min.lon)/100)*w, zh=((z.max.lat-z.min.lat)/100)*h;
                 let col = '#22c55e'; const sc = (parseFloat(z.chance)||0.5)*(parseFloat(z.weight)||1);
                 for(let r of CFG.rarity) if(sc>=r.th) { col=r.c; break; }
-                ctx.fillStyle = hexToRgba(col, 0.4); ctx.fillRect(x,y,zw,zh);
-                if(z.isCave) { ctx.fillStyle=this.cavePattern; ctx.fillRect(x,y,zw,zh); }
+                
+                // CAVE PATTERN FIX
+                if(z.isCave || z.cave) { 
+                    ctx.fillStyle = this.cavePattern; 
+                    ctx.fillRect(x, y, zw, zh); 
+                } else {
+                    ctx.fillStyle = hexToRgba(col, 0.4); 
+                    ctx.fillRect(x, y, zw, zh);
+                }
+
                 ctx.strokeStyle=col; ctx.lineWidth=2; ctx.strokeRect(x,y,zw,zh);
             });
         }
