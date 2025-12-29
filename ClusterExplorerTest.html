@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>IOP Cluster Explorer v19.0 (Alpha Variants)</title>
+    <title>IOP Cluster Explorer v19.3 (Design Polish)</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <style>
         /* --- CORE RESET --- */
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #000000; overflow: hidden; font-family: 'Segoe UI', 'Roboto', sans-serif; color: #e2e8f0; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #000; overflow: hidden; font-family: 'Segoe UI', 'Roboto', sans-serif; color: #e2e8f0; }
 
         :root {
             --phoenix-fire: #ff2a00;
@@ -119,10 +119,16 @@
         .info-title { font-size: 1.0rem; font-weight: 800; color: #fff; text-transform: uppercase; letter-spacing: 0.05em; }
         .info-close { color: #888; cursor: pointer; font-size: 1.5rem; transition: 0.2s; line-height: 1; }
         .info-close:hover { color: var(--phoenix-fire); }
-        
+
+        /* RELATED LIST STYLING (FIXED) */
         .related-list { margin-top: 20px; border-top: 1px solid #333; padding-top: 15px; display: flex; flex-direction: column; gap: 4px; }
-        .related-item { padding: 8px 10px; cursor: pointer; border-radius: 4px; font-size: 0.85rem; color: #aaa; border-left: 2px solid transparent; margin-bottom: 2px; background: #161616; }
-        .related-item:hover { background: #222; color: white; border-left-color: #666; }
+        .related-item { 
+            padding: 10px 12px; cursor: pointer; 
+            border-radius: 4px; font-size: 0.85rem; color: #ccc; 
+            border: 1px solid #222; border-left: 3px solid transparent; 
+            background: #161616; transition: all 0.2s;
+        }
+        .related-item:hover { background: #222; color: white; border-left-color: #666; transform: translateX(2px); }
         .related-item.active { background: rgba(255, 42, 0, 0.1); border-left-color: var(--phoenix-fire); color: var(--phoenix-fire); font-weight: bold; border-color: rgba(255, 42, 0, 0.2); }
 
         .loader { position: absolute; inset: 0; background: #000; z-index: 200; display: flex; justify-content: center; align-items: center; flex-direction: column; transition: opacity 0.5s; }
@@ -311,7 +317,6 @@ async function fetchJson(url) {
         return JSON.parse(t.replace(/^\uFEFF/,'').replace(/\u00A0/g,' '));
     } catch(e) { console.warn("Fetch Error", e); return null; }
 }
-
 // Universal Finder
 function findSpawns(data) {
     if(!data) return [];
@@ -331,23 +336,18 @@ function findSpawns(data) {
     return found.length>0 ? found : (Array.isArray(data) && data[0]?.lat ? [{color:'#4ade80', locations:data}] : []);
 }
 
-// STRICT BLOCKED CHECK
 function isBlocked(z, mapId) {
     const list = Store.blocked[mapId];
     if(!list || !Array.isArray(list)) return false;
-    
-    // Zone Box
-    const zMinX = z.min.lon; const zMaxX = z.max.lon;
-    const zMinY = z.min.lat; const zMaxY = z.max.lat;
-
+    const cx = (z.min.lon+z.max.lon)/2;
+    const cy = (z.min.lat+z.max.lat)/2;
     return list.some(b => {
         if(typeof b === 'string') {
             const m = b.match(/lat([\d\.]+)-([\d\.]+)_lon([\d\.]+)-([\d\.]+)/);
             if(m) {
                 const bMinLat=parseFloat(m[1]), bMaxLat=parseFloat(m[2]);
                 const bMinLon=parseFloat(m[3]), bMaxLon=parseFloat(m[4]);
-                // Intersection Check
-                return !(zMaxX < bMinLon || zMinX > bMaxLon || zMaxY < bMinLat || zMinY > bMaxLat);
+                return !(z.max.lon < bMinLon || z.min.lon > bMaxLon || z.max.lat < bMinLat || z.min.lat > bMaxLat);
             }
         }
         return false;
@@ -373,6 +373,7 @@ window.MapEngine = {
     el: null, cvs: null, ctx: null, img: null, marker: null,
     iconCache: new Map(), pattern: null,
     isDown: false, startX: 0, startY: 0, moved: false,
+    resizeObserver: null,
     
     init() {
         this.el = document.getElementById('world');
@@ -501,8 +502,7 @@ window.MapEngine = {
         // Dinos
         if(Store.selDino && Store.data.dinos[Store.selDino]) {
             Store.data.dinos[Store.selDino].forEach(z => {
-                if(isBlocked(z, Store.mapKey)) return; // BLOCKED ZONE CHECK ACTIVE
-                
+                if(isBlocked(z, Store.mapKey)) return;
                 const x=(z.min.lon/100)*w, y=(z.min.lat/100)*h, zw=((z.max.lon-z.min.lon)/100)*w, zh=((z.max.lat-z.min.lat)/100)*h;
                 let col = '#22c55e';
                 const sc = (z.chance||0.5)*(z.weight||1);
@@ -565,9 +565,11 @@ window.MapEngine = {
     },
 
     drawList(list, w, h, c) {
+        // FIX: Define ctx here
         const ctx = this.ctx;
         list.forEach(p => {
             const cx=(p.lon/100)*w, cy=(p.lat/100)*h;
+            // FIX: Try local icon first, then global
             const img = this.getIcon(p.icon) || this.getIcon(p.name);
             if(img && img.complete) ctx.drawImage(img, cx-16, cy-16, 32, 32);
             else { this.ctx.fillStyle=c; this.ctx.beginPath(); this.ctx.arc(cx,cy,6,0,7); this.ctx.fill(); this.ctx.stroke(); }
@@ -693,7 +695,6 @@ window.Ui = {
         if(type === 'caves' && d.artifacts) {
             extra = `<div class="text-xs font-bold text-amber-500 mt-4 mb-2 tracking-wider">ARTEFAKTE</div>` +
             d.artifacts.map(a => {
-                // FIX: Check local icon first
                 const url = fixUrl(a.icon || Store.icons[a.name]?.iconUrl);
                 const img = url ? `<img src="${url}" class="artifact-icon">` : '';
                 return `<div class="artifact-row">${img}<span>${a.name}</span></div>`;
@@ -734,6 +735,7 @@ window.Ui = {
     closeInfo() { document.getElementById('info-panel').classList.remove('visible'); MapEngine.setMarker(null); },
 
     setSpawnStatus(type, msg) {
+        // FIX: Safe update
         const dot = document.getElementById('st-spawn');
         const txt = document.getElementById('spawn-msg');
         if(dot) dot.className = 'status-dot ' + type;
@@ -750,6 +752,7 @@ window.Layers = {
         Store.layers.caves = on;
         ['tog-public', 'tog-caves', 'tog-all-pois'].forEach(id => {
             const el = document.getElementById(id);
+            // FIX: Check if element exists
             if(el) { if(on) el.classList.add('checked'); else el.classList.remove('checked'); }
         });
         MapEngine.draw();
@@ -757,24 +760,22 @@ window.Layers = {
 };
 
 window.Res = {
-    clear() {
-        Store.activeRes.clear();
-        document.querySelectorAll('#list-res .toggle-item').forEach(e => e.classList.remove('checked'));
-        document.getElementById('tog-all-res').classList.remove('checked');
-        MapEngine.draw();
-    },
-    
     toggleAll() {
         const allKeys = Object.keys(Store.data.res);
-        if(!keys.length) return;
-        const on = Store.activeRes.size !== keys.length;
-        if(on) this.clear();
-        else {
-            keys.forEach(k => Store.activeRes.add(k));
-            document.querySelectorAll('#list-res .toggle-item').forEach(e => e.classList.add('checked'));
-            document.getElementById('tog-all-res').classList.add('checked');
-            MapEngine.draw();
+        if(!allKeys.length) return;
+        const on = Store.activeRes.size !== allKeys.length;
+        if(on) {
+             // Turn All On
+             allKeys.forEach(k => Store.activeRes.add(k));
+             document.querySelectorAll('#list-res .toggle-item').forEach(e => e.classList.add('checked'));
+             document.getElementById('tog-all-res').classList.add('checked');
+        } else {
+             // Turn All Off
+             Store.activeRes.clear();
+             document.querySelectorAll('#list-res .toggle-item').forEach(e => e.classList.remove('checked'));
+             document.getElementById('tog-all-res').classList.remove('checked');
         }
+        MapEngine.draw();
     }
 };
 
@@ -814,19 +815,10 @@ const Data = {
             Store.data = { dinos: d?.dinoSpawns||{}, res: r?.resources||{}, pois: p?.publicSpots||[], obs: o?.obelisks||[], caves: ca?.caveSpots||[], players: findSpawns(pl) };
             if(al?.dinoSpawns) Object.assign(Store.data.dinos, al.dinoSpawns);
             
-            // NEW: Alpha List DB Mapping
-            if(c.alphaVariantKey && Store.alphas[c.alphaVariantKey]) {
-                const variants = Store.alphas[c.alphaVariantKey];
-                Object.keys(variants).forEach(normal => {
-                    const alphaName = variants[normal];
-                    if(Store.data.dinos[normal]) {
-                        Store.data.dinos[alphaName] = Store.data.dinos[normal]; // SHARE SPAWNS
-                        if(!Store.trans.dinos[alphaName]) Store.trans.dinos[alphaName] = alphaName;
-                    }
-                });
+            if(c.AlphaKey && Store.alphas[c.AlphaKey]) {
+                Object.assign(Store.data.dinos, Store.alphas[c.AlphaKey]);
             }
             
-            // Spawn Sharing (Existing Logic)
             if(Store.sharing) {
                 Object.keys(Store.sharing).forEach(sourceName => {
                     const targets = Store.sharing[sourceName];
