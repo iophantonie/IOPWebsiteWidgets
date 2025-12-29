@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>IOP Cluster Explorer v22.0 (Gallery & Alpha Fix)</title>
+    <title>IOP Cluster Explorer v22.1 (Modal Close Fix)</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <style>
         /* --- CORE RESET --- */
@@ -112,16 +112,37 @@
         /* DETAIL MODAL */
         .modal-overlay { position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,0.95); display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; backdrop-filter: blur(5px); }
         .modal-overlay.visible { opacity: 1; pointer-events: auto; }
-        .modal-card { background: #0a0a0a; border: 1px solid #333; border-left: 3px solid var(--phoenix-fire); width: 90%; max-width: 900px; height: 90%; display: flex; flex-direction: column; box-shadow: 0 0 50px rgba(0,0,0,0.8); border-radius: 8px; overflow: hidden; }
+        
+        /* FIX: Card has relative position for close button placement */
+        .modal-card { 
+            background: #0a0a0a; border: 1px solid #333; border-left: 3px solid var(--phoenix-fire); 
+            width: 90%; max-width: 900px; height: 90%; 
+            display: flex; flex-direction: column; 
+            box-shadow: 0 0 50px rgba(0,0,0,0.8); 
+            border-radius: 8px; overflow: hidden;
+            position: relative; 
+        }
+        
         .modal-img-container { width: 100%; height: 50%; background: #000; display: flex; justify-content: center; align-items: center; border-bottom: 1px solid #333; position: relative; flex-shrink: 0; }
         .modal-img { max-width: 100%; max-height: 100%; object-fit: contain; }
         .modal-body { padding: 25px; flex: 1; overflow-y: auto; min-height: 0; }
+        
+        /* FIX: Close button positioned absolutely to the card, not the image container */
+        .modal-close { 
+            position: absolute; top: 15px; right: 15px; 
+            background: rgba(0,0,0,0.8); color: white; 
+            width: 40px; height: 40px; border-radius: 50%; 
+            display: flex; align-items: center; justify-content: center; 
+            cursor: pointer; border: 1px solid #444; 
+            font-size: 20px; transition: 0.2s; z-index: 60;
+        }
+        .modal-close:hover { border-color: var(--phoenix-fire); color: var(--phoenix-fire); }
         
         .modal-nav-btn {
             position: absolute; top: 50%; transform: translateY(-50%);
             width: 40px; height: 40px; background: rgba(0,0,0,0.6); color: white;
             border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            cursor: pointer; font-size: 20px; transition: 0.2s; border: 1px solid transparent;
+            cursor: pointer; font-size: 20px; transition: 0.2s; border: 1px solid transparent; z-index: 50;
         }
         .modal-nav-btn:hover { background: rgba(0,0,0,0.9); border-color: var(--phoenix-fire); color: var(--phoenix-fire); }
         .nav-prev { left: 20px; } .nav-next { right: 20px; }
@@ -134,6 +155,8 @@
 
         .img-overlay-btn { position: absolute; bottom: 10px; right: 10px; background: rgba(0,0,0,0.8); color: var(--phoenix-gold); padding: 5px 10px; border-radius: 4px; border: 1px solid var(--phoenix-gold); font-size: 0.75rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 5px; transition: 0.2s; }
         .img-overlay-btn:hover { background: var(--phoenix-gold); color: black; }
+
+        .modal-artifact-row { display: inline-block; margin: 5px; background: rgba(251,191,36,0.1); padding: 6px 12px; border: 1px solid var(--phoenix-gold); border-radius: 4px; color: var(--phoenix-gold); font-weight: bold; font-size: 0.9rem; }
 
         /* Loader & Utils */
         .loader { position: absolute; inset: 0; background: #000; z-index: 200; display: flex; justify-content: center; align-items: center; flex-direction: column; transition: opacity 0.5s; }
@@ -158,7 +181,12 @@
 <body>
 
 <div id="error-log"></div>
-<div id="loader" class="loader"><div class="spinner mb-4"></div><div class="text-white text-sm font-bold tracking-widest uppercase">Lade System...</div></div>
+<div id="toast">Nachricht</div>
+
+<div id="loader" class="loader">
+    <div class="spinner mb-4"></div>
+    <div id="loader-msg" class="text-white font-bold text-sm tracking-widest uppercase" style="color: var(--phoenix-fire)">Lade System...</div>
+</div>
 
 <div id="app">
     <div id="mobile-toggle" onclick="Ui.toggleSidebar()">☰</div>
@@ -233,7 +261,7 @@
         </div>
 
         <div id="world">
-            <img id="map-image-layer" alt="">
+            <img id="map-image-layer" src="" alt="Karte">
             <canvas id="data-canvas"></canvas>
             <div id="selection-marker" class="pulse-marker"></div>
             <div id="input-layer"></div>
@@ -244,7 +272,7 @@
         </div>
         
         <div class="hud-bot">
-            <button class="zoom-btn" onclick="Ui.toggleFullscreen()">⛶</button>
+            <button class="zoom-btn" onclick="Ui.toggleFullscreen()" title="Vollbild">⛶</button>
             <button class="zoom-btn" onclick="MapEngine.reset()">⟲</button>
         </div>
     </div>
@@ -260,10 +288,11 @@
     <!-- DETAIL MODAL -->
     <div id="detail-modal" class="modal-overlay" onclick="if(event.target===this) Ui.closeDetail()">
         <div class="modal-card">
+            <!-- Close button moved to card root -->
+            <button class="modal-close" onclick="Ui.closeDetail()">×</button>
+            
             <div class="modal-img-container">
-                <button class="modal-close" onclick="Ui.closeDetail()">×</button>
                 <img id="detail-img" class="modal-img" alt="">
-                
                 <!-- CAROUSEL CONTROLS -->
                 <div id="gal-prev" class="modal-nav-btn nav-prev" onclick="Ui.prevImg()">❮</div>
                 <div id="gal-next" class="modal-nav-btn nav-next" onclick="Ui.nextImg()">❯</div>
@@ -297,10 +326,9 @@ const CFG = {
     rarity: [{th:0.10,c:'#22c55e'},{th:0.05,c:'#84cc16'},{th:0.02,c:'#eab308'},{th:0.01,c:'#f97316'},{th:0.001,c:'#ef4444'},{th:0,c:'#a855f7'}]
 };
 
-// HELPERS
 function fixUrl(url) {
-    if(!url) return '';
-    if(url.includes('github.com') && url.includes('/blob/')) return url.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/');
+    if (!url) return '';
+    if (url.includes('github.com') && url.includes('/blob/')) return url.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/');
     return url;
 }
 function hexToRgba(hex, alpha) {
@@ -349,7 +377,6 @@ function isBlocked(z, mapId) {
     });
 }
 
-// STORE
 const Store = {
     cfg: {}, map: null, dom: { mapImg: null },
     data: { dinos:{}, res:{}, pois:[], obs:[], caves:[], players:[] },
@@ -357,10 +384,9 @@ const Store = {
     selDino: null, selectedPOI: null, activeRes: new Set(), activeObs: new Set(),
     layers: { public: false, caves: false, players: false },
     view: { x:0, y:0, scale:1 }, sidebarOpen: true, mapKey: null,
-    currentImgIdx: 0 // Carousel Index
+    currentImgIdx: 0 
 };
 
-// MAP ENGINE
 window.MapEngine = {
     el: null, cvs: null, ctx: null, img: null, marker: null, iconCache: new Map(), pattern: null,
     isDown: false, startX: 0, startY: 0, moved: false, resizeObserver: null,
@@ -715,7 +741,7 @@ const Data = {
             if(Store.sharing) {
                 Object.keys(Store.sharing).forEach(sourceName => {
                     const targets = Store.sharing[sourceName];
-                    if(Array.isArray(targets) && Store.data.dinos[sourceName]) {
+                    if (Array.isArray(targets) && Store.data.dinos[sourceName]) {
                         targets.forEach(targetName => {
                             if (!Store.data.dinos[targetName]) {
                                 Store.data.dinos[targetName] = Store.data.dinos[sourceName];
