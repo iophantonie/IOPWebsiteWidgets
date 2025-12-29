@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>IOP Cluster Explorer v13.7 (GitHub & CORS Fix)</title>
+    <title>IOP Cluster Explorer v14.5 (Toggle Fix)</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <style>
-        /* --- CORE --- */
+        /* --- CORE RESET & LAYOUT --- */
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         
         body, html { 
@@ -24,7 +24,7 @@
             --sidebar-width: 320px;
         }
 
-        #app { position: absolute; inset: 0; display: flex; width: 100%; height: 100%; }
+        #app { position: absolute; inset: 0; display: flex; overflow: hidden; width: 100%; height: 100%; }
 
         /* --- SIDEBAR --- */
         #sidebar {
@@ -33,17 +33,20 @@
             display: flex; flex-direction: column; z-index: 50; flex-shrink: 0;
             transition: width 0.3s ease, transform 0.3s ease;
             position: relative;
-            box-shadow: 5px 0 20px rgba(0,0,0,0.9);
         }
 
-        /* Responsive Sidebar */
+        /* Collapsed State for Desktop */
+        #sidebar.collapsed { width: 0; overflow: hidden; border-right: none; }
+
+        /* Responsive Sidebar: Overlay on small screens */
         @media (max-width: 768px) {
             #sidebar { position: absolute; left: 0; top: 0; bottom: 0; transform: translateX(-100%); width: 280px; }
             #sidebar.open { transform: translateX(0); }
+            /* Hide Desktop Toggle on Mobile */
+            #sidebar-toggle { display: none !important; }
+            /* Show Mobile Toggle */
             #mobile-toggle { display: flex !important; }
         }
-
-        #sidebar.collapsed { width: 0; overflow: hidden; border-right: none; }
 
         .sb-header { padding: 15px; background: rgba(0,0,0,0.5); border-bottom: 2px solid var(--phoenix-fire); flex-shrink: 0; white-space: nowrap; overflow: hidden; }
         .sb-title { font-size: 1.0rem; font-weight: 900; color: var(--phoenix-fire); letter-spacing: 0.05em; }
@@ -61,25 +64,35 @@
         .view.active { display: block; animation: fadeIn 0.3s; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* TOGGLES */
+        /* --- DESKTOP TOGGLE BUTTON (OUTSIDE SIDEBAR) --- */
         #sidebar-toggle {
-            position: absolute; left: var(--sidebar-width); top: 50%; transform: translateY(-50%);
-            width: 24px; height: 48px; background: #111; border: 1px solid #444; border-left: none;
-            border-radius: 0 6px 6px 0; cursor: pointer; z-index: 60;
+            position: absolute; 
+            left: var(--sidebar-width); /* Startposition neben der Sidebar */
+            top: 50%; transform: translateY(-50%);
+            width: 24px; height: 48px; 
+            background: #111; 
+            border: 1px solid #444; border-left: none;
+            border-radius: 0 6px 6px 0; 
+            cursor: pointer; z-index: 60;
             display: flex; align-items: center; justify-content: center; color: #888;
             transition: left 0.3s ease, color 0.2s;
         }
         #sidebar-toggle:hover { color: var(--phoenix-fire); }
-        #sidebar.collapsed + #sidebar-toggle { left: 0; border-left: 1px solid #444; }
-        @media (max-width: 768px) { #sidebar-toggle { display: none; } }
+        
+        /* Wenn Sidebar (das Element direkt davor) die Klasse .collapsed hat: */
+        #sidebar.collapsed + #sidebar-toggle {
+            left: 0; /* Rutsche an den linken Rand */
+            border-left: 1px solid #444; /* Rahmen wiederherstellen */
+        }
 
+        /* --- MOBILE TOGGLE --- */
         #mobile-toggle {
             position: absolute; top: 15px; left: 15px; z-index: 60;
             width: 40px; height: 40px; background: rgba(0,0,0,0.8); border-radius: 4px; border: 1px solid #444;
             display: none; align-items: center; justify-content: center; color: var(--phoenix-fire); font-size: 20px; cursor: pointer;
         }
 
-        /* DROPDOWN */
+        /* --- CUSTOM DROPDOWN (DINO SELECTOR) --- */
         .custom-select { position: relative; width: 100%; }
         .select-trigger {
             display: flex; align-items: center; justify-content: space-between;
@@ -96,22 +109,27 @@
             box-shadow: 0 10px 20px rgba(0,0,0,0.5);
         }
         .select-dropdown.open { display: block; }
+        
         .select-search { position: sticky; top: 0; background: #111; padding: 8px; border-bottom: 1px solid #333; z-index: 10; }
         .select-search input { width: 100%; background: #222; border: 1px solid #444; padding: 6px; border-radius: 4px; color: white; font-size: 0.85rem; outline: none; }
         .select-search input:focus { border-color: var(--phoenix-fire); }
+
         .select-item { display: flex; align-items: center; padding: 8px 10px; cursor: pointer; border-bottom: 1px solid #1a1a1a; transition: 0.15s; font-size: 0.85rem; }
         .select-item:hover { background: #222; }
         .select-item.selected { background: rgba(255, 42, 0, 0.15); color: var(--phoenix-fire); }
         .select-item img { width: 24px; height: 24px; margin-right: 10px; object-fit: contain; }
 
-        /* MAP ENGINE */
-        #viewport { flex: 1; position: relative; background: #050505; overflow: hidden; display: block; min-width: 0; }
+        /* --- MAP ENGINE --- */
+        #viewport {
+            flex: 1; position: relative; background: transparent; overflow: hidden; display: block; min-width: 0;
+        }
+
         #world {
             position: absolute; top: 0; left: 0; width: 1024px; height: 1024px;
             box-shadow: 0 0 100px rgba(0,0,0,0.5); transform-origin: 0 0; background-color: transparent;
             will-change: transform;
         }
-        /* FIX: Removed crossorigin attribute via JS logic, styled here */
+
         #map-image-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: fill; z-index: 1; pointer-events: none; }
         #data-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; pointer-events: none; }
         #input-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; cursor: grab; }
@@ -128,7 +146,7 @@
             100% { transform: translate(-50%, -50%) scale(1.5); opacity: 0; }
         }
 
-        /* UI ELEMENTS */
+        /* --- UI ELEMENTS --- */
         .toggle-item { display: flex; align-items: center; padding: 6px 0; cursor: pointer; user-select: none; }
         .chk { width: 16px; height: 16px; border: 2px solid #444; border-radius: 3px; margin-right: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; background: #000; }
         .toggle-item:hover .chk { border-color: #888; }
@@ -141,6 +159,7 @@
         .zoom-btn { width: 40px; height: 40px; background: rgba(17, 17, 17, 0.8); border: 1px solid #444; color: white; border-radius: 6px; font-size: 18px; cursor: pointer; display: grid; place-items: center; backdrop-filter: blur(4px); }
         .zoom-btn:hover { border-color: var(--phoenix-fire); color: var(--phoenix-fire); }
 
+        /* LEGEND */
         .map-legend {
             position: absolute; bottom: 20px; left: 20px; 
             width: 160px; background: rgba(10, 10, 10, 0.95);
@@ -154,6 +173,7 @@
         .leg-item { display: flex; align-items: center; }
         .leg-box { width: 10px; height: 10px; margin-right: 8px; border-radius: 2px; border: 1px solid rgba(255,255,255,0.1); }
 
+        /* INFO PANEL */
         .info-panel { 
             position: absolute; top: 0; right: 0; bottom: 0; width: 320px; 
             background: var(--bg-panel); border-left: 1px solid var(--phoenix-fire); 
@@ -171,11 +191,13 @@
         .related-item:hover { background: #1a1a1a; color: white; }
         .related-item.active { background: rgba(255, 42, 0, 0.1); border-left-color: var(--phoenix-fire); color: var(--phoenix-fire); font-weight: bold; }
 
-        .loader { position: absolute; inset: 0; background: rgba(0,0,0,0.9); z-index: 999; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.5s; backdrop-filter: blur(5px); }
+        /* Loader */
+        .loader { position: absolute; inset: 0; background: rgba(0,0,0,0.8); z-index: 999; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.5s; backdrop-filter: blur(5px); }
         .loader.hidden { opacity: 0; pointer-events: none; }
         .spinner { width: 50px; height: 50px; border: 3px solid #333; border-top-color: var(--phoenix-fire); border-radius: 50%; animation: spin 1s infinite linear; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
+        /* Notification Toast */
         #toast {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
             background: rgba(0,0,0,0.9); border: 1px solid var(--phoenix-fire); color: white;
@@ -184,6 +206,7 @@
         }
         #toast.visible { opacity: 1; }
 
+        /* Utility */
         ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-track { background: #0a0a0a; }
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
@@ -212,9 +235,6 @@
     <div id="mobile-toggle" onclick="Ui.toggleSidebar()">☰</div>
 
     <div id="sidebar">
-        <!-- DESKTOP TOGGLE (Sibling to sidebar content) -->
-        <div id="sidebar-toggle" onclick="Ui.toggleSidebar()">◀</div>
-
         <div class="sb-header">
             <div class="text-xs text-gray-500 font-bold tracking-widest mb-1">INFINITY OF PHOENIX</div>
             <div class="sb-title">CLUSTER EXPLORER</div>
@@ -231,11 +251,14 @@
             <!-- DINOS (COMPACT MODE) -->
             <div id="view-dinos" class="view active">
                 <div class="text-xs font-bold text-gray-500 mb-2 tracking-wider">KREATUREN</div>
+                
+                <!-- CUSTOM DROPDOWN -->
                 <div class="custom-select" id="dino-dropdown">
                     <div class="select-trigger" onclick="Ui.toggleDinoDropdown()">
                         <span id="dino-trigger-text">Wähle Dino...</span>
                         <span class="text-xs text-gray-500">▼</span>
                     </div>
+                    
                     <div id="dino-dropdown-content" class="select-dropdown">
                         <div class="select-search">
                             <input type="text" id="search-dino" placeholder="Suche..." autocomplete="off">
@@ -260,9 +283,11 @@
             <div id="view-pois" class="view">
                 <div class="mb-6">
                     <div class="text-xs text-gray-500 font-bold mb-2 tracking-wider">ALLGEMEIN</div>
+                    
                     <div class="toggle-item mb-2" id="tog-all-pois" onclick="Layers.toggleAllPois()">
                         <div class="chk"></div><span class="text-amber-500 text-sm font-bold">Alle Orte einblenden</span>
                     </div>
+
                     <div class="pl-4 border-l-2 border-[#1a1a1a] ml-1">
                         <div class="toggle-item" id="tog-public" onclick="Layers.toggle('public')">
                             <div class="chk"></div><span>Public Spots</span>
@@ -290,6 +315,9 @@
             </div>
         </div>
     </div>
+    
+    <!-- DESKTOP TOGGLE BUTTON (MOVED OUTSIDE TO SURVIVE COLLAPSE) -->
+    <div id="sidebar-toggle" onclick="Ui.toggleSidebar()">◀</div>
 
     <!-- MAP VIEWPORT -->
     <div id="viewport">
@@ -306,8 +334,7 @@
         </div>
 
         <div id="world">
-            <!-- IMPORTANT: No crossorigin attribute to fix CORS/GitHub issues -->
-            <img id="map-image-layer" src="" alt="Karte">
+            <img id="map-image-layer" src="" alt="Karte" crossorigin="anonymous">
             <canvas id="data-canvas"></canvas>
             <div id="selection-marker" class="pulse-marker"></div>
             <div id="input-layer"></div>
@@ -331,7 +358,7 @@
 
 <script>
 /**
- * IOP WIDGET CORE v13.7 - GitHub Link Fix
+ * IOP WIDGET CORE v14.5 - Final Polish
  */
 
 window.CFG = {
@@ -348,16 +375,6 @@ window.CFG = {
         { th: 0.00, c: '#a855f7' }
     ]
 };
-
-// URL FIXER HELPER
-function fixGitHubUrl(url) {
-    if (!url) return '';
-    // Converts github.com/user/repo/blob/... to raw.githubusercontent.com/...
-    if (url.includes('github.com') && url.includes('/blob/')) {
-        return url.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/');
-    }
-    return url;
-}
 
 function hexToRgba(hex, alpha) {
     if(!hex) return `rgba(255, 255, 255, ${alpha})`;
@@ -388,7 +405,7 @@ window.onerror = (m,u,l) => logError(`${m} (Line ${l})`);
 
 async function fetchData(url) {
     try {
-        const r = await fetch(fixGitHubUrl(url));
+        const r = await fetch(url);
         if(!r.ok) throw new Error(`HTTP ${r.status}`);
         const t = await r.text();
         const cleaned = t.replace(/^\uFEFF/, '').replace(/\u00A0/g, ' ');
@@ -506,27 +523,20 @@ window.MapEngine = {
     fit() {
         if(!this.el) return;
         const vp = document.getElementById('viewport');
-        const s = Math.min(vp.clientWidth, vp.clientHeight); // No Margin
+        const s = Math.min(vp.clientWidth, vp.clientHeight); 
         const size = Math.max(100, s);
-        
         this.el.style.width = size+'px';
         this.el.style.height = size+'px';
         this.cvs.width = size;
         this.cvs.height = size;
-        
         this.el.style.left = (vp.clientWidth - size)/2 + 'px';
         this.el.style.top = (vp.clientHeight - size)/2 + 'px';
-        
         this.draw();
     },
 
     load(url) {
         if(!this.img) return;
-        
-        // AUTO-FIX URL
-        const safeUrl = fixGitHubUrl(url);
-        this.img.src = safeUrl;
-        
+        this.img.src = url;
         const loader = document.getElementById('loader');
         if(loader) loader.classList.remove('hidden');
 
@@ -536,8 +546,7 @@ window.MapEngine = {
              this.draw();
         };
         this.img.onerror = () => {
-            console.warn("Map Image Load Failed: " + safeUrl);
-            logError("BILD FEHLER: " + safeUrl); // Show user error
+            console.warn("Map Image Load Failed: " + url);
             if(loader) loader.classList.add('hidden');
             this.draw();
         };
@@ -575,17 +584,11 @@ window.MapEngine = {
 
     getImg(url) {
         if(!url) return null;
-        // Fix Icon URLs too
-        const safeUrl = fixGitHubUrl(url);
-        
-        if(this.iconCache.has(safeUrl)) return this.iconCache.get(safeUrl);
-        const i = new Image(); 
-        i.src = safeUrl;
-        
+        if(this.iconCache.has(url)) return this.iconCache.get(url);
+        const i = new Image(); i.src = url;
         i.onload = () => this.draw();
-        i.onerror = () => { console.warn("Broken Icon:", safeUrl); };
-        
-        this.iconCache.set(safeUrl, i);
+        i.onerror = () => { console.warn("Broken Icon:", url); };
+        this.iconCache.set(url, i);
         return i;
     },
     getResIcon(key) { return this.getImg(Store.icons[key]?.iconUrl); },
@@ -861,13 +864,10 @@ window.Ui = {
         const l = document.getElementById('list-res');
         if(!l) return;
         l.innerHTML = Object.keys(Store.data.res).sort().map(k => {
-            const iconUrl = Store.icons[k]?.iconUrl;
-            // Always show checkbox container, insert icon if available
-            const iconHtml = iconUrl ? `<img src="${iconUrl}" style="width:20px;height:20px;margin-right:8px;object-fit:contain;">` : '';
-            
+            const icon = Store.icons[k]?.iconUrl ? `<img src="${Store.icons[k].iconUrl}" style="width:20px;height:20px;margin-right:8px;object-fit:contain;">` : `<div class="chk"></div>`;
             return `<div class="toggle-item" onclick="Ui.togRes('${k}', this)">
                 <div class="chk"></div>
-                ${iconHtml}
+                ${icon}
                 <span class="toggle-text">${Store.trans.res[k]||k}</span>
             </div>`;
         }).join('');
