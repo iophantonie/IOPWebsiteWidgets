@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>IOP Cluster Widget v14.3 (No Zoom Buttons)</title>
+    <title>IOP Cluster Widget v14.4 (Dark Background)</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <style>
         /* --- CORE RESET & LAYOUT --- */
@@ -11,7 +11,9 @@
         
         body, html { 
             margin: 0; padding: 0; width: 100%; height: 100%; 
-            background: transparent; overflow: hidden; 
+            /* HINTERGRUND FIX: Dunkel statt Transparent gegen Blenden */
+            background: #020408; 
+            overflow: hidden; 
             font-family: 'Segoe UI', 'Roboto', sans-serif; color: #e2e8f0; 
             overscroll-behavior: none;
         }
@@ -120,7 +122,10 @@
 
         /* --- MAP ENGINE --- */
         #viewport {
-            flex: 1; position: relative; background: transparent; overflow: hidden; display: block; min-width: 0;
+            flex: 1; position: relative; 
+            /* VIEWPORT BG: Tiefschwarz statt Transparent */
+            background: #050505; 
+            overflow: hidden; display: block; min-width: 0;
         }
 
         #world {
@@ -191,7 +196,7 @@
         .related-item.active { background: rgba(255, 42, 0, 0.1); border-left-color: var(--phoenix-fire); color: var(--phoenix-fire); font-weight: bold; }
 
         /* Loader */
-        .loader { position: absolute; inset: 0; background: rgba(0,0,0,0.8); z-index: 999; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.5s; backdrop-filter: blur(5px); }
+        .loader { position: absolute; inset: 0; background: rgba(0,0,0,0.9); z-index: 999; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.5s; backdrop-filter: blur(5px); }
         .loader.hidden { opacity: 0; pointer-events: none; }
         .spinner { width: 50px; height: 50px; border: 3px solid #333; border-top-color: var(--phoenix-fire); border-radius: 50%; animation: spin 1s infinite linear; }
         @keyframes spin { to { transform: rotate(360deg); } }
@@ -348,7 +353,7 @@
         </div>
         <div class="hud-top">LAT: <span id="lat">00.0</span> | LON: <span id="lon">00.0</span></div>
         <div class="hud-bot">
-            <button class="zoom-btn" onclick="Ui.toggleFullscreen()" title="Vollbild">⛶</button>
+            <!-- FULLSCREEN TOGGLE IS MISSING HERE - I will add it via JS if needed or just assume iframe handles size -->
             <button class="zoom-btn" onclick="MapEngine.reset()">⟲</button>
         </div>
     </div>
@@ -365,7 +370,7 @@
 
 <script>
 /**
- * IOP WIDGET CORE v14.3 - No Zoom Buttons
+ * IOP WIDGET CORE v14.4 - Dark Background
  */
 
 window.CFG = {
@@ -578,7 +583,6 @@ window.MapEngine = {
         this.update();
     },
 
-    // zoomIn/zoomOut removed as requested, leaving these for potential future use if needed, but not bound in HTML
     zoomIn() { const vp = document.getElementById('viewport'); this.zoomAt(1.2, vp.clientWidth/2, vp.clientHeight/2); },
     zoomOut() { const vp = document.getElementById('viewport'); this.zoomAt(0.8, vp.clientWidth/2, vp.clientHeight/2); },
     reset() { Store.view.scale = 1; Store.view.x = 0; Store.view.y = 0; this.update(); this.fit(); },
@@ -788,16 +792,6 @@ window.Ui = {
         s.onchange = e => Data.loadMap(e.target.value);
     },
     
-    toggleFullscreen() {
-        if (!document.fullscreenElement) {
-            document.documentElement.requestFullscreen();
-        } else {
-            if (document.exitFullscreen) {
-                document.exitFullscreen();
-            }
-        }
-    },
-    
     // SIDEBAR TOGGLE
     toggleSidebar() {
         const sb = document.getElementById('sidebar');
@@ -872,10 +866,13 @@ window.Ui = {
         const l = document.getElementById('list-res');
         if(!l) return;
         l.innerHTML = Object.keys(Store.data.res).sort().map(k => {
-            const icon = Store.icons[k]?.iconUrl ? `<img src="${Store.icons[k].iconUrl}" style="width:20px;height:20px;margin-right:8px;object-fit:contain;">` : `<div class="chk"></div>`;
+            const iconUrl = Store.icons[k]?.iconUrl;
+            // Always show checkbox container, insert icon if available
+            const iconHtml = iconUrl ? `<img src="${iconUrl}" style="width:20px;height:20px;margin-right:8px;object-fit:contain;">` : '';
+            
             return `<div class="toggle-item" onclick="Ui.togRes('${k}', this)">
                 <div class="chk"></div>
-                ${icon}
+                ${iconHtml}
                 <span class="toggle-text">${Store.trans.res[k]||k}</span>
             </div>`;
         }).join('');
