@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>IOP Cluster Explorer v20.2 (Coordinate Styles)</title>
+    <title>IOP Cluster Explorer v21.0 (Detail Modal)</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <style>
         /* --- CORE RESET --- */
@@ -122,14 +122,46 @@
 
         /* RELATED LIST STYLING */
         .related-list { margin-top: 20px; border-top: 1px solid #333; padding-top: 15px; display: flex; flex-direction: column; gap: 4px; }
-        .related-item { 
-            padding: 10px 12px; cursor: pointer; 
-            border-radius: 4px; font-size: 0.85rem; color: #ccc; 
-            border: 1px solid #222; border-left: 3px solid transparent; 
-            background: #161616; transition: all 0.2s;
-        }
+        .related-item { padding: 8px 10px; cursor: pointer; border-radius: 4px; font-size: 0.85rem; color: #aaa; border-left: 2px solid transparent; margin-bottom: 2px; background: #161616; }
         .related-item:hover { background: #222; color: white; border-left-color: #666; transform: translateX(2px); }
         .related-item.active { background: rgba(255, 42, 0, 0.1); border-left-color: var(--phoenix-fire); color: var(--phoenix-fire); font-weight: bold; border-color: rgba(255, 42, 0, 0.2); }
+
+        /* DETAIL MODAL (NEW) */
+        .modal-overlay {
+            position: fixed; inset: 0; z-index: 200;
+            background: rgba(0,0,0,0.95);
+            display: flex; justify-content: center; align-items: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+        .modal-overlay.visible { opacity: 1; pointer-events: auto; }
+        .modal-card {
+            background: #0a0a0a; border: 1px solid #333; border-left: 3px solid var(--phoenix-fire);
+            width: 90%; max-width: 900px; max-height: 90%;
+            display: flex; flex-direction: column;
+            box-shadow: 0 0 50px rgba(0,0,0,0.8);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .modal-img-container {
+            width: 100%; height: 50%; max-height: 400px;
+            background: #000; display: flex; justify-content: center; align-items: center;
+            border-bottom: 1px solid #333; position: relative;
+        }
+        .modal-img { max-width: 100%; max-height: 100%; object-fit: contain; }
+        .modal-body { padding: 25px; overflow-y: auto; }
+        .modal-close { position: absolute; top: 15px; right: 15px; background: rgba(0,0,0,0.8); color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 1px solid #444; font-size: 20px; transition: 0.2s; }
+        .modal-close:hover { border-color: var(--phoenix-fire); color: var(--phoenix-fire); }
+        
+        .img-overlay-btn {
+            position: absolute; bottom: 10px; right: 10px;
+            background: rgba(0,0,0,0.8); color: var(--phoenix-gold);
+            padding: 5px 10px; border-radius: 4px; border: 1px solid var(--phoenix-gold);
+            font-size: 0.75rem; font-weight: bold; cursor: pointer;
+            display: flex; align-items: center; gap: 5px;
+            transition: 0.2s;
+        }
+        .img-overlay-btn:hover { background: var(--phoenix-gold); color: black; }
 
         .loader { position: absolute; inset: 0; background: #000; z-index: 200; display: flex; justify-content: center; align-items: center; flex-direction: column; transition: opacity 0.5s; }
         .loader.hidden { opacity: 0; pointer-events: none; }
@@ -217,7 +249,7 @@
                 <div class="mb-6">
                     <div class="text-xs text-gray-500 font-bold mb-2 tracking-wider">ALLGEMEIN</div>
                     <div class="toggle-item mb-2" id="tog-all-pois" onclick="Layers.toggleAllPois()">
-                        <div class="chk"></div><span class="text-amber-500 text-sm font-bold">Alle Orte</span>
+                        <div class="chk"></div><span class="text-amber-500 text-sm font-bold">Alle Orte einblenden</span>
                     </div>
                     <div class="pl-4 border-l-2 border-[#1a1a1a] ml-1">
                         <div class="toggle-item" id="tog-public" onclick="Layers.toggle('public')">
@@ -271,7 +303,6 @@
             <div id="input-layer"></div>
         </div>
         
-        <!-- ENLARGED & GOLD HUD, ORIGINAL BORDER -->
         <div class="absolute top-5 right-5 bg-black/90 px-4 py-2 rounded font-mono text-sm border border-gray-800 pointer-events-none z-50" style="color: var(--phoenix-gold);">
             LAT: <span id="lat">00.0</span> | LON: <span id="lon">00.0</span>
         </div>
@@ -289,6 +320,30 @@
             <button onclick="Ui.closeInfo()" class="text-gray-400 hover:text-white text-2xl leading-none">×</button>
         </div>
         <div id="info-body" class="p-5 text-sm text-gray-300 overflow-y-auto h-full"></div>
+    </div>
+
+    <!-- DETAIL MODAL -->
+    <div id="detail-modal" class="modal-overlay" onclick="if(event.target===this) Ui.closeDetail()">
+        <div class="modal-card">
+            <div class="modal-img-container">
+                <button class="modal-close" onclick="Ui.closeDetail()">×</button>
+                <img id="detail-img" class="modal-img" alt="">
+            </div>
+            <div class="modal-body">
+                <div class="flex justify-between items-end mb-4 border-b border-gray-800 pb-4">
+                    <h2 id="detail-title" class="text-2xl font-black text-white uppercase tracking-wide">Titel</h2>
+                    <div class="text-right">
+                         <div class="text-xs text-gray-500 font-bold mb-1">KOORDINATEN</div>
+                         <div class="text-phoenix-gold font-mono font-bold text-lg">
+                             <span id="detail-lat">00.0</span> / <span id="detail-lon">00.0</span>
+                         </div>
+                    </div>
+                </div>
+                
+                <div id="detail-desc" class="text-gray-300 leading-relaxed mb-6 whitespace-pre-wrap"></div>
+                <div id="detail-artifacts"></div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -323,7 +378,7 @@ async function fetchJson(url) {
         return JSON.parse(t.replace(/^\uFEFF/,'').replace(/\u00A0/g,' '));
     } catch(e) { console.warn("Fetch Error", e); return null; }
 }
-// Universal Finder
+
 function findSpawns(data) {
     if(!data) return [];
     if(data.spawnPoints && Array.isArray(data.spawnPoints)) return data.spawnPoints;
@@ -347,7 +402,6 @@ function isBlocked(z, mapId) {
     if(!list || !Array.isArray(list)) return false;
     const cx = (z.min.lon+z.max.lon)/2;
     const cy = (z.min.lat+z.max.lat)/2;
-    // Strict Intersection
     const zMinX = z.min.lon, zMaxX = z.max.lon, zMinY = z.min.lat, zMaxY = z.max.lat;
     
     return list.some(b => {
@@ -356,7 +410,6 @@ function isBlocked(z, mapId) {
             if(m) {
                 const bMinLat=parseFloat(m[1]), bMaxLat=parseFloat(m[2]);
                 const bMinLon=parseFloat(m[3]), bMaxLon=parseFloat(m[4]);
-                // Check Intersection
                 return !(zMaxX < bMinLon || zMinX > bMaxLon || zMaxY < bMinLat || zMinY > bMaxLat);
             }
         }
@@ -393,7 +446,6 @@ window.MapEngine = {
         this.ctx = this.cvs.getContext('2d');
         Store.dom.mapImg = this.img;
         
-        // Pattern
         const p = document.createElement('canvas'); p.width=10; p.height=10;
         const pc = p.getContext('2d');
         pc.strokeStyle='rgba(255,255,255,0.3)'; pc.lineWidth=1;
@@ -626,7 +678,6 @@ window.Ui = {
         setTimeout(()=>MapEngine.fit(), 10);
     },
 
-    // Dino UI
     renderDinos(term="") {
         const l = document.getElementById('dino-list-root'); if(!l) return;
         const t = term.toLowerCase();
@@ -663,7 +714,6 @@ window.Ui = {
     },
     resetDinoSelectionUI() { this.clearDino(); },
 
-    // Res UI
     renderRes() {
         const l = document.getElementById('list-res'); if(!l) return;
         l.innerHTML = Object.keys(Store.data.res).sort().map(k => {
@@ -690,14 +740,22 @@ window.Ui = {
         MapEngine.draw();
     },
 
-    // Info
+    // Info Popups
     showInfo(d, type) {
         Store.selectedPOI = d; MapEngine.setMarker(d);
         document.getElementById('info-title').textContent = d.name || "Info";
         
         let media = '';
-        if(d.images?.length) media = `<img src="${fixUrl(d.images[0])}" class="w-full rounded mb-4 border border-gray-700">`;
-        else if(d.icon || Store.icons[d.name]?.iconUrl) media = `<img src="${fixUrl(d.icon || Store.icons[d.name]?.iconUrl)}" class="w-20 mx-auto mb-4">`;
+        if(d.images?.length) {
+            media = `<div class="relative group cursor-pointer" onclick="Ui.openDetail()">
+                <img src="${fixUrl(d.images[0])}" class="w-full rounded mb-4 border border-gray-700">
+                <div class="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
+                    <span class="img-overlay-btn">🔍 VERGRÖSSERN</span>
+                </div>
+            </div>`;
+        } else if(d.icon || Store.icons[d.name]?.iconUrl) {
+            media = `<img src="${fixUrl(d.icon || Store.icons[d.name]?.iconUrl)}" class="w-20 mx-auto mb-4">`;
+        }
 
         let extra = '';
         if(type === 'caves' && d.artifacts) {
@@ -716,7 +774,6 @@ window.Ui = {
                 const listItems = sourceList.map(item => {
                     const isActive = item === d ? 'active' : '';
                     const idx = sourceList.indexOf(item);
-                    // CSS CLASSES FIXED HERE:
                     return `<div class="related-item ${isActive}" onclick="Ui.selectFromList('${type}', ${idx})">${item.name}</div>`;
                 }).join('');
                 extra += `<div class="text-xs font-bold text-gray-500 mt-6 mb-2 tracking-wider">${listTitle}</div><div class="flex flex-col gap-1 related-list">${listItems}</div>`;
@@ -725,14 +782,42 @@ window.Ui = {
 
         document.getElementById('info-body').innerHTML = `
             ${media}
-            <div class="flex justify-center gap-4 mb-4 text-xs font-mono text-gray-300 bg-black p-2 rounded border border-[#333]">
-                <span>LAT: <span class="text-phoenix-gold font-bold">${d.lat.toFixed(1)}</span></span>
-                <span>LON: <span class="text-phoenix-gold font-bold">${d.lon.toFixed(1)}</span></span>
+            <div class="flex justify-center gap-4 mb-4 text-xs font-mono text-gray-500 bg-black p-2 rounded border border-[#333]">
+                <span>LAT: <span class="text-orange-500 font-bold">${d.lat.toFixed(1)}</span></span>
+                <span>LON: <span class="text-orange-500 font-bold">${d.lon.toFixed(1)}</span></span>
             </div>
             <div class="text-sm text-gray-400 whitespace-pre-wrap">${d.description || d.shortDescription || 'Keine Beschreibung.'}</div>
             ${extra}
         `;
         document.getElementById('info-panel').classList.add('visible');
+    },
+
+    // --- NEW: DETAIL MODAL LOGIC ---
+    openDetail() {
+        const d = Store.selectedPOI;
+        if(!d) return;
+
+        document.getElementById('detail-title').textContent = d.name || "Detail";
+        document.getElementById('detail-img').src = fixUrl(d.images ? d.images[0] : (d.icon || ""));
+        document.getElementById('detail-lat').textContent = d.lat.toFixed(1);
+        document.getElementById('detail-lon').textContent = d.lon.toFixed(1);
+        document.getElementById('detail-desc').textContent = d.longDescription || d.description || "Keine weitere Beschreibung.";
+        
+        let arts = '';
+        if(d.artifacts) {
+             arts = `<div class="mt-6 border-t border-gray-700 pt-4"><h3 class="text-amber-500 font-bold mb-2">ARTEFAKTE</h3><div class="grid grid-cols-2 gap-2">` +
+             d.artifacts.map(a => {
+                const url = fixUrl(a.icon || Store.icons[a.name]?.iconUrl);
+                return `<div class="flex items-center bg-[#111] p-2 rounded border border-gray-700"><img src="${url}" class="w-8 h-8 mr-3 object-contain text-xs" alt="Img"><span class="text-gray-300 font-bold">${a.name}</span></div>`;
+             }).join('') + `</div></div>`;
+        }
+        document.getElementById('detail-artifacts').innerHTML = arts;
+
+        document.getElementById('detail-modal').classList.add('visible');
+    },
+
+    closeDetail() {
+        document.getElementById('detail-modal').classList.remove('visible');
     },
     
     selectFromList(type, index) {
@@ -742,11 +827,6 @@ window.Ui = {
     },
 
     closeInfo() { document.getElementById('info-panel').classList.remove('visible'); MapEngine.setMarker(null); },
-    
-    resetToggles() {
-        Store.layers = { public: false, caves: false, players: false };
-        document.querySelectorAll('.toggle-item').forEach(el => el.classList.remove('checked'));
-    },
 
     setSpawnStatus(type, msg) {
         const dot = document.getElementById('st-spawn');
@@ -772,24 +852,20 @@ window.Layers = {
 };
 
 window.Res = {
-    clear() {
-        Store.activeRes.clear();
-        document.querySelectorAll('#list-res .toggle-item').forEach(e => e.classList.remove('checked'));
-        document.getElementById('tog-all-res').classList.remove('checked');
-        MapEngine.draw();
-    },
-    
     toggleAll() {
         const allKeys = Object.keys(Store.data.res);
         if(!allKeys.length) return;
         const on = Store.activeRes.size !== allKeys.length;
-        if(on) this.clear();
-        else {
-            keys.forEach(k => Store.activeRes.add(k));
+        if(on) {
+            allKeys.forEach(k => Store.activeRes.add(k));
             document.querySelectorAll('#list-res .toggle-item').forEach(e => e.classList.add('checked'));
             document.getElementById('tog-all-res').classList.add('checked');
-            MapEngine.draw();
+        } else {
+            Store.activeRes.clear();
+            document.querySelectorAll('#list-res .toggle-item').forEach(e => e.classList.remove('checked'));
+            document.getElementById('tog-all-res').classList.remove('checked');
         }
+        MapEngine.draw();
     }
 };
 
