@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>IOP Cluster Explorer v27.0 (Image Cache Fix)</title>
+    <title>IOP Cluster Explorer v29.1 (Clean Spawns)</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <style>
         /* --- CORE RESET --- */
@@ -236,10 +236,11 @@
                 <div class="mb-6">
                     <div class="text-xs text-gray-500 font-bold mb-2 tracking-wider">SPAWNS</div>
                     <div class="toggle-item" id="tog-players" onclick="Layers.toggle('players')"><div class="chk"></div><span>Spieler Spawns</span></div>
-                    <div class="text-xs text-gray-600 ml-8 mt-1 italic flex items-center"><span id="st-spawn" class="status-dot wait"></span><span id="spawn-msg">Status: Prüfe...</span></div>
+                    <!-- REMOVED DOT HERE -->
+                    <div class="text-xs text-red-500 ml-8 mt-1 italic flex items-center"><span id="spawn-msg"></span></div>
                 </div>
                 <div><div class="text-xs text-gray-500 font-bold mb-2 tracking-wider">OBELISKEN</div><div id="list-obelisks"></div></div>
-                <div id="debug-status" class="text-[9px] text-gray-700 mt-4 px-2"></div>
+                <div id="debug-status" class="text-[9px] text-gray-700 mt-4 px-2 hidden"></div>
             </div>
         </div>
     </div>
@@ -324,7 +325,7 @@ const CFG = {
 function fixUrl(url) {
     if (!url) return '';
     if (url.includes('github.com') && url.includes('/blob/')) return url.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/');
-    return url; // REMOVED CACHE BUSTER FOR IMAGES
+    return url; 
 }
 function hexToRgba(hex, alpha) {
     const r=parseInt(hex.slice(1,3),16), g=parseInt(hex.slice(3,5),16), b=parseInt(hex.slice(5,7),16);
@@ -332,9 +333,7 @@ function hexToRgba(hex, alpha) {
 }
 async function fetchJson(url) {
     try {
-        // Cache Buster ONLY for JSON to get fresh data
-        const safeUrl = fixUrl(url) + '?t=' + Date.now();
-        const r = await fetch(safeUrl);
+        const r = await fetch(fixUrl(url));
         if(!r.ok) throw new Error("HTTP "+r.status);
         const t = await r.text();
         return JSON.parse(t.replace(/^\uFEFF/,'').replace(/\u00A0/g,' '));
@@ -401,7 +400,12 @@ window.MapEngine = {
         this.pattern = this.ctx.createPattern(p, 'repeat');
         
         const input = document.getElementById('input-layer');
-        input.onmousedown = e => { this.isDown=true; this.moved=false; this.startX=e.clientX; this.startY=e.clientY; input.style.cursor='grabbing'; };
+        input.onmousedown = e => { 
+            // MERGED CLICK HANDLER: DRAG START + CLOSE DROPDOWN
+            this.isDown=true; this.moved=false; this.startX=e.clientX; this.startY=e.clientY; input.style.cursor='grabbing';
+            document.getElementById('dino-dropdown-content').classList.remove('open'); 
+            document.querySelector('.select-trigger').classList.remove('active');
+        };
         window.onmouseup = () => { this.isDown=false; input.style.cursor='grab'; };
         input.onmousemove = e => {
             if(this.isDown) {
@@ -425,7 +429,6 @@ window.MapEngine = {
         };
         new ResizeObserver(() => this.fit()).observe(document.getElementById('viewport'));
         setTimeout(()=>this.fit(), 100);
-        input.onmousedown = () => { document.getElementById('dino-dropdown-content').classList.remove('open'); document.querySelector('.select-trigger').classList.remove('active'); };
     },
     fit() {
         if(!this.el) return;
@@ -617,7 +620,12 @@ window.Ui = {
     renderRegions() {
         const l = document.getElementById('list-regions'); const c = document.getElementById('region-container');
         if(!l || !c) return;
-        const regs = Array.isArray(Store.data.regions) ? Store.data.regions : [];
+        // FIX: Handle both array and object {regions:[]}
+        let regs = Store.data.regions;
+        if(regs && regs.regions && Array.isArray(regs.regions)) regs = regs.regions;
+        if(!Array.isArray(regs)) regs = [];
+
+        Store.data.regions = regs; // Normalize
         
         console.log("Region Check: ", regs); // Debug
 
@@ -649,7 +657,7 @@ window.Ui = {
         if(type === 'caves' && d.artifacts) {
             extra = `<div class="text-xs font-bold text-amber-500 mt-4 mb-2 tracking-wider">ARTEFAKTE</div>` +
             d.artifacts.map(a => {
-                let url = a.icon || Store.icons[a.name]?.iconUrl; // FIX: Fallback to global
+                let url = a.icon || Store.icons[a.name]?.iconUrl;
                 if(url) url = fixUrl(url); 
                 const img = url ? `<img src="${url}" class="artifact-icon">` : '';
                 return `<div class="artifact-row">${img}<span>${a.name}</span></div>`;
@@ -783,8 +791,7 @@ const Data = {
                 else if(regData.regions && Array.isArray(regData.regions)) regionsList = regData.regions;
             }
             console.log("Regions Loaded: " + regionsList.length);
-            // Debugging Output to UI
-            document.getElementById('debug-status').textContent = `RegURL: ${regUrl ? 'JA' : 'NEIN'} | Count: ${regionsList.length}`;
+            // Debugging Output to UI removed as requested
 
             Store.data = { dinos: d?.dinoSpawns||{}, res: r?.resources||{}, pois: p?.publicSpots||[], obs: o?.obelisks||[], caves: ca?.caveSpots||[], players: findSpawns(pl), regions: regionsList };
             
@@ -815,7 +822,8 @@ const Data = {
                 });
             }
 
-            const spawnMsg = Store.data.players.length ? `OK (${Store.data.players.length})` : "Keine Daten";
+            // CLEAN STATUS TEXT: Only dot if data ok
+            const spawnMsg = Store.data.players.length ? "" : "Keine Daten"; 
             const spawnType = Store.data.players.length ? "ok" : "err";
             Ui.setSpawnStatus(spawnType, spawnMsg);
             document.getElementById('tog-players').classList.toggle('disabled', !Store.data.players.length);
