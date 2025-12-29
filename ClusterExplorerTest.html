@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>IOP Cluster Explorer v14.6 (Dino Clear Fix)</title>
+    <title>IOP Cluster Explorer v14.7 (Black Background)</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <style>
         /* --- CORE RESET & LAYOUT --- */
@@ -11,7 +11,9 @@
         
         body, html { 
             margin: 0; padding: 0; width: 100%; height: 100%; 
-            background: transparent; overflow: hidden; 
+            /* HINTERGRUND: Schwarz statt Transparent */
+            background: #000000; 
+            overflow: hidden; 
             font-family: 'Segoe UI', 'Roboto', sans-serif; color: #e2e8f0; 
             overscroll-behavior: none;
         }
@@ -67,7 +69,7 @@
         /* --- DESKTOP TOGGLE BUTTON (OUTSIDE SIDEBAR) --- */
         #sidebar-toggle {
             position: absolute; 
-            left: var(--sidebar-width); /* Startposition neben der Sidebar */
+            left: var(--sidebar-width); 
             top: 50%; transform: translateY(-50%);
             width: 24px; height: 48px; 
             background: #111; 
@@ -79,10 +81,9 @@
         }
         #sidebar-toggle:hover { color: var(--phoenix-fire); }
         
-        /* Wenn Sidebar (das Element direkt davor) die Klasse .collapsed hat: */
         #sidebar.collapsed + #sidebar-toggle {
-            left: 0; /* Rutsche an den linken Rand */
-            border-left: 1px solid #444; /* Rahmen wiederherstellen */
+            left: 0; 
+            border-left: 1px solid #444; 
         }
 
         /* --- MOBILE TOGGLE --- */
@@ -121,12 +122,12 @@
 
         /* --- MAP ENGINE --- */
         #viewport {
-            flex: 1; position: relative; background: transparent; overflow: hidden; display: block; min-width: 0;
+            flex: 1; position: relative; background: #000; overflow: hidden; display: block; min-width: 0;
         }
 
         #world {
             position: absolute; top: 0; left: 0; width: 1024px; height: 1024px;
-            box-shadow: 0 0 100px rgba(0,0,0,0.5); transform-origin: 0 0; background-color: transparent;
+            box-shadow: 0 0 100px rgba(0,0,0,0.5); transform-origin: 0 0; background-color: #000;
             will-change: transform;
         }
 
@@ -192,7 +193,7 @@
         .related-item.active { background: rgba(255, 42, 0, 0.1); border-left-color: var(--phoenix-fire); color: var(--phoenix-fire); font-weight: bold; }
 
         /* Loader */
-        .loader { position: absolute; inset: 0; background: rgba(0,0,0,0.8); z-index: 999; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.5s; backdrop-filter: blur(5px); }
+        .loader { position: absolute; inset: 0; background: #000; z-index: 999; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.5s; backdrop-filter: blur(5px); }
         .loader.hidden { opacity: 0; pointer-events: none; }
         .spinner { width: 50px; height: 50px; border: 3px solid #333; border-top-color: var(--phoenix-fire); border-radius: 50%; animation: spin 1s infinite linear; }
         @keyframes spin { to { transform: rotate(360deg); } }
@@ -344,7 +345,10 @@
             <div id="input-layer"></div>
         </div>
         <div class="hud-top">LAT: <span id="lat">00.0</span> | LON: <span id="lon">00.0</span></div>
-        <!-- NO ZOOM BUTTONS AS REQUESTED -->
+        <div class="hud-bot">
+            <!-- NO ZOOM BUTTONS -->
+            <button class="zoom-btn" onclick="MapEngine.reset()">⟲</button>
+        </div>
     </div>
     
     <!-- INFO POPUP -->
@@ -359,7 +363,7 @@
 
 <script>
 /**
- * IOP WIDGET CORE v14.6 - Dino Clear Fix
+ * IOP WIDGET CORE v14.7 - Black Background
  */
 
 window.CFG = {
@@ -781,16 +785,6 @@ window.Ui = {
             }
         });
         s.onchange = e => Data.loadMap(e.target.value);
-    },
-    
-    toggleFullscreen() {
-        if (!document.fullscreenElement) {
-            document.documentElement.requestFullscreen();
-        } else {
-            if (document.exitFullscreen) {
-                document.exitFullscreen();
-            }
-        }
     },
     
     // SIDEBAR TOGGLE
