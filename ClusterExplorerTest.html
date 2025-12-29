@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>IOP Cluster Explorer v14.5 (Toggle Fix)</title>
+    <title>IOP Cluster Explorer v14.6 (Dino Clear Fix)</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <style>
         /* --- CORE RESET & LAYOUT --- */
@@ -235,6 +235,9 @@
     <div id="mobile-toggle" onclick="Ui.toggleSidebar()">☰</div>
 
     <div id="sidebar">
+        <!-- DESKTOP TOGGLE (Sibling to sidebar content) -->
+        <div id="sidebar-toggle" onclick="Ui.toggleSidebar()">◀</div>
+
         <div class="sb-header">
             <div class="text-xs text-gray-500 font-bold tracking-widest mb-1">INFINITY OF PHOENIX</div>
             <div class="sb-title">CLUSTER EXPLORER</div>
@@ -255,8 +258,12 @@
                 <!-- CUSTOM DROPDOWN -->
                 <div class="custom-select" id="dino-dropdown">
                     <div class="select-trigger" onclick="Ui.toggleDinoDropdown()">
-                        <span id="dino-trigger-text">Wähle Dino...</span>
-                        <span class="text-xs text-gray-500">▼</span>
+                        <span id="dino-trigger-text" class="truncate">Wähle Dino...</span>
+                        <div class="flex items-center">
+                            <!-- X Button to clear selection -->
+                            <span id="dino-clear-btn" class="text-xs text-gray-500 hover:text-white mr-2 hidden px-1 cursor-pointer" onclick="event.stopPropagation(); Ui.clearDinoSelection()" title="Auswahl löschen">✕</span>
+                            <span class="text-xs text-gray-500">▼</span>
+                        </div>
                     </div>
                     
                     <div id="dino-dropdown-content" class="select-dropdown">
@@ -315,9 +322,6 @@
             </div>
         </div>
     </div>
-    
-    <!-- DESKTOP TOGGLE BUTTON (MOVED OUTSIDE TO SURVIVE COLLAPSE) -->
-    <div id="sidebar-toggle" onclick="Ui.toggleSidebar()">◀</div>
 
     <!-- MAP VIEWPORT -->
     <div id="viewport">
@@ -340,10 +344,7 @@
             <div id="input-layer"></div>
         </div>
         <div class="hud-top">LAT: <span id="lat">00.0</span> | LON: <span id="lon">00.0</span></div>
-        <div class="hud-bot">
-            <button class="zoom-btn" onclick="Ui.toggleFullscreen()" title="Vollbild">⛶</button>
-            <button class="zoom-btn" onclick="MapEngine.reset()">⟲</button>
-        </div>
+        <!-- NO ZOOM BUTTONS AS REQUESTED -->
     </div>
     
     <!-- INFO POPUP -->
@@ -358,7 +359,7 @@
 
 <script>
 /**
- * IOP WIDGET CORE v14.5 - Final Polish
+ * IOP WIDGET CORE v14.6 - Dino Clear Fix
  */
 
 window.CFG = {
@@ -571,8 +572,6 @@ window.MapEngine = {
         this.update();
     },
 
-    zoomIn() { const vp = document.getElementById('viewport'); this.zoomAt(1.2, vp.clientWidth/2, vp.clientHeight/2); },
-    zoomOut() { const vp = document.getElementById('viewport'); this.zoomAt(0.8, vp.clientWidth/2, vp.clientHeight/2); },
     reset() { Store.view.scale = 1; Store.view.x = 0; Store.view.y = 0; this.update(); this.fit(); },
     
     setMarker(data) {
@@ -732,6 +731,10 @@ window.Data = {
         const c = Store.cfg[k];
         Store.map = c;
         Store.selDino = null; Store.activeRes.clear(); Store.activeObs.clear();
+        
+        // Reset UI text and hide clear button
+        Ui.resetDinoSelectionUI();
+        
         MapEngine.reset();
         MapEngine.load(c.mapImageUrl);
         Ui.setStatus('map', 'ok');
@@ -856,18 +859,33 @@ window.Ui = {
     selectDino(key, name) {
         Store.selDino = key;
         document.getElementById('dino-trigger-text').textContent = name;
+        document.getElementById('dino-clear-btn').classList.remove('hidden');
         this.toggleDinoDropdown();
         MapEngine.draw();
+    },
+
+    clearDinoSelection() {
+        Store.selDino = null;
+        this.resetDinoSelectionUI();
+        MapEngine.draw();
+    },
+
+    resetDinoSelectionUI() {
+        document.getElementById('dino-trigger-text').textContent = "Wähle Dino...";
+        document.getElementById('dino-clear-btn').classList.add('hidden');
     },
 
     renderRes() {
         const l = document.getElementById('list-res');
         if(!l) return;
         l.innerHTML = Object.keys(Store.data.res).sort().map(k => {
-            const icon = Store.icons[k]?.iconUrl ? `<img src="${Store.icons[k].iconUrl}" style="width:20px;height:20px;margin-right:8px;object-fit:contain;">` : `<div class="chk"></div>`;
+            const iconUrl = Store.icons[k]?.iconUrl;
+            // Always show checkbox container, insert icon if available
+            const iconHtml = iconUrl ? `<img src="${iconUrl}" style="width:20px;height:20px;margin-right:8px;object-fit:contain;">` : '';
+            
             return `<div class="toggle-item" onclick="Ui.togRes('${k}', this)">
                 <div class="chk"></div>
-                ${icon}
+                ${iconHtml}
                 <span class="toggle-text">${Store.trans.res[k]||k}</span>
             </div>`;
         }).join('');
