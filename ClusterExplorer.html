@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>IOP Cluster Explorer v18.4 (Sharing Logic Fix)</title>
+    <title>IOP Cluster Explorer v18.5 (List Style Fix)</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <style>
         /* --- CORE RESET --- */
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #000000; overflow: hidden; font-family: 'Segoe UI', sans-serif; color: #e2e8f0; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #000; overflow: hidden; font-family: 'Segoe UI', sans-serif; color: #e2e8f0; }
 
         :root {
             --phoenix-fire: #ff2a00;
@@ -120,6 +120,34 @@
         .info-close { color: #888; cursor: pointer; font-size: 1.5rem; transition: 0.2s; line-height: 1; }
         .info-close:hover { color: var(--phoenix-fire); }
 
+        /* RELATED ITEMS LIST STYLING */
+        .related-list { margin-top: 20px; border-top: 1px solid #333; padding-top: 15px; display: flex; flex-direction: column; gap: 4px; }
+        .related-item { 
+            padding: 10px 12px; 
+            cursor: pointer; 
+            border-radius: 4px; 
+            font-size: 0.85rem; 
+            color: #ccc; 
+            border: 1px solid #222;
+            border-left: 3px solid transparent; 
+            margin-bottom: 2px; 
+            background: #161616; /* Visible block background */
+            transition: all 0.2s;
+        }
+        .related-item:hover { 
+            background: #222; 
+            color: white; 
+            border-left-color: #666;
+            transform: translateX(2px);
+        }
+        .related-item.active { 
+            background: rgba(255, 42, 0, 0.1); 
+            border-left-color: var(--phoenix-fire); 
+            color: var(--phoenix-fire); 
+            font-weight: bold; 
+            border-color: rgba(255, 42, 0, 0.2);
+        }
+
         .loader { position: absolute; inset: 0; background: #000; z-index: 200; display: flex; justify-content: center; align-items: center; flex-direction: column; transition: opacity 0.5s; }
         .loader.hidden { opacity: 0; pointer-events: none; }
         .spinner { width: 50px; height: 50px; border: 3px solid #333; border-top-color: var(--phoenix-fire); border-radius: 50%; animation: spin 1s infinite linear; }
@@ -200,7 +228,7 @@
             <div id="view-pois" class="view">
                 <div class="mb-6">
                     <div class="text-xs text-gray-500 font-bold mb-2 tracking-wider">ALLGEMEIN</div>
-                    <div class="toggle-item mb-2" id="tog-all-pois" onclick="Layers.toggleAllPois()">
+                    <div class="toggle-item mb-2" onclick="Layers.toggleAllPois()">
                         <div class="chk"></div><span class="text-amber-500 text-sm font-bold">Alle Orte</span>
                     </div>
                     <div class="pl-4 border-l-2 border-[#1a1a1a] ml-1">
@@ -281,8 +309,8 @@ const CFG = {
     urlC: 'https://raw.githubusercontent.com/iophantonie/iophantonie-IOP_Custom_Map_Explorer.github.io/main/MapConfigs/MapConfigs.jsn',
     urlI: 'https://raw.githubusercontent.com/iophantonie/iophantonie-IOP_Custom_Map_Explorer.github.io/refs/heads/main/Icon_Datenbank/Icondb.jsn',
     urlT: 'https://raw.githubusercontent.com/iophantonie/iophantonie-IOP_Custom_Map_Explorer.github.io/main/Translation_Datenbank/translationdb.jsn',
-    urlShare: 'https://raw.githubusercontent.com/iophantonie/iophantonie-IOP_Custom_Map_Explorer.github.io/refs/heads/main/SpawnSharingConfig/spawnsharing.jsn',
-    urlBlock: 'https://raw.githubusercontent.com/iophantonie/iophantonie-IOP_Custom_Map_Explorer.github.io/refs/heads/main/Blocked_Zones_Datenbank/blockedzonesdb.jsn',
+    urlShare: 'https://raw.githubusercontent.com/iophantonie/iophantonie-IOP_Custom_Map_Explorer.github.io/main/SpawnSharingConfig/spawnsharing.jsn',
+    urlBlock: 'https://raw.githubusercontent.com/iophantonie/iophantonie-IOP_Custom_Map_Explorer.github.io/main/Blocked_Zones_Datenbank/blockedzonesdb.jsn',
     urlAlpha: 'https://raw.githubusercontent.com/iophantonie/iophantonie-IOP_Custom_Map_Explorer.github.io/main/Alpha_Listen_Datenbank/alphalistdb.jsn',
     col: { spawn: 'rgba(255, 42, 0, 0.4)', stroke: '#ff2a00' },
     rarity: [{th:0.3,c:'#22c55e'},{th:0.15,c:'#84cc16'},{th:0.07,c:'#eab308'},{th:0.03,c:'#f97316'},{th:0.01,c:'#ef4444'},{th:0,c:'#a855f7'}]
@@ -325,20 +353,22 @@ function findSpawns(data) {
     return found.length>0 ? found : (Array.isArray(data) && data[0]?.lat ? [{color:'#4ade80', locations:data}] : []);
 }
 
+// BLOCK CHECKER (String Parser)
 function isBlocked(z, mapId) {
     const list = Store.blocked[mapId];
     if(!list || !Array.isArray(list)) return false;
-    const cx = (z.min.lon+z.max.lon)/2;
-    const cy = (z.min.lat+z.max.lat)/2;
+    // Current Zone AABB
+    const zMinX = z.min.lon; const zMaxX = z.max.lon;
+    const zMinY = z.min.lat; const zMaxY = z.max.lat;
+
     return list.some(b => {
-        // String Format "lat17.57-53.99_lon15.90-49.99"
         if(typeof b === 'string') {
             const m = b.match(/lat([\d\.]+)-([\d\.]+)_lon([\d\.]+)-([\d\.]+)/);
             if(m) {
-                const latMin=parseFloat(m[1]), latMax=parseFloat(m[2]);
-                const lonMin=parseFloat(m[3]), lonMax=parseFloat(m[4]);
-                // Check if spawn center is inside blocked rect
-                return (cx >= lonMin && cx <= lonMax && cy >= latMin && cy <= latMax);
+                const bMinLat=parseFloat(m[1]), bMaxLat=parseFloat(m[2]);
+                const bMinLon=parseFloat(m[3]), bMaxLon=parseFloat(m[4]);
+                // Intersection Test
+                return (zMinX < bMaxLon && zMaxX > bMinLon && zMinY < bMaxLat && zMaxY > bMinLat);
             }
         }
         return false;
@@ -373,7 +403,6 @@ window.MapEngine = {
         this.ctx = this.cvs.getContext('2d');
         Store.dom.mapImg = this.img;
         
-        // Pattern
         const p = document.createElement('canvas'); p.width=10; p.height=10;
         const pc = p.getContext('2d');
         pc.strokeStyle='rgba(255,255,255,0.3)'; pc.lineWidth=1;
@@ -491,7 +520,8 @@ window.MapEngine = {
         // Dinos
         if(Store.selDino && Store.data.dinos[Store.selDino]) {
             Store.data.dinos[Store.selDino].forEach(z => {
-                if(isBlocked(z, Store.mapKey)) return;
+                if(isBlocked(z, Store.mapKey)) return; // Checks against blockedzonesdb
+                
                 const x=(z.min.lon/100)*w, y=(z.min.lat/100)*h, zw=((z.max.lon-z.min.lon)/100)*w, zh=((z.max.lat-z.min.lat)/100)*h;
                 let col = '#22c55e';
                 const sc = (z.chance||0.5)*(z.weight||1);
@@ -682,7 +712,6 @@ window.Ui = {
         if(type === 'caves' && d.artifacts) {
             extra = `<div class="text-xs font-bold text-amber-500 mt-4 mb-2 tracking-wider">ARTEFAKTE</div>` +
             d.artifacts.map(a => {
-                // FIX: Look in a.icon first, then global
                 const url = fixUrl(a.icon || Store.icons[a.name]?.iconUrl);
                 const img = url ? `<img src="${url}" class="artifact-icon">` : '';
                 return `<div class="artifact-row">${img}<span>${a.name}</span></div>`;
