@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>IOP Cluster Explorer v14.8 (Toggle & Image Fix)</title>
+    <title>IOP Cluster Explorer v14.9 (Artifact Gold & Toggle Fix)</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <style>
         /* --- CORE RESET & LAYOUT --- */
@@ -11,7 +11,6 @@
         
         body, html { 
             margin: 0; padding: 0; width: 100%; height: 100%; 
-            /* HINTERGRUND: Schwarz statt Transparent */
             background: #000000; 
             overflow: hidden; 
             font-family: 'Segoe UI', 'Roboto', sans-serif; color: #e2e8f0; 
@@ -20,6 +19,7 @@
 
         :root {
             --phoenix-fire: #ff2a00;
+            --phoenix-gold: #fbbf24;
             --bg-dark: #050505;
             --bg-panel: #0a0a0a;
             --border-color: #2a2a2a;
@@ -40,7 +40,7 @@
         /* Collapsed State for Desktop */
         #sidebar.collapsed { width: 0; overflow: hidden; border-right: none; }
 
-        /* Responsive Sidebar: Overlay on small screens */
+        /* Responsive Sidebar */
         @media (max-width: 768px) {
             #sidebar { position: absolute; left: 0; top: 0; bottom: 0; transform: translateX(-100%); width: 280px; }
             #sidebar.open { transform: translateX(0); }
@@ -66,10 +66,10 @@
         .view.active { display: block; animation: fadeIn 0.3s; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* --- DESKTOP TOGGLE BUTTON (OUTSIDE SIDEBAR) --- */
+        /* --- DESKTOP TOGGLE BUTTON (CRITICAL FIX: OUTSIDE SIDEBAR) --- */
         #sidebar-toggle {
             position: absolute; 
-            left: var(--sidebar-width); 
+            left: var(--sidebar-width); /* Starts next to sidebar */
             top: 50%; transform: translateY(-50%);
             width: 24px; height: 48px; 
             background: #111; 
@@ -81,9 +81,9 @@
         }
         #sidebar-toggle:hover { color: var(--phoenix-fire); }
         
-        /* Magic CSS: Wenn Sidebar (direkter Vorgänger) collapsed ist, Button nach links schieben */
+        /* Magic CSS: When previous element (#sidebar) has class .collapsed */
         #sidebar.collapsed + #sidebar-toggle {
-            left: 0; 
+            left: 0; /* Move to left edge */
             border-left: 1px solid #444; 
         }
 
@@ -94,7 +94,7 @@
             display: none; align-items: center; justify-content: center; color: var(--phoenix-fire); font-size: 20px; cursor: pointer;
         }
 
-        /* --- CUSTOM DROPDOWN (DINO SELECTOR) --- */
+        /* --- CUSTOM DROPDOWN --- */
         .custom-select { position: relative; width: 100%; }
         .select-trigger {
             display: flex; align-items: center; justify-content: space-between;
@@ -123,12 +123,12 @@
 
         /* --- MAP ENGINE --- */
         #viewport {
-            flex: 1; position: relative; background: #000; overflow: hidden; display: block; min-width: 0;
+            flex: 1; position: relative; background: transparent; overflow: hidden; display: block; min-width: 0;
         }
 
         #world {
             position: absolute; top: 0; left: 0; width: 1024px; height: 1024px;
-            box-shadow: 0 0 100px rgba(0,0,0,0.5); transform-origin: 0 0; background-color: #000;
+            box-shadow: 0 0 100px rgba(0,0,0,0.5); transform-origin: 0 0; background-color: transparent;
             will-change: transform;
         }
 
@@ -193,6 +193,21 @@
         .related-item:hover { background: #1a1a1a; color: white; }
         .related-item.active { background: rgba(255, 42, 0, 0.1); border-left-color: var(--phoenix-fire); color: var(--phoenix-fire); font-weight: bold; }
 
+        /* ARTIFACT STYLING (NEW) */
+        @keyframes borderPulse {
+            0% { border-color: #333; box-shadow: none; }
+            50% { border-color: var(--phoenix-gold); box-shadow: 0 0 10px rgba(251, 191, 36, 0.4); }
+            100% { border-color: #333; box-shadow: none; }
+        }
+        .artifact-row { 
+            display: flex; align-items: center; margin-bottom: 5px; 
+            background: #111; padding: 8px; border-radius: 4px; 
+            border: 1px solid #333; 
+            color: var(--phoenix-gold); font-weight: bold; font-size: 0.85rem;
+            animation: borderPulse 2s infinite; /* Blinking Border */
+        }
+        .artifact-icon { width: 24px; height: 24px; margin-right: 10px; object-fit: contain; }
+
         /* Loader */
         .loader { position: absolute; inset: 0; background: rgba(0,0,0,0.9); z-index: 999; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.5s; backdrop-filter: blur(5px); }
         .loader.hidden { opacity: 0; pointer-events: none; }
@@ -208,6 +223,14 @@
         }
         #toast.visible { opacity: 1; }
 
+        /* Chat */
+        .chat-container { display: flex; flex-direction: column; height: 100%; }
+        .chat-log { flex: 1; overflow-y: auto; padding: 15px; }
+        .chat-msg { padding: 8px 12px; border-radius: 6px; margin-bottom: 8px; font-size: 0.9rem; max-width: 85%; }
+        .chat-msg.u { align-self: flex-end; background: #333; margin-left: auto; }
+        .chat-msg.b { align-self: flex-start; background: #111; border-left: 2px solid var(--phoenix-fire); }
+        .chat-input { display: flex; padding: 10px; border-top: 1px solid #333; gap: 5px; }
+        
         /* Utility */
         ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-track { background: #0a0a0a; }
@@ -321,8 +344,8 @@
             </div>
         </div>
     </div>
-    
-    <!-- DESKTOP TOGGLE BUTTON (Sibling to sidebar) -->
+
+    <!-- DESKTOP TOGGLE BUTTON (Sibling to Sidebar - OUTSIDE) -->
     <div id="sidebar-toggle" onclick="Ui.toggleSidebar()">◀</div>
 
     <!-- MAP VIEWPORT -->
@@ -365,7 +388,7 @@
 
 <script>
 /**
- * IOP WIDGET CORE v14.8 - GitHub URL Fix & Toggle Restored
+ * IOP WIDGET CORE v14.9 - Artifact Styling & Toggle Fix
  */
 
 window.CFG = {
@@ -383,12 +406,9 @@ window.CFG = {
     ]
 };
 
-// --- URL FIXER ---
 function fixGitHubUrl(url) {
     if (!url) return '';
-    if (url.includes('github.com') && url.includes('/blob/')) {
-        return url.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/');
-    }
+    if (url.includes('github.com') && url.includes('/blob/')) return url.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/');
     return url;
 }
 
@@ -421,7 +441,6 @@ window.onerror = (m,u,l) => logError(`${m} (Line ${l})`);
 
 async function fetchData(url) {
     try {
-        // FIX: Use GitHub URL corrector
         const safeUrl = fixGitHubUrl(url);
         const r = await fetch(safeUrl);
         if(!r.ok) throw new Error(`HTTP ${r.status}`);
@@ -554,15 +573,11 @@ window.MapEngine = {
 
     load(url) {
         if(!this.img) return;
-        
-        // FIX: Use GitHub URL Corrector
         const safeUrl = fixGitHubUrl(url);
         this.img.src = safeUrl;
-        
         const loader = document.getElementById('loader');
         if(loader) loader.classList.remove('hidden');
 
-        // FIX: Error Handling to prevent freeze
         this.img.onload = () => {
              if(loader) loader.classList.add('hidden');
              this.fit();
@@ -570,13 +585,10 @@ window.MapEngine = {
         };
         this.img.onerror = () => {
             console.warn("Map Image Load Failed: " + safeUrl);
-            logError("BILD FEHLER: " + safeUrl); // User visibility
-            // Hide loader anyway
+            logError("BILD FEHLER: " + safeUrl);
             if(loader) loader.classList.add('hidden');
-            // Force draw (shows fallback text)
             this.draw();
         };
-        
         this.setMarker(null);
     },
 
@@ -590,8 +602,6 @@ window.MapEngine = {
         const relX = mx - rect.left;
         const relY = my - rect.top;
         const ratio = 1 - (newScale / oldScale);
-        const unscaledX = relX / oldScale;
-        const unscaledY = relY / oldScale;
         Store.view.x += (relX - (relX * (newScale / oldScale)));
         Store.view.y += (relY - (relY * (newScale / oldScale)));
         Store.view.scale = newScale;
@@ -609,11 +619,11 @@ window.MapEngine = {
 
     getImg(url) {
         if(!url) return null;
-        const safeUrl = fixGitHubUrl(url); // Fix icons too
+        const safeUrl = fixGitHubUrl(url);
         if(this.iconCache.has(safeUrl)) return this.iconCache.get(safeUrl);
         const i = new Image(); i.src = safeUrl;
         i.onload = () => this.draw();
-        i.onerror = () => { console.warn("Broken Icon:", safeUrl); };
+        i.onerror = () => { console.warn("Broken Icon"); };
         this.iconCache.set(safeUrl, i);
         return i;
     },
@@ -714,19 +724,9 @@ window.MapEngine = {
     },
 
     checkClick(lon, lat) {
-        const rad = 2.5; 
-        let hit = null;
-        let type = '';
-
-        if(Store.layers.public && Array.isArray(Store.data.pois)) {
-            hit = Store.data.pois.find(p => Math.hypot(p.lon-lon, p.lat-lat) < rad);
-            if(hit) type = 'public';
-        }
-        if(!hit && Store.layers.caves && Array.isArray(Store.data.caves)) {
-            hit = Store.data.caves.find(p => Math.hypot(p.lon-lon, p.lat-lat) < rad);
-            if(hit) type = 'caves';
-        }
-        
+        const rad = 2.5; let hit = null; let type = '';
+        if(Store.layers.public && Array.isArray(Store.data.pois)) { hit = Store.data.pois.find(p => Math.hypot(p.lon-lon, p.lat-lat) < rad); if(hit) type = 'public'; }
+        if(!hit && Store.layers.caves && Array.isArray(Store.data.caves)) { hit = Store.data.caves.find(p => Math.hypot(p.lon-lon, p.lat-lat) < rad); if(hit) type = 'caves'; }
         if(hit) Ui.showInfo(hit, type);
     }
 };
@@ -770,7 +770,19 @@ window.Data = {
             c.creatureDataUrl, c.resourceDataUrl, c.publicSpotsDataUrl, c.obeliskDataUrl, c.caveSpotsDataUrl, c.playerSpawnDataUrl 
         ];
         
-        const [d, r, p, o, ca, pl] = await Promise.all(urls.map(u => fetchData(u)));
+        // Try to fetch Alpha URL if it exists
+        if(c.alphaDataUrl) urls.push(c.alphaDataUrl);
+
+        const results = await Promise.all(urls.map(u => fetchData(u)));
+        
+        const d = results[0];
+        const r = results[1];
+        const p = results[2];
+        const o = results[3];
+        const ca = results[4];
+        const pl = results[5];
+        const al = c.alphaDataUrl ? results[6] : null;
+
         const processedSpawns = findSpawnGroups(pl);
         
         if (processedSpawns.length > 0) {
@@ -787,10 +799,16 @@ window.Data = {
             players: processedSpawns 
         };
 
+        // Merge Alphas if available
+        if (al && al.dinoSpawns) {
+             Object.keys(al.dinoSpawns).forEach(key => {
+                 Store.data.dinos[key] = al.dinoSpawns[key];
+             });
+        }
+
         Ui.renderDinos();
         Ui.renderRes();
         Ui.renderObs();
-        // Reset toggles visual state to match logic defaults
         Ui.resetToggles();
         MapEngine.draw();
     }
@@ -808,16 +826,6 @@ window.Ui = {
             }
         });
         s.onchange = e => Data.loadMap(e.target.value);
-    },
-    
-    toggleFullscreen() {
-        if (!document.fullscreenElement) {
-            document.documentElement.requestFullscreen();
-        } else {
-            if (document.exitFullscreen) {
-                document.exitFullscreen();
-            }
-        }
     },
     
     // SIDEBAR TOGGLE
@@ -850,7 +858,6 @@ window.Ui = {
         setTimeout(()=>MapEngine.fit(), 10);
     },
 
-    // Reset visual toggle states when loading map
     resetToggles() {
         Store.layers = { public: false, caves: false, players: false };
         document.querySelectorAll('.toggle-item').forEach(el => el.classList.remove('checked'));
@@ -858,7 +865,7 @@ window.Ui = {
 
     // --- NEW: RENDER DINOS WITH DROPDOWN FIX ---
     renderDinos(term="") {
-        const l = document.getElementById('dino-list-root'); // CORRECT ID
+        const l = document.getElementById('dino-list-root'); 
         if(!l) return;
         const t = term.toLowerCase();
         const keys = Object.keys(Store.data.dinos).sort();
@@ -907,7 +914,6 @@ window.Ui = {
         if(!l) return;
         l.innerHTML = Object.keys(Store.data.res).sort().map(k => {
             const iconUrl = Store.icons[k]?.iconUrl;
-            // Always show checkbox container, insert icon if available
             const iconHtml = iconUrl ? `<img src="${iconUrl}" style="width:20px;height:20px;margin-right:8px;object-fit:contain;">` : '';
             
             return `<div class="toggle-item" onclick="Ui.togRes('${k}', this)">
@@ -949,16 +955,29 @@ window.Ui = {
         const desc = data.longDescription || data.description || data.shortDescription || 'Keine Beschreibung verfügbar.';
         
         let listHtml = '';
+        // CAVES & ARTIFACTS
+        if (type === 'caves' && data.artifacts) {
+             const arts = data.artifacts.map(a => {
+                 const aIconUrl = Store.icons[a.name]?.iconUrl || a.icon;
+                 const aImg = aIconUrl ? `<img src="${aIconUrl}" class="artifact-icon">` : '';
+                 return `<div class="artifact-row">${aImg}<span>${a.name}</span></div>`;
+             }).join('');
+             listHtml = `<div class="text-xs font-bold text-gray-500 mt-4 mb-2 tracking-wider">ARTEFAKTE</div>${arts}`;
+        }
+        
+        // PUBLIC SPOTS LIST
         if (type) {
-            const listTitle = type === 'public' ? 'ANDERE SPOTS' : 'ANDERE HÖHLEN';
-            const sourceList = type === 'public' ? Store.data.pois : Store.data.caves;
-            const listItems = sourceList.map(item => {
-                const isActive = item === data ? 'active' : '';
-                const idx = sourceList.indexOf(item);
-                const fn = `Ui.selectFromList('${type}', ${idx})`;
-                return `<div class="related-item ${isActive}" onclick="${fn}">${item.name}</div>`;
-            }).join('');
-            listHtml = `<div class="text-xs font-bold text-gray-500 mt-6 mb-2 tracking-wider">${listTitle}</div><div class="flex flex-col gap-1">${listItems}</div>`;
+            const listTitle = type === 'public' ? 'ANDERE SPOTS' : (type === 'caves' ? 'ANDERE HÖHLEN' : '');
+            if (listTitle) {
+                const sourceList = type === 'public' ? Store.data.pois : Store.data.caves;
+                const listItems = sourceList.map(item => {
+                    const isActive = item === data ? 'active' : '';
+                    const idx = sourceList.indexOf(item);
+                    const fn = `Ui.selectFromList('${type}', ${idx})`;
+                    return `<div class="related-item ${isActive}" onclick="${fn}">${item.name}</div>`;
+                }).join('');
+                listHtml += `<div class="text-xs font-bold text-gray-500 mt-6 mb-2 tracking-wider">${listTitle}</div><div class="flex flex-col gap-1">${listItems}</div>`;
+            }
         }
 
         document.getElementById('info-body').innerHTML = `
@@ -1005,7 +1024,6 @@ window.Layers = {
         MapEngine.draw();
     },
     
-    // MASTER TOGGLES
     toggleAllPois() {
         const on = !Store.layers.public; 
         Store.layers.public = on;
