@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>IOP Cluster Explorer v14.7 (Black Background)</title>
+    <title>IOP Cluster Explorer v14.8 (Toggle & Image Fix)</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <style>
         /* --- CORE RESET & LAYOUT --- */
@@ -81,6 +81,7 @@
         }
         #sidebar-toggle:hover { color: var(--phoenix-fire); }
         
+        /* Magic CSS: Wenn Sidebar (direkter Vorgänger) collapsed ist, Button nach links schieben */
         #sidebar.collapsed + #sidebar-toggle {
             left: 0; 
             border-left: 1px solid #444; 
@@ -193,7 +194,7 @@
         .related-item.active { background: rgba(255, 42, 0, 0.1); border-left-color: var(--phoenix-fire); color: var(--phoenix-fire); font-weight: bold; }
 
         /* Loader */
-        .loader { position: absolute; inset: 0; background: #000; z-index: 999; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.5s; backdrop-filter: blur(5px); }
+        .loader { position: absolute; inset: 0; background: rgba(0,0,0,0.9); z-index: 999; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.5s; backdrop-filter: blur(5px); }
         .loader.hidden { opacity: 0; pointer-events: none; }
         .spinner { width: 50px; height: 50px; border: 3px solid #333; border-top-color: var(--phoenix-fire); border-radius: 50%; animation: spin 1s infinite linear; }
         @keyframes spin { to { transform: rotate(360deg); } }
@@ -236,9 +237,6 @@
     <div id="mobile-toggle" onclick="Ui.toggleSidebar()">☰</div>
 
     <div id="sidebar">
-        <!-- DESKTOP TOGGLE (Sibling to sidebar content) -->
-        <div id="sidebar-toggle" onclick="Ui.toggleSidebar()">◀</div>
-
         <div class="sb-header">
             <div class="text-xs text-gray-500 font-bold tracking-widest mb-1">INFINITY OF PHOENIX</div>
             <div class="sb-title">CLUSTER EXPLORER</div>
@@ -323,6 +321,9 @@
             </div>
         </div>
     </div>
+    
+    <!-- DESKTOP TOGGLE BUTTON (Sibling to sidebar) -->
+    <div id="sidebar-toggle" onclick="Ui.toggleSidebar()">◀</div>
 
     <!-- MAP VIEWPORT -->
     <div id="viewport">
@@ -339,7 +340,8 @@
         </div>
 
         <div id="world">
-            <img id="map-image-layer" src="" alt="Karte" crossorigin="anonymous">
+            <!-- IMPORTANT: No crossorigin attribute to fix CORS/GitHub issues -->
+            <img id="map-image-layer" src="" alt="Karte">
             <canvas id="data-canvas"></canvas>
             <div id="selection-marker" class="pulse-marker"></div>
             <div id="input-layer"></div>
@@ -363,7 +365,7 @@
 
 <script>
 /**
- * IOP WIDGET CORE v14.7 - Black Background
+ * IOP WIDGET CORE v14.8 - GitHub URL Fix & Toggle Restored
  */
 
 window.CFG = {
@@ -380,6 +382,15 @@ window.CFG = {
         { th: 0.00, c: '#a855f7' }
     ]
 };
+
+// --- URL FIXER ---
+function fixGitHubUrl(url) {
+    if (!url) return '';
+    if (url.includes('github.com') && url.includes('/blob/')) {
+        return url.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/');
+    }
+    return url;
+}
 
 function hexToRgba(hex, alpha) {
     if(!hex) return `rgba(255, 255, 255, ${alpha})`;
@@ -410,7 +421,9 @@ window.onerror = (m,u,l) => logError(`${m} (Line ${l})`);
 
 async function fetchData(url) {
     try {
-        const r = await fetch(url);
+        // FIX: Use GitHub URL corrector
+        const safeUrl = fixGitHubUrl(url);
+        const r = await fetch(safeUrl);
         if(!r.ok) throw new Error(`HTTP ${r.status}`);
         const t = await r.text();
         const cleaned = t.replace(/^\uFEFF/, '').replace(/\u00A0/g, ' ');
@@ -541,20 +554,29 @@ window.MapEngine = {
 
     load(url) {
         if(!this.img) return;
-        this.img.src = url;
+        
+        // FIX: Use GitHub URL Corrector
+        const safeUrl = fixGitHubUrl(url);
+        this.img.src = safeUrl;
+        
         const loader = document.getElementById('loader');
         if(loader) loader.classList.remove('hidden');
 
+        // FIX: Error Handling to prevent freeze
         this.img.onload = () => {
              if(loader) loader.classList.add('hidden');
              this.fit();
              this.draw();
         };
         this.img.onerror = () => {
-            console.warn("Map Image Load Failed: " + url);
+            console.warn("Map Image Load Failed: " + safeUrl);
+            logError("BILD FEHLER: " + safeUrl); // User visibility
+            // Hide loader anyway
             if(loader) loader.classList.add('hidden');
+            // Force draw (shows fallback text)
             this.draw();
         };
+        
         this.setMarker(null);
     },
 
@@ -587,11 +609,12 @@ window.MapEngine = {
 
     getImg(url) {
         if(!url) return null;
-        if(this.iconCache.has(url)) return this.iconCache.get(url);
-        const i = new Image(); i.src = url;
+        const safeUrl = fixGitHubUrl(url); // Fix icons too
+        if(this.iconCache.has(safeUrl)) return this.iconCache.get(safeUrl);
+        const i = new Image(); i.src = safeUrl;
         i.onload = () => this.draw();
-        i.onerror = () => { console.warn("Broken Icon:", url); };
-        this.iconCache.set(url, i);
+        i.onerror = () => { console.warn("Broken Icon:", safeUrl); };
+        this.iconCache.set(safeUrl, i);
         return i;
     },
     getResIcon(key) { return this.getImg(Store.icons[key]?.iconUrl); },
@@ -785,6 +808,16 @@ window.Ui = {
             }
         });
         s.onchange = e => Data.loadMap(e.target.value);
+    },
+    
+    toggleFullscreen() {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen();
+        } else {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            }
+        }
     },
     
     // SIDEBAR TOGGLE
