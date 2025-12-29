@@ -3,89 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>IOP Cluster Explorer v14.8 (Toggle & Image Fix)</title>
+    <title>IOP Cluster Explorer v18.4 (Sharing Logic Fix)</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <style>
-        /* --- CORE RESET & LAYOUT --- */
+        /* --- CORE RESET --- */
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        
-        body, html { 
-            margin: 0; padding: 0; width: 100%; height: 100%; 
-            /* HINTERGRUND: Schwarz statt Transparent */
-            background: #000000; 
-            overflow: hidden; 
-            font-family: 'Segoe UI', 'Roboto', sans-serif; color: #e2e8f0; 
-            overscroll-behavior: none;
-        }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #000000; overflow: hidden; font-family: 'Segoe UI', sans-serif; color: #e2e8f0; }
 
         :root {
             --phoenix-fire: #ff2a00;
-            --bg-dark: #050505;
+            --phoenix-gold: #fbbf24;
             --bg-panel: #0a0a0a;
-            --border-color: #2a2a2a;
             --sidebar-width: 320px;
         }
 
-        #app { position: absolute; inset: 0; display: flex; overflow: hidden; width: 100%; height: 100%; }
+        #app { position: absolute; inset: 0; display: flex; width: 100%; height: 100%; }
 
         /* --- SIDEBAR --- */
         #sidebar {
             width: var(--sidebar-width); height: 100%; 
-            background: var(--bg-panel); border-right: 1px solid var(--border-color);
+            background: var(--bg-panel); border-right: 1px solid #333;
             display: flex; flex-direction: column; z-index: 50; flex-shrink: 0;
-            transition: width 0.3s ease, transform 0.3s ease;
-            position: relative;
+            transition: margin-left 0.3s ease; 
         }
+        
+        #sidebar.collapsed { margin-left: calc(var(--sidebar-width) * -1); }
 
-        /* Collapsed State for Desktop */
-        #sidebar.collapsed { width: 0; overflow: hidden; border-right: none; }
-
-        /* Responsive Sidebar: Overlay on small screens */
-        @media (max-width: 768px) {
-            #sidebar { position: absolute; left: 0; top: 0; bottom: 0; transform: translateX(-100%); width: 280px; }
-            #sidebar.open { transform: translateX(0); }
-            /* Hide Desktop Toggle on Mobile */
-            #sidebar-toggle { display: none !important; }
-            /* Show Mobile Toggle */
-            #mobile-toggle { display: flex !important; }
-        }
-
-        .sb-header { padding: 15px; background: rgba(0,0,0,0.5); border-bottom: 2px solid var(--phoenix-fire); flex-shrink: 0; white-space: nowrap; overflow: hidden; }
+        .sb-header { padding: 15px; background: #000; border-bottom: 2px solid var(--phoenix-fire); }
         .sb-title { font-size: 1.0rem; font-weight: 900; color: var(--phoenix-fire); letter-spacing: 0.05em; }
         
-        .tabs { display: flex; background: rgba(17, 17, 17, 0.8); border-bottom: 1px solid var(--border-color); flex-shrink: 0; overflow: hidden; }
-        .tab-btn { flex: 1; padding: 10px 5px; color: #777; background: none; border: none; cursor: pointer; border-bottom: 3px solid transparent; font-weight: 700; transition: 0.2s; font-size: 0.75rem; text-align: center; }
-        .tab-btn:hover { color: white; background: rgba(255,255,255,0.05); }
-        .tab-btn.active { color: var(--phoenix-fire); border-color: var(--phoenix-fire); background: linear-gradient(to top, rgba(255, 42, 0, 0.15), transparent); }
+        .tabs { display: flex; background: #111; border-bottom: 1px solid #333; }
+        .tab-btn { flex: 1; padding: 10px; color: #777; font-size: 0.75rem; font-weight: 700; text-align: center; cursor: pointer; border-bottom: 3px solid transparent; transition: 0.2s; }
+        .tab-btn:hover { color: white; background: #1a1a1a; }
+        .tab-btn.active { color: var(--phoenix-fire); border-color: var(--phoenix-fire); background: linear-gradient(to top, rgba(255, 42, 0, 0.1), transparent); }
 
-        .sb-content { 
-            flex: 1; min-height: 0; overflow-y: auto; overflow-x: hidden; position: relative; padding: 15px;
-            scrollbar-width: thin; scrollbar-color: #333 #0a0a0a;
-        }
+        .sb-content { flex: 1; overflow-y: auto; position: relative; padding: 15px; scrollbar-width: thin; scrollbar-color: #333 #0a0a0a; }
         .view { display: none; }
         .view.active { display: block; animation: fadeIn 0.3s; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* --- DESKTOP TOGGLE BUTTON (OUTSIDE SIDEBAR) --- */
+        /* --- TOGGLE BUTTON (OUTSIDE SIDEBAR) --- */
         #sidebar-toggle {
-            position: absolute; 
-            left: var(--sidebar-width); 
-            top: 50%; transform: translateY(-50%);
-            width: 24px; height: 48px; 
-            background: #111; 
-            border: 1px solid #444; border-left: none;
-            border-radius: 0 6px 6px 0; 
-            cursor: pointer; z-index: 60;
+            position: relative; 
+            width: 24px; height: 48px; background: #111; border: 1px solid #444; border-left: none;
+            border-radius: 0 6px 6px 0; cursor: pointer; z-index: 60; margin-top: auto; margin-bottom: auto;
             display: flex; align-items: center; justify-content: center; color: #888;
-            transition: left 0.3s ease, color 0.2s;
+            align-self: center; 
+            transition: color 0.2s;
         }
         #sidebar-toggle:hover { color: var(--phoenix-fire); }
-        
-        /* Magic CSS: Wenn Sidebar (direkter Vorgänger) collapsed ist, Button nach links schieben */
-        #sidebar.collapsed + #sidebar-toggle {
-            left: 0; 
-            border-left: 1px solid #444; 
-        }
 
         /* --- MOBILE TOGGLE --- */
         #mobile-toggle {
@@ -93,154 +59,103 @@
             width: 40px; height: 40px; background: rgba(0,0,0,0.8); border-radius: 4px; border: 1px solid #444;
             display: none; align-items: center; justify-content: center; color: var(--phoenix-fire); font-size: 20px; cursor: pointer;
         }
+        @media (max-width: 768px) { #mobile-toggle { display: flex; } #sidebar-toggle { display: none; } }
 
-        /* --- CUSTOM DROPDOWN (DINO SELECTOR) --- */
-        .custom-select { position: relative; width: 100%; }
-        .select-trigger {
-            display: flex; align-items: center; justify-content: space-between;
-            width: 100%; padding: 10px; background: #151515; border: 1px solid #444; border-radius: 6px;
-            color: #ddd; cursor: pointer; font-size: 0.9rem; transition: 0.2s;
-        }
-        .select-trigger:hover { border-color: #666; }
-        .select-trigger.active { border-color: var(--phoenix-fire); }
+
+        /* --- MAP AREA --- */
+        #viewport { flex: 1; position: relative; background: #050505; overflow: hidden; display: block; }
         
-        .select-dropdown {
-            position: absolute; top: 100%; left: 0; width: 100%;
-            background: #111; border: 1px solid #444; border-top: none; border-radius: 0 0 6px 6px;
-            max-height: 350px; overflow-y: auto; z-index: 100; display: none;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
-        }
-        .select-dropdown.open { display: block; }
-        
-        .select-search { position: sticky; top: 0; background: #111; padding: 8px; border-bottom: 1px solid #333; z-index: 10; }
-        .select-search input { width: 100%; background: #222; border: 1px solid #444; padding: 6px; border-radius: 4px; color: white; font-size: 0.85rem; outline: none; }
-        .select-search input:focus { border-color: var(--phoenix-fire); }
-
-        .select-item { display: flex; align-items: center; padding: 8px 10px; cursor: pointer; border-bottom: 1px solid #1a1a1a; transition: 0.15s; font-size: 0.85rem; }
-        .select-item:hover { background: #222; }
-        .select-item.selected { background: rgba(255, 42, 0, 0.15); color: var(--phoenix-fire); }
-        .select-item img { width: 24px; height: 24px; margin-right: 10px; object-fit: contain; }
-
-        /* --- MAP ENGINE --- */
-        #viewport {
-            flex: 1; position: relative; background: #000; overflow: hidden; display: block; min-width: 0;
-        }
-
         #world {
             position: absolute; top: 0; left: 0; width: 1024px; height: 1024px;
-            box-shadow: 0 0 100px rgba(0,0,0,0.5); transform-origin: 0 0; background-color: #000;
+            box-shadow: 0 0 100px rgba(0,0,0,0.5); transform-origin: 0 0;
             will-change: transform;
         }
-
-        #map-image-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: fill; z-index: 1; pointer-events: none; }
-        #data-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; pointer-events: none; }
-        #input-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; cursor: grab; }
+        #map-image-layer { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: fill; pointer-events: none; }
+        #data-canvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+        #input-layer { position: absolute; inset: 0; width: 100%; height: 100%; cursor: grab; z-index: 10; }
         #input-layer:active { cursor: grabbing; }
 
-        /* PULSING MARKER */
+        /* --- MARKER & PULSE --- */
         .pulse-marker {
             position: absolute; width: 60px; height: 60px; border: 2px solid var(--phoenix-fire); border-radius: 50%;
             transform: translate(-50%, -50%); box-shadow: 0 0 15px var(--phoenix-fire), inset 0 0 10px var(--phoenix-fire);
-            z-index: 5; pointer-events: none; animation: pulseRing 2s infinite; display: none; 
+            z-index: 5; pointer-events: none; animation: pulse 2s infinite; display: none;
         }
-        @keyframes pulseRing {
-            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 1; }
-            100% { transform: translate(-50%, -50%) scale(1.5); opacity: 0; }
-        }
+        @keyframes pulse { 0% {transform:translate(-50%,-50%) scale(0.5);opacity:1} 100% {transform:translate(-50%,-50%) scale(1.5);opacity:0} }
 
-        /* --- UI ELEMENTS --- */
+        /* --- UI COMPONENTS --- */
         .toggle-item { display: flex; align-items: center; padding: 6px 0; cursor: pointer; user-select: none; }
         .chk { width: 16px; height: 16px; border: 2px solid #444; border-radius: 3px; margin-right: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; background: #000; }
-        .toggle-item:hover .chk { border-color: #888; }
         .toggle-item.checked .chk { background: var(--phoenix-fire); border-color: var(--phoenix-fire); }
         .toggle-item.checked .chk::after { content: '✓'; color: black; font-weight: bold; font-size: 10px; }
-        .toggle-item.disabled { opacity: 0.5; cursor: not-allowed; }
+        .toggle-item.disabled { opacity: 0.5; pointer-events: none; }
 
-        .hud-top { position: absolute; top: 20px; right: 20px; background: rgba(0,0,0,0.9); padding: 8px 12px; border-radius: 4px; color: var(--phoenix-fire); font-family: monospace; z-index: 50; border: 1px solid #333; pointer-events: none; }
-        .hud-bot { position: absolute; bottom: 30px; right: 30px; display: flex; gap: 8px; z-index: 50; }
-        .zoom-btn { width: 40px; height: 40px; background: rgba(17, 17, 17, 0.8); border: 1px solid #444; color: white; border-radius: 6px; font-size: 18px; cursor: pointer; display: grid; place-items: center; backdrop-filter: blur(4px); }
-        .zoom-btn:hover { border-color: var(--phoenix-fire); color: var(--phoenix-fire); }
+        .select-item { display: flex; align-items: center; padding: 8px; cursor: pointer; border-bottom: 1px solid #1a1a1a; }
+        .select-item:hover { background: #1a1a1a; }
+        .select-item.selected { background: rgba(255,42,0,0.1); border-left: 3px solid var(--phoenix-fire); }
+        .select-item img { width: 24px; height: 24px; margin-right: 10px; }
+
+        .custom-select { position: relative; }
+        .select-trigger { background: #151515; border: 1px solid #444; padding: 10px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-size: 0.9rem; }
+        .select-dropdown { position: absolute; top: 100%; left: 0; width: 100%; background: #111; border: 1px solid #444; max-height: 300px; overflow-y: auto; z-index: 100; display: none; }
+        .select-dropdown.open { display: block; }
+        .select-search { position: sticky; top: 0; background: #111; padding: 8px; border-bottom: 1px solid #333; z-index: 10; }
+        .select-search input { width: 100%; background: #222; border: 1px solid #444; padding: 6px; border-radius: 4px; color: white; font-size: 0.85rem; outline: none; }
+
+        /* ARTIFACTS */
+        .artifact-row { display: flex; align-items: center; margin-bottom: 5px; background: rgba(251,191,36,0.1); padding: 8px; border: 1px solid var(--phoenix-gold); border-radius: 4px; color: var(--phoenix-gold); font-weight: bold; font-size: 0.85rem; animation: glow 2s infinite alternate; }
+        .artifact-icon { width: 36px; height: 36px; margin-right: 10px; object-fit: contain; }
+        @keyframes glow { from { box-shadow: 0 0 5px rgba(251,191,36,0.2); } to { box-shadow: 0 0 15px rgba(251,191,36,0.6); } }
 
         /* LEGEND */
-        .map-legend {
-            position: absolute; bottom: 20px; left: 20px; 
-            width: 160px; background: rgba(10, 10, 10, 0.95);
-            border: 1px solid #333; border-left: 3px solid var(--phoenix-fire);
-            padding: 10px; z-index: 50; pointer-events: none;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.8);
-            font-size: 10px; color: #ccc;
-            display: flex; flex-direction: column; gap: 3px;
-        }
-        .legend-title { color: var(--phoenix-fire); font-weight: 800; text-transform: uppercase; margin-bottom: 4px; letter-spacing: 0.05em; font-size: 9px; border-bottom: 1px solid #333; padding-bottom: 3px; }
-        .leg-item { display: flex; align-items: center; }
-        .leg-box { width: 10px; height: 10px; margin-right: 8px; border-radius: 2px; border: 1px solid rgba(255,255,255,0.1); }
+        .map-legend { position: absolute; bottom: 20px; left: 20px; width: 160px; background: rgba(10,10,10,0.9); border: 1px solid #333; border-left: 3px solid var(--phoenix-fire); padding: 10px; z-index: 50; font-size: 10px; color: #ccc; pointer-events: none; }
+        .leg-item { display: flex; align-items: center; margin-bottom: 2px; }
+        .leg-box { width: 10px; height: 10px; margin-right: 8px; }
 
         /* INFO PANEL */
-        .info-panel { 
-            position: absolute; top: 0; right: 0; bottom: 0; width: 320px; 
-            background: var(--bg-panel); border-left: 1px solid var(--phoenix-fire); 
-            transform: translateX(100%); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); 
-            z-index: 100; box-shadow: -10px 0 30px rgba(0,0,0,0.8); display: flex; flex-direction: column; 
-        }
+        .info-panel { position: absolute; top: 0; right: 0; bottom: 0; width: 320px; background: var(--bg-panel); border-left: 1px solid var(--phoenix-fire); transform: translateX(100%); transition: transform 0.3s; z-index: 100; box-shadow: -10px 0 30px rgba(0,0,0,0.8); display: flex; flex-direction: column; }
         .info-panel.visible { transform: translateX(0); }
         .info-header { padding: 15px; background: #000; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center; }
         .info-title { font-size: 1.0rem; font-weight: 800; color: #fff; text-transform: uppercase; letter-spacing: 0.05em; }
         .info-close { color: #888; cursor: pointer; font-size: 1.5rem; transition: 0.2s; line-height: 1; }
         .info-close:hover { color: var(--phoenix-fire); }
-        
-        .related-list { margin-top: 20px; border-top: 1px solid #333; padding-top: 15px; }
-        .related-item { padding: 6px 8px; cursor: pointer; border-radius: 4px; font-size: 0.8rem; color: #aaa; border-left: 2px solid transparent; margin-bottom: 2px; }
-        .related-item:hover { background: #1a1a1a; color: white; }
-        .related-item.active { background: rgba(255, 42, 0, 0.1); border-left-color: var(--phoenix-fire); color: var(--phoenix-fire); font-weight: bold; }
 
-        /* Loader */
-        .loader { position: absolute; inset: 0; background: rgba(0,0,0,0.9); z-index: 999; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.5s; backdrop-filter: blur(5px); }
+        .loader { position: absolute; inset: 0; background: #000; z-index: 200; display: flex; justify-content: center; align-items: center; flex-direction: column; transition: opacity 0.5s; }
         .loader.hidden { opacity: 0; pointer-events: none; }
         .spinner { width: 50px; height: 50px; border: 3px solid #333; border-top-color: var(--phoenix-fire); border-radius: 50%; animation: spin 1s infinite linear; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* Notification Toast */
-        #toast {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            background: rgba(0,0,0,0.9); border: 1px solid var(--phoenix-fire); color: white;
-            padding: 15px 25px; border-radius: 8px; z-index: 200; pointer-events: none;
-            opacity: 0; transition: opacity 0.3s;
-        }
-        #toast.visible { opacity: 1; }
-
-        /* Utility */
-        ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-track { background: #0a0a0a; }
-        ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
         .hidden { display: none !important; }
         .phoenix-input { w-full: 100%; background: #050505; border: 1px solid #333; padding: 8px; border-radius: 6px; color: white; outline: none; font-size: 0.9rem; }
         
-        #error-log { position: absolute; top: 0; left: 0; width: 100%; background: rgba(220, 38, 38, 0.95); color: white; padding: 5px; font-size: 11px; z-index: 10000; display: none; text-align: center; }
         .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 6px; }
         .status-dot.ok { background: #10b981; box-shadow: 0 0 5px #10b981; }
         .status-dot.err { background: #ef4444; }
         .status-dot.wait { background: #f59e0b; }
+        
+        .hud-bot { position: absolute; bottom: 30px; right: 30px; display: flex; gap: 8px; z-index: 50; }
+        .zoom-btn { width: 40px; height: 40px; background: #111; border: 1px solid #444; color: white; border-radius: 6px; font-size: 20px; cursor: pointer; display: grid; place-items: center; }
+        .zoom-btn:hover { border-color: var(--phoenix-fire); color: var(--phoenix-fire); }
+        
+        #error-log { position: absolute; top: 0; left: 0; width: 100%; background: rgba(220, 38, 38, 0.95); color: white; padding: 5px; font-size: 11px; z-index: 10000; display: none; text-align: center; }
     </style>
 </head>
 <body>
 
 <div id="error-log"></div>
-<div id="toast">Nachricht</div>
 
 <div id="loader" class="loader">
     <div class="spinner mb-4"></div>
-    <div id="loader-msg" class="text-white font-bold text-sm tracking-widest uppercase" style="color: var(--phoenix-fire)">Lade System...</div>
+    <div class="text-white text-sm font-bold tracking-widest uppercase">Lade System...</div>
 </div>
 
 <div id="app">
-    <!-- MOBILE TOGGLE (Visible only on small screens) -->
     <div id="mobile-toggle" onclick="Ui.toggleSidebar()">☰</div>
-
     <div id="sidebar">
         <div class="sb-header">
             <div class="text-xs text-gray-500 font-bold tracking-widest mb-1">INFINITY OF PHOENIX</div>
             <div class="sb-title">CLUSTER EXPLORER</div>
-            <select id="map-select" class="phoenix-input mt-3 w-full text-sm"><option disabled selected>Karte...</option></select>
+            <select id="map-select" class="phoenix-input mt-3 text-sm"><option>Lade Karten...</option></select>
         </div>
 
         <nav class="tabs">
@@ -249,31 +164,27 @@
             <button class="tab-btn" onclick="Ui.tab('pois')">ORTE</button>
         </nav>
 
-        <div class="sb-content custom-scrollbar">
-            <!-- DINOS (COMPACT MODE) -->
+        <div class="sb-content">
+            <!-- DINOS -->
             <div id="view-dinos" class="view active">
                 <div class="text-xs font-bold text-gray-500 mb-2 tracking-wider">KREATUREN</div>
-                
-                <!-- CUSTOM DROPDOWN -->
                 <div class="custom-select" id="dino-dropdown">
                     <div class="select-trigger" onclick="Ui.toggleDinoDropdown()">
                         <span id="dino-trigger-text" class="truncate">Wähle Dino...</span>
                         <div class="flex items-center">
-                            <!-- X Button to clear selection -->
-                            <span id="dino-clear-btn" class="text-xs text-gray-500 hover:text-white mr-2 hidden px-1 cursor-pointer" onclick="event.stopPropagation(); Ui.clearDinoSelection()" title="Auswahl löschen">✕</span>
+                            <span id="dino-clear-btn" class="text-xs text-gray-500 hover:text-white mr-2 hidden px-2 cursor-pointer" onclick="event.stopPropagation(); Ui.clearDino()">✕</span>
                             <span class="text-xs text-gray-500">▼</span>
                         </div>
                     </div>
-                    
                     <div id="dino-dropdown-content" class="select-dropdown">
-                        <div class="select-search">
-                            <input type="text" id="search-dino" placeholder="Suche..." autocomplete="off">
+                        <div class="p-2 bg-[#111] sticky top-0 border-b border-gray-700">
+                            <input type="text" id="search-dino" placeholder="Suche..." class="phoenix-input" autocomplete="off">
                         </div>
                         <div id="dino-list-root"></div>
                     </div>
                 </div>
             </div>
-            
+
             <!-- RESSOURCEN -->
             <div id="view-res" class="view">
                 <div class="mb-4 border-b border-gray-800 pb-2">
@@ -289,11 +200,9 @@
             <div id="view-pois" class="view">
                 <div class="mb-6">
                     <div class="text-xs text-gray-500 font-bold mb-2 tracking-wider">ALLGEMEIN</div>
-                    
                     <div class="toggle-item mb-2" id="tog-all-pois" onclick="Layers.toggleAllPois()">
-                        <div class="chk"></div><span class="text-amber-500 text-sm font-bold">Alle Orte einblenden</span>
+                        <div class="chk"></div><span class="text-amber-500 text-sm font-bold">Alle Orte</span>
                     </div>
-
                     <div class="pl-4 border-l-2 border-[#1a1a1a] ml-1">
                         <div class="toggle-item" id="tog-public" onclick="Layers.toggle('public')">
                             <div class="chk"></div><span>Public Spots</span>
@@ -309,8 +218,9 @@
                     <div class="toggle-item" id="tog-players" onclick="Layers.toggle('players')">
                         <div class="chk"></div><span>Spieler Spawns</span>
                     </div>
-                    <div id="spawn-status" class="text-xs text-gray-600 ml-8 mt-1 italic flex items-center">
-                        <span id="st-spawn" class="status-dot wait"></span> Status: Prüfe...
+                    <div class="text-xs text-gray-600 ml-8 mt-1 italic flex items-center">
+                         <span id="st-spawn" class="status-dot wait"></span> 
+                         <span id="spawn-msg">Status: Prüfe...</span>
                     </div>
                 </div>
 
@@ -321,145 +231,140 @@
             </div>
         </div>
     </div>
-    
-    <!-- DESKTOP TOGGLE BUTTON (Sibling to sidebar) -->
+
+    <!-- TOGGLE BUTTON -->
     <div id="sidebar-toggle" onclick="Ui.toggleSidebar()">◀</div>
 
-    <!-- MAP VIEWPORT -->
+    <!-- MAP -->
     <div id="viewport">
-        <!-- THE VERTICAL LEGEND -->
         <div class="map-legend">
-            <div class="legend-title">Spawn Raten</div>
-            <div class="leg-item"><div class="leg-box" style="background: rgba(34, 197, 94, 0.9)"></div>Sehr Häufig</div>
-            <div class="leg-item"><div class="leg-box" style="background: rgba(132, 204, 22, 0.9)"></div>Häufig</div>
-            <div class="leg-item"><div class="leg-box" style="background: rgba(234, 179, 8, 0.9)"></div>Gelegentlich</div>
-            <div class="leg-item"><div class="leg-box" style="background: rgba(249, 115, 22, 0.9)"></div>Selten</div>
-            <div class="leg-item"><div class="leg-box" style="background: rgba(239, 68, 68, 0.9)"></div>Sehr Selten</div>
-            <div class="leg-item"><div class="leg-box" style="background: rgba(168, 85, 247, 0.9)"></div>Extrem Selten</div>
-            <div class="leg-item mt-2"><div class="leg-box" style="background: repeating-linear-gradient(45deg, rgba(255,255,255,0.2), rgba(255,255,255,0.2) 2px, transparent 2px, transparent 4px); border: 1px solid #777"></div>Höhle</div>
+            <div class="font-bold text-amber-500 mb-2 uppercase text-[10px]">Spawn Raten</div>
+            <div class="leg-item"><div class="leg-box" style="background:#22c55e"></div>Sehr Häufig</div>
+            <div class="leg-item"><div class="leg-box" style="background:#84cc16"></div>Häufig</div>
+            <div class="leg-item"><div class="leg-box" style="background:#eab308"></div>Gelegentlich</div>
+            <div class="leg-item"><div class="leg-box" style="background:#f97316"></div>Selten</div>
+            <div class="leg-item"><div class="leg-box" style="background:#ef4444"></div>Sehr Selten</div>
+            <div class="leg-item"><div class="leg-box" style="background:#a855f7"></div>Extrem Selten</div>
+            <div class="leg-item mt-2"><div class="leg-box" style="background:repeating-linear-gradient(45deg,#fff2,#fff2 2px,transparent 2px,transparent 4px);border:1px solid #777"></div>Höhle</div>
         </div>
 
         <div id="world">
-            <!-- IMPORTANT: No crossorigin attribute to fix CORS/GitHub issues -->
-            <img id="map-image-layer" src="" alt="Karte">
+            <img id="map-image-layer" alt="">
             <canvas id="data-canvas"></canvas>
             <div id="selection-marker" class="pulse-marker"></div>
             <div id="input-layer"></div>
         </div>
-        <div class="hud-top">LAT: <span id="lat">00.0</span> | LON: <span id="lon">00.0</span></div>
+        
+        <div class="absolute top-5 right-5 bg-black/80 px-3 py-2 rounded text-amber-500 font-mono text-xs border border-gray-800 pointer-events-none z-50">
+            LAT: <span id="lat">00.0</span> | LON: <span id="lon">00.0</span>
+        </div>
+        
         <div class="hud-bot">
-            <!-- NO ZOOM BUTTONS -->
+            <button class="zoom-btn" onclick="Ui.toggleFullscreen()">⛶</button>
             <button class="zoom-btn" onclick="MapEngine.reset()">⟲</button>
         </div>
     </div>
-    
-    <!-- INFO POPUP -->
+
+    <!-- POPUP -->
     <div id="info-panel" class="info-panel">
-        <div class="flex justify-between items-center bg-[#0a0a0a] p-4 border-b border-[#333]">
-            <h2 id="info-title" class="text-lg font-bold text-white uppercase">Info</h2>
-            <button onclick="Ui.closeInfo()" class="text-gray-400 hover:text-white text-xl">×</button>
+        <div class="info-header">
+            <h2 id="info-title" class="text-lg font-bold text-white uppercase truncate">Info</h2>
+            <button onclick="Ui.closeInfo()" class="text-gray-400 hover:text-white text-2xl leading-none">×</button>
         </div>
-        <div id="info-body" class="p-4 text-sm text-gray-300 overflow-y-auto h-full"></div>
+        <div id="info-body" class="p-5 text-sm text-gray-300 overflow-y-auto h-full"></div>
     </div>
 </div>
 
 <script>
-/**
- * IOP WIDGET CORE v14.8 - GitHub URL Fix & Toggle Restored
- */
-
-window.CFG = {
+// CONFIG
+const CFG = {
     urlC: 'https://raw.githubusercontent.com/iophantonie/iophantonie-IOP_Custom_Map_Explorer.github.io/main/MapConfigs/MapConfigs.jsn',
     urlI: 'https://raw.githubusercontent.com/iophantonie/iophantonie-IOP_Custom_Map_Explorer.github.io/refs/heads/main/Icon_Datenbank/Icondb.jsn',
     urlT: 'https://raw.githubusercontent.com/iophantonie/iophantonie-IOP_Custom_Map_Explorer.github.io/main/Translation_Datenbank/translationdb.jsn',
+    urlShare: 'https://raw.githubusercontent.com/iophantonie/iophantonie-IOP_Custom_Map_Explorer.github.io/refs/heads/main/SpawnSharingConfig/spawnsharing.jsn',
+    urlBlock: 'https://raw.githubusercontent.com/iophantonie/iophantonie-IOP_Custom_Map_Explorer.github.io/refs/heads/main/Blocked_Zones_Datenbank/blockedzonesdb.jsn',
+    urlAlpha: 'https://raw.githubusercontent.com/iophantonie/iophantonie-IOP_Custom_Map_Explorer.github.io/main/Alpha_Listen_Datenbank/alphalistdb.jsn',
     col: { spawn: 'rgba(255, 42, 0, 0.4)', stroke: '#ff2a00' },
-    rarity: [
-        { th: 0.30, c: '#22c55e' }, 
-        { th: 0.15, c: '#84cc16' }, 
-        { th: 0.07, c: '#eab308' }, 
-        { th: 0.03, c: '#f97316' }, 
-        { th: 0.01, c: '#ef4444' }, 
-        { th: 0.00, c: '#a855f7' }
-    ]
+    rarity: [{th:0.3,c:'#22c55e'},{th:0.15,c:'#84cc16'},{th:0.07,c:'#eab308'},{th:0.03,c:'#f97316'},{th:0.01,c:'#ef4444'},{th:0,c:'#a855f7'}]
 };
 
-// --- URL FIXER ---
-function fixGitHubUrl(url) {
-    if (!url) return '';
-    if (url.includes('github.com') && url.includes('/blob/')) {
-        return url.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/');
-    }
+// HELPERS
+function fixUrl(url) {
+    if(!url) return '';
+    if(url.includes('github.com') && url.includes('/blob/')) return url.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/');
     return url;
 }
-
 function hexToRgba(hex, alpha) {
-    if(!hex) return `rgba(255, 255, 255, ${alpha})`;
-    const r = parseInt(hex.slice(1, 3), 16);
-    const g = parseInt(hex.slice(3, 5), 16);
-    const b = parseInt(hex.slice(5, 7), 16);
-    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+    const r=parseInt(hex.slice(1,3),16), g=parseInt(hex.slice(3,5),16), b=parseInt(hex.slice(5,7),16);
+    return `rgba(${r},${g},${b},${alpha})`;
+}
+async function fetchJson(url) {
+    try {
+        const r = await fetch(fixUrl(url));
+        if(!r.ok) throw new Error("HTTP "+r.status);
+        const t = await r.text();
+        return JSON.parse(t.replace(/^\uFEFF/,'').replace(/\u00A0/g,' '));
+    } catch(e) { console.warn("Fetch Error", e); return null; }
+}
+// Universal Finder
+function findSpawns(data) {
+    if(!data) return [];
+    if(data.spawnPoints && Array.isArray(data.spawnPoints)) return data.spawnPoints;
+    let found = [];
+    const search = o => {
+        if(!o || typeof o!=='object') return;
+        if(Array.isArray(o)) {
+            if(o.length>0 && (o[0].locations||o[0].lat!==undefined)) { found=o; return; }
+            o.forEach(search);
+        } else {
+            if(o.spawnPoints) { found=o.spawnPoints; return; }
+            Object.values(o).forEach(search);
+        }
+    }
+    search(data);
+    return found.length>0 ? found : (Array.isArray(data) && data[0]?.lat ? [{color:'#4ade80', locations:data}] : []);
 }
 
-window.Store = {
-    cfg: {}, map: null,
-    dom: { mapImg: null },
+function isBlocked(z, mapId) {
+    const list = Store.blocked[mapId];
+    if(!list || !Array.isArray(list)) return false;
+    const cx = (z.min.lon+z.max.lon)/2;
+    const cy = (z.min.lat+z.max.lat)/2;
+    return list.some(b => {
+        // String Format "lat17.57-53.99_lon15.90-49.99"
+        if(typeof b === 'string') {
+            const m = b.match(/lat([\d\.]+)-([\d\.]+)_lon([\d\.]+)-([\d\.]+)/);
+            if(m) {
+                const latMin=parseFloat(m[1]), latMax=parseFloat(m[2]);
+                const lonMin=parseFloat(m[3]), lonMax=parseFloat(m[4]);
+                // Check if spawn center is inside blocked rect
+                return (cx >= lonMin && cx <= lonMax && cy >= latMin && cy <= latMax);
+            }
+        }
+        return false;
+    });
+}
+
+// STORE
+const Store = {
+    cfg: {}, map: null, dom: { mapImg: null },
     data: { dinos:{}, res:{}, pois:[], obs:[], caves:[], players:[] },
     icons: {}, trans: {d:{}, r:{}},
+    sharing: {}, blocked: {}, alphas: {},
     selDino: null, selectedPOI: null,
     activeRes: new Set(), activeObs: new Set(),
     layers: { public: false, caves: false, players: false },
     view: { x:0, y:0, scale:1 },
-    sidebarOpen: true
+    sidebarOpen: true,
+    mapKey: null
 };
 
-function logError(msg) {
-    const el = document.getElementById('error-log');
-    if(el) { el.style.display='block'; el.textContent=`ERROR: ${msg}`; }
-    console.error(msg);
-}
-window.onerror = (m,u,l) => logError(`${m} (Line ${l})`);
-
-async function fetchData(url) {
-    try {
-        // FIX: Use GitHub URL corrector
-        const safeUrl = fixGitHubUrl(url);
-        const r = await fetch(safeUrl);
-        if(!r.ok) throw new Error(`HTTP ${r.status}`);
-        const t = await r.text();
-        const cleaned = t.replace(/^\uFEFF/, '').replace(/\u00A0/g, ' ');
-        return JSON.parse(cleaned);
-    } catch(e) { console.warn("JSON Error", e); return null; }
-}
-
-function findSpawnGroups(rawData) {
-    if (!rawData) return [];
-    if (rawData.spawnPoints && Array.isArray(rawData.spawnPoints)) return rawData.spawnPoints; 
-    let found = [];
-    const search = (obj) => {
-        if (!obj || typeof obj !== 'object') return;
-        if (Array.isArray(obj)) {
-             if(obj.length > 0 && (obj[0].locations || obj[0].lat !== undefined)) { found = obj; return; }
-             obj.forEach(search);
-        } else {
-             if(obj.spawnPoints) { found = obj.spawnPoints; return; }
-             Object.values(obj).forEach(search);
-        }
-    };
-    search(rawData);
-    if (found.length > 0) return found;
-    if (Array.isArray(rawData) && rawData.length > 0 && rawData[0].lat !== undefined) {
-         return [{ name: "Spawns", color: "#4ade80", locations: rawData }];
-    }
-    return [];
-}
-
+// MAP ENGINE
 window.MapEngine = {
     el: null, cvs: null, ctx: null, img: null, marker: null,
-    iconCache: new Map(),
-    cavePattern: null,
-    isDown: false, hasMoved: false, startX: 0, startY: 0,
-    resizeObserver: null,
-
+    iconCache: new Map(), pattern: null,
+    isDown: false, startX: 0, startY: 0, moved: false,
+    
     init() {
         this.el = document.getElementById('world');
         this.img = document.getElementById('map-image-layer');
@@ -468,456 +373,284 @@ window.MapEngine = {
         this.ctx = this.cvs.getContext('2d');
         Store.dom.mapImg = this.img;
         
-        const pCvs = document.createElement('canvas');
-        pCvs.width = 10; pCvs.height = 10;
-        const pCtx = pCvs.getContext('2d');
-        pCtx.strokeStyle = 'rgba(255,255,255,0.4)';
-        pCtx.lineWidth = 1;
-        pCtx.beginPath(); pCtx.moveTo(0, 10); pCtx.lineTo(10, 0); pCtx.stroke();
-        this.cavePattern = this.ctx.createPattern(pCvs, 'repeat');
+        // Pattern
+        const p = document.createElement('canvas'); p.width=10; p.height=10;
+        const pc = p.getContext('2d');
+        pc.strokeStyle='rgba(255,255,255,0.3)'; pc.lineWidth=1;
+        pc.beginPath(); pc.moveTo(0,10); pc.lineTo(10,0); pc.stroke();
+        this.pattern = this.ctx.createPattern(p, 'repeat');
         
         const input = document.getElementById('input-layer');
-        
-        input.onmousedown = e => { 
-            this.isDown = true; this.hasMoved = false; 
-            this.startX = e.clientX; this.startY = e.clientY; 
-            input.style.cursor='grabbing'; 
-        };
-        
-        window.onmouseup = () => { this.isDown = false; input.style.cursor='grab'; };
-        
+        input.onmousedown = e => { this.isDown=true; this.moved=false; this.startX=e.clientX; this.startY=e.clientY; input.style.cursor='grabbing'; };
+        window.onmouseup = () => { this.isDown=false; input.style.cursor='grab'; };
         input.onmousemove = e => {
             if(this.isDown) {
-                const dx = e.clientX - this.startX;
-                const dy = e.clientY - this.startY;
-                if(Math.abs(dx) > 5 || Math.abs(dy) > 5) {
-                    this.hasMoved = true;
-                    Store.view.x += dx; Store.view.y += dy;
-                    this.startX = e.clientX; this.startY = e.clientY;
-                    this.update();
+                const dx=e.clientX-this.startX, dy=e.clientY-this.startY;
+                if(Math.abs(dx)>2 || Math.abs(dy)>2) {
+                    this.moved=true; Store.view.x+=dx; Store.view.y+=dy;
+                    this.startX=e.clientX; this.startY=e.clientY; this.update();
                 }
             }
             const r = this.el.getBoundingClientRect();
-            const lat = ((e.clientY - r.top)/r.height)*100;
-            const lon = ((e.clientX - r.left)/r.width)*100;
-            const latEl = document.getElementById('lat');
-            const lonEl = document.getElementById('lon');
-            if(latEl) latEl.innerText = Math.max(0,Math.min(100, lat)).toFixed(1);
-            if(lonEl) lonEl.innerText = Math.max(0,Math.min(100, lon)).toFixed(1);
+            const lat = ((e.clientY-r.top)/r.height)*100, lon = ((e.clientX-r.left)/r.width)*100;
+            document.getElementById('lat').innerText = Math.max(0,Math.min(100,lat)).toFixed(1);
+            document.getElementById('lon').innerText = Math.max(0,Math.min(100,lon)).toFixed(1);
         };
-        
-        input.onwheel = e => { 
+        input.onwheel = e => {
             e.preventDefault();
-            const delta = e.deltaY > 0 ? 0.9 : 1.1;
-            const rect = document.getElementById('viewport').getBoundingClientRect();
-            this.zoomAt(delta, e.clientX - rect.left, e.clientY - rect.top);
-        };
-
-        input.onclick = e => {
-            if(this.hasMoved) return;
             const r = this.el.getBoundingClientRect();
-            const cx = e.clientX - r.left;
-            const cy = e.clientY - r.top;
-            const lon = (cx / r.width) * 100;
-            const lat = (cy / r.height) * 100;
-            this.checkClick(lon, lat);
+            const mx = e.clientX - r.left, my = e.clientY - r.top;
+            const factor = e.deltaY > 0 ? 0.9 : 1.1;
+            this.zoomAt(factor, mx, my);
         };
-
-        this.resizeObserver = new ResizeObserver(() => this.fit());
-        this.resizeObserver.observe(document.getElementById('viewport'));
+        input.onclick = e => {
+            if(this.moved) return;
+            const r = this.el.getBoundingClientRect();
+            const cx = e.clientX - r.left, cy = e.clientY - r.top;
+            this.click((cx/r.width)*100, (cy/r.height)*100);
+        };
         
+        new ResizeObserver(() => this.fit()).observe(document.getElementById('viewport'));
         setTimeout(()=>this.fit(), 100);
         
-        input.addEventListener('mousedown', () => {
-             const dd = document.getElementById('dino-dropdown-content');
-             const trig = document.querySelector('.select-trigger');
-             if(dd.classList.contains('open')) {
-                 dd.classList.remove('open');
-                 trig.classList.remove('active');
-             }
-        });
+        input.onmousedown = () => {
+            document.getElementById('dino-dropdown-content').classList.remove('open');
+            document.querySelector('.select-trigger').classList.remove('active');
+        };
     },
 
     fit() {
         if(!this.el) return;
         const vp = document.getElementById('viewport');
-        const s = Math.min(vp.clientWidth, vp.clientHeight); 
+        const s = Math.min(vp.clientWidth, vp.clientHeight);
         const size = Math.max(100, s);
-        this.el.style.width = size+'px';
-        this.el.style.height = size+'px';
-        this.cvs.width = size;
-        this.cvs.height = size;
-        this.el.style.left = (vp.clientWidth - size)/2 + 'px';
-        this.el.style.top = (vp.clientHeight - size)/2 + 'px';
+        this.el.style.width=size+'px'; this.el.style.height=size+'px';
+        this.cvs.width=size; this.cvs.height=size;
+        this.el.style.left=(vp.clientWidth-size)/2+'px';
+        this.el.style.top=(vp.clientHeight-size)/2+'px';
         this.draw();
     },
 
     load(url) {
-        if(!this.img) return;
-        
-        // FIX: Use GitHub URL Corrector
-        const safeUrl = fixGitHubUrl(url);
-        this.img.src = safeUrl;
-        
-        const loader = document.getElementById('loader');
-        if(loader) loader.classList.remove('hidden');
-
-        // FIX: Error Handling to prevent freeze
-        this.img.onload = () => {
-             if(loader) loader.classList.add('hidden');
-             this.fit();
-             this.draw();
+        const safe = fixUrl(url);
+        this.img.src = safe;
+        document.getElementById('loader').classList.remove('hidden');
+        this.img.onload = () => { document.getElementById('loader').classList.add('hidden'); this.fit(); this.draw(); };
+        this.img.onerror = () => { 
+            document.getElementById('error-log').innerText = "Bild Fehler: " + safe;
+            document.getElementById('loader').classList.add('hidden'); 
+            this.draw(); 
         };
-        this.img.onerror = () => {
-            console.warn("Map Image Load Failed: " + safeUrl);
-            logError("BILD FEHLER: " + safeUrl); // User visibility
-            // Hide loader anyway
-            if(loader) loader.classList.add('hidden');
-            // Force draw (shows fallback text)
-            this.draw();
-        };
-        
         this.setMarker(null);
     },
 
     update() { if(this.el) this.el.style.transform = `translate(${Store.view.x}px, ${Store.view.y}px) scale(${Store.view.scale})`; },
     
-    zoomAt(factor, mx, my) {
-        const oldScale = Store.view.scale;
-        const newScale = Math.max(0.5, Math.min(10, oldScale * factor));
-        if(newScale === oldScale) return;
-        const rect = this.el.getBoundingClientRect();
-        const relX = mx - rect.left;
-        const relY = my - rect.top;
-        const ratio = 1 - (newScale / oldScale);
-        const unscaledX = relX / oldScale;
-        const unscaledY = relY / oldScale;
-        Store.view.x += (relX - (relX * (newScale / oldScale)));
-        Store.view.y += (relY - (relY * (newScale / oldScale)));
-        Store.view.scale = newScale;
+    zoomAt(f, mx, my) {
+        const os = Store.view.scale;
+        const ns = Math.max(0.5, Math.min(10, os * f));
+        if(os===ns) return;
+        Store.view.x += mx - (mx * (ns/os));
+        Store.view.y += my - (my * (ns/os));
+        Store.view.scale = ns;
         this.update();
     },
-
-    reset() { Store.view.scale = 1; Store.view.x = 0; Store.view.y = 0; this.update(); this.fit(); },
     
-    setMarker(data) {
-        if(!data) { this.marker.style.display = 'none'; return; }
-        this.marker.style.left = data.lon + '%';
-        this.marker.style.top = data.lat + '%';
-        this.marker.style.display = 'block';
+    reset() { Store.view.scale=1; Store.view.x=0; Store.view.y=0; this.update(); this.fit(); },
+    
+    setMarker(d) {
+        const m = this.marker;
+        if(!d) { m.style.display='none'; return; }
+        m.style.left=d.lon+'%'; m.style.top=d.lat+'%'; m.style.display='block';
     },
 
-    getImg(url) {
+    getIcon(key) {
+        if(!key) return null;
+        let url = key.includes('http') ? key : Store.icons[key]?.iconUrl;
+        url = fixUrl(url);
         if(!url) return null;
-        const safeUrl = fixGitHubUrl(url); // Fix icons too
-        if(this.iconCache.has(safeUrl)) return this.iconCache.get(safeUrl);
-        const i = new Image(); i.src = safeUrl;
+        
+        if(this.iconCache.has(url)) return this.iconCache.get(url);
+        const i = new Image(); i.src = url;
         i.onload = () => this.draw();
-        i.onerror = () => { console.warn("Broken Icon:", safeUrl); };
-        this.iconCache.set(safeUrl, i);
+        this.iconCache.set(url, i);
         return i;
     },
-    getResIcon(key) { return this.getImg(Store.icons[key]?.iconUrl); },
 
     draw() {
-        if(!this.ctx || !this.cvs || !window.Store || !Store.data) return;
-        const w = this.cvs.width, h = this.cvs.height;
-        const ctx = this.ctx;
-        ctx.clearRect(0, 0, w, h);
+        if(!this.ctx) return;
+        const w=this.cvs.width, h=this.cvs.height, ctx=this.ctx;
+        ctx.clearRect(0,0,w,h);
         
-        if (this.img.naturalWidth === 0 && this.img.src) {
-             ctx.fillStyle = '#1a1a1a'; ctx.fillRect(0,0,w,h);
-             ctx.fillStyle = '#ff2a00'; ctx.font = '20px sans-serif'; ctx.textAlign = 'center';
-             ctx.fillText("Bild konnte nicht geladen werden", w/2, h/2);
+        if(this.img.naturalWidth===0) {
+            ctx.fillStyle='#111'; ctx.fillRect(0,0,w,h);
+            ctx.fillStyle='#f00'; ctx.font='20px sans-serif'; ctx.textAlign='center';
+            ctx.fillText("Bild Fehler", w/2, h/2);
         }
 
-        if(Store.selDino && Array.isArray(Store.data.dinos[Store.selDino])) {
+        // Dinos
+        if(Store.selDino && Store.data.dinos[Store.selDino]) {
             Store.data.dinos[Store.selDino].forEach(z => {
-                const x = (z.min.lon/100)*w, y = (z.min.lat/100)*h;
-                const zw = ((z.max.lon - z.min.lon)/100)*w, zh = ((z.max.lat - z.min.lat)/100)*h;
-                const score = (z.chance || 0.5) * (z.weight || 1);
-                let hex = '#22c55e';
-                for(let r of window.CFG.rarity) { if(score >= r.th) { hex = r.c; break; } }
-                ctx.fillStyle = hexToRgba(hex, 0.4); ctx.fillRect(x, y, zw, zh);
-                if (z.isCave) { ctx.fillStyle = this.cavePattern; ctx.fillRect(x, y, zw, zh); }
-                ctx.strokeStyle = hex; ctx.lineWidth = 2; ctx.strokeRect(x, y, zw, zh);
+                if(isBlocked(z, Store.mapKey)) return;
+                const x=(z.min.lon/100)*w, y=(z.min.lat/100)*h, zw=((z.max.lon-z.min.lon)/100)*w, zh=((z.max.lat-z.min.lat)/100)*h;
+                let col = '#22c55e';
+                const sc = (z.chance||0.5)*(z.weight||1);
+                for(let r of CFG.rarity) if(sc>=r.th) { col=r.c; break; }
+                
+                ctx.fillStyle = hexToRgba(col, 0.4); ctx.fillRect(x,y,zw,zh);
+                if(z.isCave) { ctx.fillStyle=this.cavePattern; ctx.fillRect(x,y,zw,zh); }
+                ctx.strokeStyle=col; ctx.lineWidth=2; ctx.strokeRect(x,y,zw,zh);
             });
         }
 
+        // Res
         Store.activeRes.forEach(k => {
-            if(Array.isArray(Store.data.res[k])) {
-                const img = this.getResIcon(k);
-                const col = {'Metal':'#b87333'}[k] || '#fff';
+            if(Store.data.res[k]) {
+                const img = this.getIcon(k);
+                const col = {'Metal':'#b87333'}[k]||'#fff';
                 Store.data.res[k].forEach(p => {
-                    const cx = (p.lon/100)*w, cy = (p.lat/100)*h;
-                    const sz = Math.min(32, 12 + ((p.size||1)*2));
-                    if(img && img.complete && img.naturalWidth > 0) ctx.drawImage(img, cx-sz/2, cy-sz/2, sz, sz);
-                    else { ctx.fillStyle=col; ctx.beginPath(); ctx.arc(cx,cy,sz/3,0,6.28); ctx.fill(); }
+                    const cx=(p.lon/100)*w, cy=(p.lat/100)*h;
+                    const sz = Math.min(32, 12+((p.size||1)*2));
+                    if(img && img.complete) ctx.drawImage(img, cx-sz/2, cy-sz/2, sz, sz);
+                    else { ctx.fillStyle=col; ctx.beginPath(); ctx.arc(cx,cy,sz/3,0,7); ctx.fill(); }
                 });
             }
         });
 
-        if(Store.layers.public && Array.isArray(Store.data.pois)) this.drawPois(Store.data.pois, '#ff2a00', w, h);
-        if(Store.layers.caves && Array.isArray(Store.data.caves)) this.drawPois(Store.data.caves, '#a855f7', w, h);
+        // Pois
+        if(Store.layers.public) this.drawList(Store.data.pois, w, h, '#ff2a00');
+        if(Store.layers.caves) this.drawList(Store.data.caves, w, h, '#a855f7');
         
+        // Obs
         Store.activeObs.forEach(k => {
-            const o = Store.data.obs.find(i => i.name === k);
+            const o = Store.data.obs.find(i=>i.name===k);
             if(o) {
-                let img = o.icon ? this.getImg(o.icon) : null;
-                if(!img) img = this.getImg(Store.icons[o.name]?.iconUrl);
+                let img = this.getIcon(o.icon) || this.getIcon(o.name);
                 const cx=(o.lon/100)*w, cy=(o.lat/100)*h;
-                if(img && img.complete && img.naturalWidth > 0) {
+                if(img && img.complete) {
                     const ht=60, ar=img.naturalWidth/img.naturalHeight;
-                    const wt=ht*ar;
-                    ctx.drawImage(img, cx-(wt/2), cy-ht, wt, ht); 
+                    ctx.drawImage(img, cx-(ht*ar)/2, cy-ht, ht*ar, ht);
                 } else {
-                    const c = o.name.includes('Rot') ? '#ef4444' : o.name.includes('Grün') ? '#22c55e' : '#3b82f6';
-                    ctx.fillStyle=c; ctx.beginPath(); ctx.arc(cx,cy,8,0,6.28); ctx.fill();
-                    ctx.lineWidth=2; ctx.strokeStyle='#fff'; ctx.stroke();
+                    ctx.fillStyle='#f00'; ctx.beginPath(); ctx.arc(cx,cy,8,0,7); ctx.fill();
                 }
             }
         });
 
-        if (Store.layers.players && Store.data.players) {
-            const spawns = Store.data.players; 
-            const palette = ['#4ade80', '#60a5fa', '#facc15', '#f87171', '#c084fc', '#fb923c', '#2dd4bf', '#f472b6'];
-            
-            if (spawns.length === 0) Ui.toast("Keine Spieler-Spawns verfügbar");
-
-            spawns.forEach((group, index) => {
-                const color = group.color || palette[index % palette.length];
-                ctx.fillStyle = color;
-                ctx.strokeStyle = '#fff';
-                ctx.lineWidth = 1.5;
-
-                const points = group.locations || group.spawnPoints || (Array.isArray(group) ? group : []);
-                points.forEach(loc => {
-                    if (loc.lat !== undefined) {
-                         const cx = (loc.lon / 100) * w;
-                         const cy = (loc.lat / 100) * h;
-                         ctx.beginPath(); ctx.arc(cx, cy, 8, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+        // Players
+        if(Store.layers.players && Store.data.players.length) {
+            const pal = ['#4ade80', '#60a5fa', '#facc15', '#f87171', '#c084fc', '#fb923c'];
+            Store.data.players.forEach((g, i) => {
+                ctx.fillStyle = g.color || pal[i%pal.length];
+                ctx.strokeStyle = '#fff'; ctx.lineWidth=1.5;
+                const pts = g.locations || g.spawnPoints || (Array.isArray(g)?g:[]);
+                pts.forEach(p => {
+                    if(p.lat!==undefined) {
+                        const cx=(p.lon/100)*w, cy=(p.lat/100)*h;
+                        ctx.beginPath(); ctx.arc(cx,cy,8,0,7); ctx.fill(); ctx.stroke();
                     }
                 });
             });
         }
     },
 
-    drawPois(list, c, w, h) {
-        if (!Array.isArray(list)) return;
+    drawList(list, w, h, c) {
         const ctx = this.ctx;
         list.forEach(p => {
             const cx=(p.lon/100)*w, cy=(p.lat/100)*h;
-            const img = p.icon ? this.getImg(p.icon) : null;
-            if(img && img.complete && img.naturalWidth > 0) ctx.drawImage(img, cx-16, cy-16, 32, 32);
-            else { ctx.fillStyle=c; ctx.beginPath(); ctx.arc(cx,cy,6,0,6.28); ctx.fill(); ctx.stroke(); }
+            const img = this.getIcon(p.icon) || this.getIcon(p.name);
+            if(img && img.complete) ctx.drawImage(img, cx-16, cy-16, 32, 32);
+            else { this.ctx.fillStyle=c; this.ctx.beginPath(); this.ctx.arc(cx,cy,6,0,7); this.ctx.fill(); this.ctx.stroke(); }
         });
     },
 
-    checkClick(lon, lat) {
-        const rad = 2.5; 
-        let hit = null;
-        let type = '';
-
-        if(Store.layers.public && Array.isArray(Store.data.pois)) {
-            hit = Store.data.pois.find(p => Math.hypot(p.lon-lon, p.lat-lat) < rad);
-            if(hit) type = 'public';
-        }
-        if(!hit && Store.layers.caves && Array.isArray(Store.data.caves)) {
-            hit = Store.data.caves.find(p => Math.hypot(p.lon-lon, p.lat-lat) < rad);
-            if(hit) type = 'caves';
-        }
-        
+    click(lon, lat) {
+        const rad = 2.5; let hit = null, type = '';
+        if(Store.layers.public) { hit = Store.data.pois.find(p => Math.hypot(p.lon-lon, p.lat-lat)<rad); if(hit) type='public'; }
+        if(!hit && Store.layers.caves) { hit = Store.data.caves.find(p => Math.hypot(p.lon-lon, p.lat-lat)<rad); if(hit) type='caves'; }
         if(hit) Ui.showInfo(hit, type);
-    }
-};
-
-// --- DATA ---
-window.Data = {
-    async init() {
-        try {
-            const [c, i, t] = await Promise.all([
-                fetchData(CFG.urlC), fetchData(CFG.urlI), fetchData(CFG.urlT)
-            ]);
-            
-            if(!c) throw new Error("Config Error");
-            Store.cfg = c;
-            Store.icons = {...(i?.Items||{}), ...(i?.Kreaturen||{}), ...(i?.Ressourcen||{})};
-            if(t) { Store.trans.dinos = t.Kreaturen||{}; Store.trans.res = t.Ressourcen||{}; }
-
-            Ui.initSelector(c);
-            this.loadMap('TheIsland');
-
-        } catch(e) { console.error(e); logError("Init Failed"); }
-    },
-
-    async loadMap(k) {
-        const l = document.getElementById('loader');
-        if(l) l.classList.remove('hidden');
-        
-        Ui.setSpawnStatus('wait', 'Lade...');
-        const c = Store.cfg[k];
-        Store.map = c;
-        Store.selDino = null; Store.activeRes.clear(); Store.activeObs.clear();
-        
-        // Reset UI text and hide clear button
-        Ui.resetDinoSelectionUI();
-        
-        MapEngine.reset();
-        MapEngine.load(c.mapImageUrl);
-        Ui.setStatus('map', 'ok');
-
-        const urls = [
-            c.creatureDataUrl, c.resourceDataUrl, c.publicSpotsDataUrl, c.obeliskDataUrl, c.caveSpotsDataUrl, c.playerSpawnDataUrl 
-        ];
-        
-        const [d, r, p, o, ca, pl] = await Promise.all(urls.map(u => fetchData(u)));
-        const processedSpawns = findSpawnGroups(pl);
-        
-        if (processedSpawns.length > 0) {
-            Ui.setSpawnStatus('ok', `OK (${processedSpawns.length} Zonen)`);
-            document.getElementById('tog-players').classList.remove('disabled');
-        } else {
-            Ui.setSpawnStatus('err', 'Keine Daten');
-            document.getElementById('tog-players').classList.add('disabled');
-        }
-
-        Store.data = {
-            dinos: d?.dinoSpawns||{}, res: r?.resources||{}, 
-            pois: p?.publicSpots||[], obs: o?.obelisks||[], caves: ca?.caveSpots||[],
-            players: processedSpawns 
-        };
-
-        Ui.renderDinos();
-        Ui.renderRes();
-        Ui.renderObs();
-        // Reset toggles visual state to match logic defaults
-        Ui.resetToggles();
-        MapEngine.draw();
     }
 };
 
 // --- UI ---
 window.Ui = {
-    initSelector(cfg) {
+    init(cfg) {
         const s = document.getElementById('map-select');
         Object.keys(cfg).forEach(k => {
             if(cfg[k].activated) {
-                const o = document.createElement('option');
-                o.value = k; o.textContent = cfg[k].displayName;
-                s.appendChild(o);
+                const o=document.createElement('option'); o.value=k; o.textContent=cfg[k].displayName; s.appendChild(o);
             }
         });
         s.onchange = e => Data.loadMap(e.target.value);
     },
-    
-    toggleFullscreen() {
-        if (!document.fullscreenElement) {
-            document.documentElement.requestFullscreen();
-        } else {
-            if (document.exitFullscreen) {
-                document.exitFullscreen();
-            }
-        }
-    },
-    
-    // SIDEBAR TOGGLE
+
     toggleSidebar() {
         const sb = document.getElementById('sidebar');
-        const toggler = document.getElementById('sidebar-toggle');
-        const isCollapsed = sb.classList.toggle('collapsed');
-        
-        toggler.innerHTML = isCollapsed ? '▶' : '◀';
-        
-        // Force Map Resize
-        setTimeout(() => MapEngine.fit(), 310);
+        const tg = document.getElementById('sidebar-toggle');
+        const c = sb.classList.toggle('collapsed');
+        tg.innerHTML = c ? '▶' : '◀';
+        setTimeout(()=>MapEngine.fit(), 310);
     },
-    
-    setSpawnStatus(type, msg) {
-        const el = document.getElementById('st-spawn');
-        const txt = document.getElementById('spawn-status');
-        if(el) el.className = 'status-dot ' + type;
-        if(txt) txt.textContent = msg;
+
+    toggleFullscreen() {
+        if(!document.fullscreenElement) document.documentElement.requestFullscreen();
+        else if(document.exitFullscreen) document.exitFullscreen();
     },
-    
-    setStatus(id, type) {}, 
 
     tab(id) {
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-        const idx = ['dinos','res','pois'].indexOf(id);
-        if(idx !== -1) document.querySelectorAll('.tab-btn')[idx].classList.add('active');
+        const map = {dinos:0, res:1, pois:2};
+        if(map[id]!==undefined) document.querySelectorAll('.tab-btn')[map[id]].classList.add('active');
         document.getElementById('view-'+id).classList.add('active');
         setTimeout(()=>MapEngine.fit(), 10);
     },
 
-    // Reset visual toggle states when loading map
-    resetToggles() {
-        Store.layers = { public: false, caves: false, players: false };
-        document.querySelectorAll('.toggle-item').forEach(el => el.classList.remove('checked'));
-    },
-
-    // --- NEW: RENDER DINOS WITH DROPDOWN FIX ---
+    // Dino UI
     renderDinos(term="") {
-        const l = document.getElementById('dino-list-root'); // CORRECT ID
-        if(!l) return;
+        const l = document.getElementById('dino-list-root'); if(!l) return;
         const t = term.toLowerCase();
         const keys = Object.keys(Store.data.dinos).sort();
         const show = keys.filter(k => (Store.trans.dinos[k]||k).toLowerCase().includes(t));
-        
-        const items = (t ? show : show.slice(0, 50)).map(k => {
-            const name = Store.trans.dinos[k]||k;
-            const icon = Store.icons[k]?.iconUrl || 'https://placehold.co/24';
-            const cls = Store.selDino === k ? 'selected' : '';
-            return `<div class="select-item ${cls}" onclick="Ui.selectDino('${k}', '${name}')">
-                <img src="${icon}"><span>${name}</span>
-            </div>`;
+        l.innerHTML = show.map(k => {
+            const n = Store.trans.dinos[k]||k;
+            const i = Store.icons[k]?.iconUrl || 'https://placehold.co/24';
+            const sel = Store.selDino===k ? 'selected' : '';
+            return `<div class="select-item ${sel}" onclick="Ui.selDino('${k}','${n}')"><img src="${fixUrl(i)}"><span>${n}</span></div>`;
         }).join('');
-        l.innerHTML = items + (show.length > 50 && !t ? `<div class="text-xs text-center text-gray-500 p-2">... ${show.length-50} weitere ...</div>` : '');
     },
-
+    
     toggleDinoDropdown() {
-        const dd = document.getElementById('dino-dropdown-content');
-        const trig = document.querySelector('.select-trigger');
-        dd.classList.toggle('open');
-        trig.classList.toggle('active');
-        if(dd.classList.contains('open')) document.getElementById('search-dino').focus();
+        const d = document.getElementById('dino-dropdown-content');
+        d.classList.toggle('open');
+        document.querySelector('.select-trigger').classList.toggle('active');
+        if(d.classList.contains('open')) document.getElementById('search-dino').focus();
     },
 
-    selectDino(key, name) {
-        Store.selDino = key;
-        document.getElementById('dino-trigger-text').textContent = name;
+    selDino(k, n) {
+        Store.selDino = k;
+        document.getElementById('dino-trigger-text').textContent = n;
         document.getElementById('dino-clear-btn').classList.remove('hidden');
         this.toggleDinoDropdown();
         MapEngine.draw();
     },
 
-    clearDinoSelection() {
+    clearDino() {
         Store.selDino = null;
-        this.resetDinoSelectionUI();
-        MapEngine.draw();
-    },
-
-    resetDinoSelectionUI() {
         document.getElementById('dino-trigger-text').textContent = "Wähle Dino...";
         document.getElementById('dino-clear-btn').classList.add('hidden');
+        MapEngine.draw();
     },
+    resetDinoSelectionUI() { this.clearDino(); },
 
+    // Res UI
     renderRes() {
-        const l = document.getElementById('list-res');
-        if(!l) return;
+        const l = document.getElementById('list-res'); if(!l) return;
         l.innerHTML = Object.keys(Store.data.res).sort().map(k => {
-            const iconUrl = Store.icons[k]?.iconUrl;
-            // Always show checkbox container, insert icon if available
-            const iconHtml = iconUrl ? `<img src="${iconUrl}" style="width:20px;height:20px;margin-right:8px;object-fit:contain;">` : '';
-            
-            return `<div class="toggle-item" onclick="Ui.togRes('${k}', this)">
-                <div class="chk"></div>
-                ${iconHtml}
-                <span class="toggle-text">${Store.trans.res[k]||k}</span>
-            </div>`;
+            const i = Store.icons[k]?.iconUrl;
+            const ih = i ? `<img src="${fixUrl(i)}" style="width:20px;height:20px;margin-right:8px;object-fit:contain">` : '';
+            return `<div class="toggle-item" onclick="Ui.togRes('${k}',this)"><div class="chk"></div>${ih}<span class="text-xs text-gray-300">${Store.trans.res[k]||k}</span></div>`;
         }).join('');
     },
-
     togRes(k, el) {
         if(Store.activeRes.has(k)) { Store.activeRes.delete(k); el.classList.remove('checked'); }
         else { Store.activeRes.add(k); el.classList.add('checked'); }
@@ -925,57 +658,60 @@ window.Ui = {
     },
 
     renderObs() {
-        const l = document.getElementById('list-obelisks');
-        if(!l) return;
+        const l = document.getElementById('list-obelisks'); if(!l) return;
         l.innerHTML = Store.data.obs.map(o => `
-            <div class="toggle-item" onclick="Ui.togObs('${o.name}', this)">
-                <div class="chk"></div><span class="toggle-text">${o.name}</span>
-            </div>`).join('');
+            <div class="toggle-item" onclick="Ui.togObs('${o.name}',this)"><div class="chk"></div><span class="text-xs text-gray-300">${o.name}</span></div>
+        `).join('');
     },
-
     togObs(k, el) {
         if(Store.activeObs.has(k)) { Store.activeObs.delete(k); el.classList.remove('checked'); }
         else { Store.activeObs.add(k); el.classList.add('checked'); }
         MapEngine.draw();
     },
 
-    showInfo(data, type) {
-        Store.selectedPOI = data;
-        MapEngine.setMarker(data);
-        document.getElementById('info-title').textContent = data.name || "INFO";
-        let imgHtml = '';
-        if (data.images && data.images.length > 0) imgHtml = `<img src="${data.images[0]}" class="w-full rounded border border-gray-700 mb-4 bg-black" onerror="this.style.display='none'">`;
-        else if (data.icon) imgHtml = `<div class="flex justify-center mb-4"><img src="${data.icon}" class="w-16 h-16 object-contain"></div>`;
-        const desc = data.longDescription || data.description || data.shortDescription || 'Keine Beschreibung verfügbar.';
+    // Info
+    showInfo(d, type) {
+        Store.selectedPOI = d; MapEngine.setMarker(d);
+        document.getElementById('info-title').textContent = d.name || "Info";
         
-        let listHtml = '';
-        if (type) {
-            const listTitle = type === 'public' ? 'ANDERE SPOTS' : 'ANDERE HÖHLEN';
-            const sourceList = type === 'public' ? Store.data.pois : Store.data.caves;
-            const listItems = sourceList.map(item => {
-                const isActive = item === data ? 'active' : '';
-                const idx = sourceList.indexOf(item);
-                const fn = `Ui.selectFromList('${type}', ${idx})`;
-                return `<div class="related-item ${isActive}" onclick="${fn}">${item.name}</div>`;
+        let media = '';
+        if(d.images?.length) media = `<img src="${fixUrl(d.images[0])}" class="w-full rounded mb-4 border border-gray-700">`;
+        else if(d.icon || Store.icons[d.name]?.iconUrl) media = `<img src="${fixUrl(d.icon || Store.icons[d.name]?.iconUrl)}" class="w-20 mx-auto mb-4">`;
+
+        let extra = '';
+        if(type === 'caves' && d.artifacts) {
+            extra = `<div class="text-xs font-bold text-amber-500 mt-4 mb-2 tracking-wider">ARTEFAKTE</div>` +
+            d.artifacts.map(a => {
+                // FIX: Look in a.icon first, then global
+                const url = fixUrl(a.icon || Store.icons[a.name]?.iconUrl);
+                const img = url ? `<img src="${url}" class="artifact-icon">` : '';
+                return `<div class="artifact-row">${img}<span>${a.name}</span></div>`;
             }).join('');
-            listHtml = `<div class="text-xs font-bold text-gray-500 mt-6 mb-2 tracking-wider">${listTitle}</div><div class="flex flex-col gap-1">${listItems}</div>`;
+        }
+        
+        if (type) {
+            const listTitle = type === 'public' ? 'ANDERE SPOTS' : (type === 'caves' ? 'ANDERE HÖHLEN' : '');
+            if (listTitle) {
+                const sourceList = type === 'public' ? Store.data.pois : Store.data.caves;
+                const listItems = sourceList.map(item => {
+                    const isActive = item === d ? 'active' : '';
+                    const idx = sourceList.indexOf(item);
+                    return `<div class="related-item ${isActive}" onclick="Ui.selectFromList('${type}', ${idx})">${item.name}</div>`;
+                }).join('');
+                extra += `<div class="text-xs font-bold text-gray-500 mt-6 mb-2 tracking-wider">${listTitle}</div><div class="flex flex-col gap-1 related-list">${listItems}</div>`;
+            }
         }
 
         document.getElementById('info-body').innerHTML = `
-            ${imgHtml}
-            <div class="flex justify-center space-x-3 mb-4 text-xs font-mono text-gray-500 bg-black p-2 rounded border border-[#222]">
-                <span>LAT: <span class="text-[#ff2a00]">${data.lat.toFixed(1)}</span></span>
-                <span>LON: <span class="text-[#ff2a00]">${data.lon.toFixed(1)}</span></span>
+            ${media}
+            <div class="flex justify-center gap-4 mb-4 text-xs font-mono text-gray-500 bg-black p-2 rounded border border-[#333]">
+                <span>LAT: <span class="text-amber-500">${d.lat.toFixed(1)}</span></span>
+                <span>LON: <span class="text-amber-500">${d.lon.toFixed(1)}</span></span>
             </div>
-            <div class="text-sm text-gray-400 leading-relaxed whitespace-pre-wrap">${desc}</div>
-            ${listHtml}
+            <div class="text-sm text-gray-400 whitespace-pre-wrap">${d.description || d.shortDescription || 'Keine Beschreibung.'}</div>
+            ${extra}
         `;
-        const panel = document.getElementById('info-panel');
-        panel.classList.add('visible');
-        setTimeout(() => {
-            const activeEl = panel.querySelector('.related-item.active');
-            if(activeEl) activeEl.scrollIntoView({behavior: "smooth", block: "center"});
-        }, 100);
+        document.getElementById('info-panel').classList.add('visible');
     },
     
     selectFromList(type, index) {
@@ -984,35 +720,31 @@ window.Ui = {
         if(item) this.showInfo(item, type);
     },
 
-    closeInfo() { 
-        document.getElementById('info-panel').classList.remove('visible');
-        MapEngine.setMarker(null);
-        Store.selectedPOI = null;
+    closeInfo() { document.getElementById('info-panel').classList.remove('visible'); MapEngine.setMarker(null); },
+    
+    resetToggles() {
+        Store.layers = { public: false, caves: false, players: false };
+        document.querySelectorAll('.toggle-item').forEach(el => el.classList.remove('checked'));
     },
 
-    toast(msg) {
-        const t = document.getElementById('toast');
-        t.textContent = msg;
-        t.classList.add('visible');
-        setTimeout(() => t.classList.remove('visible'), 3000);
+    setSpawnStatus(type, msg) {
+        const dot = document.getElementById('st-spawn');
+        const txt = document.getElementById('spawn-msg');
+        if(dot) dot.className = 'status-dot ' + type;
+        if(txt) txt.textContent = msg;
     }
 };
 
 window.Layers = {
-    toggle(key) {
-        Store.layers[key] = !Store.layers[key];
-        document.getElementById('tog-'+key).classList.toggle('checked');
-        MapEngine.draw();
-    },
+    toggle(k) { Store.layers[k]=!Store.layers[k]; document.getElementById('tog-'+k).classList.toggle('checked'); MapEngine.draw(); },
     
-    // MASTER TOGGLES
     toggleAllPois() {
         const on = !Store.layers.public; 
         Store.layers.public = on;
         Store.layers.caves = on;
         ['tog-public', 'tog-caves', 'tog-all-pois'].forEach(id => {
             const el = document.getElementById(id);
-            if(on) el.classList.add('checked'); else el.classList.remove('checked');
+            if(el) { if(on) el.classList.add('checked'); else el.classList.remove('checked'); }
         });
         MapEngine.draw();
     }
@@ -1028,12 +760,11 @@ window.Res = {
     
     toggleAll() {
         const allKeys = Object.keys(Store.data.res);
-        if (allKeys.length === 0) return;
-        const allActive = Store.activeRes.size === allKeys.length;
-        if (allActive) {
-            this.clear();
-        } else {
-            allKeys.forEach(k => Store.activeRes.add(k));
+        if(!keys.length) return;
+        const on = Store.activeRes.size !== keys.length;
+        if(on) this.clear();
+        else {
+            keys.forEach(k => Store.activeRes.add(k));
             document.querySelectorAll('#list-res .toggle-item').forEach(e => e.classList.add('checked'));
             document.getElementById('tog-all-res').classList.add('checked');
             MapEngine.draw();
@@ -1041,12 +772,74 @@ window.Res = {
     }
 };
 
-document.getElementById('search-dino').oninput = e => Ui.renderDinos(e.target.value);
+// --- BOOT ---
+const Data = {
+    async init() {
+        try {
+            const [c, i, t, sh, bl, al] = await Promise.all([
+                fetchJson(CFG.urlC), fetchJson(CFG.urlI), fetchJson(CFG.urlT),
+                fetchJson(CFG.urlShare), fetchJson(CFG.urlBlock), fetchJson(CFG.urlAlpha)
+            ]);
+            if(!c) throw "Config Error";
+            Store.cfg = c;
+            Store.icons = {...(i?.Items||{}), ...(i?.Kreaturen||{}), ...(i?.Ressourcen||{})};
+            if(t) { Store.trans.dinos = t.Kreaturen||{}; Store.trans.res = t.Ressourcen||{}; }
+            Store.sharing = sh || {};
+            Store.blocked = bl || {};
+            Store.alphas = al || {};
+            
+            Ui.init(c);
+            this.loadMap('TheIsland');
+        } catch(e) { console.error(e); }
+    },
+    async loadMap(k) {
+        try {
+            const c = Store.cfg[k]; Store.map = c; Store.mapKey = k; 
+            Store.selDino=null; Store.activeRes.clear(); Store.activeObs.clear();
+            Ui.resetDinoSelectionUI(); MapEngine.reset(); MapEngine.load(c.mapImageUrl);
+            
+            const urls = [c.creatureDataUrl, c.resourceDataUrl, c.publicSpotsDataUrl, c.obeliskDataUrl, c.caveSpotsDataUrl, c.playerSpawnDataUrl];
+            if(c.alphaDataUrl) urls.push(c.alphaDataUrl);
+            const res = await Promise.all(urls.map(u => fetchJson(u)));
+            
+            const [d,r,p,o,ca,pl] = res;
+            const al = c.alphaDataUrl ? res[6] : null;
 
-document.addEventListener("DOMContentLoaded", () => {
-    MapEngine.init(); 
-    Data.init();
-});
+            Store.data = { dinos: d?.dinoSpawns||{}, res: r?.resources||{}, pois: p?.publicSpots||[], obs: o?.obelisks||[], caves: ca?.caveSpots||[], players: findSpawns(pl) };
+            if(al?.dinoSpawns) Object.assign(Store.data.dinos, al.dinoSpawns);
+            
+            if(c.AlphaKey && Store.alphas[c.AlphaKey]) {
+                Object.assign(Store.data.dinos, Store.alphas[c.AlphaKey]);
+            }
+            
+            if(Store.sharing) {
+                Object.keys(Store.sharing).forEach(sourceName => {
+                    const targets = Store.sharing[sourceName];
+                    if (Array.isArray(targets) && Store.data.dinos[sourceName]) {
+                        targets.forEach(targetName => {
+                            if (!Store.data.dinos[targetName]) {
+                                Store.data.dinos[targetName] = Store.data.dinos[sourceName];
+                                if (!Store.trans.dinos[targetName]) Store.trans.dinos[targetName] = targetName;
+                            }
+                        });
+                    }
+                });
+            }
+
+            const spawnMsg = Store.data.players.length ? `OK (${Store.data.players.length})` : "Keine Daten";
+            const spawnType = Store.data.players.length ? "ok" : "err";
+            Ui.setSpawnStatus(spawnType, spawnMsg);
+            document.getElementById('tog-players').classList.toggle('disabled', !Store.data.players.length);
+
+            Ui.renderDinos(); Ui.renderRes(); Ui.renderObs(); 
+            if(typeof Ui.resetToggles === 'function') Ui.resetToggles();
+            MapEngine.draw();
+        } catch(e) { console.error("LoadMap Error", e); }
+    }
+};
+
+document.getElementById('search-dino').oninput = e => Ui.renderDinos(e.target.value);
+document.addEventListener("DOMContentLoaded", () => { MapEngine.init(); Data.init(); });
 
 </script>
 </body>
