@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>IOP Cluster Explorer v30.0 (Map Info System)</title>
+    <title>IOP Cluster Explorer v30.1 (Map Info & Colors)</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <style>
         /* --- CORE RESET --- */
@@ -191,7 +191,8 @@
             <div class="flex items-center justify-between mb-1">
                 <div><div class="text-xs text-gray-500 font-bold tracking-widest mb-1">INFINITY OF PHOENIX</div><div class="sb-title">CLUSTER EXPLORER</div></div>
                 <div class="flex items-center">
-                    <button id="map-info-btn" onclick="Ui.showMapInfo()" class="text-gray-400 hover:text-white mr-2 hidden" title="Karten Infos">ℹ️</button>
+                    <!-- NEW INFO BUTTON -->
+                    <button id="map-info-btn" onclick="Ui.showMapInfo()" class="hidden mr-3 px-2 py-1 rounded border border-gray-600 bg-gray-800 text-xs text-gray-300 hover:border-phoenix-fire hover:text-phoenix-fire transition-colors uppercase font-bold tracking-wider">MAP INFO</button>
                     <img src="https://raw.githubusercontent.com/iophantonie/iophantonie-IOP_Custom_Map_Explorer.github.io/main/IOPCOM_Logo.png" class="w-12 h-12 object-contain" alt="Logo">
                 </div>
             </div>
@@ -246,7 +247,7 @@
                 <div class="mb-6">
                     <div class="text-xs text-gray-500 font-bold mb-2 tracking-wider">SPAWNS</div>
                     <div class="toggle-item" id="tog-players" onclick="Layers.toggle('players')"><div class="chk"></div><span>Spieler Spawns</span></div>
-                    <div class="text-xs text-gray-600 ml-8 mt-1 italic flex items-center"><span id="st-spawn" class="status-dot wait"></span><span id="spawn-msg">Status: Prüfe...</span></div>
+                    <div class="text-xs text-gray-600 ml-8 mt-1 italic flex items-center"><span id="spawn-msg">Status: Prüfe...</span></div>
                 </div>
                 <div><div class="text-xs text-gray-500 font-bold mb-2 tracking-wider">OBELISKEN</div><div class="toggle-item mb-2" id="tog-all-obs" onclick="Obs.toggleAll()"><div class="chk"></div><span class="text-xs font-bold text-gray-400">Alle Obelisken</span></div><div id="list-obelisks"></div></div>
             </div>
@@ -687,9 +688,18 @@ window.Ui = {
              const si = info.specialInfo;
              content += `<div class="mt-8 border-t border-gray-800 pt-4">
                  <h3 class="text-phoenix-gold font-bold uppercase mb-3 text-sm tracking-widest">${si.Kategorie || 'Special Info'}</h3>
-                 <div class="flex flex-wrap gap-2">
-                     ${(si.Liste || []).map(l => `<span class="bg-red-900/40 text-red-200 px-2 py-1 rounded text-xs border border-red-900">${l}</span>`).join('')}
+                 
+                 <!-- Map Specific S-Dinos (Blue) -->
+                 <div class="flex flex-wrap gap-2 mb-3">
+                     ${(si.Liste || []).map(l => `<span class="bg-blue-900/40 text-blue-200 px-2 py-1 rounded text-xs border border-blue-900">${l}</span>`).join('')}
                  </div>
+
+                 <!-- Global S-Dinos (Different Blue/Indigo) -->
+                 ${si.OnEachMap_Liste && si.OnEachMap_Liste.length ? `
+                 <div class="text-xs text-gray-500 font-bold mb-2 uppercase tracking-wide mt-4">Auf jeder Karte:</div>
+                 <div class="flex flex-wrap gap-2">
+                     ${si.OnEachMap_Liste.map(l => `<span class="bg-cyan-900/40 text-cyan-200 px-2 py-1 rounded text-xs border border-cyan-900">${l}</span>`).join('')}
+                 </div>` : ''}
              </div>`;
         }
 
