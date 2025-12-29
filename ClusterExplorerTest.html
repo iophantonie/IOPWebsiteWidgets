@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>IOP Cluster Explorer v19.3 (Design Polish)</title>
+    <title>IOP Cluster Explorer v20.0 (Rarity Fix)</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <style>
         /* --- CORE RESET --- */
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #000; overflow: hidden; font-family: 'Segoe UI', 'Roboto', sans-serif; color: #e2e8f0; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #000000; overflow: hidden; font-family: 'Segoe UI', sans-serif; color: #e2e8f0; }
 
         :root {
             --phoenix-fire: #ff2a00;
@@ -103,9 +103,22 @@
         .select-search input { width: 100%; background: #222; border: 1px solid #444; padding: 6px; border-radius: 4px; color: white; font-size: 0.85rem; outline: none; }
 
         /* ARTIFACTS */
-        .artifact-row { display: flex; align-items: center; margin-bottom: 5px; background: rgba(251,191,36,0.1); padding: 8px; border: 1px solid var(--phoenix-gold); border-radius: 4px; color: var(--phoenix-gold); font-weight: bold; font-size: 0.85rem; animation: glow 2s infinite alternate; }
-        .artifact-icon { width: 36px; height: 36px; margin-right: 10px; object-fit: contain; }
-        @keyframes glow { from { box-shadow: 0 0 5px rgba(251,191,36,0.2); } to { box-shadow: 0 0 15px rgba(251,191,36,0.6); } }
+        .artifact-row { 
+            display: flex; align-items: center; margin-bottom: 6px; 
+            background: rgba(251,191,36,0.1); padding: 10px; 
+            border: 1px solid var(--phoenix-gold); border-radius: 6px; 
+            color: var(--phoenix-gold); font-weight: bold; font-size: 0.9rem; 
+            animation: borderPulse 2s infinite; 
+        }
+        .artifact-icon { 
+            width: 36px; height: 36px; margin-right: 15px; object-fit: contain; 
+            filter: drop-shadow(0 0 5px rgba(251,191,36,0.5));
+        }
+        @keyframes borderPulse { 
+            0% { border-color: rgba(251,191,36,0.3); } 
+            50% { border-color: rgba(251,191,36,1); box-shadow: 0 0 10px rgba(251,191,36,0.2); } 
+            100% { border-color: rgba(251,191,36,0.3); } 
+        }
 
         /* LEGEND */
         .map-legend { position: absolute; bottom: 20px; left: 20px; width: 160px; background: rgba(10,10,10,0.9); border: 1px solid #333; border-left: 3px solid var(--phoenix-fire); padding: 10px; z-index: 50; font-size: 10px; color: #ccc; pointer-events: none; }
@@ -113,14 +126,14 @@
         .leg-box { width: 10px; height: 10px; margin-right: 8px; }
 
         /* INFO PANEL */
-        .info-panel { position: absolute; top: 0; right: 0; bottom: 0; width: 320px; background: var(--bg-panel); border-left: 1px solid var(--phoenix-fire); transform: translateX(100%); transition: transform 0.3s; z-index: 100; box-shadow: -10px 0 30px rgba(0,0,0,0.8); display: flex; flex-direction: column; }
+        .info-panel { position: absolute; top: 0; right: 0; bottom: 0; width: 340px; background: var(--bg-panel); border-left: 1px solid var(--phoenix-fire); transform: translateX(100%); transition: transform 0.3s; z-index: 100; box-shadow: -10px 0 30px rgba(0,0,0,0.9); display: flex; flex-direction: column; }
         .info-panel.visible { transform: translateX(0); }
         .info-header { padding: 15px; background: #000; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center; }
         .info-title { font-size: 1.0rem; font-weight: 800; color: #fff; text-transform: uppercase; letter-spacing: 0.05em; }
         .info-close { color: #888; cursor: pointer; font-size: 1.5rem; transition: 0.2s; line-height: 1; }
         .info-close:hover { color: var(--phoenix-fire); }
 
-        /* RELATED LIST STYLING (FIXED) */
+        /* RELATED LIST STYLING */
         .related-list { margin-top: 20px; border-top: 1px solid #333; padding-top: 15px; display: flex; flex-direction: column; gap: 4px; }
         .related-item { 
             padding: 10px 12px; cursor: pointer; 
@@ -296,7 +309,15 @@ const CFG = {
     urlBlock: 'https://raw.githubusercontent.com/iophantonie/iophantonie-IOP_Custom_Map_Explorer.github.io/main/Blocked_Zones_Datenbank/blockedzonesdb.jsn',
     urlAlpha: 'https://raw.githubusercontent.com/iophantonie/iophantonie-IOP_Custom_Map_Explorer.github.io/main/Alpha_Listen_Datenbank/alphalistdb.jsn',
     col: { spawn: 'rgba(255, 42, 0, 0.4)', stroke: '#ff2a00' },
-    rarity: [{th:0.3,c:'#22c55e'},{th:0.15,c:'#84cc16'},{th:0.07,c:'#eab308'},{th:0.03,c:'#f97316'},{th:0.01,c:'#ef4444'},{th:0,c:'#a855f7'}]
+    // ADJUSTED RARITY THRESHOLDS FOR BETTER COLOR SPREAD
+    rarity: [
+        { th: 0.10, c: '#22c55e' }, // Very Common (>10%)
+        { th: 0.05, c: '#84cc16' }, // Common (>5%)
+        { th: 0.02, c: '#eab308' }, // Uncommon (>2%)
+        { th: 0.01, c: '#f97316' }, // Rare (>1%)
+        { th: 0.001, c: '#ef4444' }, // Very Rare (>0.1%)
+        { th: 0.00, c: '#a855f7' }  // Ultra Rare (<0.1%)
+    ]
 };
 
 // HELPERS
@@ -341,13 +362,18 @@ function isBlocked(z, mapId) {
     if(!list || !Array.isArray(list)) return false;
     const cx = (z.min.lon+z.max.lon)/2;
     const cy = (z.min.lat+z.max.lat)/2;
+    
+    // Intersection Check
+    const zMinX = z.min.lon, zMaxX = z.max.lon, zMinY = z.min.lat, zMaxY = z.max.lat;
+
     return list.some(b => {
         if(typeof b === 'string') {
             const m = b.match(/lat([\d\.]+)-([\d\.]+)_lon([\d\.]+)-([\d\.]+)/);
             if(m) {
                 const bMinLat=parseFloat(m[1]), bMaxLat=parseFloat(m[2]);
                 const bMinLon=parseFloat(m[3]), bMaxLon=parseFloat(m[4]);
-                return !(z.max.lon < bMinLon || z.min.lon > bMaxLon || z.max.lat < bMinLat || z.min.lat > bMaxLat);
+                // AABB Intersection
+                return !(zMaxX < bMinLon || zMinX > bMaxLon || zMaxY < bMinLat || zMinY > bMaxLat);
             }
         }
         return false;
@@ -504,8 +530,10 @@ window.MapEngine = {
             Store.data.dinos[Store.selDino].forEach(z => {
                 if(isBlocked(z, Store.mapKey)) return;
                 const x=(z.min.lon/100)*w, y=(z.min.lat/100)*h, zw=((z.max.lon-z.min.lon)/100)*w, zh=((z.max.lat-z.min.lat)/100)*h;
+                
+                // Color Logic
                 let col = '#22c55e';
-                const sc = (z.chance||0.5)*(z.weight||1);
+                const sc = (parseFloat(z.chance)||0.5)*(parseFloat(z.weight)||1);
                 for(let r of CFG.rarity) if(sc>=r.th) { col=r.c; break; }
                 
                 ctx.fillStyle = hexToRgba(col, 0.4); ctx.fillRect(x,y,zw,zh);
@@ -565,11 +593,9 @@ window.MapEngine = {
     },
 
     drawList(list, w, h, c) {
-        // FIX: Define ctx here
         const ctx = this.ctx;
         list.forEach(p => {
             const cx=(p.lon/100)*w, cy=(p.lat/100)*h;
-            // FIX: Try local icon first, then global
             const img = this.getIcon(p.icon) || this.getIcon(p.name);
             if(img && img.complete) ctx.drawImage(img, cx-16, cy-16, 32, 32);
             else { this.ctx.fillStyle=c; this.ctx.beginPath(); this.ctx.arc(cx,cy,6,0,7); this.ctx.fill(); this.ctx.stroke(); }
@@ -708,6 +734,7 @@ window.Ui = {
                 const listItems = sourceList.map(item => {
                     const isActive = item === d ? 'active' : '';
                     const idx = sourceList.indexOf(item);
+                    // CSS CLASSES FIXED HERE:
                     return `<div class="related-item ${isActive}" onclick="Ui.selectFromList('${type}', ${idx})">${item.name}</div>`;
                 }).join('');
                 extra += `<div class="text-xs font-bold text-gray-500 mt-6 mb-2 tracking-wider">${listTitle}</div><div class="flex flex-col gap-1 related-list">${listItems}</div>`;
@@ -735,7 +762,6 @@ window.Ui = {
     closeInfo() { document.getElementById('info-panel').classList.remove('visible'); MapEngine.setMarker(null); },
 
     setSpawnStatus(type, msg) {
-        // FIX: Safe update
         const dot = document.getElementById('st-spawn');
         const txt = document.getElementById('spawn-msg');
         if(dot) dot.className = 'status-dot ' + type;
@@ -752,7 +778,6 @@ window.Layers = {
         Store.layers.caves = on;
         ['tog-public', 'tog-caves', 'tog-all-pois'].forEach(id => {
             const el = document.getElementById(id);
-            // FIX: Check if element exists
             if(el) { if(on) el.classList.add('checked'); else el.classList.remove('checked'); }
         });
         MapEngine.draw();
@@ -764,17 +789,10 @@ window.Res = {
         const allKeys = Object.keys(Store.data.res);
         if(!allKeys.length) return;
         const on = Store.activeRes.size !== allKeys.length;
-        if(on) {
-             // Turn All On
-             allKeys.forEach(k => Store.activeRes.add(k));
-             document.querySelectorAll('#list-res .toggle-item').forEach(e => e.classList.add('checked'));
-             document.getElementById('tog-all-res').classList.add('checked');
-        } else {
-             // Turn All Off
-             Store.activeRes.clear();
-             document.querySelectorAll('#list-res .toggle-item').forEach(e => e.classList.remove('checked'));
-             document.getElementById('tog-all-res').classList.remove('checked');
-        }
+        if(on) allKeys.forEach(k => Store.activeRes.add(k)); else Store.activeRes.clear();
+        
+        document.getElementById('tog-all-res').classList.toggle('checked', on);
+        document.querySelectorAll('#list-res .toggle-item').forEach(e => e.classList.toggle('checked', on));
         MapEngine.draw();
     }
 };
