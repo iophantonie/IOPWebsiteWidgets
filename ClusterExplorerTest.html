@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>IOP Cluster Explorer v29.1 (Clean Spawns)</title>
+    <title>IOP Cluster Explorer v29.2 (No Green Dot)</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <style>
         /* --- CORE RESET --- */
@@ -92,7 +92,7 @@
         .select-item { display: flex; align-items: center; padding: 8px; cursor: pointer; border-bottom: 1px solid #1a1a1a; }
         .select-item:hover { background: #1a1a1a; }
         .select-item.selected { background: rgba(255,42,0,0.1); border-left: 3px solid var(--phoenix-fire); }
-        .select-item img { width: 24px; height: 24px; margin-right: 10px; }
+        .select-item img { width: 24px; height: 24px; margin-right: 10px; object-fit: contain; }
 
         .custom-select { position: relative; }
         .select-trigger { background: #151515; border: 1px solid #444; padding: 10px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-size: 0.9rem; }
@@ -112,14 +112,14 @@
         .leg-box { width: 10px; height: 10px; margin-right: 8px; }
 
         /* INFO PANEL */
-        .info-panel { position: absolute; top: 0; right: 0; bottom: 0; width: 320px; background: var(--bg-panel); border-left: 1px solid var(--phoenix-fire); transform: translateX(100%); transition: transform 0.3s; z-index: 100; box-shadow: -10px 0 30px rgba(0,0,0,0.9); display: flex; flex-direction: column; }
+        .info-panel { position: absolute; top: 0; right: 0; bottom: 0; width: 320px; background: var(--bg-panel); border-left: 1px solid var(--phoenix-fire); transform: translateX(100%); transition: transform 0.3s; z-index: 100; box-shadow: -10px 0 30px rgba(0,0,0,0.8); display: flex; flex-direction: column; }
         .info-panel.visible { transform: translateX(0); }
         .info-header { padding: 15px; background: #000; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center; }
         .info-title { font-size: 1.0rem; font-weight: 800; color: #fff; text-transform: uppercase; letter-spacing: 0.05em; }
         .info-close { color: #888; cursor: pointer; font-size: 1.5rem; transition: 0.2s; line-height: 1; }
         .info-close:hover { color: var(--phoenix-fire); }
 
-        /* RELATED LIST STYLING */
+        /* RELATED LIST */
         .related-list { margin-top: 20px; border-top: 1px solid #333; padding-top: 15px; display: flex; flex-direction: column; gap: 4px; }
         .related-item { padding: 8px 10px; cursor: pointer; border-radius: 4px; font-size: 0.85rem; color: #ccc; border: 1px solid #222; border-left: 3px solid transparent; background: #161616; transition: all 0.2s; }
         .related-item:hover { background: #222; color: white; border-left-color: #666; transform: translateX(2px); }
@@ -225,6 +225,7 @@
                     <!-- DYNAMIC REGIONS -->
                     <div id="region-container" class="hidden mb-2 pl-4 border-l-2 border-[#1a1a1a] ml-1">
                         <div class="text-[10px] text-gray-600 font-bold mb-1 mt-2 uppercase tracking-wider">Regionen</div>
+                        <div class="toggle-item mb-2" id="tog-all-regions" onclick="Reg.toggleAll()"><div class="chk"></div><span class="text-xs font-bold text-gray-400">Alle Regionen</span></div>
                         <div id="list-regions"></div>
                     </div>
 
@@ -236,11 +237,11 @@
                 <div class="mb-6">
                     <div class="text-xs text-gray-500 font-bold mb-2 tracking-wider">SPAWNS</div>
                     <div class="toggle-item" id="tog-players" onclick="Layers.toggle('players')"><div class="chk"></div><span>Spieler Spawns</span></div>
-                    <!-- REMOVED DOT HERE -->
-                    <div class="text-xs text-red-500 ml-8 mt-1 italic flex items-center"><span id="spawn-msg"></span></div>
+                    <div class="text-xs text-gray-600 ml-8 mt-1 italic flex items-center">
+                        <span id="spawn-msg">Status: Prüfe...</span>
+                    </div>
                 </div>
-                <div><div class="text-xs text-gray-500 font-bold mb-2 tracking-wider">OBELISKEN</div><div id="list-obelisks"></div></div>
-                <div id="debug-status" class="text-[9px] text-gray-700 mt-4 px-2 hidden"></div>
+                <div><div class="text-xs text-gray-500 font-bold mb-2 tracking-wider">OBELISKEN</div><div class="toggle-item mb-2" id="tog-all-obs" onclick="Obs.toggleAll()"><div class="chk"></div><span class="text-xs font-bold text-gray-400">Alle Obelisken</span></div><div id="list-obelisks"></div></div>
             </div>
         </div>
     </div>
@@ -620,12 +621,8 @@ window.Ui = {
     renderRegions() {
         const l = document.getElementById('list-regions'); const c = document.getElementById('region-container');
         if(!l || !c) return;
-        // FIX: Handle both array and object {regions:[]}
-        let regs = Store.data.regions;
-        if(regs && regs.regions && Array.isArray(regs.regions)) regs = regs.regions;
-        if(!Array.isArray(regs)) regs = [];
-
-        Store.data.regions = regs; // Normalize
+        // FIX: Ensure regions is an array
+        const regs = Array.isArray(Store.data.regions) ? Store.data.regions : [];
         
         console.log("Region Check: ", regs); // Debug
 
@@ -657,7 +654,7 @@ window.Ui = {
         if(type === 'caves' && d.artifacts) {
             extra = `<div class="text-xs font-bold text-amber-500 mt-4 mb-2 tracking-wider">ARTEFAKTE</div>` +
             d.artifacts.map(a => {
-                let url = a.icon || Store.icons[a.name]?.iconUrl;
+                let url = a.icon || Store.icons[a.name]?.iconUrl; // FIX: Fallback to global
                 if(url) url = fixUrl(url); 
                 const img = url ? `<img src="${url}" class="artifact-icon">` : '';
                 return `<div class="artifact-row">${img}<span>${a.name}</span></div>`;
@@ -743,6 +740,44 @@ window.Res = {
         const on = Store.activeRes.size !== allKeys.length;
         if(on) { allKeys.forEach(k => Store.activeRes.add(k)); document.querySelectorAll('#list-res .toggle-item').forEach(e => e.classList.add('checked')); document.getElementById('tog-all-res').classList.add('checked'); } 
         else { this.clear(); }
+        MapEngine.draw();
+    }
+};
+
+window.Obs = {
+    toggleAll() {
+        const allKeys = Store.data.obs.map(o => o.name);
+        if(!allKeys.length) return;
+        const on = Store.activeObs.size !== allKeys.length;
+        
+        if (on) {
+            allKeys.forEach(k => Store.activeObs.add(k));
+            document.querySelectorAll('#list-obelisks .toggle-item').forEach(e => e.classList.add('checked'));
+            document.getElementById('tog-all-obs').classList.add('checked');
+        } else {
+            Store.activeObs.clear();
+            document.querySelectorAll('#list-obelisks .toggle-item').forEach(e => e.classList.remove('checked'));
+            document.getElementById('tog-all-obs').classList.remove('checked');
+        }
+        MapEngine.draw();
+    }
+};
+
+window.Reg = {
+    toggleAll() {
+        const allKeys = Store.data.regions.map(r => r.id);
+        if(!allKeys.length) return;
+        const on = Store.activeRegions.size !== allKeys.length;
+
+        if(on) {
+             allKeys.forEach(k => Store.activeRegions.add(k));
+             document.querySelectorAll('#list-regions .toggle-item').forEach(e => e.classList.add('checked'));
+             document.getElementById('tog-all-regions').classList.add('checked');
+        } else {
+             Store.activeRegions.clear();
+             document.querySelectorAll('#list-regions .toggle-item').forEach(e => e.classList.remove('checked'));
+             document.getElementById('tog-all-regions').classList.remove('checked');
+        }
         MapEngine.draw();
     }
 };
