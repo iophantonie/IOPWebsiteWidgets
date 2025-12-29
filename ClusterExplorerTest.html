@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>IOP Cluster Explorer v30.1 (Map Info & Colors)</title>
+    <title>IOP Cluster Explorer v31.1 (Live Map Key Fix)</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <style>
         /* --- CORE RESET --- */
@@ -28,6 +28,10 @@
         }
         
         #sidebar.collapsed { margin-left: calc(var(--sidebar-width) * -1); }
+        
+        /* Disable Sidebar content in Live Mode */
+        .live-mode-active .sb-content { opacity: 0.3; pointer-events: none; filter: grayscale(1); }
+        .live-mode-active .tabs { opacity: 0.3; pointer-events: none; }
 
         .sb-header { padding: 15px; background: #000; border-bottom: 2px solid var(--phoenix-fire); }
         .sb-title { font-size: 1.0rem; font-weight: 900; color: var(--phoenix-fire); letter-spacing: 0.05em; }
@@ -37,7 +41,7 @@
         .tab-btn:hover { color: white; background: #1a1a1a; }
         .tab-btn.active { color: var(--phoenix-fire); border-color: var(--phoenix-fire); background: linear-gradient(to top, rgba(255, 42, 0, 0.1), transparent); }
 
-        .sb-content { flex: 1; overflow-y: auto; position: relative; padding: 15px; scrollbar-width: thin; scrollbar-color: #333 #0a0a0a; }
+        .sb-content { flex: 1; overflow-y: auto; position: relative; padding: 15px; scrollbar-width: thin; scrollbar-color: #333 #0a0a0a; transition: opacity 0.3s; }
         .view { display: none; }
         .view.active { display: block; animation: fadeIn 0.3s; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -69,10 +73,20 @@
             box-shadow: 0 0 100px rgba(0,0,0,0.5); transform-origin: 0 0;
             will-change: transform;
         }
+        /* Hidden in Live Mode */
+        .live-mode-active #world, 
+        .live-mode-active .map-legend,
+        .live-mode-active .hud-bot,
+        .live-mode-active #coords-display { display: none !important; }
+
         #map-image-layer { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: fill; pointer-events: none; }
         #data-canvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
         #input-layer { position: absolute; inset: 0; width: 100%; height: 100%; cursor: grab; z-index: 10; }
         #input-layer:active { cursor: grabbing; }
+
+        /* LIVE MAP IFRAME */
+        #live-frame { position: absolute; inset: 0; width: 100%; height: 100%; border: none; z-index: 100; background: #000; display: none; }
+        .live-mode-active #live-frame { display: block; }
 
         /* --- MARKER & PULSE --- */
         .pulse-marker {
@@ -112,14 +126,14 @@
         .leg-box { width: 10px; height: 10px; margin-right: 8px; }
 
         /* INFO PANEL */
-        .info-panel { position: absolute; top: 0; right: 0; bottom: 0; width: 320px; background: var(--bg-panel); border-left: 1px solid var(--phoenix-fire); transform: translateX(100%); transition: transform 0.3s; z-index: 100; box-shadow: -10px 0 30px rgba(0,0,0,0.8); display: flex; flex-direction: column; }
+        .info-panel { position: absolute; top: 0; right: 0; bottom: 0; width: 320px; background: var(--bg-panel); border-left: 1px solid var(--phoenix-fire); transform: translateX(100%); transition: transform 0.3s; z-index: 100; box-shadow: -10px 0 30px rgba(0,0,0,0.9); display: flex; flex-direction: column; }
         .info-panel.visible { transform: translateX(0); }
         .info-header { padding: 15px; background: #000; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center; }
         .info-title { font-size: 1.0rem; font-weight: 800; color: #fff; text-transform: uppercase; letter-spacing: 0.05em; }
         .info-close { color: #888; cursor: pointer; font-size: 1.5rem; transition: 0.2s; line-height: 1; }
         .info-close:hover { color: var(--phoenix-fire); }
 
-        /* RELATED LIST */
+        /* RELATED LIST STYLING */
         .related-list { margin-top: 20px; border-top: 1px solid #333; padding-top: 15px; display: flex; flex-direction: column; gap: 4px; }
         .related-item { padding: 8px 10px; cursor: pointer; border-radius: 4px; font-size: 0.85rem; color: #ccc; border: 1px solid #222; border-left: 3px solid transparent; background: #161616; transition: all 0.2s; }
         .related-item:hover { background: #222; color: white; border-left-color: #666; transform: translateX(2px); }
@@ -155,6 +169,12 @@
 
         #toast { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.9); border: 1px solid var(--phoenix-fire); color: white; padding: 15px 25px; border-radius: 8px; z-index: 200; pointer-events: none; opacity: 0; transition: opacity 0.3s; }
         #toast.visible { opacity: 1; }
+        
+        /* LIVE BUTTON STYLES */
+        @keyframes pulse-red { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 70% { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
+        .btn-live { border-color: #ef4444; color: #ef4444; animation: pulse-red 2s infinite; }
+        .btn-live:hover { background: #ef4444; color: white; }
+        .live-active { background: #ef4444 !important; color: white !important; animation: none !important; }
 
         ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-track { background: #0a0a0a; }
@@ -190,10 +210,10 @@
         <div class="sb-header">
             <div class="flex items-center justify-between mb-1">
                 <div><div class="text-xs text-gray-500 font-bold tracking-widest mb-1">INFINITY OF PHOENIX</div><div class="sb-title">CLUSTER EXPLORER</div></div>
-                <div class="flex items-center">
-                    <!-- NEW INFO BUTTON -->
-                    <button id="map-info-btn" onclick="Ui.showMapInfo()" class="hidden mr-3 px-2 py-1 rounded border border-gray-600 bg-gray-800 text-xs text-gray-300 hover:border-phoenix-fire hover:text-phoenix-fire transition-colors uppercase font-bold tracking-wider">MAP INFO</button>
-                    <img src="https://raw.githubusercontent.com/iophantonie/iophantonie-IOP_Custom_Map_Explorer.github.io/main/IOPCOM_Logo.png" class="w-12 h-12 object-contain" alt="Logo">
+                <div class="flex items-center gap-2">
+                    <button id="live-map-btn" onclick="Ui.toggleLiveMode()" class="hidden px-2 py-1 rounded border border-gray-600 bg-gray-900 text-xs font-bold tracking-wider btn-live">LIVE</button>
+                    <button id="map-info-btn" onclick="Ui.showMapInfo()" class="hidden px-2 py-1 rounded border border-gray-600 bg-gray-800 text-xs text-gray-300 hover:border-phoenix-fire hover:text-phoenix-fire transition-colors uppercase font-bold tracking-wider">INFO</button>
+                    <img src="https://raw.githubusercontent.com/iophantonie/iophantonie-IOP_Custom_Map_Explorer.github.io/main/IOPCOM_Logo.png" class="w-10 h-10 object-contain" alt="Logo">
                 </div>
             </div>
             <select id="map-select" class="phoenix-input mt-3 text-sm"><option>Lade Karten...</option></select>
@@ -247,7 +267,7 @@
                 <div class="mb-6">
                     <div class="text-xs text-gray-500 font-bold mb-2 tracking-wider">SPAWNS</div>
                     <div class="toggle-item" id="tog-players" onclick="Layers.toggle('players')"><div class="chk"></div><span>Spieler Spawns</span></div>
-                    <div class="text-xs text-gray-600 ml-8 mt-1 italic flex items-center"><span id="spawn-msg">Status: Prüfe...</span></div>
+                    <div class="text-xs text-gray-600 ml-8 mt-1 italic flex items-center"><span id="spawn-msg"></span></div>
                 </div>
                 <div><div class="text-xs text-gray-500 font-bold mb-2 tracking-wider">OBELISKEN</div><div class="toggle-item mb-2" id="tog-all-obs" onclick="Obs.toggleAll()"><div class="chk"></div><span class="text-xs font-bold text-gray-400">Alle Obelisken</span></div><div id="list-obelisks"></div></div>
             </div>
@@ -257,6 +277,9 @@
     <div id="sidebar-toggle" onclick="Ui.toggleSidebar()">◀</div>
 
     <div id="viewport">
+        <!-- LIVE MAP IFRAME -->
+        <iframe id="live-map-frame" class="absolute inset-0 w-full h-full hidden z-20 bg-black" frameborder="0"></iframe>
+
         <div class="map-legend">
             <div class="font-bold text-amber-500 mb-2 uppercase text-[10px]">Spawn Raten</div>
             <div class="leg-item"><div class="leg-box" style="background:#22c55e"></div>Sehr Häufig</div>
@@ -275,7 +298,7 @@
             <div id="input-layer"></div>
         </div>
         
-        <div class="absolute top-5 right-5 bg-black/90 px-4 py-2 rounded font-mono text-sm border border-gray-800 pointer-events-none z-50" style="color: var(--phoenix-gold);">
+        <div id="coords-display" class="absolute top-5 right-5 bg-black/90 px-4 py-2 rounded font-mono text-sm border border-gray-800 pointer-events-none z-50" style="color: var(--phoenix-gold);">
             LAT: <span id="lat">00.0</span> | LON: <span id="lon">00.0</span>
         </div>
         
@@ -399,7 +422,7 @@ const Store = {
     selDino: null, selectedPOI: null, activeRes: new Set(), activeObs: new Set(), activeRegions: new Set(),
     layers: { public: false, caves: false, players: false },
     view: { x:0, y:0, scale:1 }, sidebarOpen: true, mapKey: null,
-    currentImgIdx: 0 
+    currentImgIdx: 0, liveMode: false
 };
 
 window.MapEngine = {
@@ -610,6 +633,25 @@ window.Ui = {
         document.getElementById('view-'+id).classList.add('active');
         setTimeout(()=>MapEngine.fit(), 10);
     },
+    
+    // LIVE MODE TOGGLE
+    toggleLiveMode() {
+        Store.liveMode = !Store.liveMode;
+        const btn = document.getElementById('live-map-btn');
+        const frame = document.getElementById('live-map-frame');
+        const body = document.body;
+
+        if (Store.liveMode) {
+            btn.classList.add('live-active');
+            body.classList.add('live-mode-active');
+            frame.src = Store.map.liveMapDataUrl || Store.map.LiveMapDataUrl || Store.map.iframeUrl || ""; // Load URL with new key
+        } else {
+            btn.classList.remove('live-active');
+            body.classList.remove('live-mode-active');
+            frame.src = ""; // Stop loading
+        }
+    },
+
     renderDinos(term="") {
         const l = document.getElementById('dino-list-root'); if(!l) return;
         const t = term.toLowerCase();
@@ -795,7 +837,7 @@ window.Ui = {
         if(item) this.showInfo(item, type);
     },
     closeInfo() { document.getElementById('info-panel').classList.remove('visible'); MapEngine.setMarker(null); },
-    setSpawnStatus(type, msg) { const dot = document.getElementById('st-spawn'); const txt = document.getElementById('spawn-msg'); if(dot) dot.className = 'status-dot ' + type; if(txt) txt.textContent = msg; }
+    setSpawnStatus(type, msg) { const txt = document.getElementById('spawn-msg'); if(txt) txt.textContent = msg; }
 };
 
 window.Layers = {
@@ -884,6 +926,10 @@ const Data = {
             const regUrl = c.regionDataUrl || c.RegionDataUrl || c.regionsDataUrl || c.RegionsDataUrl;
             if(regUrl) console.log("Region URL: " + regUrl);
             const infoUrl = c.infoBadgeUrl || c.InfoBadgeUrl;
+            
+            // LIVE MAP URL Check
+            const liveUrl = c.liveMapDataUrl || c.LiveMapDataUrl || c.iframeUrl;
+            if(liveUrl) { Store.map.liveMapDataUrl = liveUrl; }
 
             // Fixed Array with Null fallbacks to ensure index stability
             const reqs = [
@@ -905,11 +951,12 @@ const Data = {
             
             Store.data = { dinos: d?.dinoSpawns||{}, res: r?.resources||{}, pois: p?.publicSpots||[], obs: o?.obelisks||[], caves: ca?.caveSpots||[], players: findSpawns(pl), regions: regionsList, mapInfo: infoData };
             
-            // Toggle Info Button
+            // Toggle Info & Live Buttons
             const infoBtn = document.getElementById('map-info-btn');
-            if(infoBtn) {
-                if(infoData) infoBtn.classList.remove('hidden'); else infoBtn.classList.add('hidden');
-            }
+            if(infoBtn) { if(infoData) infoBtn.classList.remove('hidden'); else infoBtn.classList.add('hidden'); }
+            
+            const liveBtn = document.getElementById('live-map-btn');
+            if(liveBtn) { if(liveUrl) liveBtn.classList.remove('hidden'); else liveBtn.classList.add('hidden'); }
 
             // ALPHA FIX
             if(c.alphaVariantKey && Store.alphas[c.alphaVariantKey]) {
