@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IOP Level Progress System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Acme&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* Farben und Schriftarten - IOP Style */
+        :root {
+            --color-red: #E53935;
+            --color-dark: rgba(20, 20, 20, 0.95);
+            --color-light-dark: rgba(40, 40, 40, 0.9);
+            --color-text: #f7f7f7;
+            --color-gold: #FFEB3B;
+            --color-info: #2196F3;
+            
+            --font-main: sans-serif;
+            --font-header: 'Acme', sans-serif;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            background-color: transparent;
+            font-family: var(--font-main);
+            color: var(--color-text);
+            margin: 0;
+            padding: 5px; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden; 
+        }
+
+        /* Hauptcontainer */
+        .progress-container {
+            background-color: var(--color-dark);
+            border-radius: 12px;
+            border: 2px solid var(--color-red);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.8);
+            width: 100%;
+            max-width: 1200px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            height: 98%; 
+            max-height: 98vh;
+        }
+
+        /* Header */
+        .header {
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 15px;
+            text-align: center;
+            border-bottom: 2px solid var(--color-red);
+            flex-shrink: 0;
+        }
+
+        .title {
+            font-family: var(--font-header);
+            font-size: 1.8rem; 
+            color: var(--color-red);
+            text-transform: uppercase;
+            margin: 0;
+            text-shadow: 0 0 10px rgba(229, 57, 53, 0.4);
+            letter-spacing: 1px;
+        }
+
+        .subtitle {
+            font-size: 0.9rem;
+            color: #aaa;
+            margin-top: 5px;
+            font-style: italic;
+        }
+
+        /* Content Area mit Scrollbar für alles außer Header */
+        .content-scroll {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 15px;
+            scrollbar-width: thin;
+            scrollbar-color: var(--color-red) transparent;
+        }
+        .content-scroll::-webkit-scrollbar { width: 6px; }
+        .content-scroll::-webkit-scrollbar-thumb { background-color: var(--color-red); border-radius: 3px; }
+
+        /* Info Boxen */
+        .info-card {
+            background-color: var(--color-light-dark);
+            border-left: 4px solid var(--color-info);
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .info-card h3 {
+            margin-top: 0;
+            color: var(--color-info);
+            font-family: var(--font-header);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .alert-box {
+            background-color: rgba(229, 57, 53, 0.15);
+            border: 1px solid var(--color-red);
+            color: #ffcccc;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .alert-box i {
+            color: var(--color-red);
+            margin-top: 3px;
+        }
+
+        /* Progress Liste / Tabelle */
+        .list-header {
+            display: grid;
+            grid-template-columns: 0.5fr 1fr 1fr;
+            padding: 10px 15px;
+            background-color: rgba(255,255,255,0.1);
+            font-family: var(--font-header);
+            color: var(--color-gold);
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            backdrop-filter: blur(5px);
+        }
+
+        .progress-list {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .progress-row {
+            display: grid;
+            grid-template-columns: 0.5fr 1fr 1fr;
+            background-color: rgba(255,255,255,0.03);
+            padding: 12px 15px;
+            align-items: center;
+            transition: background 0.2s;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .progress-row:hover {
+            background-color: rgba(255,255,255,0.08);
+        }
+
+        .lvl-badge {
+            font-family: var(--font-header);
+            font-size: 1.2rem;
+            color: #fff;
+            background-color: #333;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #555;
+        }
+
+        .data-col {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1rem;
+        }
+
+        .data-col i {
+            width: 20px;
+            text-align: center;
+            color: #aaa;
+        }
+
+        /* Highlights für spezielle Level */
+        .milestone-100 {
+            background: linear-gradient(90deg, rgba(255,235,59,0.1), transparent);
+            border-left: 3px solid var(--color-gold);
+        }
+        .milestone-100 .lvl-badge {
+            border-color: var(--color-gold);
+            color: var(--color-gold);
+            box-shadow: 0 0 10px rgba(255, 235, 59, 0.3);
+        }
+
+        .milestone-max {
+            background: linear-gradient(90deg, rgba(229, 57, 53, 0.15), transparent);
+            border-left: 3px solid var(--color-red);
+        }
+        .milestone-max .lvl-badge {
+            border-color: var(--color-red);
+            color: var(--color-red);
+            box-shadow: 0 0 10px rgba(229, 57, 53, 0.4);
+        }
+
+        /* Highlight Text */
+        .highlight {
+            color: var(--color-gold);
+            font-weight: bold;
+        }
+
+        @media (max-width: 600px) {
+            .title { font-size: 1.4rem; }
+            .list-header, .progress-row {
+                font-size: 0.85rem;
+                padding: 10px;
+            }
+            .lvl-badge { width: 35px; height: 35px; font-size: 0.9rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="progress-container">
+        
+        <div class="header">
+            <h1 class="title">Progressives Level-Upgrade</h1>
+            <div class="subtitle">Strukturen & Decay Skalierung</div>
+        </div>
+
+        <div class="content-scroll">
+            
+            <!-- Erklärung -->
+            <div class="info-card">
+                <h3><i class="fa-solid fa-circle-info"></i> Wie es funktioniert</h3>
+                <p>
+                    Euer Strukturenlimit und Decay skalieren nun direkt mit eurem <strong>Spieler-Level</strong>. 
+                    Login löst die Achievements aus und aktualisiert eure Limits. 
+                    Die Werte sind so ausgelegt, dass die Standard-Limits (Level 100) auch ohne Bosse erreichbar sind.
+                </p>
+                <p style="margin-top: 10px; font-size: 0.85rem; color: #aaa;">
+                    <em>Hinweis: In den ersten 100 Leveln gibt es viele kleine Schritte für schnelle Erfolgserlebnisse!</em>
+                </p>
+            </div>
+
+            <div class="alert-box">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                <div>
+                    <strong>Wichtig für Stämme:</strong><br>
+                    Der Spieler mit dem <u>höchsten</u> Strukturenlimit und Decay im Stamm gibt diese Werte für alle Stammesstrukturen vor.
+                </div>
+            </div>
+
+            <!-- Tabelle Header -->
+            <div class="list-header">
+                <div>Level</div>
+                <div><i class="fa-solid fa-hourglass-half"></i> Decay</div>
+                <div><i class="fa-solid fa-warehouse"></i> Limit</div>
+            </div>
+
+            <!-- Liste (Generiert durch JS) -->
+            <div id="progressList" class="progress-list">
+                <!-- Items werden hier eingefügt -->
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // DATENBANK DER LEVEL
+        const levelData = [
+            { lvl: 1, decay: 5, limit: 100 },
+            { lvl: 10, decay: 7, limit: 150 },
+            { lvl: 20, decay: 10, limit: 200 },
+            { lvl: 30, decay: 12, limit: 250 },
+            { lvl: 40, decay: 14, limit: 500 },
+            { lvl: 50, decay: 16, limit: 750 },
+            { lvl: 60, decay: 18, limit: 1000 },
+            { lvl: 70, decay: 21, limit: 2500 },
+            { lvl: 80, decay: 25, limit: 4000 },
+            { lvl: 90, decay: 27, limit: 5000 },
+            { lvl: 100, decay: 30, limit: 8000, milestone: "100" }, // Standard Max
+            { lvl: 105, decay: 31, limit: 8050 },
+            { lvl: 110, decay: 32, limit: 8100 },
+            { lvl: 115, decay: 33, limit: 8150 },
+            { lvl: 120, decay: 34, limit: 8200 },
+            { lvl: 125, decay: 35, limit: 8250 },
+            { lvl: 130, decay: 36, limit: 8300 },
+            { lvl: 135, decay: 37, limit: 8350 },
+            { lvl: 140, decay: 38, limit: 8400 },
+            { lvl: 145, decay: 39, limit: 8450 },
+            { lvl: 150, decay: 40, limit: 8500 },
+            { lvl: 155, decay: 41, limit: 8550 },
+            { lvl: 160, decay: 42, limit: 8600 },
+            { lvl: 165, decay: 43, limit: 8650 },
+            { lvl: 170, decay: 44, limit: 8700 },
+            { lvl: 175, decay: 45, limit: 8750 },
+            { lvl: 180, decay: 46, limit: 8800 },
+            { lvl: 185, decay: 47, limit: 8850 },
+            { lvl: 190, decay: 48, limit: 8900 },
+            { lvl: 195, decay: 49, limit: 8950 },
+            { lvl: 200, decay: 50, limit: 9000, milestone: "max" } // Absolute Max
+        ];
+
+        const listContainer = document.getElementById('progressList');
+
+        function renderList() {
+            listContainer.innerHTML = '';
+            
+            levelData.forEach(item => {
+                const row = document.createElement('div');
+                
+                // Klassen bestimmen (Milestones)
+                let rowClass = 'progress-row';
+                if (item.milestone === "100") rowClass += ' milestone-100';
+                if (item.milestone === "max") rowClass += ' milestone-max';
+
+                row.className = rowClass;
+
+                row.innerHTML = `
+                    <div>
+                        <div class="lvl-badge">${item.lvl}</div>
+                    </div>
+                    <div class="data-col">
+                        <i class="fa-solid fa-hourglass-half"></i>
+                        <span><span class="highlight">${item.decay}</span> Tage</span>
+                    </div>
+                    <div class="data-col">
+                        <i class="fa-solid fa-warehouse"></i>
+                        <span><span class="highlight">${item.limit}</span> Stk.</span>
+                    </div>
+                `;
+                listContainer.appendChild(row);
+            });
+        }
+
+        renderList();
+
+    </script>
+</body>
+</html>
