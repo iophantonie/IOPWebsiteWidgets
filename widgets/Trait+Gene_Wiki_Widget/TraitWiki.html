@@ -1,1 +1,634 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IOP Trait & Gen Wiki</title>
+    <link href="https://fonts.googleapis.com/css2?family=Acme&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* Farben und Schriftarten - IOP Style */
+        :root {
+            --color-red: #E53935;
+            --color-dark: rgba(20, 20, 20, 0.95);
+            --color-light-dark: rgba(40, 40, 40, 0.9);
+            --color-text: #f7f7f7;
+            --color-gold: #FFEB3B;
+            --color-stat: #4CAF50; /* Grün für Stats/Attribute */
+            --color-combat: #F44336; /* Rot für Kampf */
+            --color-utility: #2196F3; /* Blau für Utility */
+            --color-breeding: #9C27B0; /* Lila für Zucht */
+            
+            --font-main: sans-serif;
+            --font-header: 'Acme', sans-serif;
+        }
 
+        * { box-sizing: border-box; }
+
+        body {
+            background-color: transparent;
+            font-family: var(--font-main);
+            color: var(--color-text);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* Container */
+        .wiki-container {
+            background-color: var(--color-dark);
+            border-radius: 12px;
+            border: 3px solid var(--color-red);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.8);
+            width: 100%;
+            max-width: 1600px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            height: 90vh; 
+        }
+
+        /* Header */
+        .wiki-header {
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 20px;
+            text-align: center;
+            border-bottom: 2px solid var(--color-red);
+            flex-shrink: 0;
+        }
+
+        .wiki-title {
+            font-family: var(--font-header);
+            font-size: 2.2rem;
+            color: var(--color-red);
+            text-transform: uppercase;
+            margin: 0 0 15px 0;
+            text-shadow: 0 0 10px rgba(229, 57, 53, 0.4);
+        }
+
+        /* Controls: Suche & Filter */
+        .controls-area {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+
+        .search-wrapper {
+            position: relative;
+            flex-grow: 1;
+            max-width: 400px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 15px 12px 40px;
+            border-radius: 8px;
+            border: 2px solid #555;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--color-red);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #aaa;
+        }
+
+        /* Filter Buttons */
+        .filter-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .filter-btn {
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #ccc;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: var(--font-header);
+            text-transform: uppercase;
+            transition: all 0.2s;
+        }
+
+        .filter-btn:hover {
+            background-color: rgba(255, 255, 255, 0.15);
+            color: #fff;
+        }
+
+        .filter-btn.active {
+            background-color: var(--color-red);
+            border-color: var(--color-red);
+            color: #fff;
+            box-shadow: 0 0 10px rgba(229, 57, 53, 0.4);
+        }
+
+        /* Content Grid */
+        .grid-container {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); 
+            gap: 20px;
+            scrollbar-width: thin;
+            scrollbar-color: var(--color-red) transparent;
+        }
+
+        .grid-container::-webkit-scrollbar { width: 8px; }
+        .grid-container::-webkit-scrollbar-thumb { background-color: var(--color-red); border-radius: 4px; }
+
+        /* Trait Card */
+        .trait-card {
+            background-color: var(--color-light-dark);
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .trait-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            border-color: var(--color-gold);
+        }
+
+        /* Kategorie-Streifen an der Seite */
+        .trait-card::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background-color: #555;
+        }
+
+        .trait-card[data-cat="Kampf"]::before { background-color: var(--color-combat); }
+        .trait-card[data-cat="Attribute"]::before { background-color: var(--color-stat); }
+        .trait-card[data-cat="Utility"]::before { background-color: var(--color-utility); }
+        .trait-card[data-cat="Zucht"]::before { background-color: var(--color-breeding); }
+
+        .card-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 10px;
+            margin-bottom: 5px;
+        }
+
+        .trait-name-container {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .trait-name-de {
+            font-family: var(--font-header);
+            font-size: 1.4rem;
+            color: #fff; /* Weiß und Dick */
+            font-weight: 700;
+        }
+        
+        .trait-name-en {
+            color: #aaa;
+            font-size: 0.95rem;
+            font-family: var(--font-main);
+            font-weight: normal;
+            font-style: italic;
+        }
+
+        .trait-icon {
+            font-size: 1.5rem;
+            color: var(--color-gold);
+        }
+
+        .trait-desc {
+            font-size: 0.9rem;
+            line-height: 1.4;
+            color: #ddd;
+            min-height: 45px;
+        }
+
+        /* Werte Box */
+        .values-box {
+            background-color: rgba(0, 0, 0, 0.3);
+            border-radius: 6px;
+            padding: 10px;
+            font-size: 0.9rem;
+        }
+
+        .value-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 4px;
+            border-bottom: 1px dashed rgba(255,255,255,0.1);
+            padding-bottom: 2px;
+        }
+        .value-row:last-child { border-bottom: none; margin-bottom: 0; }
+
+        .tier-label { color: #aaa; }
+        .tier-val { color: var(--color-gold); font-weight: bold; }
+
+        /* Footer Infos */
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+            font-size: 0.8rem;
+            padding-top: 10px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .stack-info {
+            color: #ccc;
+        }
+        .stack-info span {
+            color: var(--color-red);
+            font-weight: bold;
+            font-size: 1rem;
+        }
+        
+        .tag {
+            font-size: 0.75rem;
+            padding: 2px 8px;
+            border-radius: 10px;
+            background-color: rgba(255,255,255,0.1);
+            color: #aaa;
+            text-transform: uppercase;
+        }
+
+        /* Empty State */
+        .no-results {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 50px;
+            font-size: 1.5rem;
+            color: #666;
+            font-family: var(--font-header);
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="wiki-container">
+        
+        <div class="wiki-header">
+            <h1 class="wiki-title">🧬 Gen & Trait Wiki</h1>
+            
+            <div class="controls-area">
+                <!-- Suche -->
+                <div class="search-wrapper">
+                    <i class="fa-solid fa-search search-icon"></i>
+                    <input type="text" id="searchInput" class="search-input" placeholder="Suche nach Gen, Effekt oder Name...">
+                </div>
+
+                <!-- Filter -->
+                <div class="filter-group">
+                    <button class="filter-btn active" data-filter="all">Alle</button>
+                    <button class="filter-btn" data-filter="Kampf">Kampf ⚔️</button>
+                    <button class="filter-btn" data-filter="Utility">Utility 🛠️</button>
+                    <button class="filter-btn" data-filter="Attribute">Attribute 📊</button>
+                    <button class="filter-btn" data-filter="Zucht">Zucht 🧬</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="contentGrid" class="grid-container">
+            <!-- Karten werden hier generiert -->
+        </div>
+
+    </div>
+
+    <script>
+        // DATENBANK DER TRAITS (Alle 29 aus der Liste)
+        const traitData = [
+            // --- KAMPF ---
+            {
+                name_de: "Aggressiv", name_en: "Aggressive",
+                category: "Kampf",
+                desc: "Wenn diese Kreatur Schaden verursacht, erhält sie einen Bewegungsgeschwindigkeits-Buff für 5 Sekunden.",
+                t1: "2.5% Speed", t2: "3.75% Speed", t3: "5.0% Speed",
+                stack: 2, icon: "fa-bolt"
+            },
+            {
+                name_de: "Wütend", name_en: "Angry",
+                category: "Kampf",
+                desc: "Verursacht mehr Schaden basierend auf der aktuellen Gesundheit (Bonus beginnt bei 50% HP).",
+                t1: "1.25% Dmg", t2: "1.875% Dmg", t3: "2.5% Dmg",
+                stack: 2, icon: "fa-face-angry"
+            },
+            {
+                name_de: "Blutrausch", name_en: "Frenzy",
+                category: "Kampf",
+                desc: "Erhöht Schaden und Geschwindigkeit nach einem Kill kurzzeitig.",
+                t1: "10% Dmg/Speed", t2: "15% Dmg/Speed", t3: "20% Dmg/Speed",
+                stack: 3, icon: "fa-fire"
+            },
+            {
+                name_de: "Riesentöter", name_en: "Giantslaying",
+                category: "Kampf",
+                desc: "Mehr Schaden gegen große Kreaturen (>500 Drag Weight), weniger Schaden gegen kleine (<200).",
+                t1: "+2.5% Large / -7.5% Small", t2: "+3.75% Large / -11.25% Small", t3: "+5.0% Large / -15.0% Small",
+                stack: 2, icon: "fa-axe"
+            },
+            {
+                name_de: "Wuchtschlag", name_en: "Heavy-Hitting",
+                category: "Kampf",
+                desc: "Verursacht mehr Nahkampfschaden, hat aber eine verringerte Angriffsgeschwindigkeit.",
+                t1: "+2.5% Dmg / -5% Speed", t2: "+3.75% Dmg / -7.5% Speed", t3: "+5.0% Dmg / -10.0% Speed",
+                stack: 3, icon: "fa-hammer"
+            },
+            {
+                name_de: "Königsmörder", name_en: "Kingslaying",
+                category: "Kampf",
+                desc: "Erhöhter Schaden gegen Bosse und Alphas, verringerter Schaden gegen alle anderen.",
+                t1: "+5% Boss / -10% Andere", t2: "+7.5% Boss / -15% Andere", t3: "+10% Boss / -20% Andere",
+                stack: 3, icon: "fa-crown"
+            },
+            {
+                name_de: "Taub", name_en: "Numb",
+                category: "Kampf",
+                desc: "Ein Teil des erlittenen Schadens wird in Schaden über Zeit (DoT) umgewandelt.",
+                t1: "25% DoT", t2: "37.5% DoT", t3: "50.0% DoT",
+                stack: 1, icon: "fa-capsules"
+            },
+            {
+                name_de: "Beschützend", name_en: "Protective",
+                category: "Kampf",
+                desc: "Reduziert den Schaden, den der Reiter erleidet.",
+                t1: "-15.0% Schaden", t2: "-22.5% Schaden", t3: "-30.0% Schaden",
+                stack: 2, icon: "fa-user-shield"
+            },
+            {
+                name_de: "Flinkschlag", name_en: "Quick-Hitting",
+                category: "Kampf",
+                desc: "Greift schneller an, verursacht aber weniger Nahkampfschaden.",
+                t1: "+2.5% Speed / -5% Dmg", t2: "+3.75% Speed / -7.5% Dmg", t3: "+5.0% Speed / -10.0% Dmg",
+                stack: 3, icon: "fa-wind"
+            },
+            {
+                name_de: "Zäh", name_en: "Tenacious",
+                category: "Kampf",
+                desc: "Nimmt weniger Schaden basierend auf aktueller Gesundheit (Effekt startet bei 50% HP).",
+                t1: "-12.5% Dmg", t2: "-18.75% Dmg", t3: "-25.0% Dmg",
+                stack: 3, icon: "fa-heart-pulse"
+            },
+            {
+                name_de: "Vampirisch", name_en: "Vampiric",
+                category: "Kampf",
+                desc: "Heilt den Dino um einen Prozentsatz des verursachten Schadens (Effekt sinkt bei hohem Drag Weight).",
+                t1: "5% Lifesteal", t2: "7.5% Lifesteal", t3: "10.0% Lifesteal",
+                stack: 1, icon: "fa-droplet"
+            },
+             {
+                name_de: "Ablenkend", name_en: "Distracting",
+                category: "Kampf",
+                desc: "Gegner, die von diesem Dino getroffen werden, verursachen 20s lang weniger Schaden an anderen.",
+                t1: "-5% Dmg", t2: "-7.5% Dmg", t3: "-10% Dmg",
+                stack: 1, icon: "fa-mask"
+            },
+            {
+                name_de: "Aufgeregt", name_en: "Excitable",
+                category: "Kampf",
+                desc: "Treffer mit dem Basis-Angriff reduzieren die Abklingzeit anderer Fähigkeiten.",
+                t1: "-0.25s CD", t2: "-0.375s CD", t3: "-0.5s CD",
+                stack: 1, icon: "fa-stopwatch"
+            },
+
+            // --- UTILITY / ATTRIBUTE ---
+            {
+                name_de: "Athletisch", name_en: "Athletic",
+                category: "Attribute",
+                desc: "Erhält HP- und Stamina-Regeneration basierend auf dem Sauerstoff-Wert.",
+                t1: "0.05 Reg/Oxy", t2: "0.075 Reg/Oxy", t3: "0.1 Reg/Oxy",
+                stack: 3, icon: "fa-person-running"
+            },
+            {
+                name_de: "Aquatisch/Schwimmer", name_en: "Aquatic/Swimmer",
+                category: "Utility",
+                desc: "Schwimmt schneller und verbraucht weniger Sauerstoff/Ausdauer im Wasser.",
+                t1: "+7.5% Speed", t2: "+11.25% Speed", t3: "+15% Speed",
+                stack: 3, icon: "fa-water"
+            },
+            {
+                name_de: "Lastenträger", name_en: "Bearing/Carrier",
+                category: "Utility",
+                desc: "Reduziert das Gewicht einer spezifischen Item-Kategorie im Inventar.",
+                t1: "-15% Gewicht", t2: "-22.5% Gewicht", t3: "-30% Gewicht",
+                stack: 3, icon: "fa-weight-hanging"
+            },
+            {
+                name_de: "Sorglos", name_en: "Carefree",
+                category: "Utility",
+                desc: "Erhält einen Bewegungsgeschwindigkeits-Bonus, der bei Kampf oder Reiter verloren geht.",
+                t1: "+7.5% Speed", t2: "+11.25% Speed", t3: "+15.0% Speed",
+                stack: 1, icon: "fa-feather"
+            },
+            {
+                name_de: "Kälteresistent", name_en: "Cold",
+                category: "Utility",
+                desc: "Kreatur und Reiter erhalten Hitzeschutz (Hyperthermic) und weniger Feuerschaden.",
+                t1: "40 Iso / -5% Fire", t2: "60 Iso / -7.5% Fire", t3: "80 Iso / -10% Fire",
+                stack: 3, icon: "fa-sun"
+            },
+            {
+                name_de: "Feige", name_en: "Cowardly",
+                category: "Utility",
+                desc: "Erhält einen Geschwindigkeits-Buff, wenn Schaden von nicht-verbündeten Zielen genommen wird.",
+                t1: "+2.5% Speed", t2: "+3.75% Speed", t3: "+5.0% Speed",
+                stack: 3, icon: "fa-person-falling-burst"
+            },
+            {
+                name_de: "Tagaktiv", name_en: "Diurnal",
+                category: "Utility",
+                desc: "Reduziert den Ausdauerverbrauch am Tag.",
+                t1: "-2.5% Stamina", t2: "-3.75% Stamina", t3: "-5.0% Stamina",
+                stack: 3, icon: "fa-sun"
+            },
+            {
+                name_de: "Schnelllerner", name_en: "Fast Learner",
+                category: "Utility",
+                desc: "Erhöht den Erfahrungsgewinn.",
+                t1: "+15% XP", t2: "+22.5% XP", t3: "+30% XP",
+                stack: 3, icon: "fa-graduation-cap"
+            },
+            {
+                name_de: "Fettpolster", name_en: "Fatty",
+                category: "Attribute",
+                desc: "Erhält Rüstung basierend auf dem Nahrungswert.",
+                t1: "0.1 Rüstung/Food", t2: "0.15 Rüstung/Food", t3: "0.2 Rüstung/Food",
+                stack: 3, icon: "fa-shield-heart"
+            },
+            {
+                name_de: "Frenetisch", name_en: "Frenetic",
+                category: "Attribute",
+                desc: "Erhöht die Erholung von Betäubung (Torpor).",
+                t1: "+7.5% Recovery", t2: "+11.25% Recovery", t3: "+15.0% Recovery",
+                stack: 3, icon: "fa-bed"
+            },
+            {
+                name_de: "Nachtaktiv", name_en: "Nocturnal",
+                category: "Utility",
+                desc: "Reduziert den Ausdauerverbrauch in der Nacht.",
+                t1: "-2.5% Stamina", t2: "-3.7% Stamina", t3: "-5.0% Stamina",
+                stack: 3, icon: "fa-moon"
+            },
+            {
+                name_de: "Langsamer Stoffwechsel", name_en: "Slow Metabolism",
+                category: "Utility",
+                desc: "Verbraucht weniger Nahrung (auch für Fähigkeiten wie Daedon-Heilung).",
+                t1: "-5% Food", t2: "-7.5% Food", t3: "-10% Food",
+                stack: 3, icon: "fa-utensils"
+            },
+            {
+                name_de: "Sprinter", name_en: "Sprinter/High Endurance",
+                category: "Utility",
+                desc: "Verbraucht weniger Ausdauer beim Sprinten.",
+                t1: "-4% Stamina", t2: "-6% Stamina", t3: "-8% Stamina",
+                stack: 3, icon: "fa-shoe-prints"
+            },
+            {
+                name_de: "Wärme", name_en: "Warm",
+                category: "Utility",
+                desc: "Kreatur und Reiter erhalten Kälteschutz (Hypothermic) und weniger Eisschaden.",
+                t1: "40 Iso / -5% Ice", t2: "60 Iso / -7.5% Ice", t3: "80 Iso / -10% Ice",
+                stack: 3, icon: "fa-snowflake"
+            },
+
+            // --- ZUCHT ---
+            {
+                name_de: "Robust", name_en: "Robust",
+                category: "Zucht",
+                desc: "Erhöht die Wahrscheinlichkeit, den HÖHEREN Stat der Eltern zu vererben.",
+                t1: "+1.5% Chance", t2: "+2.25% Chance", t3: "+3.0% Chance",
+                stack: 3, icon: "fa-dna"
+            },
+            {
+                name_de: "Gebrechlich", name_en: "Frail",
+                category: "Zucht",
+                desc: "VERRINGERT die Wahrscheinlichkeit, den HÖHEREN Stat der Eltern zu vererben.",
+                t1: "-1.5% Chance", t2: "-2.25% Chance", t3: "-3.0% Chance",
+                stack: 3, icon: "fa-link-slash"
+            },
+            {
+                name_de: "Veränderlich", name_en: "Mutable",
+                category: "Zucht",
+                desc: "Erhöht die Wahrscheinlichkeit für eine Mutation auf einem bestimmten Stat.",
+                t1: "+1.0% Chance", t2: "+1.5% Chance", t3: "+2.0% Chance",
+                stack: 3, icon: "fa-bacterium"
+            }
+        ];
+
+        // ELEMENTE
+        const grid = document.getElementById('contentGrid');
+        const searchInput = document.getElementById('searchInput');
+        const filterBtns = document.querySelectorAll('.filter-btn');
+
+        // RENDER FUNKTION
+        function renderTraits(filterCat = 'all', searchText = '') {
+            grid.innerHTML = '';
+            
+            const filteredData = traitData.filter(trait => {
+                const matchesCat = filterCat === 'all' || trait.category === filterCat;
+                const matchesSearch = trait.name_de.toLowerCase().includes(searchText.toLowerCase()) || 
+                                      trait.name_en.toLowerCase().includes(searchText.toLowerCase()) || 
+                                      trait.desc.toLowerCase().includes(searchText.toLowerCase());
+                return matchesCat && matchesSearch;
+            });
+
+            if (filteredData.length === 0) {
+                grid.innerHTML = '<div class="no-results">Keine Gene gefunden... vielleicht neu züchten? 🧬</div>';
+                return;
+            }
+
+            filteredData.forEach(trait => {
+                const card = document.createElement('div');
+                card.className = 'trait-card';
+                card.setAttribute('data-cat', trait.category);
+                
+                card.innerHTML = `
+                    <div class="card-header-row">
+                        <div class="trait-name-container">
+                            <span class="trait-name-de">${trait.name_de}</span>
+                            <span class="trait-name-en">/ ${trait.name_en}</span>
+                        </div>
+                        <i class="fa-solid ${trait.icon} trait-icon"></i>
+                    </div>
+                    
+                    <div class="trait-desc">${trait.desc}</div>
+                    
+                    <div class="values-box">
+                        <div class="value-row">
+                            <span class="tier-label">1 Stack (T1):</span>
+                            <span class="tier-val">${trait.t1}</span>
+                        </div>
+                        <div class="value-row">
+                            <span class="tier-label">2 Stacks (T2):</span>
+                            <span class="tier-val">${trait.t2}</span>
+                        </div>
+                        <div class="value-row">
+                            <span class="tier-label">3 Stacks (T3):</span>
+                            <span class="tier-val">${trait.t3}</span>
+                        </div>
+                    </div>
+
+                    <div class="card-footer">
+                        <div class="stack-info">Max. Stapel: <span>${trait.stack}</span></div>
+                        <span class="tag">${trait.category}</span>
+                    </div>
+                `;
+                
+                grid.appendChild(card);
+            });
+        }
+
+        // EVENT LISTENERS
+        searchInput.addEventListener('input', (e) => {
+            const activeBtn = document.querySelector('.filter-btn.active');
+            const currentFilter = activeBtn ? activeBtn.dataset.filter : 'all';
+            renderTraits(currentFilter, e.target.value);
+        });
+
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                filterBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                const filter = btn.dataset.filter;
+                const search = searchInput.value;
+                renderTraits(filter, search);
+            });
+        });
+
+        // Initial Render
+        renderTraits();
+
+    </script>
+</body>
+</html>
