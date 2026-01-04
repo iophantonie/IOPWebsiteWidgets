@@ -18,6 +18,7 @@
             --color-info: #2196F3;
             --color-tame: #4CAF50;
             --color-warn: #FF9800;
+            --color-paleo-glow: rgba(229, 57, 53, 0.6);
             
             --font-main: sans-serif;
             --font-header: 'Acme', sans-serif;
@@ -47,12 +48,10 @@
             box-shadow: 0 4px 30px rgba(0, 0, 0, 0.8);
             width: 100%;
             height: 100%;
-            max-width: none; 
-            max-height: none;
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            position: relative; /* Für Modal Positionierung */
+            position: relative;
         }
 
         /* Header */
@@ -65,6 +64,10 @@
             background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)); 
             background-size: cover;
             background-position: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
         }
 
         .title {
@@ -81,6 +84,40 @@
             color: #aaa;
             font-style: italic;
             margin-top: 5px;
+        }
+
+        /* SEARCH BAR (Neu) */
+        .search-container {
+            width: 100%;
+            max-width: 500px;
+            position: relative;
+            margin-top: 5px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px 15px 10px 40px;
+            border-radius: 20px;
+            border: 2px solid #555;
+            background-color: rgba(0, 0, 0, 0.3);
+            color: #fff;
+            font-family: var(--font-main);
+            font-size: 1rem;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--color-red);
+            box-shadow: 0 0 15px var(--color-paleo-glow);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #aaa;
         }
 
         /* Navigation Tabs */
@@ -127,6 +164,14 @@
         /* Sections (managed by JS) */
         .section { display: none; animation: fadeIn 0.3s ease; }
         .section.active { display: block; }
+        
+        /* Suche aktiv: Zeige alle Kreaturen-Sections an */
+        .content-area.searching .creature-section {
+            display: block !important;
+        }
+        .content-area.searching .non-creature-section {
+            display: none !important;
+        }
         
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
@@ -208,7 +253,7 @@
             display: block;
         }
 
-        /* Platzhalter für Dino Bilder (Falls kein Bild vorhanden) */
+        /* Platzhalter für Dino Bilder */
         .creature-img-placeholder {
             height: 150px;
             background-color: #2a2a2a;
@@ -295,6 +340,9 @@
         .badge-noboss { background-color: rgba(244, 67, 54, 0.2); color: #F44336; border: 1px solid #F44336; }
         .badge-desert { background-color: rgba(255, 152, 0, 0.2); color: #FF9800; border: 1px solid #FF9800; }
 
+        /* Such-Filter Helper */
+        .hidden { display: none !important; }
+
         /* === MODAL STYLING (POPUP) === */
         .modal {
             display: none;
@@ -323,7 +371,7 @@
             border: 2px solid var(--color-gold);
             border-radius: 12px;
             width: 95%;
-            max-width: 1300px; /* Erhöht für größeres Popup */
+            max-width: 1300px;
             max-height: 95%;
             display: flex;
             flex-direction: row;
@@ -352,7 +400,7 @@
         .close-btn:hover { color: var(--color-red); }
 
         .modal-image-col {
-            flex: 2.5; /* Deutlich mehr Platz für das Bild */
+            flex: 2.5; 
             background-color: #000;
             display: flex;
             align-items: center;
@@ -364,11 +412,10 @@
         .modal-image-col img {
             width: 100%;
             height: 100%;
-            object-fit: contain; /* Zeigt ganzes Bild ohne Abschneiden */
-            max-height: 90vh; /* Mehr Höhe erlauben */
+            object-fit: contain;
+            max-height: 90vh;
         }
         
-        /* Styling für Modal Platzhalter wenn kein Bild da ist */
         .modal-image-col .placeholder-icon {
             font-size: 8rem;
             color: #444;
@@ -400,12 +447,11 @@
             padding-bottom: 10px;
         }
 
-        /* Responsive Modal für Handys */
         @media (max-width: 800px) {
             .modal-content { flex-direction: column; overflow-y: auto; }
             .modal-image-col { 
                 flex: none; 
-                height: 40vh; /* Höher auf Mobile */
+                height: 40vh;
                 border-right: none; 
                 border-bottom: 2px solid var(--color-red); 
             }
@@ -418,6 +464,7 @@
             .title { font-size: 1.5rem; }
             .creature-grid { grid-template-columns: 1fr; }
             .nav-tab { padding: 10px; font-size: 0.8rem; }
+            .search-container { max-width: 90%; }
         }
     </style>
 </head>
@@ -428,6 +475,11 @@
         <div class="header">
             <h1 class="title">Paleo Apex Predatoren</h1>
             <div class="subtitle">Fähigkeiten, Arten & Infos - Infinity of Phoenix</div>
+            
+            <div class="search-container">
+                <i class="fa-solid fa-search search-icon"></i>
+                <input type="text" id="searchInput" class="search-input" placeholder="Kreatur suchen (z.B. Rex, Giga)...">
+            </div>
         </div>
 
         <!-- Navigation -->
@@ -439,12 +491,11 @@
             <div class="nav-tab" onclick="showSection('taming')"><i class="fa-solid fa-drumstick-bite"></i> Zähm-Guides</div>
         </div>
 
-        <div class="content-area">
+        <div class="content-area" id="contentArea">
 
-            <!-- 1. FAQ & INFO SECTION -->
-            <div id="faq" class="section active">
+            <!-- 1. FAQ & INFO SECTION (Non-Creature) -->
+            <div id="faq" class="section non-creature-section active">
                 
-                <!-- Intro Box -->
                 <div class="info-box">
                     <h3><i class="fa-solid fa-info-circle"></i> Willkommen bei Paleo Ark</h3>
                     <p style="color: #ddd; line-height: 1.5;">
@@ -461,7 +512,6 @@
                     </div>
                 </div>
 
-                <!-- Mechaniken Box -->
                 <div class="info-box">
                     <h3><i class="fa-solid fa-gear"></i> Wichtige Mechaniken</h3>
                     <ul style="line-height: 1.6;">
@@ -472,7 +522,6 @@
                     </ul>
                 </div>
 
-                <!-- Spawn Raten -->
                 <div class="faq-item">
                     <div class="faq-question" onclick="toggleFaq(this)">
                         <span><i class="fa-solid fa-chart-pie"></i> Wie sind die Spawn-Raten verteilt?</span>
@@ -502,8 +551,8 @@
 
             </div>
 
-            <!-- 2. REX VARIANTEN -->
-            <div id="rex" class="section">
+            <!-- 2. REX VARIANTEN (Creature) -->
+            <div id="rex" class="section creature-section">
                 <div class="creature-grid">
                     
                     <!-- Evo Rex -->
@@ -570,8 +619,8 @@
                 </div>
             </div>
 
-            <!-- 3. GIGA VARIANTEN -->
-            <div id="giga" class="section">
+            <!-- 3. GIGA VARIANTEN (Creature) -->
+            <div id="giga" class="section creature-section">
                 <div class="info-box" style="border-left: 4px solid var(--color-red);">
                     <strong>Achtung:</strong> Paleo Gigas können NICHT in Boss-Arenen mitgenommen werden! Dafür passen sie geduckt in die Tek Cave.
                 </div>
@@ -611,8 +660,8 @@
                 </div>
             </div>
 
-            <!-- 4. WASSER KREATUREN -->
-            <div id="water" class="section">
+            <!-- 4. WASSER KREATUREN (Creature) -->
+            <div id="water" class="section creature-section">
                 <div class="creature-grid">
                     
                     <!-- Evo Mosa -->
@@ -644,8 +693,8 @@
                 </div>
             </div>
 
-            <!-- 5. TAMING GUIDES -->
-            <div id="taming" class="section">
+            <!-- 5. TAMING GUIDES (Non-Creature) -->
+            <div id="taming" class="section non-creature-section">
                 
                 <!-- Rex Guide -->
                 <div class="tame-card">
@@ -723,10 +772,29 @@
 
     <script>
         function showSection(sectionId) {
+            // Reset Suche
+            if(document.getElementById('searchInput').value === '') {
+               // Normal behavior
+            } else {
+               // Wenn Suche aktiv war, aber Tab geklickt wird -> Suche leeren oder beibehalten?
+               // Am besten: Suche resetten beim Tabwechsel für sauberen State
+               document.getElementById('searchInput').value = '';
+               const contentArea = document.getElementById('contentArea');
+               contentArea.classList.remove('searching');
+               const cards = document.querySelectorAll('.creature-card');
+               cards.forEach(c => c.classList.remove('hidden'));
+            }
+
+            // Hide all sections
             document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+            
+            // Deactivate all tabs
             document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
+
+            // Show target
             document.getElementById(sectionId).classList.add('active');
             
+            // Activate tab
             const tabs = document.querySelectorAll('.nav-tab');
             tabs.forEach(tab => {
                 if(tab.getAttribute('onclick').includes(sectionId)) {
@@ -740,44 +808,74 @@
             parent.classList.toggle('open');
         }
 
+        // SEARCH LOGIC
+        const searchInput = document.getElementById('searchInput');
+        const creatureCards = document.querySelectorAll('.creature-card');
+        const contentArea = document.getElementById('contentArea');
+
+        searchInput.addEventListener('keyup', (e) => {
+            const term = e.target.value.toLowerCase();
+            
+            if (term.length > 0) {
+                // Suche aktiv
+                contentArea.classList.add('searching');
+                
+                creatureCards.forEach(card => {
+                    const name = card.querySelector('.creature-name').innerText.toLowerCase();
+                    const type = card.querySelector('.creature-type').innerText.toLowerCase();
+                    
+                    if (name.includes(term) || type.includes(term)) {
+                        card.classList.remove('hidden');
+                    } else {
+                        card.classList.add('hidden');
+                    }
+                });
+            } else {
+                // Suche inaktiv -> Reset
+                contentArea.classList.remove('searching');
+                creatureCards.forEach(card => card.classList.remove('hidden'));
+                
+                // Stelle sicher, dass nur die aktive Section angezeigt wird (defaultverhalten)
+                const activeTab = document.querySelector('.nav-tab.active');
+                if(activeTab) {
+                    // Simuliere Klick auf aktiven Tab, um Sections zurückzusetzen
+                    activeTab.click(); 
+                } else {
+                    showSection('faq');
+                }
+            }
+        });
+
         /* --- MODAL LOGIC --- */
         const modal = document.getElementById('creatureModal');
 
         function openModal(cardElement) {
-            // Daten aus der angeklickten Karte extrahieren
             const imgElement = cardElement.querySelector('.creature-img');
             const placeholderElement = cardElement.querySelector('.creature-img-placeholder');
             const title = cardElement.querySelector('.creature-name').innerText;
             const type = cardElement.querySelector('.creature-type').innerText;
             
-            // Inhalt (Badge, Info Text, Liste) klonen
-            // Wir nehmen alles aus .creature-content außer Title und Type, da wir die oben platzieren
             const contentSource = cardElement.querySelector('.creature-content');
             let contentHtml = '';
             
-            // Sammle HTML der relevanten Kind-Elemente
             Array.from(contentSource.children).forEach(child => {
                 if(!child.classList.contains('creature-name') && !child.classList.contains('creature-type')) {
                     contentHtml += child.outerHTML;
                 }
             });
 
-            // Daten ins Modal füllen
             document.getElementById('modalTitle').innerText = title;
             document.getElementById('modalType').innerText = type;
             document.getElementById('modalBody').innerHTML = contentHtml;
 
-            // Bild Logik: Echtes Bild oder Placeholder Icon?
             const imgCol = document.getElementById('modalImgCol');
-            imgCol.innerHTML = ''; // Reset
+            imgCol.innerHTML = ''; 
 
             if(imgElement) {
-                // Echtes Bild
                 const newImg = document.createElement('img');
                 newImg.src = imgElement.src;
                 imgCol.appendChild(newImg);
             } else if (placeholderElement) {
-                // Placeholder (Icon)
                 const iconClass = placeholderElement.querySelector('i').className;
                 const iconDiv = document.createElement('div');
                 iconDiv.className = 'placeholder-icon';
@@ -785,7 +883,6 @@
                 imgCol.appendChild(iconDiv);
             }
 
-            // Anzeigen
             modal.classList.add('active');
         }
 
@@ -793,7 +890,6 @@
             modal.classList.remove('active');
         }
 
-        // Klick außerhalb schließt Modal
         modal.addEventListener('click', (e) => {
             if(e.target === modal) {
                 closeModal();
