@@ -30,27 +30,33 @@
             font-family: var(--font-main);
             color: var(--color-text);
             margin: 0;
-            padding: 5px; 
+            /* Padding reduziert, damit es den Rahmen besser ausfüllt */
+            padding: 0; 
             display: flex;
             flex-direction: column;
             align-items: center;
             height: 100vh;
+            width: 100vw;
             overflow: hidden; 
         }
 
         /* Container */
         .paleo-container {
             background-color: var(--color-dark);
-            border-radius: 12px;
+            /* Optional: Radius entfernen, wenn es nahtlos sein soll. Hier leicht abgerundet gelassen. */
+            border-radius: 8px; 
             border: 2px solid var(--color-red);
             box-shadow: 0 4px 30px rgba(0, 0, 0, 0.8);
+            
+            /* WICHTIG: Volle Breite und Höhe des Eltern-Elements */
             width: 100%;
-            max-width: 1400px;
+            height: 100%;
+            max-width: none; /* Keine Begrenzung mehr */
+            max-height: none;
+            
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            height: 98%; 
-            max-height: 98vh;
         }
 
         /* Header */
@@ -60,7 +66,7 @@
             text-align: center;
             border-bottom: 2px solid var(--color-red);
             flex-shrink: 0;
-            background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)); /* Platz für Hintergrundbild */
+            background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)); 
             background-size: cover;
             background-position: center;
         }
@@ -100,12 +106,15 @@
             border-bottom: 3px solid transparent;
             transition: all 0.2s;
             white-space: nowrap;
+            flex-grow: 1; /* Tabs verteilen sich auf die Breite */
+            text-align: center;
         }
 
         .nav-tab:hover { color: #fff; background-color: rgba(255,255,255,0.05); }
         .nav-tab.active {
             color: var(--color-gold);
             border-bottom-color: var(--color-gold);
+            background-color: rgba(255,255,255,0.02);
         }
 
         /* Content Area */
@@ -175,6 +184,7 @@
         /* Creature Cards Grid */
         .creature-grid {
             display: grid;
+            /* Flexibles Grid: Füllt den verfügbaren Platz optimal aus */
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 20px;
         }
@@ -284,6 +294,7 @@
             .header { padding: 10px; }
             .title { font-size: 1.5rem; }
             .creature-grid { grid-template-columns: 1fr; }
+            .nav-tab { padding: 10px; font-size: 0.8rem; }
         }
     </style>
 </head>
