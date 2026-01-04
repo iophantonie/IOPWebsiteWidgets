@@ -52,6 +52,7 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            position: relative; /* Für Modal Positionierung */
         }
 
         /* Header */
@@ -190,6 +191,7 @@
             overflow: hidden;
             transition: transform 0.2s, box-shadow 0.2s;
             position: relative;
+            cursor: pointer; /* Zeigt an, dass es klickbar ist */
         }
         .creature-card:hover {
             transform: translateY(-5px);
@@ -293,6 +295,124 @@
         .badge-noboss { background-color: rgba(244, 67, 54, 0.2); color: #F44336; border: 1px solid #F44336; }
         .badge-desert { background-color: rgba(255, 152, 0, 0.2); color: #FF9800; border: 1px solid #FF9800; }
 
+        /* === MODAL STYLING (POPUP) === */
+        .modal {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.85);
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-content {
+            background-color: var(--color-light-dark);
+            border: 2px solid var(--color-gold);
+            border-radius: 12px;
+            width: 95%;
+            max-width: 900px;
+            max-height: 90%;
+            display: flex;
+            flex-direction: row;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 0 30px rgba(0,0,0,0.8);
+            transform: scale(0.95);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .modal.active .modal-content {
+            transform: scale(1);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            color: #fff;
+            font-size: 2rem;
+            cursor: pointer;
+            z-index: 10;
+            text-shadow: 0 0 5px #000;
+            transition: color 0.2s;
+        }
+        .close-btn:hover { color: var(--color-red); }
+
+        .modal-image-col {
+            flex: 1.5;
+            background-color: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-right: 2px solid var(--color-red);
+            overflow: hidden;
+        }
+
+        .modal-image-col img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain; /* Zeigt ganzes Bild ohne Abschneiden */
+            max-height: 70vh;
+        }
+        
+        /* Styling für Modal Platzhalter wenn kein Bild da ist */
+        .modal-image-col .placeholder-icon {
+            font-size: 8rem;
+            color: #444;
+        }
+
+        .modal-info-col {
+            flex: 1;
+            padding: 25px;
+            overflow-y: auto;
+            background: linear-gradient(135deg, rgba(40,40,40,1) 0%, rgba(30,30,30,1) 100%);
+        }
+
+        .modal-title {
+            font-family: var(--font-header);
+            font-size: 2rem;
+            color: var(--color-gold);
+            margin: 0 0 5px 0;
+            line-height: 1;
+        }
+
+        .modal-type {
+            display: block;
+            color: #aaa;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 0.85rem;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 10px;
+        }
+
+        /* Responsive Modal für Handys */
+        @media (max-width: 800px) {
+            .modal-content { flex-direction: column; overflow-y: auto; }
+            .modal-image-col { 
+                flex: none; 
+                height: 250px; 
+                border-right: none; 
+                border-bottom: 2px solid var(--color-red); 
+            }
+            .modal-info-col { flex: none; }
+            .modal-title { font-size: 1.5rem; }
+        }
+
         @media (max-width: 700px) {
             .header { padding: 10px; }
             .title { font-size: 1.5rem; }
@@ -387,7 +507,7 @@
                 <div class="creature-grid">
                     
                     <!-- Evo Rex -->
-                    <div class="creature-card">
+                    <div class="creature-card" onclick="openModal(this)">
                         <img src="https://i.postimg.cc/vBCYBLcS/rex.png" class="creature-img" alt="Evo Rex">
                         <div class="creature-content">
                             <h4 class="creature-name">Tyrannosaurus (Evo)</h4>
@@ -402,7 +522,7 @@
                     </div>
 
                     <!-- Paleo Rex -->
-                    <div class="creature-card">
+                    <div class="creature-card" onclick="openModal(this)">
                         <img src="https://i.postimg.cc/ZRvm1BVP/paleorex.png" class="creature-img" alt="Paleo Rex">
                         <div class="creature-content">
                             <h4 class="creature-name">Paleo Tyrannosaurus</h4>
@@ -417,7 +537,7 @@
                     </div>
 
                     <!-- Tarbosaurus -->
-                    <div class="creature-card">
+                    <div class="creature-card" onclick="openModal(this)">
                         <img src="https://i.postimg.cc/L8gpbZ5H/GXn9mgf-XAAAt-Xq.jpg" class="creature-img" alt="Tarbosaurus">
                         <div class="creature-content">
                             <h4 class="creature-name">Tarbosaurus</h4>
@@ -433,7 +553,7 @@
                     </div>
 
                     <!-- Legacy Rex -->
-                    <div class="creature-card">
+                    <div class="creature-card" onclick="openModal(this)">
                         <img src="https://i.postimg.cc/QdZ3vdT1/image2.png" class="creature-img" alt="Legacy Rex">
                         <div class="creature-content">
                             <h4 class="creature-name">Legacy Rex</h4>
@@ -459,7 +579,7 @@
                 <div class="creature-grid">
                     
                     <!-- Evo Giga -->
-                    <div class="creature-card">
+                    <div class="creature-card" onclick="openModal(this)">
                         <img src="https://i.postimg.cc/CKLL6x3J/paleo-ark-evolution-evo-giganotosaurus-by-dracaavis-dh2ce9f-fullview.jpg" class="creature-img" alt="Evo Giga">
                         <div class="creature-content">
                             <h4 class="creature-name">Evo Giganotosaurus</h4>
@@ -474,7 +594,7 @@
                     </div>
 
                     <!-- Wasteland Giga -->
-                    <div class="creature-card">
+                    <div class="creature-card" onclick="openModal(this)">
                         <img src="https://i.postimg.cc/2St6KZDG/20250215004619-1.jpg" class="creature-img" alt="Wasteland Giga">
                         <div class="creature-content">
                             <h4 class="creature-name">Evo Wasteland Giga</h4>
@@ -496,7 +616,7 @@
                 <div class="creature-grid">
                     
                     <!-- Evo Mosa -->
-                    <div class="creature-card">
+                    <div class="creature-card" onclick="openModal(this)">
                         <img src="https://i.postimg.cc/FKxtFQmH/mosa-2-png.png" class="creature-img" alt="Evo Mosa">
                         <div class="creature-content">
                             <h4 class="creature-name">Evo Mosasaurus</h4>
@@ -512,7 +632,7 @@
                     </div>
 
                     <!-- Evo Plesio -->
-                    <div class="creature-card">
+                    <div class="creature-card" onclick="openModal(this)">
                         <div class="creature-img-placeholder" style="opacity: 0.5;"><i class="fa-solid fa-question"></i></div>
                         <div class="creature-content">
                             <h4 class="creature-name">Evo Plesiosaurus</h4>
@@ -579,20 +699,34 @@
             </div>
 
         </div>
+
+        <!-- MODAL STRUCTURE -->
+        <div id="creatureModal" class="modal">
+            <div class="modal-content">
+                <span class="close-btn" onclick="closeModal()">&times;</span>
+                
+                <div class="modal-image-col" id="modalImgCol">
+                    <!-- Bild oder Placeholder wird hier eingefügt -->
+                </div>
+                
+                <div class="modal-info-col">
+                    <h2 class="modal-title" id="modalTitle">Titel</h2>
+                    <span class="modal-type" id="modalType">Subtitle</span>
+                    <div id="modalBody">
+                        <!-- Inhalt (Beschreibung & Listen) wird hier kopiert -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <script>
         function showSection(sectionId) {
-            // Hide all sections
             document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
-            
-            // Deactivate all tabs
             document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
-
-            // Show target
             document.getElementById(sectionId).classList.add('active');
             
-            // Activate tab (simple logic based on onclick attribute matching)
             const tabs = document.querySelectorAll('.nav-tab');
             tabs.forEach(tab => {
                 if(tab.getAttribute('onclick').includes(sectionId)) {
@@ -605,6 +739,66 @@
             const parent = element.parentElement;
             parent.classList.toggle('open');
         }
+
+        /* --- MODAL LOGIC --- */
+        const modal = document.getElementById('creatureModal');
+
+        function openModal(cardElement) {
+            // Daten aus der angeklickten Karte extrahieren
+            const imgElement = cardElement.querySelector('.creature-img');
+            const placeholderElement = cardElement.querySelector('.creature-img-placeholder');
+            const title = cardElement.querySelector('.creature-name').innerText;
+            const type = cardElement.querySelector('.creature-type').innerText;
+            
+            // Inhalt (Badge, Info Text, Liste) klonen
+            // Wir nehmen alles aus .creature-content außer Title und Type, da wir die oben platzieren
+            const contentSource = cardElement.querySelector('.creature-content');
+            let contentHtml = '';
+            
+            // Sammle HTML der relevanten Kind-Elemente
+            Array.from(contentSource.children).forEach(child => {
+                if(!child.classList.contains('creature-name') && !child.classList.contains('creature-type')) {
+                    contentHtml += child.outerHTML;
+                }
+            });
+
+            // Daten ins Modal füllen
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalType').innerText = type;
+            document.getElementById('modalBody').innerHTML = contentHtml;
+
+            // Bild Logik: Echtes Bild oder Placeholder Icon?
+            const imgCol = document.getElementById('modalImgCol');
+            imgCol.innerHTML = ''; // Reset
+
+            if(imgElement) {
+                // Echtes Bild
+                const newImg = document.createElement('img');
+                newImg.src = imgElement.src;
+                imgCol.appendChild(newImg);
+            } else if (placeholderElement) {
+                // Placeholder (Icon)
+                const iconClass = placeholderElement.querySelector('i').className;
+                const iconDiv = document.createElement('div');
+                iconDiv.className = 'placeholder-icon';
+                iconDiv.innerHTML = `<i class="${iconClass}"></i>`;
+                imgCol.appendChild(iconDiv);
+            }
+
+            // Anzeigen
+            modal.classList.add('active');
+        }
+
+        function closeModal() {
+            modal.classList.remove('active');
+        }
+
+        // Klick außerhalb schließt Modal
+        modal.addEventListener('click', (e) => {
+            if(e.target === modal) {
+                closeModal();
+            }
+        });
     </script>
 </body>
 </html>
