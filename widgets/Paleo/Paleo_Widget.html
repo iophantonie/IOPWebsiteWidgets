@@ -30,7 +30,6 @@
             font-family: var(--font-main);
             color: var(--color-text);
             margin: 0;
-            /* Padding reduziert, damit es den Rahmen besser ausfüllt */
             padding: 0; 
             display: flex;
             flex-direction: column;
@@ -43,17 +42,13 @@
         /* Container */
         .paleo-container {
             background-color: var(--color-dark);
-            /* Optional: Radius entfernen, wenn es nahtlos sein soll. Hier leicht abgerundet gelassen. */
             border-radius: 8px; 
             border: 2px solid var(--color-red);
             box-shadow: 0 4px 30px rgba(0, 0, 0, 0.8);
-            
-            /* WICHTIG: Volle Breite und Höhe des Eltern-Elements */
             width: 100%;
             height: 100%;
-            max-width: none; /* Keine Begrenzung mehr */
+            max-width: none; 
             max-height: none;
-            
             display: flex;
             flex-direction: column;
             overflow: hidden;
@@ -106,7 +101,7 @@
             border-bottom: 3px solid transparent;
             transition: all 0.2s;
             white-space: nowrap;
-            flex-grow: 1; /* Tabs verteilen sich auf die Breite */
+            flex-grow: 1; 
             text-align: center;
         }
 
@@ -163,7 +158,7 @@
         }
         .faq-item.open .faq-answer {
             padding: 15px;
-            max-height: 500px; /* Arbitrary high value */
+            max-height: 500px; 
             border-top: 1px solid rgba(255,255,255,0.1);
         }
         .faq-icon { transition: transform 0.3s; }
@@ -184,7 +179,6 @@
         /* Creature Cards Grid */
         .creature-grid {
             display: grid;
-            /* Flexibles Grid: Füllt den verfügbaren Platz optimal aus */
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 20px;
         }
@@ -203,7 +197,16 @@
             border-color: var(--color-red);
         }
         
-        /* Platzhalter für Dino Bilder */
+        /* Bilder Styling */
+        .creature-img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-bottom: 2px solid var(--color-red);
+            display: block;
+        }
+
+        /* Platzhalter für Dino Bilder (Falls kein Bild vorhanden) */
         .creature-img-placeholder {
             height: 150px;
             background-color: #2a2a2a;
@@ -385,7 +388,7 @@
                     
                     <!-- Evo Rex -->
                     <div class="creature-card">
-                        <div class="creature-img-placeholder"><i class="fa-solid fa-dragon"></i></div>
+                        <img src="https://i.postimg.cc/vBCYBLcS/rex.png" class="creature-img" alt="Evo Rex">
                         <div class="creature-content">
                             <h4 class="creature-name">Tyrannosaurus (Evo)</h4>
                             <span class="creature-type">Der Standard Upgrade</span>
@@ -400,7 +403,7 @@
 
                     <!-- Paleo Rex -->
                     <div class="creature-card">
-                        <div class="creature-img-placeholder" style="color: var(--color-gold);"><i class="fa-solid fa-dragon"></i></div>
+                        <img src="https://i.postimg.cc/ZRvm1BVP/paleorex.png" class="creature-img" alt="Paleo Rex">
                         <div class="creature-content">
                             <h4 class="creature-name">Paleo Tyrannosaurus</h4>
                             <span class="creature-type">Realistischer Urzeit-Look</span>
@@ -415,7 +418,7 @@
 
                     <!-- Tarbosaurus -->
                     <div class="creature-card">
-                        <div class="creature-img-placeholder" style="color: #FF9800;"><i class="fa-solid fa-sun"></i></div>
+                        <img src="https://i.postimg.cc/L8gpbZ5H/GXn9mgf-XAAAt-Xq.jpg" class="creature-img" alt="Tarbosaurus">
                         <div class="creature-content">
                             <h4 class="creature-name">Tarbosaurus</h4>
                             <span class="creature-type">Wüsten-Spezialist</span>
@@ -431,7 +434,7 @@
 
                     <!-- Legacy Rex -->
                     <div class="creature-card">
-                        <div class="creature-img-placeholder" style="color: var(--color-red);"><i class="fa-solid fa-crown"></i></div>
+                        <img src="https://i.postimg.cc/QdZ3vdT1/image2.png" class="creature-img" alt="Legacy Rex">
                         <div class="creature-content">
                             <h4 class="creature-name">Legacy Rex</h4>
                             <span class="creature-type">Rare Spawn (5%)</span>
@@ -457,7 +460,7 @@
                     
                     <!-- Evo Giga -->
                     <div class="creature-card">
-                        <div class="creature-img-placeholder"><i class="fa-solid fa-teeth-open"></i></div>
+                        <img src="https://i.postimg.cc/CKLL6x3J/paleo-ark-evolution-evo-giganotosaurus-by-dracaavis-dh2ce9f-fullview.jpg" class="creature-img" alt="Evo Giga">
                         <div class="creature-content">
                             <h4 class="creature-name">Evo Giganotosaurus</h4>
                             <span class="creature-type">Der Rudel-Jäger</span>
@@ -472,7 +475,7 @@
 
                     <!-- Wasteland Giga -->
                     <div class="creature-card">
-                        <div class="creature-img-placeholder" style="color: #9C27B0;"><i class="fa-solid fa-biohazard"></i></div>
+                        <img src="https://i.postimg.cc/2St6KZDG/20250215004619-1.jpg" class="creature-img" alt="Wasteland Giga">
                         <div class="creature-content">
                             <h4 class="creature-name">Evo Wasteland Giga</h4>
                             <span class="creature-type">Extinction Exclusive</span>
@@ -494,7 +497,7 @@
                     
                     <!-- Evo Mosa -->
                     <div class="creature-card">
-                        <div class="creature-img-placeholder" style="color: var(--color-info);"><i class="fa-solid fa-fish-fins"></i></div>
+                        <img src="https://i.postimg.cc/FKxtFQmH/mosa-2-png.png" class="creature-img" alt="Evo Mosa">
                         <div class="creature-content">
                             <h4 class="creature-name">Evo Mosasaurus</h4>
                             <span class="creature-type">Ozean Herrscher</span>
