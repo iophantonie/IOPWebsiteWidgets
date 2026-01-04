@@ -1,0 +1,1334 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IOP S-Variants & Fantastic Tames</title>
+    <link href="https://fonts.googleapis.com/css2?family=Acme&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* IOP Style Variables */
+        :root {
+            --color-red: #E53935;
+            --color-dark: rgba(20, 20, 20, 0.95);
+            --color-light-dark: rgba(40, 40, 40, 0.9);
+            --color-text: #f7f7f7;
+            --color-gold: #FFEB3B;
+            --color-info: #2196F3;
+            /* S-Variant Marine Blau (Win 11 Style) */
+            --color-s-blue: #0078D4; 
+            --color-s-glow: rgba(0, 120, 212, 0.6);
+            --color-tame: #4CAF50;
+            
+            --font-main: sans-serif;
+            --font-header: 'Acme', sans-serif;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            background-color: transparent;
+            font-family: var(--font-main);
+            color: var(--color-text);
+            margin: 0;
+            padding: 0; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden; 
+        }
+
+        /* Container */
+        .s-container {
+            background-color: var(--color-dark);
+            border-radius: 8px; 
+            border: 2px solid var(--color-red);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.8);
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Header */
+        .header {
+            background-color: rgba(0, 0, 0, 0.6);
+            padding: 15px;
+            text-align: center;
+            border-bottom: 2px solid var(--color-red);
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .title {
+            font-family: var(--font-header);
+            font-size: 1.8rem; 
+            color: var(--color-red);
+            text-transform: uppercase;
+            margin: 0;
+            text-shadow: 0 0 10px rgba(229, 57, 53, 0.6);
+            letter-spacing: 1px;
+        }
+
+        .subtitle {
+            color: #aaa;
+            font-size: 0.9rem;
+            font-style: italic;
+        }
+
+        /* SEARCH BAR */
+        .search-container {
+            width: 100%;
+            max-width: 500px;
+            position: relative;
+            margin-top: 5px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px 15px 10px 40px;
+            border-radius: 20px;
+            border: 2px solid #555;
+            background-color: rgba(0, 0, 0, 0.3);
+            color: #fff;
+            font-family: var(--font-main);
+            font-size: 1rem;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--color-s-blue);
+            box-shadow: 0 0 15px var(--color-s-glow);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #aaa;
+        }
+
+        /* Navigation Tabs */
+        .nav-tabs {
+            display: flex;
+            background-color: rgba(255,255,255,0.05);
+            padding: 0 10px;
+            overflow-x: auto;
+            flex-shrink: 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .nav-tab {
+            padding: 12px 20px;
+            cursor: pointer;
+            font-family: var(--font-header);
+            text-transform: uppercase;
+            color: #aaa;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+            white-space: nowrap;
+            flex-grow: 1; 
+            text-align: center;
+        }
+
+        .nav-tab:hover { color: #fff; background-color: rgba(255,255,255,0.05); }
+        .nav-tab.active {
+            color: var(--color-s-blue);
+            border-bottom-color: var(--color-s-blue);
+            background-color: rgba(0, 120, 212, 0.1);
+        }
+
+        /* Content Area */
+        .content-area {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 20px;
+            scrollbar-width: thin;
+            scrollbar-color: var(--color-s-blue) transparent;
+        }
+        .content-area::-webkit-scrollbar { width: 8px; }
+        .content-area::-webkit-scrollbar-thumb { background-color: var(--color-s-blue); border-radius: 4px; }
+
+        /* Sections */
+        .section { display: none; animation: fadeIn 0.3s ease; }
+        .section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* General Box Styling */
+        .info-box {
+            background-color: var(--color-light-dark);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .info-box h3 { margin-top: 0; color: var(--color-gold); font-family: var(--font-header); border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; }
+        .info-box ul { padding-left: 20px; color: #ccc; }
+        .info-box li { margin-bottom: 8px; line-height: 1.4; }
+
+        /* FAQ Styling */
+        .faq-item {
+            background-color: var(--color-light-dark);
+            margin-bottom: 10px;
+            border-radius: 6px;
+            border-left: 4px solid var(--color-info);
+            padding: 15px;
+        }
+        .faq-question { font-weight: bold; color: #fff; margin-bottom: 5px; display: block; }
+        .faq-answer { color: #ccc; font-size: 0.95rem; line-height: 1.4; }
+
+        /* Map Grid */
+        .map-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 15px;
+        }
+
+        .map-card {
+            background-color: var(--color-light-dark);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            padding: 15px;
+            transition: transform 0.2s;
+        }
+        .map-card:hover { transform: translateY(-3px); border-color: var(--color-gold); }
+        .map-title {
+            color: var(--color-red);
+            font-family: var(--font-header);
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 5px;
+        }
+        .map-list { list-style: none; padding: 0; margin: 0; font-size: 0.9rem; color: #ddd; }
+        .map-list li { margin-bottom: 4px; padding-left: 15px; position: relative; }
+        .map-list li::before { content: '›'; color: var(--color-gold); position: absolute; left: 0; font-weight: bold; }
+        
+        /* Specials/Abilities Grid */
+        .ability-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px; /* Mehr Abstand für die größeren Karten */
+        }
+
+        .ability-card {
+            background-color: var(--color-light-dark);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            /* Kein Padding hier, da Bild und Content Boxen sind */
+            padding: 0; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+            transition: all 0.3s ease;
+            position: relative;
+            cursor: pointer;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Pulsierender Blauer Hover Effekt */
+        .ability-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 20px var(--color-s-glow), inset 0 0 10px rgba(0, 120, 212, 0.2);
+            border-color: var(--color-s-blue);
+        }
+
+        /* Bilder und Platzhalter in der Karte */
+        .card-img-top {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+            border-bottom: 2px solid var(--color-s-blue);
+            display: block;
+            background-color: #222;
+        }
+        
+        .card-img-placeholder {
+            width: 100%;
+            height: 160px;
+            background-color: rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-bottom: 2px solid var(--color-s-blue);
+            color: #444;
+            font-size: 3rem;
+            transition: color 0.3s;
+        }
+        
+        .ability-card:hover .card-img-placeholder {
+            color: var(--color-s-blue);
+        }
+
+        /* Inhalt der Karte */
+        .ability-card-content {
+            padding: 15px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .ability-card h3 {
+            margin: 0 0 10px 0;
+            color: var(--color-s-blue);
+            font-family: var(--font-header);
+            font-size: 1.3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .ability-details { 
+            font-size: 0.9rem; 
+            color: #ccc; 
+            line-height: 1.5; 
+            pointer-events: none; 
+        }
+        .ability-details ul { padding-left: 20px; margin: 5px 0; }
+
+        /* Taming Cards Grid */
+        .tame-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 15px;
+        }
+
+        .tame-card {
+            background-color: var(--color-light-dark);
+            border-left: 4px solid var(--color-tame);
+            border-radius: 6px;
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+        .tame-card h3 {
+            margin: 0 0 10px 0;
+            color: var(--color-tame);
+            font-family: var(--font-header);
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .tame-details {
+            font-size: 0.9rem;
+            color: #ddd;
+            line-height: 1.5;
+        }
+        .tame-req-list {
+            background-color: rgba(0,0,0,0.3);
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+        .tame-req-list div { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; color: #aaa; font-size: 0.85rem; }
+        .tame-req-list i { color: var(--color-gold); width: 20px; text-align: center; }
+
+
+        /* Highlight Search Result */
+        .hidden { display: none !important; }
+        .highlight-text { background-color: rgba(255, 235, 59, 0.3); color: #fff; border-radius: 2px; }
+
+        /* Fancy Badges */
+        .s-badge {
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            color: #fff;
+            margin-left: auto;
+            text-transform: uppercase;
+            font-family: var(--font-main);
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        /* Badge Colors */
+        .badge-farm { background-color: rgba(76, 175, 80, 0.2); color: #4CAF50; border-color: #4CAF50; }
+        .badge-combat { background-color: rgba(244, 67, 54, 0.2); color: #F44336; border-color: #F44336; }
+        .badge-utility { background-color: rgba(33, 150, 243, 0.2); color: #2196F3; border-color: #2196F3; }
+        .badge-hybrid { background-color: rgba(156, 39, 176, 0.2); color: #9C27B0; border-color: #9C27B0; }
+        .badge-mythic { background-color: rgba(255, 193, 7, 0.2); color: #FFC107; border-color: #FFC107; }
+        .badge-resource { background-color: rgba(255, 87, 34, 0.2); color: #FF5722; border-color: #FF5722; }
+        .badge-healer { background-color: rgba(0, 188, 212, 0.2); color: #00BCD4; border-color: #00BCD4; }
+        .badge-flyer { background-color: rgba(96, 125, 139, 0.2); color: #90A4AE; border-color: #90A4AE; }
+
+        /* === MODAL STYLING === */
+        .modal {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.85);
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal.active { display: flex; opacity: 1; }
+
+        .modal-content {
+            background-color: var(--color-light-dark);
+            border: 2px solid var(--color-s-blue);
+            border-radius: 12px;
+            width: 95%;
+            max-width: 1100px;
+            max-height: 90%;
+            display: flex;
+            flex-direction: row;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 0 40px var(--color-s-glow);
+            transform: scale(0.95);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .modal.active .modal-content { transform: scale(1); }
+
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            color: #fff;
+            font-size: 2rem;
+            cursor: pointer;
+            z-index: 10;
+            text-shadow: 0 0 5px #000;
+            transition: color 0.2s;
+        }
+        .close-btn:hover { color: var(--color-s-blue); }
+
+        .modal-image-col {
+            flex: 1.5;
+            background-color: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-right: 2px solid var(--color-s-blue);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .modal-image-col img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            max-height: 80vh;
+        }
+
+        .modal-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #444;
+        }
+        .modal-placeholder i { font-size: 5rem; margin-bottom: 10px; }
+
+        .modal-info-col {
+            flex: 1;
+            padding: 25px;
+            overflow-y: auto;
+            background: linear-gradient(135deg, rgba(40,40,40,1) 0%, rgba(30,30,30,1) 100%);
+        }
+
+        .modal-title {
+            font-family: var(--font-header);
+            font-size: 2rem;
+            color: var(--color-s-blue);
+            margin: 0 0 5px 0;
+            line-height: 1;
+        }
+
+        .modal-subtitle {
+            color: #aaa;
+            font-size: 0.9rem;
+            font-style: italic;
+            margin-bottom: 20px;
+            display: block;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 10px;
+        }
+
+        @media (max-width: 800px) {
+            .modal-content { flex-direction: column; overflow-y: auto; }
+            .modal-image-col { flex: none; height: 35vh; border-right: none; border-bottom: 2px solid var(--color-s-blue); }
+            .modal-info-col { flex: none; }
+        }
+
+        @media (max-width: 600px) {
+            .title { font-size: 1.4rem; }
+            .nav-tab { padding: 10px; font-size: 0.85rem; }
+            .search-container { max-width: 90%; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="s-container">
+        
+        <div class="header">
+            <h1 class="title">S-Kreaturen & Fantastic Tames</h1>
+            <div class="subtitle">Fähigkeiten, Spawns & Infos</div>
+            
+            <div class="search-container">
+                <i class="fa-solid fa-search search-icon"></i>
+                <input type="text" id="searchInput" class="search-input" placeholder="S-Kreatur suchen (z.B. Anky, Rex)...">
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="nav-tabs">
+            <div class="nav-tab active" onclick="showSection('faq')"><i class="fa-solid fa-circle-info"></i> Übersicht & FAQ</div>
+            <div class="nav-tab" onclick="showSection('maps')"><i class="fa-solid fa-map"></i> Fundorte</div>
+            <div class="nav-tab" onclick="showSection('abilities')"><i class="fa-solid fa-bolt"></i> Fähigkeiten & Details</div>
+            <div class="nav-tab" onclick="showSection('taming')"><i class="fa-solid fa-drumstick-bite"></i> Zähm-Guides</div>
+        </div>
+
+        <div class="content-area">
+
+            <!-- 1. ÜBERSICHT & FAQ -->
+            <div id="faq" class="section active">
+                
+                <div class="info-box">
+                    <h3><i class="fa-solid fa-dna"></i> Was sind S-Kreaturen?</h3>
+                    <p style="color: #ddd;">
+                        S-Varianten (Shiny/S-Dino Variants) sind spezielle Versionen der bekannten Kreaturen. 
+                        Sie haben oft verbesserte Werte, nützliche Fähigkeiten (wie Auto-Farm) oder besondere optische Effekte.
+                    </p>
+                    <ul style="margin-top: 10px;">
+                        <li><strong>Generelle S-Buffs:</strong> Gezähmte S-Dinos haben in der Regel <span style="color: var(--color-s-blue);">+10% Schaden & Speed, -10% HP</span> und sind <span style="color: var(--color-success);">immun gegen Strahlung</span>.</li>
+                        <li><strong>Crossbreeding:</strong> <span style="color: var(--color-red);">Deaktiviert</span> (um Seltenheit zu wahren).</li>
+                        <li><strong>S-Rhynio:</strong> <span style="color: var(--color-s-blue);">Breedbar</span>, aber extrem selten.</li>
+                        <li><strong>Shinehorn Helper:</strong> Deaktiviert.</li>
+                    </ul>
+                </div>
+
+                <div class="info-box">
+                    <h3><i class="fa-solid fa-chart-line"></i> Spawns & Raten</h3>
+                    <div class="faq-item">
+                        <span class="faq-question">Wo spawnen S-Varianten?</span>
+                        <div class="faq-answer">
+                            Generell überall, wo die Vanilla-Variante spawnt. Wir haben sie auf das ganze Cluster verteilt (siehe Reiter "Fundorte").
+                            Fantastic Tames spawnen überall dort, wo es Fantastic Tames gibt.
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <span class="faq-question">Wie hoch ist die Chance?</span>
+                        <div class="faq-answer">
+                            <ul>
+                                <li>Normal: <strong>10%</strong> Chance (statt Vanilla).</li>
+                                <li>S-Unicorn & S-Carcha: <strong>50%</strong> Chance.</li>
+                                <li>S-Rhynio: <strong>10%</strong> Chance.</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <span class="faq-question">Partikel-Effekte?</span>
+                        <div class="faq-answer">
+                           Halte <strong style="color: var(--color-gold);">E</strong> auf einem S-Dino gedrückt, um spezielle Partikeleffekte zu aktivieren oder deaktivieren.
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- 2. FUNDORTE (MAPS) -->
+            <div id="maps" class="section">
+                <div class="map-grid" id="mapGrid">
+                    <!-- The Island -->
+                    <div class="map-card" data-map="island">
+                        <div class="map-title">The Island</div>
+                        <ul class="map-list">
+                            <li>S-Rhyniognatha</li>
+                            <li>S-Otter</li>
+                            <li>S-Megalodon</li>
+                            <li>S-Basilosaurus</li>
+                            <li>S-Therizinosaurus</li>
+                            <li>S-Allosaurus</li>
+                            <li>S-Desmodus</li>
+                            <li>S-Ceratosaurus</li>
+                            <li style="color: #aaa; margin-top:5px;">+ Bee, Unicorn, Cat</li>
+                            <li style="color: #aaa;">+ Fantastic Tames</li>
+                        </ul>
+                    </div>
+
+                    <!-- Svartalfheim -->
+                    <div class="map-card" data-map="svartalfheim">
+                        <div class="map-title">Svartalfheim</div>
+                        <ul class="map-list">
+                            <li>S-Rex</li>
+                            <li>S-Maewing</li>
+                            <li>S-Thylacoleo</li>
+                            <li>S-Fenrir</li>
+                            <li>S-Trike</li>
+                            <li>S-Andrewsarchus</li>
+                            <li>S-Deinonychus</li>
+                            <li>S-Basilosaurus</li>
+                            <li style="color: #aaa; margin-top:5px;">+ Bee, Unicorn, Cat</li>
+                            <li style="color: #aaa;">+ Fantastic Tames</li>
+                        </ul>
+                    </div>
+
+                    <!-- Scorched Earth -->
+                    <div class="map-card" data-map="scorched">
+                        <div class="map-title">Scorched Earth</div>
+                        <ul class="map-list">
+                            <li>S-Maewing</li>
+                            <li>S-Mantis</li>
+                            <li>S-Wyvern (Alle)</li>
+                            <li>S-Fasolasuchus</li>
+                            <li>S-Doedicurus</li>
+                            <li>S-Daeodon</li>
+                            <li>S-Ankylosaurus</li>
+                            <li style="color: #aaa; margin-top:5px;">+ Bee, Unicorn, Cat</li>
+                            <li style="color: #aaa;">+ Fantastic Tames</li>
+                        </ul>
+                    </div>
+
+                    <!-- The Center -->
+                    <div class="map-card" data-map="center">
+                        <div class="map-title">The Center</div>
+                        <ul class="map-list">
+                            <li>S-Thylacoleo</li>
+                            <li>S-Plesiosaur</li>
+                            <li>S-Mosasaurus</li>
+                            <li>S-Deinosuchus</li>
+                            <li>S-Carcharodontosaurus</li>
+                            <li>S-Dunkleosteus</li>
+                            <li>S-Doedicurus</li>
+                            <li style="color: #aaa; margin-top:5px;">+ Bee, Unicorn, Cat</li>
+                            <li style="color: #aaa;">+ Fantastic Tames</li>
+                        </ul>
+                    </div>
+
+                    <!-- Astraeos -->
+                    <div class="map-card" data-map="astraeos">
+                        <div class="map-title">Astraeos</div>
+                        <ul class="map-list">
+                            <li>S-Mosasaurus</li>
+                            <li>S-Deinosuchus</li>
+                            <li>S-Basilosaurus</li>
+                            <li>S-Maeguanas</li>
+                            <li>Cyclopen</li>
+                            <li>Seepferdchen</li>
+                            <li>Minotauren</li>
+                            <li style="color: #aaa; margin-top:5px;">+ Bee, Unicorn, Cat</li>
+                            <li style="color: #aaa;">+ Fantastic Tames</li>
+                        </ul>
+                    </div>
+
+                    <!-- Aberration -->
+                    <div class="map-card" data-map="aberration">
+                        <div class="map-title">Aberration</div>
+                        <ul class="map-list">
+                            <li>S-Trike</li>
+                            <li>S-Shinehorn</li>
+                            <li>S-Spino</li>
+                            <li>S-Rockdrake</li>
+                            <li>S-Megalosaurus</li>
+                            <li>S-Deinonychus</li>
+                            <li>S-Reaper Queen</li>
+                            <li style="color: #aaa; margin-top:5px;">+ Bee, Unicorn, Cat</li>
+                            <li style="color: #aaa;">+ Fantastic Tames</li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Ragnarok -->
+                    <div class="map-card" data-map="ragnarok">
+                        <div class="map-title">Ragnarok</div>
+                        <ul class="map-list">
+                            <li>S-Spino</li>
+                            <li>S-Daeodon</li>
+                            <li>S-Dunkleo</li>
+                            <li>S-Theri</li>
+                            <li>S-Griffin</li>
+                            <li>S-Ice Wyvern</li>
+                            <li>S-Direwolf</li>
+                            <li>S-Desmodus</li>
+                            <li style="color: #aaa; margin-top:5px;">+ Bee, Unicorn</li>
+                            <li style="color: #aaa;">+ Fantastic Tames</li>
+                        </ul>
+                    </div>
+
+                    <!-- Extinction -->
+                    <div class="map-card" data-map="extinction">
+                        <div class="map-title">Extinction</div>
+                        <ul class="map-list">
+                            <li>S-Velonasaur</li>
+                            <li>S-Direbear</li>
+                            <li>S-Snow Owl</li>
+                            <li>S-Rex</li>
+                            <li>S-Ankylosaurus</li>
+                            <li>S-Andrewsarchus</li>
+                            <li>S-Carcha</li>
+                            <li>S-Fenrir</li>
+                            <li style="color: #aaa; margin-top:5px;">+ Bee, Unicorn</li>
+                            <li style="color: #aaa;">+ Fantastic Tames</li>
+                        </ul>
+                    </div>
+
+                    <!-- Valguero -->
+                    <div class="map-card" data-map="valguero">
+                        <div class="map-title">Valguero</div>
+                        <ul class="map-list">
+                            <li>S-Megaraptor</li>
+                            <li>S-Rockdrake</li>
+                            <li>S-Reaper</li>
+                            <li>S-Doedicurus</li>
+                            <li>S-Deinonychus</li>
+                            <li>S-Megalodon</li>
+                            <li>S-Otter</li>
+                            <li style="color: #aaa; margin-top:5px;">+ Bee, Unicorn, Cat</li>
+                            <li style="color: #aaa;">+ Fantastic Tames</li>
+                        </ul>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- 3. FÄHIGKEITEN & DETAILS -->
+            <div id="abilities" class="section">
+                <div class="info-box" style="margin-bottom: 10px; border-left: 4px solid var(--color-s-blue);">
+                    <i class="fa-solid fa-bolt"></i> <strong>Spezial:</strong> Viele S-Kreaturen sind immun gegen radioaktiven Schaden!
+                </div>
+                
+                <div class="ability-grid" id="abilityGrid">
+                    
+                    <!-- ANDREWSARCHUS -->
+                    <div class="ability-card" data-name="S-Andrewsarchus" onclick="openModal(this)">
+                        <div class="card-img-placeholder"><i class="fa-solid fa-paw"></i></div>
+                        <!-- FÜR ECHTES BILD: <img src="DEIN_LINK" class="card-img-top"> und div oben löschen -->
+                        <div class="ability-card-content">
+                            <h3>S-Andrewsarchus <span class="s-badge badge-combat"><i class="fa-solid fa-gun"></i> Combat</span></h3>
+                            <div class="ability-details">
+                                <ul>
+                                    <li>Sattel in Gelben/Roten Drops.</li>
+                                    <li>Spawnt im Grasland.</li>
+                                    <li>Zähmung: Knockout oder Passiv (wie ASE).</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ANKYLOSAURUS -->
+                    <div class="ability-card" data-name="S-Ankylosaurus" onclick="openModal(this)">
+                        <div class="card-img-placeholder"><i class="fa-solid fa-hammer"></i></div>
+                        <div class="ability-card-content">
+                            <h3>S-Ankylosaurus <span class="s-badge badge-farm"><i class="fa-solid fa-hammer"></i> Farm</span></h3>
+                            <div class="ability-details">
+                                Hört nicht auf zu farmen, wenn er 50% seines Gewichts erreicht hat (wie ein Solo-Farm-Mod).
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- DOEDICURUS -->
+                    <div class="ability-card" data-name="S-Doedicurus" onclick="openModal(this)">
+                        <div class="card-img-placeholder"><i class="fa-solid fa-gem"></i></div>
+                        <div class="ability-card-content">
+                            <h3>S-Doedicurus <span class="s-badge badge-farm"><i class="fa-solid fa-gem"></i> Farm</span></h3>
+                            <div class="ability-details">
+                                <ul>
+                                    <li>Hört nicht auf zu farmen bei 50% Gewicht.</li>
+                                    <li>Reduziert Sand-Gewicht um 75%.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- DIREBEAR -->
+                    <div class="ability-card" data-name="S-Direbear" onclick="openModal(this)">
+                        <div class="card-img-placeholder"><i class="fa-solid fa-paw"></i></div>
+                        <div class="ability-card-content">
+                            <h3>S-Direbear <span class="s-badge badge-hybrid"><i class="fa-solid fa-paw"></i> Hybrid</span></h3>
+                            <div class="ability-details">
+                                <ul>
+                                    <li>50% Gewichtsreduktion: Metall, Barren, Obsidian, Kristall, Stein, Polymer, Sand, Schwefel, Schwarze Perlen.</li>
+                                    <li>20% größer als normal.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- MANTIS -->
+                    <div class="ability-card" data-name="S-Mantis" onclick="openModal(this)">
+                        <div class="card-img-placeholder"><i class="fa-solid fa-sickle"></i></div>
+                        <div class="ability-card-content">
+                            <h3>S-Mantis <span class="s-badge badge-farm"><i class="fa-solid fa-sickle"></i> Farm</span></h3>
+                            <div class="ability-details">
+                                50% Gewichtsreduktion für Metall, Barren, Obsidian, Kristall, Stein, Polymer und Schwarze Perlen.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- FASOLASUCHUS -->
+                    <div class="ability-card" data-name="S-Fasolasuchus" onclick="openModal(this)">
+                        <div class="card-img-placeholder"><i class="fa-solid fa-mountain"></i></div>
+                        <div class="ability-card-content">
+                            <h3>S-Fasolasuchus <span class="s-badge badge-farm"><i class="fa-solid fa-mountain"></i> Farm</span></h3>
+                            <div class="ability-details">
+                                Farmt Metall statt Feuerstein.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CERATOSAURUS -->
+                    <div class="ability-card" data-name="S-Ceratosaurus" onclick="openModal(this)">
+                        <div class="card-img-placeholder"><i class="fa-solid fa-skull"></i></div>
+                        <div class="ability-card-content">
+                            <h3>S-Ceratosaurus <span class="s-badge badge-combat"><i class="fa-solid fa-skull"></i> Combat</span></h3>
+                            <div class="ability-details">
+                                <ul>
+                                    <li>Erlaubt Waffenbenutzung beim Reiten.</li>
+                                    <li>Zähmung: Knockout.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- DEINONYCHUS -->
+                    <div class="ability-card" data-name="S-Deinonychus" onclick="openModal(this)">
+                        <div class="card-img-placeholder"><i class="fa-solid fa-dragon"></i></div>
+                        <div class="ability-card-content">
+                            <h3>S-Deinonychus <span class="s-badge badge-combat"><i class="fa-solid fa-dragon"></i> Combat</span></h3>
+                            <div class="ability-details">
+                                <ul>
+                                    <li>Zähmung: Knockout (Außergewöhnliches Kibble).</li>
+                                    <li>Züchtbar.</li>
+                                    <li>Erhält keine Bonuslevel bei Zähmung (Balance).</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- DAEODON -->
+                    <div class="ability-card" data-name="S-Daeodon" onclick="openModal(this)">
+                        <div class="card-img-placeholder"><i class="fa-solid fa-fire"></i></div>
+                        <div class="ability-card-content">
+                            <h3>S-Daeodon <span class="s-badge badge-combat"><i class="fa-solid fa-fire"></i> Combat</span></h3>
+                            <div class="ability-details">
+                                <ul>
+                                    <li>Hat Rex-Basiswerte!</li>
+                                    <li>Verfügt über einen Flächenangriff.</li>
+                                    <li><strong>Achtung:</strong> Heilt nicht!</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- FENRIR -->
+                    <div class="ability-card" data-name="S-Fenrir" onclick="openModal(this)">
+                        <div class="card-img-placeholder"><i class="fa-solid fa-moon"></i></div>
+                        <div class="ability-card-content">
+                            <h3>S-Fenrir <span class="s-badge badge-mythic"><i class="fa-solid fa-moon"></i> Mythic</span></h3>
+                            <div class="ability-details">
+                                <ul>
+                                    <li>Zähmung: Knockout.</li>
+                                    <li>Züchtbar.</li>
+                                    <li>Stacheln immer sichtbar & Schnee-Effekte.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- GRIFFIN -->
+                    <div class="ability-card" data-name="S-Griffin" onclick="openModal(this)">
+                        <div class="card-img-placeholder"><i class="fa-solid fa-feather"></i></div>
+                        <div class="ability-card-content">
+                            <h3>S-Griffin <span class="s-badge badge-flyer"><i class="fa-solid fa-feather"></i> Flyer</span></h3>
+                            <div class="ability-details">
+                                <ul>
+                                    <li>Schnelleres Rückwärtsfliegen.</li>
+                                    <li>Eigener Sattel.</li>
+                                    <li>Zähmung: Knockout (10% Spawnchance).</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- MAEWING -->
+                    <div class="ability-card" data-name="S-Maewing S-Maeguana" onclick="openModal(this)">
+                        <div class="card-img-placeholder"><i class="fa-solid fa-toolbox"></i></div>
+                        <div class="ability-card-content">
+                            <h3>S-Maewing / Maeguana <span class="s-badge badge-utility"><i class="fa-solid fa-toolbox"></i> Utility</span></h3>
+                            <div class="ability-details">
+                                Ermöglicht das Benutzen von Waffen beim Reiten.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- MEGALOSAURUS -->
+                    <div class="ability-card" data-name="S-Megalosaurus" onclick="openModal(this)">
+                        <div class="card-img-placeholder"><i class="fa-solid fa-eye"></i></div>
+                        <div class="ability-card-content">
+                            <h3>S-Megalosaurus <span class="s-badge badge-combat"><i class="fa-solid fa-eye"></i> Combat</span></h3>
+                            <div class="ability-details">
+                                Schläft tagsüber nicht (kein Sleep-Mode), ist aber nachts stärker.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PEGASUS -->
+                    <div class="ability-card" data-name="S-Pegasus" onclick="openModal(this)">
+                        <div class="card-img-placeholder"><i class="fa-solid fa-horse"></i></div>
+                        <div class="ability-card-content">
+                            <h3>S-Pegasus <span class="s-badge badge-mythic"><i class="fa-solid fa-horse"></i> Mythic</span></h3>
+                            <div class="ability-details">
+                                <ul>
+                                    <li>Fantastic Tame.</li>
+                                    <li>Zähmung: Knockout mit speziellem Kibble (Lvl 30).</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- QUEEN BEE -->
+                    <div class="ability-card" data-name="S-Queen Bee Bienenkönigin" onclick="openModal(this)">
+                        <div class="card-img-placeholder"><i class="fa-solid fa-jar"></i></div>
+                        <div class="ability-card-content">
+                            <h3>S-Queen Bee <span class="s-badge badge-resource"><i class="fa-solid fa-jar"></i> Resource</span></h3>
+                            <div class="ability-details">
+                                <ul>
+                                    <li>Hat keinen Bienenstock.</li>
+                                    <li>Produziert Honig beim Wandern.</li>
+                                    <li>Frisst nur Seltene Blumen.</li>
+                                    <li>Spawnt wie normale Bienen.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SHINEHORN -->
+                    <div class="ability-card" data-name="S-Shinehorn" onclick="openModal(this)">
+                        <div class="card-img-placeholder"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+                        <div class="ability-card-content">
+                            <h3>S-Shinehorn <span class="s-badge badge-utility"><i class="fa-solid fa-wand-magic-sparkles"></i> Tame-Help</span></h3>
+                            <div class="ability-details">
+                                <ul>
+                                    <li>Passives Zähmen.</li>
+                                    <li>+10% Dmg/Speed, -10% HP.</li>
+                                    <li><strong>Fähigkeit "Zähmhilfe":</strong> Erhöht Hunger wilder KO-Kreaturen (beschleunigt Zähmen).</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SNOW OWL -->
+                    <div class="ability-card" data-name="S-Snow Owl Schnee Eule" onclick="openModal(this)">
+                        <div class="card-img-placeholder"><i class="fa-solid fa-heart-pulse"></i></div>
+                        <div class="ability-card-content">
+                            <h3>S-Snow Owl <span class="s-badge badge-healer"><i class="fa-solid fa-heart-pulse"></i> Healer</span></h3>
+                            <div class="ability-details">
+                                <ul>
+                                    <li>Heilt doppelt so schnell wie normal.</li>
+                                    <li>Kann rückwärts fliegen & Waffenbenutzung erlaubt.</li>
+                                    <li>Benötigt 30% mehr Food/Zeit zum Zähmen.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- VELONASAUR -->
+                    <div class="ability-card" data-name="S-Velonasaur" onclick="openModal(this)">
+                        <div class="card-img-placeholder"><i class="fa-solid fa-crosshairs"></i></div>
+                        <div class="ability-card-content">
+                            <h3>S-Velonasaur <span class="s-badge badge-combat"><i class="fa-solid fa-crosshairs"></i> Turret</span></h3>
+                            <div class="ability-details">
+                                Ermöglicht das Tragen von Waffen beim Reiten.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- RHYNIOGNATHA -->
+                    <div class="ability-card" data-name="S-Rhyniognatha" onclick="openModal(this)">
+                        <div class="card-img-placeholder"><i class="fa-solid fa-helicopter"></i></div>
+                        <div class="ability-card-content">
+                            <h3>S-Rhyniognatha <span class="s-badge badge-utility"><i class="fa-solid fa-helicopter"></i> Utility</span></h3>
+                            <div class="ability-details">
+                                <ul>
+                                    <li>+10% Dmg/Speed, -10% HP.</li>
+                                    <li>Kein Speed-Nerf beim Tragen von Dinos.</li>
+                                    <li><strong>Züchtbar!</strong></li>
+                                    <li>Zähmung wie normal (10% Spawnchance).</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- DIREWOLF -->
+                    <div class="ability-card" data-name="S-Direwolf" onclick="openModal(this)">
+                        <div class="card-img-placeholder"><i class="fa-solid fa-dog"></i></div>
+                        <div class="ability-card-content">
+                            <h3>S-Direwolf <span class="s-badge badge-combat"><i class="fa-solid fa-dog"></i> Combat</span></h3>
+                            <div class="ability-details">
+                                <ul>
+                                    <li>+10% Dmg/Speed, -10% HP.</li>
+                                    <li>Ca. 30% größer.</li>
+                                    <li>Hat einen eigenen Sattel (in Drops findbar).</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- DESMODUS -->
+                    <div class="ability-card" data-name="S-Desmodus" onclick="openModal(this)">
+                        <div class="card-img-placeholder"><i class="fa-solid fa-bat"></i></div>
+                        <div class="ability-card-content">
+                            <h3>S-Desmodus <span class="s-badge badge-flyer"><i class="fa-solid fa-bat"></i> Flyer</span></h3>
+                            <div class="ability-details">
+                                <ul>
+                                    <li>Kann in Höhlen fliegen (Cave Flyer).</li>
+                                    <li>+10% Dmg/Speed, -10% HP.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- MEGARAPTOR -->
+                    <div class="ability-card" data-name="S-Megaraptor" onclick="openModal(this)">
+                        <div class="card-img-placeholder"><i class="fa-solid fa-feather-pointed"></i></div>
+                        <div class="ability-card-content">
+                            <h3>S-Megaraptor <span class="s-badge badge-combat"><i class="fa-solid fa-feather-pointed"></i> Combat</span></h3>
+                            <div class="ability-details">
+                                <ul>
+                                    <li>Erlaubt Waffenbenutzung.</li>
+                                    <li>Argentavis-Regenerations-Buff beim Fressen von Leichen.</li>
+                                    <li>Isolationsschaden x3 (statt x2).</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- DUNKLEOSTEUS -->
+                    <div class="ability-card" data-name="S-Dunkleosteus" onclick="openModal(this)">
+                        <div class="card-img-placeholder"><i class="fa-solid fa-fish"></i></div>
+                        <div class="ability-card-content">
+                            <h3>S-Dunkleosteus <span class="s-badge badge-utility"><i class="fa-solid fa-fish"></i> Water Farm</span></h3>
+                            <div class="ability-details">
+                                <ul>
+                                    <li>Kann rückwärts schwimmen.</li>
+                                    <li>Immun gegen Quallen/Dismount.</li>
+                                    <li>75% Gewichtsreduktion: Metall, Kristall, Obsidian, Stein, Öl.</li>
+                                    <li>Spawnt bei Anglerfischen (Tiefsee).</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- MEGALODON -->
+                    <div class="ability-card" data-name="S-Megalodon" onclick="openModal(this)">
+                        <div class="card-img-placeholder"><i class="fa-solid fa-shark"></i></div>
+                        <div class="ability-card-content">
+                            <h3>S-Megalodon <span class="s-badge badge-combat"><i class="fa-solid fa-shark"></i> Water Combat</span></h3>
+                            <div class="ability-details">
+                                <ul>
+                                    <li>+50% Schaden!</li>
+                                    <li>Immun gegen Quallen/Blitz/Dismount.</li>
+                                    <li>Blutungs-Effekt (wie Carcha).</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- 4. ZÄHM-GUIDES (NEU) -->
+            <div id="taming" class="section">
+                
+                <div class="info-box">
+                    <h3><i class="fa-solid fa-drumstick-bite"></i> Allgemeine Zähm-Regel</h3>
+                    <p style="color: #ddd;">
+                        Die meisten S-Varianten werden <strong>genauso gezähmt wie ihre Vanilla-Gegenstücke</strong> (oft Standard Knockout oder Passiv). 
+                        Hier sind die Ausnahmen und Besonderheiten aufgelistet:
+                    </p>
+                </div>
+
+                <div class="tame-grid">
+                    
+                    <!-- S-Andrewsarchus -->
+                    <div class="tame-card">
+                        <h3><i class="fa-solid fa-paw"></i> S-Andrewsarchus</h3>
+                        <div class="tame-details">
+                            Flexibler als das Original.
+                        </div>
+                        <div class="tame-req-list">
+                            <div><i class="fa-solid fa-skull"></i> Methode: Knockout oder Passiv (Honig werfen)</div>
+                        </div>
+                    </div>
+
+                    <!-- S-Desmodus -->
+                    <div class="tame-card">
+                        <h3><i class="fa-solid fa-bat"></i> S-Desmodus</h3>
+                        <div class="tame-details">
+                            Greift keine Bloodpacks! Lass ihn dein Blut (HP) saugen.
+                        </div>
+                        <div class="tame-req-list">
+                            <div><i class="fa-solid fa-heart-pulse"></i> Methode: HP-Saugen (Keine Bloodpacks)</div>
+                        </div>
+                    </div>
+
+                    <!-- S-Deinonychus -->
+                    <div class="tame-card">
+                        <h3><i class="fa-solid fa-dragon"></i> S-Deinonychus</h3>
+                        <div class="tame-details">
+                            Anders als der normale Deinonychus (Eier klauen), wird die S-Variante klassisch betäubt.
+                        </div>
+                        <div class="tame-req-list">
+                            <div><i class="fa-solid fa-skull"></i> Methode: Knockout</div>
+                            <div><i class="fa-solid fa-egg"></i> Futter: Außergewöhnliches Kibble (Extraordinary)</div>
+                        </div>
+                    </div>
+
+                    <!-- S-Fenrir -->
+                    <div class="tame-card">
+                        <h3><i class="fa-solid fa-moon"></i> S-Fenrir</h3>
+                        <div class="tame-details">
+                            Kann in der Wildnis gefunden und direkt gezähmt werden (nicht nur Boss-Belohnung).
+                        </div>
+                        <div class="tame-req-list">
+                            <div><i class="fa-solid fa-skull"></i> Methode: Knockout</div>
+                            <div><i class="fa-solid fa-dna"></i> Züchtbar: Ja</div>
+                        </div>
+                    </div>
+
+                    <!-- S-Griffin -->
+                    <div class="tame-card">
+                        <h3><i class="fa-solid fa-feather"></i> S-Griffin</h3>
+                        <div class="tame-details">
+                            Standard Betäubung.
+                        </div>
+                        <div class="tame-req-list">
+                            <div><i class="fa-solid fa-skull"></i> Methode: Knockout</div>
+                        </div>
+                    </div>
+
+                    <!-- S-Pegasus -->
+                    <div class="tame-card">
+                        <h3><i class="fa-solid fa-horse"></i> S-Pegasus</h3>
+                        <div class="tame-details">
+                            Benötigt spezielles Futter.
+                        </div>
+                        <div class="tame-req-list">
+                            <div><i class="fa-solid fa-skull"></i> Methode: Knockout</div>
+                            <div><i class="fa-solid fa-utensils"></i> Futter: Custom Kibble (Lvl 30)</div>
+                        </div>
+                    </div>
+
+                    <!-- S-Ceratosaurus -->
+                    <div class="tame-card">
+                        <h3><i class="fa-solid fa-skull"></i> S-Ceratosaurus</h3>
+                        <div class="tame-details">
+                            Standard Betäubungs-Methode.
+                        </div>
+                        <div class="tame-req-list">
+                            <div><i class="fa-solid fa-crosshairs"></i> Methode: Knockout</div>
+                        </div>
+                    </div>
+
+                    <!-- S-Shinehorn -->
+                    <div class="tame-card">
+                        <h3><i class="fa-solid fa-wand-magic-sparkles"></i> S-Shinehorn</h3>
+                        <div class="tame-details">
+                            Wird passiv gezähmt (Futter auf Taste 0 legen und füttern).
+                        </div>
+                        <div class="tame-req-list">
+                            <div><i class="fa-solid fa-hand-holding-heart"></i> Methode: Passiv</div>
+                            <div><i class="fa-solid fa-seedling"></i> Futter: Pflanzen-Spezies Z Samen / Pilze</div>
+                        </div>
+                    </div>
+
+                    <!-- S-Snow Owl -->
+                    <div class="tame-card">
+                        <h3><i class="fa-solid fa-snowflake"></i> S-Schnee Eule</h3>
+                        <div class="tame-details">
+                            Benötigt deutlich mehr Nahrung und Zeit als die normale Eule.
+                        </div>
+                        <div class="tame-req-list">
+                            <div><i class="fa-solid fa-clock"></i> Dauer: Länger als Vanilla</div>
+                            <div><i class="fa-solid fa-drumstick-bite"></i> Menge: +30% Nahrung</div>
+                        </div>
+                    </div>
+
+                    <!-- S-Rhyniognatha -->
+                    <div class="tame-card">
+                        <h3><i class="fa-solid fa-helicopter"></i> S-Rhyniognatha</h3>
+                        <div class="tame-details">
+                            Gleiche Methode wie Vanilla (Pheromon + Opfer-Dino schwängern lassen).
+                        </div>
+                        <div class="tame-req-list">
+                            <div><i class="fa-solid fa-circle-xmark"></i> Methode: Opferung (Vanilla)</div>
+                            <div><i class="fa-solid fa-baby"></i> Besonderheit: Züchtbar!</div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+        <!-- MODAL STRUCTURE -->
+        <div id="creatureModal" class="modal">
+            <div class="modal-content">
+                <span class="close-btn" onclick="closeModal()">&times;</span>
+                
+                <div class="modal-image-col" id="modalImgCol">
+                    <!-- Dynamic Content -->
+                </div>
+                
+                <div class="modal-info-col">
+                    <h2 class="modal-title" id="modalTitle">Titel</h2>
+                    <span class="modal-subtitle" id="modalBadge">Kategorie</span>
+                    <div id="modalBody">
+                        <!-- Dynamic Content -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // TAB LOGIC
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+            
+            const tabs = document.querySelectorAll('.nav-tab');
+            tabs.forEach(tab => {
+                if(tab.getAttribute('onclick').includes(sectionId)) {
+                    tab.classList.add('active');
+                }
+            });
+        }
+
+        // SEARCH LOGIC
+        const searchInput = document.getElementById('searchInput');
+        const abilityCards = document.querySelectorAll('.ability-card');
+        const mapCards = document.querySelectorAll('.map-card');
+
+        searchInput.addEventListener('keyup', (e) => {
+            const term = e.target.value.toLowerCase();
+            
+            if(term.length > 0) {
+                const currentSection = document.querySelector('.section.active').id;
+                if (currentSection !== 'maps' && currentSection !== 'abilities') {
+                    showSection('abilities');
+                }
+            } else {
+                resetFilters();
+                return;
+            }
+
+            // Filter Abilities
+            abilityCards.forEach(card => {
+                const name = card.dataset.name.toLowerCase();
+                const text = card.innerText.toLowerCase();
+                if(name.includes(term) || text.includes(term)) {
+                    card.classList.remove('hidden');
+                } else {
+                    card.classList.add('hidden');
+                }
+            });
+
+            // Filter Maps
+            mapCards.forEach(card => {
+                const listItems = card.querySelectorAll('li');
+                let mapHasMatch = false;
+
+                listItems.forEach(li => {
+                    if(li.innerText.toLowerCase().includes(term)) {
+                        li.style.color = "#FFEB3B";
+                        li.style.fontWeight = "bold";
+                        mapHasMatch = true;
+                    } else {
+                        li.style.color = "";
+                        li.style.fontWeight = "normal";
+                    }
+                });
+
+                if(mapHasMatch || card.querySelector('.map-title').innerText.toLowerCase().includes(term)) {
+                    card.classList.remove('hidden');
+                } else {
+                    card.classList.add('hidden');
+                }
+            });
+        });
+
+        function resetFilters() {
+            abilityCards.forEach(c => c.classList.remove('hidden'));
+            mapCards.forEach(c => {
+                c.classList.remove('hidden');
+                c.querySelectorAll('li').forEach(li => {
+                    li.style.color = "";
+                    li.style.fontWeight = "normal";
+                });
+            });
+        }
+
+        // MODAL LOGIC
+        const modal = document.getElementById('creatureModal');
+
+        function openModal(cardElement) {
+            const title = cardElement.querySelector('h3').childNodes[0].textContent.trim();
+            const badge = cardElement.querySelector('.s-badge').outerHTML;
+            const content = cardElement.querySelector('.ability-details').innerHTML;
+            
+            // Check for real image first
+            const realImg = cardElement.querySelector('img.card-img-top');
+            
+            // Get placeholder icon class if no image
+            const placeholderIcon = cardElement.querySelector('.card-img-placeholder i')?.className;
+
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalBadge').innerHTML = badge;
+            document.getElementById('modalBody').innerHTML = content;
+
+            const imgCol = document.getElementById('modalImgCol');
+            imgCol.innerHTML = '';
+
+            if (realImg) {
+                const img = document.createElement('img');
+                img.src = realImg.src;
+                img.alt = title;
+                imgCol.appendChild(img);
+            } else if (placeholderIcon) {
+                // Placeholder if no image
+                const placeholder = document.createElement('div');
+                placeholder.className = 'modal-placeholder';
+                placeholder.innerHTML = `<i class="${placeholderIcon}"></i><span>Bild folgt</span>`;
+                imgCol.appendChild(placeholder);
+            }
+
+            modal.classList.add('active');
+        }
+
+        function closeModal() {
+            modal.classList.remove('active');
+        }
+
+        modal.addEventListener('click', (e) => {
+            if(e.target === modal) {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>
