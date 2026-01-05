@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IOP Interface System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Acme&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* --- VARIABLES --- */
+        :root {
+            --c-fire: #ff3300;
+            --c-fire-dark: #cc2900;
+            --c-bg: #050505; /* Deep Black */
+            --c-panel: #121212;
+            --c-content: #1a1a1a;
+            --c-text: #e0e0e0;
+            --c-dim: #888;
+            --c-border: #333;
+            
+            --f-head: 'Acme', sans-serif;
+            --f-body: 'Roboto', sans-serif;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0; padding: 0;
+            background-color: var(--c-bg);
+            color: var(--c-text);
+            font-family: var(--f-body);
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* --- LAYOUT CONTAINER --- */
+        .interface-container {
+            display: flex;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* --- SIDEBAR NAVIGATION --- */
+        .sidebar {
+            width: 280px;
+            background-color: var(--c-panel);
+            border-right: 2px solid var(--c-fire);
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            z-index: 10;
+            box-shadow: 5px 0 20px rgba(0,0,0,0.5);
+        }
+
+        .logo-area {
+            padding: 30px 20px;
+            text-align: center;
+            border-bottom: 1px solid var(--c-border);
+            background: linear-gradient(180deg, rgba(255,51,0,0.1) 0%, transparent 100%);
+        }
+
+        .logo-title {
+            font-family: var(--f-head);
+            font-size: 2.2rem;
+            color: var(--c-fire);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin: 0;
+            text-shadow: 0 0 15px rgba(255, 51, 0, 0.4);
+            line-height: 1;
+        }
+
+        .logo-sub {
+            font-size: 0.8rem;
+            color: var(--c-dim);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-top: 5px;
+            display: block;
+        }
+
+        .nav-menu {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+            flex-grow: 1;
+        }
+
+        .nav-item {
+            margin-bottom: 5px;
+        }
+
+        .nav-btn {
+            width: 100%;
+            padding: 15px 25px;
+            background: transparent;
+            border: none;
+            border-left: 4px solid transparent;
+            color: var(--c-dim);
+            font-family: var(--f-head);
+            font-size: 1.2rem;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .nav-btn:hover {
+            background-color: rgba(255,255,255,0.03);
+            color: #fff;
+        }
+
+        .nav-btn.active {
+            background: linear-gradient(90deg, rgba(255,51,0,0.15) 0%, transparent 100%);
+            border-left-color: var(--c-fire);
+            color: #fff;
+            text-shadow: 0 0 10px rgba(255,51,0,0.5);
+        }
+
+        .nav-btn i { width: 25px; text-align: center; }
+
+        /* --- MAIN CONTENT AREA --- */
+        .content-wrapper {
+            flex-grow: 1;
+            background-color: var(--c-bg);
+            background-image: 
+                radial-gradient(circle at 10% 10%, rgba(255,51,0,0.03) 0%, transparent 20%),
+                radial-gradient(circle at 90% 90%, rgba(255,51,0,0.03) 0%, transparent 20%);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Top Header inside Content */
+        .content-header {
+            padding: 20px 40px;
+            border-bottom: 1px solid var(--c-border);
+            background-color: rgba(20, 20, 20, 0.95);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .page-title {
+            font-family: var(--f-head);
+            font-size: 2rem;
+            color: #fff;
+            margin: 0;
+            text-transform: uppercase;
+        }
+        
+        .page-desc {
+            color: var(--c-dim);
+            margin-top: 5px;
+        }
+
+        /* Scrollable Content */
+        .scroll-area {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 40px;
+            scroll-behavior: smooth;
+        }
+        .scroll-area::-webkit-scrollbar { width: 8px; }
+        .scroll-area::-webkit-scrollbar-thumb { background-color: #333; border-radius: 4px; }
+
+        /* --- CONTENT SECTIONS --- */
+        .content-section {
+            display: none;
+            max-width: 1100px;
+            margin: 0 auto;
+            animation: fadeIn 0.4s ease;
+        }
+        .content-section.active { display: block; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Content Blocks */
+        .info-block {
+            background-color: var(--c-content);
+            border: 1px solid var(--c-border);
+            border-radius: 8px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .block-header {
+            padding: 15px 25px;
+            background: #222;
+            border-bottom: 1px solid var(--c-border);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .block-title {
+            font-family: var(--f-head);
+            font-size: 1.4rem;
+            color: var(--c-fire);
+            margin: 0;
+        }
+
+        .block-body {
+            padding: 25px;
+            line-height: 1.6;
+            color: #ccc;
+        }
+
+        .block-body img {
+            max-width: 100%;
+            border-radius: 6px;
+            border: 1px solid #333;
+            margin-top: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+        }
+
+        /* Specific Styles for Lists within blocks */
+        .feature-list li {
+            margin-bottom: 10px;
+            padding-left: 20px;
+            position: relative;
+        }
+        .feature-list li::before {
+            content: '>';
+            color: var(--c-fire);
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+
+        /* Command Box */
+        .cmd-box {
+            background: rgba(0,0,0,0.4);
+            border-left: 4px solid var(--c-fire);
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 4px 4px 0;
+        }
+        .cmd-box code {
+            font-family: monospace;
+            color: #fff;
+            background: #333;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 1.1em;
+        }
+
+        /* Quest Grid for Dailies/Weeklies */
+        .quest-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .quest-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--c-border);
+            padding: 20px;
+            border-radius: 6px;
+        }
+        .quest-head { font-family: var(--f-head); font-size: 1.2rem; color: #fff; margin-bottom: 10px; border-bottom: 1px solid #333; padding-bottom: 5px; }
+        .reward-list { font-size: 0.9rem; color: #aaa; }
+        
+        @media (max-width: 800px) { .quest-grid { grid-template-columns: 1fr; } }
+
+    </style>
+</head>
+<body>
+
+    <div class="interface-container">
+        
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+            <div class="logo-area">
+                <h1 class="logo-title">IOP</h1>
+                <span class="logo-sub">Interface System</span>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <button class="nav-btn active" onclick="showTab('quests')">
+                        <i class="fa-solid fa-scroll"></i> Questsystem
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-btn" onclick="showTab('tracker')">
+                        <i class="fa-solid fa-chart-pie"></i> Tracker
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-btn" onclick="showTab('scoreboards')">
+                        <i class="fa-solid fa-trophy"></i> Scoreboards
+                    </button>
+                </li>
+            </ul>
+        </div>
+
+        <!-- MAIN CONTENT -->
+        <div class="content-wrapper">
+            
+            <!-- 1. QUESTS -->
+            <div id="quests" class="content-section active">
+                <div class="content-header">
+                    <div>
+                        <h2 class="page-title">Questsystem</h2>
+                        <div class="page-desc">Erledige Aufgaben, verdiene Belohnungen & XP</div>
+                    </div>
+                    <i class="fa-solid fa-scroll" style="font-size: 3rem; color: var(--c-fire); opacity: 0.2;"></i>
+                </div>
+
+                <div class="scroll-area">
+                    
+                    <!-- General Info -->
+                    <div class="info-block">
+                        <div class="block-header">
+                            <i class="fa-solid fa-info-circle" style="color:var(--c-fire)"></i>
+                            <h3 class="block-title">Funktionsweise</h3>
+                        </div>
+                        <div class="block-body">
+                            <p>Unser System erfasst automatisch deine Aktionen im Spiel. Du musst keine Quests manuell annehmen – erledige einfach die Aufgaben!</p>
+                            <ul class="feature-list">
+                                <li><strong>Farmen:</strong> Alles was du selbst oder mit Dinos abbaust.</li>
+                                <li><strong>Kampf:</strong> Aktive Kills (Spieler oder Dino).</li>
+                                <li><strong>Zähmen:</strong> Erfolgreiche Tames werden gezählt.</li>
+                                <li><strong>Handwerk:</strong> Hergestellte Items (Inventar & Strukturen).</li>
+                            </ul>
+                            <p><em>Hinweis: Wenn eine Quest Aufgaben enthält, die du in der Vergangenheit bereits erledigt hast (z.B. "Erreiche Level 50"), wird sie automatisch als fertig markiert.</em></p>
+                            
+                            <div class="cmd-box">
+                                <strong>Belohnung abholen:</strong><br>
+                                Tippe im Chat: <code>/belohnungen</code>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Types -->
+                    <div class="quest-grid">
+                        <div class="quest-card">
+                            <div class="quest-head" style="color: #4CAF50;">Daily Quests (Täglich)</div>
+                            <p>Reset alle 24 Stunden.</p>
+                            <p><strong>Mögliche Belohnungen:</strong></p>
+                            <ul class="reward-list">
+                                <li>Lebensversicherungs-Punkte</li>
+                                <li>Wyvern Milch (mit Glück)</li>
+                                <li>Lootcrates</li>
+                                <li>Erfahrungspunkte (XP)</li>
+                            </ul>
+                        </div>
+                        <div class="quest-card">
+                            <div class="quest-head" style="color: #9C27B0;">Weekly Quests (Wöchentlich)</div>
+                            <p>Reset alle 7 Tage.</p>
+                            <p><strong>Mögliche Belohnungen:</strong></p>
+                            <ul class="reward-list">
+                                <li>Höhere Mengen an Punkten</li>
+                                <li>Seltenere Items</li>
+                                <li>Hochwertige Lootcrates</li>
+                                <li>Große XP Pakete</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="info-block" style="margin-top: 30px;">
+                        <div class="block-header">
+                            <i class="fa-solid fa-bars-progress" style="color:var(--c-fire)"></i>
+                            <h3 class="block-title">Questlines & Interface</h3>
+                        </div>
+                        <div class="block-body">
+                            <p>Unter <strong>"Active Quests"</strong> siehst du deinen aktuellen Fortschritt. Unter <strong>"Completed Quests"</strong> findest du deine Erfolge.</p>
+                            <img src="https://i.postimg.cc/bJ1MnqHh/Bild-2024-05-17-163408358.png" alt="Quest Interface Overview">
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- 2. TRACKER -->
+            <div id="tracker" class="content-section">
+                <div class="content-header">
+                    <div>
+                        <h2 class="page-title">Tracker System</h2>
+                        <div class="page-desc">Deine Statistiken auf einen Blick</div>
+                    </div>
+                    <i class="fa-solid fa-chart-pie" style="font-size: 3rem; color: var(--c-fire); opacity: 0.2;"></i>
+                </div>
+
+                <div class="scroll-area">
+                    
+                    <div class="info-block">
+                        <div class="block-header">
+                            <i class="fa-solid fa-eye" style="color:var(--c-fire)"></i>
+                            <h3 class="block-title">Was wird getrackt?</h3>
+                        </div>
+                        <div class="block-body">
+                            <p>Unser Tracker läuft im Hintergrund mit und speichert deinen Fortschritt clusterweit.</p>
+                            <div class="quest-grid">
+                                <div>
+                                    <h4 style="color:#fff; margin-bottom:10px;">Aktivitäten</h4>
+                                    <ul class="feature-list">
+                                        <li>Gesammelte Ressourcen (Holz, Stein, etc.)</li>
+                                        <li>Hergestellte Gegenstände</li>
+                                        <li>Absolvierte Quests (Daily/Weekly)</li>
+                                        <li>Teilnahme an Server Events</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h4 style="color:#fff; margin-bottom:10px;">Kampf & Zucht</h4>
+                                    <ul class="feature-list">
+                                        <li>Gezähmte Kreaturen</li>
+                                        <li>Getötete wilde Dinos</li>
+                                        <li>Getötete Bosse</li>
+                                        <li>Tode (Spieler)</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="info-block">
+                        <div class="block-header">
+                            <i class="fa-solid fa-images" style="color:var(--c-fire)"></i>
+                            <h3 class="block-title">Tracker Vorschau</h3>
+                        </div>
+                        <div class="block-body">
+                            <p>Hier siehst du, wie die Statistik im Spiel aussieht. Du kannst genau nachverfolgen, welche Ressource du wie oft gefarmt hast.</p>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                                <img src="https://i.postimg.cc/xd373hfm/Bild-2024-05-17-171303694.png" alt="Stats 1">
+                                <img src="https://i.postimg.cc/05hsjgb5/Bild-2024-05-17-171327220.png" alt="Stats 2">
+                            </div>
+                            <img src="https://i.postimg.cc/CLmP6kkZ/Bild-2024-05-17-171514409.png" alt="General Tracker" style="width: 100%; margin-top: 10px;">
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- 3. SCOREBOARDS -->
+            <div id="scoreboards" class="content-section">
+                <div class="content-header">
+                    <div>
+                        <h2 class="page-title">Scoreboards</h2>
+                        <div class="page-desc">Ranglisten für Spieler und Stämme</div>
+                    </div>
+                    <i class="fa-solid fa-trophy" style="font-size: 3rem; color: var(--c-fire); opacity: 0.2;"></i>
+                </div>
+
+                <div class="scroll-area">
+                    
+                    <div class="info-block">
+                        <div class="block-header">
+                            <i class="fa-solid fa-user" style="color:var(--c-fire)"></i>
+                            <h3 class="block-title">Spieler Scoreboard</h3>
+                        </div>
+                        <div class="block-body">
+                            <p>Hier misst du dich mit jedem anderen Spieler auf dem Cluster. Die Daten werden über alle Server hinweg synchronisiert.</p>
+                            <p><strong>Kategorien:</strong></p>
+                            <ul>
+                                <li>Gesamte Tode</li>
+                                <li>Gezähmte Tiere</li>
+                                <li>WildDino Kills</li>
+                                <li>Gesamtspielzeit</li>
+                            </ul>
+                            <img src="https://i.postimg.cc/Fs7r6scZ/Bild-2024-05-17-170300086.png" alt="Player Scoreboard">
+                        </div>
+                    </div>
+
+                    <div class="info-block">
+                        <div class="block-header">
+                            <i class="fa-solid fa-users" style="color:var(--c-fire)"></i>
+                            <h3 class="block-title">Stamm Scoreboard</h3>
+                        </div>
+                        <div class="block-body">
+                            <p>Hier werden die Leistungen aller Mitglieder eines Stammes zusammengezählt. Welcher Tribe beherrscht den Server?</p>
+                            <img src="https://i.postimg.cc/vB7bGDb6/Bild-2024-05-17-160116864.png" alt="Tribe Scoreboard">
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        function showTab(tabId) {
+            // Hide all sections
+            document.querySelectorAll('.content-section').forEach(el => {
+                el.classList.remove('active');
+            });
+            
+            // Remove active class from buttons
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Activate target
+            document.getElementById(tabId).classList.add('active');
+            
+            // Highlight button
+            // Find the button that calls this function with specific ID
+            const buttons = document.querySelectorAll('.nav-btn');
+            buttons.forEach(btn => {
+                if(btn.getAttribute('onclick').includes(tabId)) {
+                    btn.classList.add('active');
+                }
+            });
+        }
+    </script>
+</body>
+</html>
