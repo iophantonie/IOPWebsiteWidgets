@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IOP Community Center</title>
+    <link href="https://fonts.googleapis.com/css2?family=Acme&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* --- VARIABLES --- */
+        :root {
+            --c-fire: #ff3300;
+            --c-bg: #050505;
+            --c-panel: #121212;
+            --c-content: #1a1a1a;
+            --c-text: #e0e0e0;
+            --c-dim: #888;
+            --c-border: #333;
+            
+            --f-head: 'Acme', sans-serif;
+            --f-body: 'Roboto', sans-serif;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0; padding: 0;
+            background-color: transparent; 
+            color: var(--c-text);
+            font-family: var(--f-body);
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        /* Animationen */
+        @keyframes fire-border-pulse {
+            0% { box-shadow: 0 0 10px rgba(255, 51, 0, 0.2); border-color: rgba(255, 51, 0, 0.5); }
+            50% { box-shadow: 0 0 25px rgba(255, 51, 0, 0.5); border-color: rgba(255, 51, 0, 1); }
+            100% { box-shadow: 0 0 10px rgba(255, 51, 0, 0.2); border-color: rgba(255, 51, 0, 0.5); }
+        }
+        
+        @keyframes fire-text {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 200% 50%; }
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- WIDGET CONTAINER --- */
+        .widget-container {
+            display: flex;
+            flex-direction: column;
+            width: 98%; 
+            height: 95vh;
+            background-color: var(--c-bg);
+            border: 2px solid var(--c-fire);
+            border-radius: 12px;
+            animation: fire-border-pulse 4s infinite ease-in-out;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 0 50px rgba(0,0,0,0.9);
+        }
+
+        /* --- HEADER --- */
+        .header {
+            background-color: #080808;
+            padding: 15px 25px;
+            border-bottom: 1px solid var(--c-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+            background-image: 
+                radial-gradient(circle at 10% 50%, rgba(255,51,0,0.05) 0%, transparent 40%);
+        }
+
+        .header-content {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .title {
+            font-family: var(--f-head);
+            font-size: 2rem;
+            text-transform: uppercase;
+            margin: 0;
+            letter-spacing: 2px;
+            background: linear-gradient(90deg, #ff0000, #ff4d00, #ff9900, #ffcc00, #ff9900, #ff4d00, #ff0000);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: fire-text 4s linear infinite;
+            filter: drop-shadow(0 0 5px rgba(255,69,0,0.3));
+            line-height: 1;
+        }
+
+        .subtitle {
+            color: var(--c-dim);
+            font-size: 0.85rem;
+            margin-top: 5px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* SEARCH BAR */
+        .search-container {
+            position: relative;
+            width: 300px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px 15px 10px 40px;
+            border-radius: 20px;
+            border: 1px solid var(--c-border);
+            background-color: rgba(30, 30, 30, 0.5);
+            color: #fff;
+            font-family: var(--f-body);
+            font-size: 0.95rem;
+            outline: none;
+            transition: border 0.3s, box-shadow 0.3s;
+        }
+
+        .search-input:focus {
+            border-color: var(--c-fire);
+            box-shadow: 0 0 10px rgba(255, 51, 0, 0.2);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--c-dim);
+        }
+
+        /* --- NAVIGATION TABS (OBEN) --- */
+        .nav-tabs {
+            display: flex;
+            background-color: var(--c-panel);
+            padding: 0 10px;
+            overflow-x: auto;
+            flex-shrink: 0;
+            border-bottom: 1px solid var(--c-border);
+        }
+
+        .nav-tab {
+            padding: 15px 25px;
+            cursor: pointer;
+            font-family: var(--f-head);
+            text-transform: uppercase;
+            color: var(--c-dim);
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+            white-space: nowrap;
+            flex-grow: 1;
+            text-align: center;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .nav-tab:hover { color: #fff; background-color: rgba(255,255,255,0.02); }
+
+        .nav-tab.active {
+            background-color: rgba(255,51,0,0.05);
+            border-bottom-color: var(--c-fire);
+            color: var(--c-fire);
+            text-shadow: 0 0 10px rgba(255, 51, 0, 0.3);
+        }
+
+        /* --- CONTENT AREA --- */
+        .content-area {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 40px;
+            background-color: var(--c-bg);
+            background-image: radial-gradient(circle at 50% 50%, rgba(255,51,0,0.02) 0%, transparent 40%);
+        }
+        .content-area::-webkit-scrollbar { width: 8px; }
+        .content-area::-webkit-scrollbar-thumb { background-color: #333; border-radius: 4px; }
+
+        /* Sections */
+        .section { display: none; animation: fadeIn 0.4s ease; max-width: 1200px; margin: 0 auto; }
+        .section.active { display: block; }
+
+        /* Section Headers */
+        .section-header {
+            border-bottom: 1px solid var(--c-border);
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .section-title { font-family: var(--f-head); font-size: 2.2rem; color: #fff; margin: 0; }
+        .section-icon { color: var(--c-fire); font-size: 2rem; opacity: 0.8; }
+
+        /* Info Blocks */
+        .info-block {
+            background-color: var(--c-content);
+            border: 1px solid var(--c-border);
+            border-radius: 6px;
+            padding: 25px;
+            margin-bottom: 25px;
+            line-height: 1.6;
+            color: #ccc;
+            font-size: 1rem;
+        }
+        .info-block h3 { color: var(--c-fire); font-family: var(--f-head); margin-top: 0; }
+        .info-block strong { color: #fff; }
+        .info-block ul { padding-left: 20px; margin: 15px 0; }
+        .info-block li { margin-bottom: 5px; }
+
+        /* Locations List (Showcase) */
+        .location-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .location-item {
+            background: #252525;
+            padding: 15px;
+            border-radius: 4px;
+            border-left: 3px solid var(--c-fire);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .location-item span { font-weight: bold; color: #fff; }
+        .location-item small { color: #888; }
+
+        /* Card Grid (Traders/Casino) */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        .card {
+            background-color: #202020;
+            border: 1px solid var(--c-border);
+            border-radius: 6px;
+            overflow: hidden;
+            transition: transform 0.2s;
+        }
+        .card:hover { transform: translateY(-5px); border-color: var(--c-fire); }
+        .card-img-container {
+            width: 100%; height: 180px; background-color: #000;
+            overflow: hidden; display: flex; align-items: center; justify-content: center;
+            border-bottom: 1px solid #333;
+        }
+        .card-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s; cursor: pointer; }
+        .card:hover .card-img { transform: scale(1.05); }
+        .card-body { padding: 15px; }
+        .card-title { font-family: var(--f-head); color: var(--c-fire); font-size: 1.3rem; margin: 0 0 5px 0; }
+        .card-text { font-size: 0.9rem; color: #bbb; line-height: 1.4; }
+
+        /* Creature Details (List Style) */
+        .creature-detail {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 30px;
+            background: #151515;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #333;
+        }
+        .cd-img-col { width: 35%; flex-shrink: 0; }
+        .cd-img { width: 100%; border-radius: 4px; cursor: pointer; border: 1px solid #444; }
+        .cd-text-col { flex-grow: 1; }
+        .cd-title { font-family: var(--f-head); font-size: 1.6rem; color: var(--c-fire); margin-top: 0; }
+
+        /* Big Images */
+        .big-img {
+            width: 100%; border-radius: 6px; border: 1px solid #333;
+            margin-top: 15px; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+        }
+
+        /* Modal */
+        .modal {
+            display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95); z-index: 100; justify-content: center; align-items: center;
+        }
+        .modal.open { display: flex; }
+        .modal img { max-width: 95%; max-height: 90%; border: 2px solid var(--c-fire); border-radius: 6px; box-shadow: 0 0 50px rgba(255,51,0,0.2); }
+        .close-btn { position: absolute; top: 20px; right: 20px; color: #fff; font-size: 3rem; cursor: pointer; line-height: 1; }
+
+        @media (max-width: 900px) {
+            .widget-container { flex-direction: column; width: 100%; height: 100vh; border: none; border-radius: 0; }
+            .nav-menu { display: flex; margin: 0; }
+            .creature-detail { flex-direction: column; }
+            .cd-img-col { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="widget-container">
+        
+        <!-- HEADER -->
+        <div class="header">
+            <div class="header-content">
+                <h1 class="title">Community Center</h1>
+                <span class="subtitle">Eigene Exklusive Karte & Schwarzmarkt</span>
+            </div>
+            
+            <div class="search-container">
+                <i class="fa-solid fa-search search-icon"></i>
+                <input type="text" id="searchInput" class="search-input" placeholder="Suche (z.B. Drache, Lizenz)...">
+            </div>
+        </div>
+
+        <!-- NAVIGATION -->
+        <div class="nav-tabs">
+            <div class="nav-tab active" onclick="showTab('showcase', this)">
+                <i class="fa-solid fa-map-location-dot"></i> Showcase
+            </div>
+            <div class="nav-tab" onclick="showTab('traders', this)">
+                <i class="fa-solid fa-store"></i> Schwarzmarkt Händler
+            </div>
+            <div class="nav-tab" onclick="showTab('mounts', this)">
+                <i class="fa-solid fa-dragon"></i> Exklusive Reittiere
+            </div>
+            <div class="nav-tab" onclick="showTab('casino', this)">
+                <i class="fa-solid fa-dice"></i> Casino
+            </div>
+        </div>
+
+        <!-- CONTENT -->
+        <div class="content-area">
+
+            <!-- TAB 1: SHOWCASE -->
+            <div id="showcase" class="section active">
+                <div class="section-header">
+                    <i class="fa-solid fa-map section-icon"></i>
+                    <h2 class="section-title">Übersicht & Erklärung</h2>
+                </div>
+
+                <div class="info-block searchable">
+                    <h3>Willkommen im Zentrum</h3>
+                    <p>Diese Modkarte wurde speziell für die Community von Infinity of Phoenix erstellt. Sie bietet auf die Community zugeschnittene Inhalte wie Logos, besondere Orte und Custom-Inhalte. Die Karte ist als ultimative Markt- und Event-Karte im Mittelalter-Fantasy-Stil geplant. Sie befindet sich in einem Tal mit viel Vegetation, Felsen und speziellen Nacht-Leuchteffekten.</p>
+                    <img src="https://i.postimg.cc/sgN2Zvv5/40.png" class="big-img" onclick="openModal(this.src)">
+                </div>
+
+                <div class="info-block searchable">
+                    <h3>Wichtige Orte</h3>
+                    <div class="location-list">
+                        <div class="location-item"><span>Land-Arena</span> <small>Mit Tribünen & Schutz-Cube</small></div>
+                        <div class="location-item"><span>Wasser-Arena</span> <small>Mit Unterwasser-Tribüne</small></div>
+                        <div class="location-item"><span>Dynamische Event-Orte</span> <small>Land & Wasser</small></div>
+                        <div class="location-item"><span>Spielermarkt</span> <small>61 nummerierte Häuser</small></div>
+                        <div class="location-item"><span>Spielerbank</span> <small>Im Adelsviertel</small></div>
+                        <div class="location-item"><span>Phoenix Tempel</span> <small>Zentraler Treffpunkt</small></div>
+                        <div class="location-item"><span>Fußballplatz</span> <small>Football Ark Mod</small></div>
+                        <div class="location-item"><span>Hall of Thunder</span> <small>Mjölnirs Heilung</small></div>
+                        <div class="location-item"><span>Phoenix Brauerei</span> <small>Getränkelager</small></div>
+                        <div class="location-item"><span>Kirche</span> <small>Zur Anbetung</small></div>
+                    </div>
+                </div>
+
+                <div class="info-block searchable">
+                    <h3>Marktlizenz</h3>
+                    <p>Möchtest du auf dem Schwarzmarkt ein Haus mieten? Hol dir die Marktlizenz!</p>
+                    <ul>
+                        <li><strong>Dauer:</strong> Unbegrenzt (Muss jährlich erneuert werden).</li>
+                        <li><strong>Berechtigung:</strong> 50 Strukturen, Unlimited Weight auf dem Schwarzmarkt.</li>
+                        <li><strong>Regeln:</strong> Nur 1 Haus pro Stamm. Dekoration nur im Haus/Garten.</li>
+                        <li><strong>Stände:</strong> Bis zu 4 Verkaufsstände erlaubt (Items, Waffen, Rüstung, Kreaturen).</li>
+                    </ul>
+                    <img src="https://i.postimg.cc/1trv8yzZ/gy-H8-Rd-QZJw-AL5-R33-IYOkx-Xriuq1-ENIbvs-Wlze-DA2.webp" class="big-img" onclick="openModal(this.src)">
+                </div>
+            </div>
+
+            <!-- TAB 2: TRADERS -->
+            <div id="traders" class="section">
+                <div class="section-header">
+                    <i class="fa-solid fa-shop section-icon"></i>
+                    <h2 class="section-title">Schwarzmarkt Händler</h2>
+                </div>
+
+                <div class="info-block searchable">
+                    <p>Der Schwarzmarkt befindet sich in der Mitte der Karte (nördlich vom Spawn). In der Burg auf dem Berg findet ihr diverse Händler. Bezahlt wird mit Edelsteinen oder Gold.</p>
+                </div>
+
+                <div class="card-grid">
+                    <!-- Cards -->
+                    <div class="card searchable">
+                        <div class="card-img-container"><img src="https://i.postimg.cc/Ss3SrdGL/Bild-2025-01-07-204538284.png" class="card-img" onclick="openModal(this.src)"></div>
+                        <div class="card-body"><h4 class="card-title">Reittierhändler</h4><p class="card-text">Verkauft einzigartige Mod-Reittiere.</p></div>
+                    </div>
+                    <div class="card searchable">
+                        <div class="card-img-container"><img src="https://i.postimg.cc/hGQ3m0fR/Bild-2025-01-07-204624283.png" class="card-img" onclick="openModal(this.src)"></div>
+                        <div class="card-body"><h4 class="card-title">Schultertiere</h4><p class="card-text">Besondere Begleiter für die Schulter.</p></div>
+                    </div>
+                    <div class="card searchable">
+                        <div class="card-img-container"><img src="https://i.postimg.cc/50WrBkYW/Bild-2025-01-07-211521912.png" class="card-img" onclick="openModal(this.src)"></div>
+                        <div class="card-body"><h4 class="card-title">Alchemist</h4><p class="card-text">Magische Waren, Potions und Zaubertränke.</p></div>
+                    </div>
+                    <div class="card searchable">
+                        <div class="card-img-container"><img src="https://i.postimg.cc/ncpkRrm9/Bild-2025-01-07-202102408.png" class="card-img" onclick="openModal(this.src)"></div>
+                        <div class="card-body"><h4 class="card-title">Gemischtwaren</h4><p class="card-text">Deko-Artikel und Verkaufsstrukturen.</p></div>
+                    </div>
+                    <div class="card searchable">
+                        <div class="card-img-container"><img src="https://i.postimg.cc/x1XG440B/Bild-2025-01-07-203733522.png" class="card-img" onclick="openModal(this.src)"></div>
+                        <div class="card-body"><h4 class="card-title">Rüstungshändler</h4><p class="card-text">Verbesserte Rüstungen und Kleidung.</p></div>
+                    </div>
+                    <div class="card searchable">
+                        <div class="card-img-container"><img src="https://i.postimg.cc/6QNk6R16/Bild-2025-01-07-204010173.png" class="card-img" onclick="openModal(this.src)"></div>
+                        <div class="card-body"><h4 class="card-title">Waffenhändler</h4><p class="card-text">Verbesserte Waffen und Werkzeuge.</p></div>
+                    </div>
+                    <div class="card searchable">
+                        <div class="card-img-container"><img src="https://i.postimg.cc/fL9kSk4R/Bild-2025-01-07-210123829.png" class="card-img" onclick="openModal(this.src)"></div>
+                        <div class="card-body"><h4 class="card-title">Tribute Ankäufer</h4><p class="card-text">Kauft Tribute an und zahlt in Gold.</p></div>
+                    </div>
+                    <div class="card searchable">
+                        <div class="card-img-container"><img src="https://i.postimg.cc/1RbfSGqV/Bild-2025-01-07-205944692.png" class="card-img" onclick="openModal(this.src)"></div>
+                        <div class="card-body"><h4 class="card-title">Der Hehler</h4><p class="card-text">Geheime Waren und korrupte Kreaturen.</p></div>
+                    </div>
+                    <div class="card searchable">
+                        <div class="card-img-container"><img src="https://i.postimg.cc/50dtWD02/Bild-2025-05-20-232903234.png" class="card-img" onclick="openModal(this.src)"></div>
+                        <div class="card-body"><h4 class="card-title">Teleportation</h4><p class="card-text">Teleport-Steine für schnelles Reisen.</p></div>
+                    </div>
+                     <div class="card searchable">
+                        <div class="card-img-container"><img src="https://i.postimg.cc/ZnSChZWs/Bild-2025-01-07-205603129.png" class="card-img" onclick="openModal(this.src)"></div>
+                        <div class="card-body"><h4 class="card-title">Chibi Händler</h4><p class="card-text">Verkauft normale Chibis.</p></div>
+                    </div>
+                     <div class="card searchable">
+                        <div class="card-img-container"><img src="https://i.postimg.cc/NMYcs0xX/Bild-2025-01-07-205703117.png" class="card-img" onclick="openModal(this.src)"></div>
+                        <div class="card-body"><h4 class="card-title">Skin Händler</h4><p class="card-text">Skins für Rüstungen und Waffen.</p></div>
+                    </div>
+                     <div class="card searchable">
+                        <div class="card-img-container"><img src="https://i.postimg.cc/dtCnQ0k4/Bild-2025-01-07-204257313.png" class="card-img" onclick="openModal(this.src)"></div>
+                        <div class="card-body"><h4 class="card-title">Pferdehändler</h4><p class="card-text">Verkauft Pferde.</p></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 3: MOUNTS -->
+            <div id="mounts" class="section">
+                <div class="section-header">
+                    <i class="fa-solid fa-dragon section-icon"></i>
+                    <h2 class="section-title">Exklusive Reittiere</h2>
+                </div>
+
+                <div class="info-block searchable">
+                    <h3>Infos zur Zucht & Herkunft</h3>
+                    <p>Diese Kreaturen sind (außer Shiny/S-Varianten) nur auf dem Schwarzmarkt erhältlich. Sie werden <strong>kastriert</strong> verkauft (Level 140-160).</p>
+                    <p><strong>Master Breeding:</strong> Über "IOP Fertility Injektoren" (erspielbar) könnt ihr diese Tiere 1x paaren lassen. Das Baby kommt ebenfalls kastriert zur Welt.</p>
+                </div>
+
+                <!-- Creature Items -->
+                <div class="creature-detail searchable">
+                    <div class="cd-img-col">
+                        <img src="https://i.postimg.cc/wjQF1fMS/Bild-2025-01-26-175759173.png" class="cd-img" onclick="openModal(this.src)">
+                    </div>
+                    <div class="cd-text-col">
+                        <h3 class="cd-title">Dragon's Kingdom Drachen</h3>
+                        <p><strong>Arten:</strong> Verschiedene Größen (T1 - T5).</p>
+                        <p><strong>Besonderheiten:</strong> Sturzflug, verschiedene Atmen-Arten, neue Animationen & Sounds, kein Ausdauerverbrauch im Gleitmodus.</p>
+                    </div>
+                </div>
+
+                <div class="creature-detail searchable">
+                    <div class="cd-img-col">
+                        <img src="https://i.postimg.cc/zBPwY4v1/GUke7-Dc-WUAIBUz-B.jpg" class="cd-img" onclick="openModal(this.src)">
+                    </div>
+                    <div class="cd-text-col">
+                        <h3 class="cd-title">Marnii's Owlgriffins</h3>
+                        <p><strong>Arten:</strong> Royal Griffin, Normaler Owlgriffin.</p>
+                        <p><strong>Besonderheiten:</strong> Sturzflug, Waffen beim Reiten, Greif-Funktion, leiser Flug. Die Royal-Variante ist größer und majestätischer.</p>
+                    </div>
+                </div>
+
+                <div class="creature-detail searchable">
+                    <div class="cd-img-col">
+                        <img src="https://i.postimg.cc/BQ4jtCzK/sivatherium-3.png" class="cd-img" onclick="openModal(this.src)">
+                    </div>
+                    <div class="cd-text-col">
+                        <h3 class="cd-title">Sivatherium</h3>
+                        <p><strong>Arten:</strong> Normal, Aberrant.</p>
+                        <p><strong>Besonderheiten:</strong> Verleiht dem Reiter Beweglichkeit und Ausdauer. Ein exzellentes Reittier für Reisen.</p>
+                    </div>
+                </div>
+
+                <div class="creature-detail searchable">
+                    <div class="cd-img-col">
+                        <img src="https://i.postimg.cc/3JZFw1Ky/arkascended-4-22-2024-12-06-11-pm-min.png" class="cd-img" onclick="openModal(this.src)">
+                    </div>
+                    <div class="cd-text-col">
+                        <h3 class="cd-title">Cyrus' Critters: Jumping Spider</h3>
+                        <p><strong>Arten:</strong> Snow, Jungle, Aberrant.</p>
+                        <p><strong>Besonderheiten:</strong> Klettern an Wänden, aufgeladener Weitsprung, lähmt Beute beim Drüberspringen.</p>
+                    </div>
+                </div>
+
+                <div class="creature-detail searchable">
+                    <div class="cd-img-col">
+                        <img src="https://i.postimg.cc/v8VYr2jK/t0jtr199j17d1.png" class="cd-img" onclick="openModal(this.src)">
+                    </div>
+                    <div class="cd-text-col">
+                        <h3 class="cd-title">Draconis Glaucus</h3>
+                        <p><strong>Besonderheiten:</strong> Elektrische Angriffe (Nesseltiergift/Biotoxin nötig), kann Wasser verlassen, starke Betäubung.</p>
+                    </div>
+                </div>
+
+                <div class="creature-detail searchable">
+                    <div class="cd-img-col">
+                        <img src="https://i.postimg.cc/4d53rWkG/scorched-earth-2.jpg" class="cd-img" onclick="openModal(this.src)">
+                    </div>
+                    <div class="cd-text-col">
+                        <h3 class="cd-title">Colossusscorpius</h3>
+                        <p><strong>Arten:</strong> Normal, Aberrant.</p>
+                        <p><strong>Besonderheiten:</strong> Zangen- und Schwanzangriffe, hoher Torpor-Schaden, kann Kreaturen greifen und tragen (Taste C).</p>
+                    </div>
+                </div>
+
+                <div class="creature-detail searchable">
+                    <div class="cd-img-col">
+                        <img src="https://i.postimg.cc/C17w5dKp/image-2024-07-09-230915146.png" class="cd-img" onclick="openModal(this.src)">
+                    </div>
+                    <div class="cd-text-col">
+                        <h3 class="cd-title">Moro's Nothosaurus</h3>
+                        <p><strong>Besonderheiten:</strong> Elektro-Angriffe, schnelle Regeneration im Wasser, wendig, findet Silica Pearls.</p>
+                    </div>
+                </div>
+
+                <div class="creature-detail searchable">
+                    <div class="cd-img-col">
+                        <img src="https://i.postimg.cc/TwHQGMDq/13244164-Tylosaurus-mosasaur-and-prey-illustration.jpg" class="cd-img" onclick="openModal(this.src)">
+                    </div>
+                    <div class="cd-text-col">
+                        <h3 class="cd-title">Moro's Tylosaurus</h3>
+                        <p><strong>Besonderheiten:</strong> Schnappangriffe, Todesrolle, produziert Gifte (Pheromon, Toxisch, Torpor).</p>
+                    </div>
+                </div>
+
+                 <div class="creature-detail searchable">
+                    <div class="cd-img-col">
+                        <img src="https://i.postimg.cc/JhXLjLVc/Bild-2025-05-20-214815786.png" class="cd-img" onclick="openModal(this.src)">
+                    </div>
+                    <div class="cd-text-col">
+                        <h3 class="cd-title">Skyshroud Drakara (Avatar Ikran)</h3>
+                        <p><strong>Arten:</strong> Dwarf, Normal, Aberrant, Bloodfang, Arctic.</p>
+                        <p><strong>Besonderheiten:</strong> Majestätische Flugtiere inspiriert von Avatar. Unterschiedliche Stats und Fähigkeiten.</p>
+                    </div>
+                </div>
+                 <div class="creature-detail searchable">
+                    <div class="cd-img-col">
+                        <img src="https://i.postimg.cc/cJRH7YfJ/arkascended-12-8-2024-5-56-29-pm.jpg" class="cd-img" onclick="openModal(this.src)">
+                    </div>
+                    <div class="cd-text-col">
+                        <h3 class="cd-title">Dracotheutis</h3>
+                        <p><strong>Besonderheiten:</strong> Saugt Ladelicht für Energie, eingeschränkter Flug, absorbiert Ladung für Heilung/Schaden.</p>
+                    </div>
+                </div>
+                 <div class="creature-detail searchable">
+                    <div class="cd-img-col">
+                        <img src="https://i.postimg.cc/J0sHvLp7/after-sacrificing-many-many-kairukus-and-collecting-v0-xibrkyltvrac1.jpg" class="cd-img" onclick="openModal(this.src)">
+                    </div>
+                    <div class="cd-text-col">
+                        <h3 class="cd-title">Moro's Indomitable Duo</h3>
+                        <p><strong>Arten:</strong> Indominus Rex, Indo-Raptor.</p>
+                        <p><strong>Besonderheiten:</strong> Die ultimativen Jäger. Extrem stark und gefährlich.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 4: CASINO -->
+            <div id="casino" class="section">
+                <div class="section-header">
+                    <i class="fa-solid fa-dice section-icon"></i>
+                    <h2 class="section-title">Das Casino</h2>
+                </div>
+
+                <div class="info-block searchable">
+                    <h3>Spielspaß & Gewinne</h3>
+                    <p>Das Infinity of Phoenix Casino befindet sich auf dem Schwarzmarkt (neben dem Reittierhändler). Hier könnt ihr euer Gold in 3 Arten von Casino Coins tauschen.</p>
+                    <p><strong>Spiele:</strong></p>
+                    <ul>
+                        <li><strong>Blackjack:</strong> Spiele gegen den Server.</li>
+                        <li><strong>Spielautomaten:</strong> Versuche dein Glück an den Maschinen.</li>
+                        <li><strong>Raptorenrennen:</strong> Wette auf deinen Favoriten!</li>
+                        <li><strong>Glücksräder:</strong> (Silber & Gold Coins) Für einzigartige Items.</li>
+                        <li><strong>Poker:</strong> Spiele gegen andere Spieler.</li>
+                        <li><strong>Mystery Boxen:</strong> Öffne Boxen mit Gold Coins.</li>
+                    </ul>
+                    <p><strong>Daily Reward:</strong> Im Mystery Raum gibt es eine Tafel, die eine tägliche Aufgabe stellt. Als Belohnung gibt es einen Coin.</p>
+                </div>
+
+                <div class="card-grid">
+                     <div class="card searchable">
+                        <div class="card-img-container"><img src="https://i.postimg.cc/k45LvpwD/Bild-2025-01-07-225546162.png" class="card-img" onclick="openModal(this.src)"></div>
+                        <div class="card-body"><h4 class="card-title">Eingang</h4></div>
+                    </div>
+                     <div class="card searchable">
+                        <div class="card-img-container"><img src="https://i.postimg.cc/FRq7C3vv/Bild-2025-01-07-211636787.png" class="card-img" onclick="openModal(this.src)"></div>
+                        <div class="card-body"><h4 class="card-title">Coin Raum</h4></div>
+                    </div>
+                     <div class="card searchable">
+                        <div class="card-img-container"><img src="https://i.postimg.cc/W4zg1M2R/Bild-2025-01-07-211721957.png" class="card-img" onclick="openModal(this.src)"></div>
+                        <div class="card-body"><h4 class="card-title">Spielautomaten</h4></div>
+                    </div>
+                     <div class="card searchable">
+                        <div class="card-img-container"><img src="https://i.postimg.cc/t4MsRJ27/Bild-2025-01-07-212655107.png" class="card-img" onclick="openModal(this.src)"></div>
+                        <div class="card-body"><h4 class="card-title">Pokertisch</h4></div>
+                    </div>
+                     <div class="card searchable">
+                        <div class="card-img-container"><img src="https://i.postimg.cc/y8qGMyzN/Bild-2025-01-07-212821396.png" class="card-img" onclick="openModal(this.src)"></div>
+                        <div class="card-body"><h4 class="card-title">Raptorenrennen</h4></div>
+                    </div>
+                     <div class="card searchable">
+                        <div class="card-img-container"><img src="https://i.postimg.cc/FR2qhyJG/Bild-2025-01-07-212905779.png" class="card-img" onclick="openModal(this.src)"></div>
+                        <div class="card-body"><h4 class="card-title">Glücksrad</h4></div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="imgModal" class="modal">
+        <span class="close-btn" onclick="closeModal()">&times;</span>
+        <span class="modal-nav modal-prev" onclick="changeImage(-1)">&#10094;</span>
+        <img id="modalImage" class="modal-img" src="">
+        <span class="modal-nav modal-next" onclick="changeImage(1)">&#10095;</span>
+    </div>
+
+    <script>
+        function showTab(tabId, btn) {
+            document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
+            
+            document.getElementById(tabId).classList.add('active');
+            btn.classList.add('active');
+        }
+
+        // --- SEARCH LOGIC ---
+        const searchInput = document.getElementById('searchInput');
+        
+        searchInput.addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            const activeSection = document.querySelector('.section.active');
+            const searchables = activeSection.querySelectorAll('.searchable');
+            
+            searchables.forEach(el => {
+                const text = el.innerText.toLowerCase();
+                if(text.includes(term)) {
+                    el.style.display = ''; // Show default
+                } else {
+                    el.style.display = 'none';
+                }
+            });
+        });
+
+        // --- MODAL LOGIC ---
+        const modal = document.getElementById('imgModal');
+        const modalImg = document.getElementById('modalImage');
+        let galleryImages = [];
+        let currentIndex = 0;
+
+        function openModal(src) {
+            // Find current context images
+            const activeSection = document.querySelector('.section.active');
+            galleryImages = Array.from(activeSection.querySelectorAll('img')).map(img => img.src);
+            
+            currentIndex = galleryImages.indexOf(src);
+            if(currentIndex === -1) currentIndex = 0;
+
+            updateModalImage();
+            modal.classList.add('open');
+        }
+
+        function closeModal() {
+            modal.classList.remove('open');
+        }
+
+        function updateModalImage() {
+            modalImg.src = galleryImages[currentIndex];
+        }
+
+        function changeImage(direction) {
+            currentIndex += direction;
+            if(currentIndex >= galleryImages.length) currentIndex = 0;
+            if(currentIndex < 0) currentIndex = galleryImages.length - 1;
+            updateModalImage();
+        }
+
+        modal.addEventListener('click', (e) => {
+            if(e.target === modal) closeModal();
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (!modal.classList.contains('open')) return;
+            if (e.key === 'ArrowLeft') changeImage(-1);
+            if (e.key === 'ArrowRight') changeImage(1);
+            if (e.key === 'Escape') closeModal();
+        });
+    </script>
+
+</body>
+</html>
