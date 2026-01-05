@@ -574,11 +574,11 @@
         <!-- Navigation -->
         <div class="nav-tabs">
             <div class="nav-tab active" onclick="showSection('faq')"><i class="fa-solid fa-circle-question"></i> Info & FAQ</div>
-            <div class="nav-tab" onclick="showSection('checker')"><i class="fa-solid fa-flask"></i> Shiny Checker</div>
-            <div class="nav-tab" onclick="showSection('colors')"><i class="fa-solid fa-palette"></i> Farb Sets</div>
             <div class="nav-tab" onclick="showSection('variants')"><i class="fa-solid fa-dna"></i> Shiny Arten</div>
-            <div class="nav-tab" onclick="showSection('combos')"><i class="fa-solid fa-layer-group"></i> Kombinationen</div>
             <div class="nav-tab" onclick="showSection('tinies')"><i class="fa-solid fa-paw"></i> Tinies & Stats</div>
+            <div class="nav-tab" onclick="showSection('colors')"><i class="fa-solid fa-palette"></i> Farb Sets</div>
+            <div class="nav-tab" onclick="showSection('checker')"><i class="fa-solid fa-flask"></i> Shiny Checker</div>
+            <div class="nav-tab" onclick="showSection('combos')"><i class="fa-solid fa-layer-group"></i> Essenz Checker</div>
         </div>
 
         <div class="content-area">
@@ -600,7 +600,7 @@
                             <p>
                                 <strong>Rohe Essenz:</strong> Erhältlich durch das Töten von <em>Enraged Shinys</em>. Wird benötigt, um den <em>Shiny Prod</em> (Speer) zu craften.<br><br>
                                 <strong>Essenz Extrahieren:</strong> Mit dem Shiny Prod können Fähigkeiten von <em>wilden</em> Shinys extrahiert werden. Diese Essenz kann dann auf eigene Dinos <strong>derselben Art</strong> angewendet werden (z.B. Raptor-Essenz auf Raptor).<br>
-                                <em>Hinweis: Bis zu zwei Essenzen können gestapelt werden. Weitere Details zu erlaubten Kombinationen findest du im Reiter "Kombinationen".</em>
+                                <em>Hinweis: Bis zu zwei Essenzen können gestapelt werden. Weitere Details zu erlaubten Kombinationen findest du im Reiter "Essenz Checker".</em>
                             </p>
                         </div>
                         <div style="text-align: center; flex-basis: 300px;">
@@ -618,99 +618,9 @@
                 </div>
             </div>
 
-            <!-- NEW: SHINY CHECKER SECTION (Renamed from Builder) -->
-            <div id="checker" class="section">
-                <div class="info-box">
-                    <h3><i class="fa-solid fa-flask"></i> Shiny Checker</h3>
-                    <p>Hier kannst du die Effekte deines Shinys zusammenstellen und sehen, welche Boni es erhält.</p>
-                    
-                    <div class="builder-container">
-                        <!-- Controls -->
-                        <div class="builder-section">
-                            <h4 style="color:var(--color-gold); margin-top:0;">Eigenschaften hinzufügen</h4>
-                            <select id="effectSelect" class="builder-select">
-                                <option value="">-- Wähle Effekt --</option>
-                                <optgroup label="Visual/Effect">
-                                    <option value="Burning">Burning</option>
-                                    <option value="Frozen">Frozen</option>
-                                    <option value="Electro">Electro</option>
-                                    <option value="Toxic">Toxic</option>
-                                    <option value="Radioactive">Radioactive</option>
-                                    <option value="Spectral">Spectral</option>
-                                    <option value="Holographic">Holographic</option>
-                                    <option value="Rubber">Rubber</option>
-                                    <option value="Dazzling">Dazzling</option>
-                                    <option value="Nightmare">Nightmare</option>
-                                    <option value="Crystalline">Crystalline</option>
-                                    <option value="Skeletal">Skeletal</option>
-                                </optgroup>
-                                <optgroup label="Abilities">
-                                    <option value="Shinobi">Shinobi</option>
-                                    <option value="Fathomless">Fathomless</option>
-                                    <option value="Endurant">Endurant</option>
-                                    <option value="Lunar">Lunar</option>
-                                    <option value="Floral">Floral</option>
-                                </optgroup>
-                                <optgroup label="Stats">
-                                    <option value="Strong">Strong (Melee)</option>
-                                    <option value="Fast">Fast (Speed)</option>
-                                    <option value="Durable">Durable (Resist)</option>
-                                    <option value="Heavy">Heavy (Weight)</option>
-                                    <option value="Intelligent">Intelligent (XP)</option>
-                                </optgroup>
-                                <optgroup label="Size">
-                                    <option value="Tiny">Tiny</option>
-                                    <option value="Massive">Massive</option>
-                                    <option value="Colossal">Colossal</option>
-                                    <option value="Pygmy">Pygmy</option>
-                                </optgroup>
-                            </select>
-                            <button onclick="addEffect()" class="sheet-link-btn" style="width:100%; margin-top:0; margin-bottom:20px;">Hinzufügen</button>
-
-                            <h4 style="color:var(--color-gold);">Farb-Set auswählen</h4>
-                            <select id="colorSetSelect" class="builder-select" onchange="updateBuilder()">
-                                <option value="">-- Kein Set --</option>
-                                <!-- Populated by JS -->
-                            </select>
-
-                            <div id="selectedChips" class="chip-container"></div>
-                        </div>
-
-                        <!-- Results -->
-                        <div class="builder-section">
-                            <h4 style="color:#2196F3; margin-top:0; border-bottom:1px solid #444; padding-bottom:10px;">Ergebnis</h4>
-                            <div id="builderResults">
-                                <p style="color:#666; font-style:italic;">Füge Effekte hinzu um Boni zu sehen...</p>
-                            </div>
-                            
-                            <div id="builderColorPreview" style="margin-top:20px; display:none;">
-                                <h4 style="color:#ff00ff; margin-bottom:10px;">Farb-Vorschau</h4>
-                                <div id="builderColorCircles" class="color-circles"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- NEW: COLOR SETS SECTION -->
-            <div id="colors" class="section">
-                <div class="info-box">
-                    <h3><i class="fa-solid fa-palette"></i> Farb-Sets Bibliothek</h3>
-                    <p>Eine Übersicht aller bekannten Shiny-Farbkombinationen.</p>
-                    <a href="https://docs.google.com/spreadsheets/d/1imxJ6Y6LxaqLiEpKrK2p2fvrVl06SEN7PhPhY8kpQNg/edit?gid=0#gid=0" target="_blank" class="sheet-link-btn" style="margin-bottom:20px;">
-                        <i class="fa-solid fa-table"></i> Zur Farb-Tabelle (Google Sheets)
-                    </a>
-                    
-                    <div id="colorSetGrid" class="shiny-grid">
-                        <!-- Populated by JS -->
-                    </div>
-                </div>
-            </div>
-
             <!-- 2. SHINY ARTEN (VARIANTS) -->
             <div id="variants" class="section">
                 <div class="shiny-grid">
-                    <!-- Cards are generated here... -->
                     <!-- RADIOACTIVE -->
                     <div class="shiny-card" onclick="openModal(this)">
                         <img src="https://i.postimg.cc/nzs9ZzK6/Bild-2024-09-14-132637655.png" class="card-img" alt="Radioactive">
@@ -929,11 +839,137 @@
                     </div>
                 </div>
             </div>
+
+            <!-- 4. TINIES & STATS -->
+            <div id="tinies" class="section">
+                <div class="info-box">
+                    <h3><i class="fa-solid fa-paw"></i> Tinies (Nur Shoulder Pets)</h3>
+                    <p>Spezielle Varianten, die nur für Schulter-Tiere verfügbar sind und dem Träger Boni verleihen.</p>
+                    <div class="tiny-grid" style="margin-top: 15px;">
+                        <div class="tiny-card"><h4>Bolstering</h4><p>Reduziert das Gewicht im Inventar.</p></div>
+                        <div class="tiny-card"><h4>Hydrating</h4><p>Reduziert den Wasserverbrauch.</p></div>
+                        <div class="tiny-card"><h4>Invigorating</h4><p>Stellt Ausdauer wieder her.</p></div>
+                        <div class="tiny-card"><h4>Obscured</h4><p>Reduziert Aggro-Reichweite wilder Dinos.</p></div>
+                        <div class="tiny-card"><h4>Pyrethrous</h4><p>Hält Insekten fern.</p></div>
+                        <div class="tiny-card"><h4>Revitalizing</h4><p>Regeneriert Gesundheit.</p></div>
+                        <div class="tiny-card"><h4>Serene</h4><p>Hilft beim Konzentrieren (Crafting).</p></div>
+                    </div>
+                </div>
+                <div class="info-box">
+                    <h3><i class="fa-solid fa-chart-bar"></i> Stat-Booster Varianten</h3>
+                    <p>Diese Dinos haben eine höhere Chance auf außergewöhnlich hohe Wild-Werte in einem bestimmten Attribut.</p>
+                    <div class="tiny-grid" style="margin-top: 15px;">
+                        <div class="tiny-card"><h4 style="color: #4CAF50;">Hardy</h4><p>Gesundheit</p></div>
+                        <div class="tiny-card"><h4 style="color: #FFC107;">Stalwart</h4><p>Ausdauer</p></div>
+                        <div class="tiny-card"><h4 style="color: #03A9F4;">Inspired</h4><p>Sauerstoff</p></div>
+                        <div class="tiny-card"><h4 style="color: #FF5722;">Satiate</h4><p>Nahrung</p></div>
+                        <div class="tiny-card"><h4 style="color: #9E9E9E;">Hefty</h4><p>Gewicht</p></div>
+                        <div class="tiny-card"><h4 style="color: #F44336;">Fierce</h4><p>Nahkampfschaden</p></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- NEW: COLOR SETS SECTION -->
+            <div id="colors" class="section">
+                <div class="info-box">
+                    <h3><i class="fa-solid fa-palette"></i> Farb-Sets Bibliothek</h3>
+                    <p>Eine Übersicht aller bekannten Shiny-Farbkombinationen.</p>
+                    <a href="https://docs.google.com/spreadsheets/d/1imxJ6Y6LxaqLiEpKrK2p2fvrVl06SEN7PhPhY8kpQNg/edit?gid=0#gid=0" target="_blank" class="sheet-link-btn" style="margin-bottom:20px;">
+                        <i class="fa-solid fa-table"></i> Zur Farb-Tabelle (Google Sheets)
+                    </a>
+                    
+                    <div id="colorSetGrid" class="shiny-grid">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- NEW: SHINY CHECKER SECTION (Renamed from Builder) -->
+            <div id="checker" class="section">
+                <div class="info-box">
+                    <h3><i class="fa-solid fa-flask"></i> Shiny Checker</h3>
+                    <p>Hier kannst du die Effekte deines Shinys zusammenstellen und sehen, welche Boni es erhält.</p>
+                    
+                    <div class="builder-container">
+                        <!-- Controls -->
+                        <div class="builder-section">
+                            <h4 style="color:var(--color-gold); margin-top:0;">Eigenschaften hinzufügen</h4>
+                            <select id="effectSelect" class="builder-select">
+                                <option value="">-- Wähle Effekt --</option>
+                                <optgroup label="Visual/Effect">
+                                    <option value="Burning">Burning</option>
+                                    <option value="Frozen">Frozen</option>
+                                    <option value="Electro">Electro</option>
+                                    <option value="Toxic">Toxic</option>
+                                    <option value="Radioactive">Radioactive</option>
+                                    <option value="Spectral">Spectral</option>
+                                    <option value="Holographic">Holographic</option>
+                                    <option value="Rubber">Rubber</option>
+                                    <option value="Dazzling">Dazzling</option>
+                                    <option value="Nightmare">Nightmare</option>
+                                    <option value="Crystalline">Crystalline</option>
+                                    <option value="Skeletal">Skeletal</option>
+                                </optgroup>
+                                <optgroup label="Abilities">
+                                    <option value="Shinobi">Shinobi</option>
+                                    <option value="Fathomless">Fathomless</option>
+                                    <option value="Endurant">Endurant</option>
+                                    <option value="Lunar">Lunar</option>
+                                    <option value="Floral">Floral</option>
+                                </optgroup>
+                                <optgroup label="Stat Boosts">
+                                    <option value="Hardy">Hardy (HP)</option>
+                                    <option value="Stalwart">Stalwart (Stam)</option>
+                                    <option value="Inspired">Inspired (Oxy)</option>
+                                    <option value="Satiate">Satiate (Food)</option>
+                                    <option value="Hefty">Hefty (Weight)</option>
+                                    <option value="Fierce">Fierce (Melee)</option>
+                                </optgroup>
+                                <optgroup label="Tinies (Shoulder)">
+                                    <option value="Bolstering">Bolstering</option>
+                                    <option value="Hydrating">Hydrating</option>
+                                    <option value="Invigorating">Invigorating</option>
+                                    <option value="Obscured">Obscured</option>
+                                    <option value="Pyrethrous">Pyrethrous</option>
+                                    <option value="Revitalizing">Revitalizing</option>
+                                    <option value="Serene">Serene</option>
+                                </optgroup>
+                                <optgroup label="Size">
+                                    <option value="Colossal">Colossal</option>
+                                    <option value="Pygmy">Pygmy</option>
+                                </optgroup>
+                            </select>
+                            <button onclick="addEffect()" class="sheet-link-btn" style="width:100%; margin-top:0; margin-bottom:20px;">Hinzufügen</button>
+
+                            <h4 style="color:var(--color-gold);">Farb-Set auswählen</h4>
+                            <select id="colorSetSelect" class="builder-select" onchange="updateBuilder()">
+                                <option value="">-- Kein Set --</option>
+                                <!-- Populated by JS -->
+                            </select>
+
+                            <div id="selectedChips" class="chip-container"></div>
+                        </div>
+
+                        <!-- Results -->
+                        <div class="builder-section">
+                            <h4 style="color:#2196F3; margin-top:0; border-bottom:1px solid #444; padding-bottom:10px;">Ergebnis</h4>
+                            <div id="builderResults">
+                                <p style="color:#666; font-style:italic;">Füge Effekte hinzu um Boni zu sehen...</p>
+                            </div>
+                            
+                            <div id="builderColorPreview" style="margin-top:20px; display:none;">
+                                <h4 style="color:#ff00ff; margin-bottom:10px;">Farb-Vorschau</h4>
+                                <div id="builderColorCircles" class="color-circles"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
             
-            <!-- 3. KOMBINATIONEN (NEU) -->
+            <!-- 3. ESSENZ CHECKER (OLD COMBINATIONS) -->
             <div id="combos" class="section">
                 <div class="info-box">
-                    <h3><i class="fa-solid fa-calculator"></i> Shiny Kombinations-Check</h3>
+                    <h3><i class="fa-solid fa-calculator"></i> Essenz Checker</h3>
                     <p>
                         Wähle hier zwei Shiny-Essenzen aus, um zu prüfen, ob sie miteinander kombinierbar sind.
                     </p>
@@ -972,8 +1008,22 @@
                                     <option value="Colossal" data-cat="size">Colossal</option>
                                     <option value="Pygmy" data-cat="size">Pygmy</option>
                                 </optgroup>
-                                <optgroup label="Tiny (Stat/Shoulder)">
-                                    <option value="Tiny" data-cat="tiny">Tiny / Stat Boost</option>
+                                <optgroup label="Tinies (Shoulder)">
+                                    <option value="Bolstering" data-cat="tiny">Bolstering</option>
+                                    <option value="Hydrating" data-cat="tiny">Hydrating</option>
+                                    <option value="Invigorating" data-cat="tiny">Invigorating</option>
+                                    <option value="Obscured" data-cat="tiny">Obscured</option>
+                                    <option value="Pyrethrous" data-cat="tiny">Pyrethrous</option>
+                                    <option value="Revitalizing" data-cat="tiny">Revitalizing</option>
+                                    <option value="Serene" data-cat="tiny">Serene</option>
+                                </optgroup>
+                                <optgroup label="Stat Boosts">
+                                    <option value="Hardy" data-cat="tiny">Hardy (HP)</option>
+                                    <option value="Stalwart" data-cat="tiny">Stalwart (Stam)</option>
+                                    <option value="Inspired" data-cat="tiny">Inspired (Oxy)</option>
+                                    <option value="Satiate" data-cat="tiny">Satiate (Food)</option>
+                                    <option value="Hefty" data-cat="tiny">Hefty (Weight)</option>
+                                    <option value="Fierce" data-cat="tiny">Fierce (Melee)</option>
                                 </optgroup>
                             </select>
 
@@ -1005,8 +1055,22 @@
                                     <option value="Colossal" data-cat="size">Colossal</option>
                                     <option value="Pygmy" data-cat="size">Pygmy</option>
                                 </optgroup>
-                                <optgroup label="Tiny (Stat/Shoulder)">
-                                    <option value="Tiny" data-cat="tiny">Tiny / Stat Boost</option>
+                                <optgroup label="Tinies (Shoulder)">
+                                    <option value="Bolstering" data-cat="tiny">Bolstering</option>
+                                    <option value="Hydrating" data-cat="tiny">Hydrating</option>
+                                    <option value="Invigorating" data-cat="tiny">Invigorating</option>
+                                    <option value="Obscured" data-cat="tiny">Obscured</option>
+                                    <option value="Pyrethrous" data-cat="tiny">Pyrethrous</option>
+                                    <option value="Revitalizing" data-cat="tiny">Revitalizing</option>
+                                    <option value="Serene" data-cat="tiny">Serene</option>
+                                </optgroup>
+                                <optgroup label="Stat Boosts">
+                                    <option value="Hardy" data-cat="tiny">Hardy (HP)</option>
+                                    <option value="Stalwart" data-cat="tiny">Stalwart (Stam)</option>
+                                    <option value="Inspired" data-cat="tiny">Inspired (Oxy)</option>
+                                    <option value="Satiate" data-cat="tiny">Satiate (Food)</option>
+                                    <option value="Hefty" data-cat="tiny">Hefty (Weight)</option>
+                                    <option value="Fierce" data-cat="tiny">Fierce (Melee)</option>
                                 </optgroup>
                             </select>
                         </div>
@@ -1139,64 +1203,140 @@
             "Endurant": { desc: "Ausdauer", stats: ["Unendlicher Sprint"] },
             "Lunar": { desc: "Mond", stats: ["Geringe Schwerkraft", "Hohe Sprünge"] },
             "Floral": { desc: "Heilung", stats: ["HP Regeneration Aura"] },
-            "Strong": { desc: "Stat Boost", stats: ["Nahkampfschaden +25%"] },
-            "Fast": { desc: "Stat Boost", stats: ["Geschwindigkeit +20%"] },
-            "Durable": { desc: "Stat Boost", stats: ["Erlittener Schaden -20%"] },
-            "Heavy": { desc: "Stat Boost", stats: ["Gewicht +50%"] },
-            "Intelligent": { desc: "Stat Boost", stats: ["Erfahrungsgewinn +50%"] },
-            "Tiny": { desc: "Size Mod", stats: ["Größe -50%", "Speed +10%", "Traglast -20%"] },
-            "Massive": { desc: "Size Mod", stats: ["Größe +30%", "HP +20%", "Speed -10%"] },
+            // Correct Stat Boosts
+            "Hardy": { desc: "Stat Boost", stats: ["Gesundheit (HP) +"] },
+            "Stalwart": { desc: "Stat Boost", stats: ["Ausdauer (Stam) +"] },
+            "Inspired": { desc: "Stat Boost", stats: ["Sauerstoff (Oxy) +"] },
+            "Satiate": { desc: "Stat Boost", stats: ["Nahrung (Food) +"] },
+            "Hefty": { desc: "Stat Boost", stats: ["Gewicht (Weight) +"] },
+            "Fierce": { desc: "Stat Boost", stats: ["Nahkampfschaden (Melee) +"] },
+            // Tinies
+            "Bolstering": { desc: "Tiny Utility", stats: ["Reduziert Inventar-Gewicht"] },
+            "Hydrating": { desc: "Tiny Utility", stats: ["Reduziert Wasserverbrauch"] },
+            "Invigorating": { desc: "Tiny Utility", stats: ["Stellt Ausdauer her"] },
+            "Obscured": { desc: "Tiny Utility", stats: ["Reduziert Aggro"] },
+            "Pyrethrous": { desc: "Tiny Utility", stats: ["Insektenschutz"] },
+            "Revitalizing": { desc: "Tiny Utility", stats: ["Regeneriert Gesundheit"] },
+            "Serene": { desc: "Tiny Utility", stats: ["Crafting Fokus"] },
+            
             "Colossal": { desc: "Size Mod", stats: ["Größe +50%", "HP +++", "Speed ---"] },
             "Pygmy": { desc: "Size Mod", stats: ["Größe -30%", "Speed ++", "HP -"] }
         };
 
         const COLOR_SETS = [
             { name: "Abominable", ids: [214, 33, 23, 34, 96, 25] },
+            { name: "Abro", ids: [25, 59, 36, 55, 67, 91] },
+            { name: "Ace", ids: [79, 226, 36, 90, 50, 55] },
+            { name: "Agender", ids: [79, 35, 59, 57, 55, 18] },
+            { name: "Albino", ids: [36, 218, 55, 38, 8] },
             { name: "All Hallow's", ids: [4, 14, 34, 62, 75, 76] },
-            { name: "Azure", ids: [28, 215, 95, 53, 54, 93] },
-            { name: "Bright Rainbow", ids: [1, 4, 54, 84, 95, 207, 208] },
+            { name: "Amazon", ids: [57, 58, 59, 66, 94] },
+            { name: "Amethyst", ids: [18, 30, 67, 50, 90] },
+            { name: "Azure", ids: [28, 215, 95, 53, 54] },
+            { name: "Bi", ids: [210, 91, 68, 95, 54, 89] },
+            { name: "Blaze", ids: [70, 75, 208, 56] },
+            { name: "Bright Rainbow", ids: [1, 208, 4, 84, 95] },
+            { name: "Budgie", ids: [209, 214, 226, 215, 53] },
+            { name: "Buffer Overflow", ids: [76, 95, 73] },
             { name: "Candy", ids: [4, 11, 18, 36, 74, 75] },
-            { name: "Caribbean", ids: [53, 58, 59, 94, 95, 96] },
+            { name: "Caribbean", ids: [53, 58, 59, 94, 95] },
             { name: "Chalcedony", ids: [40, 33, 41, 34, 64] },
             { name: "Charnel", ids: [226, 63, 64, 97, 209, 47] },
-            { name: "Cheep", ids: [11, 19, 25, 68] },
-            { name: "Dreary Rainbow", ids: [24, 44, 70, 85, 89, 94] },
+            { name: "Cheep", ids: [11, 100, 25, 19, 68, 89] },
+            { name: "Chocolate Egg", ids: [18, 4, 10, 74, 77, 71] },
+            { name: "Coal", ids: [80, 29, 51] },
+            { name: "Dreary Rainbow", ids: [70, 44, 24, 85, 94] },
             { name: "Ectoplasm", ids: [7, 11, 18, 23, 25, 83] },
             { name: "Eldritch", ids: [79, 56, 61, 86, 26, 84] },
+            { name: "Ember", ids: [62, 20, 74] },
+            { name: "Expectation Failed", ids: [54, 73, 90] },
+            { name: "Fallout", ids: [18, 55, 25, 214, 23, 46] },
+            { name: "Fathomless", ids: [224, 51, 53, 54, 81, 95] },
+            { name: "Figgy Pudding", ids: [69, 68, 82, 210, 38, 32] },
+            { name: "Fluid", ids: [91, 54, 213, 79, 18, 89] },
+            { name: "Frozen", ids: [18, 28, 96, 95] },
             { name: "Fudge Brownie", ids: [15, 71, 34, 100] },
-            { name: "Ghoulish/Vampyre", ids: [79, 73, 81, 226, 80, 17] },
-            { name: "Gilded", ids: [8, 10, 11, 36, 55, 216] },
-            { name: "Ginger", ids: [32, 10, 208, 44, 217, 22, 15] },
-            { name: "Goth", ids: [62, 69, 70, 79, 89, 90] },
-            { name: "Indigo", ids: [28, 30, 31, 49, 50, 89] },
+            { name: "Gateway Timeout", ids: [78, 99, 205] },
+            { name: "Genderqueer", ids: [89, 90, 18, 55, 88, 86] },
+            { name: "Ghoulish (Vampyre)", ids: [79, 73, 81, 226, 80, 17] },
+            { name: "Gilded", ids: [36, 55, 8, 11, 216] },
+            { name: "Ginger", ids: [32, 10, 208, 44, 217] },
+            { name: "Goth", ids: [70, 69, 90, 89, 62] },
+            { name: "Grinch", ids: [85, 26, 27, 60, 65, 57] },
+            { name: "Gummy", ids: [11, 59, 90, 91, 95, 76] },
+            { name: "Heartthrob/True", ids: [39, 73, 12, 79, 62, 17] },
+            { name: "Hubba Hubba/Ardent", ids: [68, 30, 19, 90, 91, 82] },
+            { name: "Humbug", ids: [79, 82, 89, 69, 99, 100] },
+            { name: "Indigo", ids: [28, 30, 31, 49, 50] },
+            { name: "Infinite Loop", ids: [84, 54, 73] },
             { name: "Jack O' Lantern", ids: [75, 76, 79, 82, 89, 90] },
-            { name: "Luna", ids: [25, 24, 26, 66, 27, 87] },
-            { name: "Midnight", ids: [57, 80, 81, 52, 51, 29] },
+            { name: "Jungle", ids: [84, 83, 85, 59, 88] },
+            { name: "Kraken 1", ids: [14, 79, 80, 81, 29] },
+            { name: "Kraken 2", ids: [52, 49, 31, 30, 50] },
+            { name: "Kraken 3", ids: [53, 95, 96, 69, 207] },
+            { name: "Krampus", ids: [92, 94, 59, 25, 226, 80] },
+            { name: "Lichen", ids: [98, 23, 66, 78, 72] },
+            { name: "Lovebird/Chivalrous", ids: [19, 74, 76, 78, 59, 58] },
+            { name: "Luna", ids: [25, 24, 26, 66, 27] },
+            { name: "Midnight", ids: [57, 80, 81, 52, 51] },
             { name: "Mint Chocolate Chip", ids: [84, 100, 15] },
-            { name: "Mossy", ids: [23, 46, 26, 45, 78, 98] },
-            { name: "Motley", ids: [25, 31, 50, 59, 71, 208] },
+            { name: "Mistletoe", ids: [87, 57, 88, 26, 28, 18] },
+            { name: "Mossy", ids: [23, 46, 26, 45, 78] },
+            { name: "Motley", ids: [31, 25, 208, 50, 59] },
             { name: "Neopolitan", ids: [19, 100, 33] },
-            { name: "Noir", ids: [13, 14, 35, 56, 60, 79] },
-            { name: "Paisley", ids: [13, 81, 85, 213, 216, 221] },
-            { name: "Polar", ids: [18, 55, 8, 28, 215, 59] },
-            { name: "Poppy", ids: [12, 19, 56, 70, 71, 73] },
-            { name: "Princess", ids: [30, 67, 69, 91, 210, 220] },
+            { name: "Noir", ids: [79, 60, 56, 14, 35] },
+            { name: "Nonbinary", ids: [216, 36, 89, 90, 78, 79] },
+            { name: "Paisley", ids: [213, 221, 216, 85, 81] },
+            { name: "Pan", ids: [68, 69, 93, 94, 78, 225] },
+            { name: "Paramour/Faithful", ids: [90, 61, 29, 82, 31, 49] },
+            { name: "Pastel", ids: [19, 21, 209, 25, 28] },
+            { name: "Peep", ids: [36, 209, 47, 30, 67, 96] },
+            { name: "Piebald", ids: [36, 18, 55, 79, 56] },
+            { name: "Platonic", ids: [10, 76, 99, 97, 44, 209] },
+            { name: "Polar", ids: [18, 55, 8, 28, 215] },
+            { name: "Poly", ids: [91, 68, 84, 66, 96, 95] },
+            { name: "Poppy", ids: [19, 12, 73, 70, 71] },
+            { name: "Princess", ids: [30, 67, 210, 220, 91] },
+            { name: "Psycho Lapis", ids: [50, 18, 49, 30, 52] },
+            { name: "Psycho Leaf", ids: [46, 61, 87, 26, 27] },
+            { name: "Psycho Matcha", ids: [45, 46, 26, 23, 9] },
+            { name: "Psycho Plum", ids: [91, 50, 89, 30, 69] },
             { name: "Pumpkin", ids: [16, 74, 75, 76, 88, 222] },
-            { name: "Rainbow", ids: [10, 11, 12, 26, 50, 73, 215] },
-            { name: "Rockwell", ids: [30, 50, 67, 82, 89, 90, 213] },
+            { name: "Punk", ids: [100, 84, 19, 50, 13] },
+            { name: "Puppylove/Winsome", ids: [38, 39, 21, 17, 19, 73] },
+            { name: "Radium", ids: [79, 83, 97, 98, 99, 100] },
+            { name: "Railgun Error", ids: [73, 43, 84] },
+            { name: "Rainbow", ids: [73, 12, 10, 11, 26] },
+            { name: "Raspberry Ripple", ids: [69, 68, 32, 20, 82] },
+            { name: "Roasted Chestnut", ids: [22, 77, 15, 71, 41, 56] },
+            { name: "Rockwell", ids: [30, 67, 213, 50, 90] },
             { name: "Rocky Road", ids: [32, 42, 34, 36] },
-            { name: "Rose", ids: [12, 19, 38, 39, 21, 43] },
+            { name: "Rose", ids: [12, 19, 38, 39, 21] },
             { name: "Roynish", ids: [89, 90, 71, 72, 93, 56] },
-            { name: "Russet", ids: [21, 20, 77, 72, 70, 71] },
-            { name: "Saffron", ids: [209, 11, 10, 222, 76, 77] },
-            { name: "Sanna Claws", ids: [70, 71, 1, 18, 68] },
-            { name: "Spice", ids: [39, 43, 75, 72, 71, 62] },
+            { name: "Ruby", ids: [19, 12, 73, 70, 17] },
+            { name: "Russet", ids: [21, 20, 77, 72, 70] },
+            { name: "Saffron", ids: [209, 11, 10, 222, 76] },
+            { name: "Sanna Claws", ids: [70, 71, 17, 25, 55, 20] },
+            { name: "Santa Tooths", ids: [86, 87, 26, 216, 12, 18] },
+            { name: "Segmentation Fault", ids: [84, 207, 44] },
+            { name: "Sherwood", ids: [25, 26, 66, 85, 84] },
+            { name: "Shinobi", ids: [13, 50, 49, 82] },
+            { name: "Smoochie/Passionate", ids: [19, 68, 70, 69, 17, 71] },
+            { name: "Spice", ids: [39, 43, 75, 72, 71] },
             { name: "Squamous", ids: [80, 57, 69, 29, 82, 62] },
-            { name: "Sunset", ids: [31, 72, 74, 76, 89, 224] },
-            { name: "Tatterdemalion", ids: [10, 17, 22, 26, 32, 224] },
-            { name: "Tiger", ids: [36, 38, 10, 221, 44, 56] },
-            { name: "Verdant", ids: [25, 66, 85, 88, 84, 27, 58] },
-            { name: "Xanthic", ids: [216, 11, 209, 32, 9, 33] },
+            { name: "Stack Corruption", ids: [83, 84, 54] },
+            { name: "Storm", ids: [24, 66, 65, 61, 35] },
+            { name: "Sugarplum", ids: [90, 67, 55, 48, 31, 50] },
+            { name: "Sunset", ids: [31, 72, 74, 76, 89] },
+            { name: "Tatterdemalion", ids: [32, 10, 17, 22, 26] },
+            { name: "Tiger", ids: [36, 38, 10, 221, 44] },
+            { name: "Trans", ids: [67, 30, 36, 18, 96, 28] },
+            { name: "Unprocessable Entity", ids: [89, 54, 224] },
+            { name: "Unrequited", ids: [28, 67, 94, 51, 92, 57] },
+            { name: "Uranium Oxide", ids: [74, 208, 77, 44, 14, 79] },
+            { name: "Verdant", ids: [25, 66, 85, 88, 84] },
+            { name: "Xanthic", ids: [216, 11, 209, 32, 9] },
+            { name: "Zero Day", ids: [73, 43, 75] }
         ];
 
         const ARK_COLORS = {
