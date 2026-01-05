@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IOP Ui Mod & QoL</title>
+    <link href="https://fonts.googleapis.com/css2?family=Acme&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* IOP Style Variables */
+        :root {
+            --color-dark: rgba(20, 20, 20, 0.95);
+            --color-light-dark: rgba(40, 40, 40, 0.9);
+            --color-text: #f7f7f7;
+            
+            /* UI Mod Colors */
+            --color-ui-orange: #f7ad6b; /* Aus deinem Text */
+            --color-ui-tech: #00bcd4;   /* Cyan für Tech-Look */
+            --color-ui-glow: rgba(247, 173, 107, 0.4);
+            
+            --font-main: sans-serif;
+            --font-header: 'Acme', sans-serif;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            background-color: transparent;
+            font-family: var(--font-main);
+            color: var(--color-text);
+            margin: 0;
+            padding: 0; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden; 
+        }
+
+        /* Container */
+        .ui-container {
+            background-color: var(--color-dark);
+            border-radius: 8px; 
+            border: 2px solid var(--color-ui-orange);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.8);
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, rgba(40,30,20,0.9), rgba(20,20,20,0.95));
+            padding: 20px;
+            text-align: center;
+            border-bottom: 2px solid var(--color-ui-orange);
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Tech Grid Background im Header */
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: 
+                linear-gradient(rgba(247, 173, 107, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(247, 173, 107, 0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        .title {
+            font-family: var(--font-header);
+            font-size: 2.2rem; 
+            text-transform: uppercase;
+            margin: 0;
+            z-index: 1;
+            color: var(--color-ui-orange);
+            text-shadow: 0 0 15px var(--color-ui-glow);
+            letter-spacing: 2px;
+        }
+
+        .subtitle {
+            color: var(--color-ui-tech);
+            font-size: 1rem;
+            font-style: italic;
+            z-index: 1;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Navigation Tabs */
+        .nav-tabs {
+            display: flex;
+            background-color: rgba(255,255,255,0.05);
+            padding: 0 10px;
+            overflow-x: auto;
+            flex-shrink: 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .nav-tab {
+            padding: 15px 20px;
+            cursor: pointer;
+            font-family: var(--font-header);
+            text-transform: uppercase;
+            color: #aaa;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+            flex-grow: 1; 
+            text-align: center;
+            font-size: 1.1rem;
+            white-space: nowrap;
+        }
+
+        .nav-tab:hover { color: #fff; background-color: rgba(255,255,255,0.05); }
+        
+        .nav-tab.active {
+            color: var(--color-ui-orange);
+            border-bottom-color: var(--color-ui-orange);
+            background-color: rgba(247, 173, 107, 0.1);
+        }
+
+        /* Content Area */
+        .content-area {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 20px;
+            scrollbar-width: thin;
+            scrollbar-color: var(--color-ui-orange) transparent;
+        }
+        .content-area::-webkit-scrollbar { width: 8px; }
+        .content-area::-webkit-scrollbar-thumb { background-color: var(--color-ui-orange); border-radius: 4px; }
+
+        /* Sections */
+        .section { display: none; animation: fadeIn 0.4s ease; }
+        .section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Feature Cards (Grid Layout) */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background-color: var(--color-light-dark);
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            border-color: var(--color-ui-orange);
+        }
+
+        .card-header-row {
+            padding: 15px;
+            background-color: rgba(0,0,0,0.2);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-title {
+            margin: 0;
+            color: var(--color-ui-orange);
+            font-family: var(--font-header);
+            font-size: 1.3rem;
+        }
+
+        .card-icon {
+            color: var(--color-ui-tech);
+            font-size: 1.2rem;
+        }
+
+        .card-body {
+            padding: 15px;
+            color: #ddd;
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+
+        .card-img-container {
+            width: 100%;
+            height: 200px;
+            background-color: #000;
+            overflow: hidden;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            cursor: pointer;
+            position: relative;
+        }
+
+        .card-img-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+        
+        .card-img-container:hover img {
+            transform: scale(1.05);
+        }
+        
+        /* Placeholder Icon Style for Potions */
+        .card-img-placeholder {
+            width: 100%;
+            height: 200px;
+            background-color: rgba(0, 188, 212, 0.1); /* Light Cyan Tint */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            cursor: pointer;
+            color: var(--color-ui-tech);
+            font-size: 4rem;
+            transition: color 0.3s;
+        }
+        .feature-card:hover .card-img-placeholder {
+            color: var(--color-ui-orange);
+        }
+        
+        .zoom-hint {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background-color: rgba(0,0,0,0.7);
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            pointer-events: none;
+        }
+
+        /* List Styling inside Cards */
+        .feature-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .feature-list li {
+            margin-bottom: 8px;
+            padding-left: 20px;
+            position: relative;
+        }
+        .feature-list li::before {
+            content: '>';
+            color: var(--color-ui-tech);
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+
+        /* Highlight Box */
+        .highlight-box {
+            background: linear-gradient(90deg, rgba(0, 188, 212, 0.1), transparent);
+            border-left: 4px solid var(--color-ui-tech);
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+
+        /* === MODAL STYLING (Image Gallery Popup) === */
+        .modal {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal.active { display: flex; opacity: 1; }
+
+        .modal-content {
+            max-width: 95%;
+            max-height: 95%;
+            position: relative;
+            box-shadow: 0 0 30px rgba(0,0,0,0.8);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .modal-img-wrapper {
+            position: relative;
+            max-height: 90vh;
+            border: 2px solid var(--color-ui-orange);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .modal-img-wrapper img {
+            max-width: 100%;
+            max-height: 85vh;
+            display: none;
+        }
+        
+        .modal-img-wrapper img.active {
+            display: block;
+        }
+
+        .gallery-controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            background-color: rgba(0,0,0,0.5);
+            padding: 8px 15px;
+            border-radius: 20px;
+        }
+
+        .gallery-dot {
+            width: 12px;
+            height: 12px;
+            background-color: #fff;
+            border-radius: 50%;
+            opacity: 0.5;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .gallery-dot:hover { opacity: 0.8; }
+        .gallery-dot.active { opacity: 1; background-color: var(--color-ui-orange); transform: scale(1.2); }
+
+        .close-btn {
+            position: absolute;
+            top: -40px;
+            right: 0;
+            color: #fff;
+            font-size: 2rem;
+            cursor: pointer;
+            z-index: 10;
+            text-shadow: 0 0 5px #000;
+        }
+        .close-btn:hover { color: var(--color-ui-orange); }
+
+        @media (max-width: 700px) {
+            .title { font-size: 1.8rem; }
+            .feature-grid { grid-template-columns: 1fr; }
+            .nav-tab { padding: 12px; font-size: 0.9rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="ui-container">
+        
+        <div class="header">
+            <h1 class="title">IOP Ui Mod & QoL</h1>
+            <div class="subtitle">Ingame Shop, Radial Menü & Tools</div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="nav-tabs">
+            <div class="nav-tab active" onclick="showSection('shop', this)"><i class="fa-solid fa-cart-shopping"></i> Ingame Shop</div>
+            <div class="nav-tab" onclick="showSection('iopui', this)"><i class="fa-solid fa-sliders"></i> IOP UI</div>
+            <div class="nav-tab" onclick="showSection('radial', this)"><i class="fa-solid fa-circle-notch"></i> Radial Menü</div>
+            <div class="nav-tab" onclick="showSection('system', this)"><i class="fa-solid fa-desktop"></i> System & HUD</div>
+            <div class="nav-tab" onclick="showSection('items', this)"><i class="fa-solid fa-box-open"></i> IOP QoL+ Items</div>
+        </div>
+
+        <div class="content-area">
+
+            <!-- 1. TOKEN SHOP -->
+            <div id="shop" class="section active">
+                
+                <div class="highlight-box">
+                    <strong style="color: var(--color-ui-orange);">Crossplay Ready!</strong> 
+                    Diese Mod & Shop UI sind 100% konform mit den Terms of Service und für alle Plattformen optimiert.
+                </div>
+
+                <div class="feature-grid">
+                    
+                    <!-- Token Shop mit 2 Bildern -->
+                    <div class="feature-card">
+                        <div class="card-img-container" onclick="openGallery(['https://i.postimg.cc/0jwZ41BR/image.png', 'https://i.postimg.cc/8k6HNDZk/image.png'])">
+                            <img src="https://i.postimg.cc/0jwZ41BR/image.png" alt="Shop UI Cover">
+                            <div class="zoom-hint"><i class="fa-solid fa-images"></i> 2 Bilder ansehen</div>
+                        </div>
+                        <div class="card-header-row">
+                            <i class="fa-solid fa-store card-icon"></i>
+                            <h3 class="card-title">Ingame Token Shop</h3>
+                        </div>
+                        <div class="card-body">
+                            <ul class="feature-list">
+                                <li><strong>Vollständig integriert:</strong> Nutze den Token Shop direkt im Spiel.</li>
+                                <li><strong>Synchronisiert:</strong> Profilbezogene Daten werden live angezeigt.</li>
+                                <li><strong>Zugriff:</strong> Öffnen über <code>F3</code> oder das Radial-Menü.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. IOP UI -->
+            <div id="iopui" class="section">
+                
+                <div class="feature-grid">
+                    <!-- IOP User Interface -->
+                    <div class="feature-card">
+                        <div class="card-img-container" onclick="openGallery(['https://i.postimg.cc/yNMZg439/Bild-2025-05-20-230956102.png'])">
+                            <img src="https://i.postimg.cc/yNMZg439/Bild-2025-05-20-230956102.png" alt="IOP User Interface">
+                            <div class="zoom-hint"><i class="fa-solid fa-magnifying-glass-plus"></i> Vergrößern</div>
+                        </div>
+                        <div class="card-header-row">
+                            <i class="fa-solid fa-sliders card-icon"></i>
+                            <h3 class="card-title">IOP User Interface</h3>
+                        </div>
+                        <div class="card-body">
+                            <ul class="feature-list">
+                                <li><strong>Live Server Raten:</strong> Anzeige der aktuellen Multiplikatoren.</li>
+                                <li><strong>Quick-Links:</strong> Vote-Seiten, Discord, Dododex & Website direkt öffnen.</li>
+                                <li><strong>Performance:</strong> Schalte Nebel/Wolken aus (FPS Boost).</li>
+                                <li><strong>Auto-Run:</strong> Speichere deine Einstellungen (z.B. "Kein Nebel") für jeden Join.</li>
+                                <li><strong>Solo Farm:</strong> Spezielle Buttons für Solo-Farming.</li>
+                                <li><strong>Regelwerk:</strong> Ingame-Ansicht der Serverregeln.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Wegweiser & Navigation -->
+                    <div class="feature-card">
+                        <div class="card-img-container" onclick="openGallery(['https://i.postimg.cc/dtbsM8ps/image.png'])">
+                            <img src="https://i.postimg.cc/dtbsM8ps/image.png" alt="Wegweiser">
+                            <div class="zoom-hint"><i class="fa-solid fa-magnifying-glass-plus"></i> Vergrößern</div>
+                        </div>
+                        <div class="card-header-row">
+                            <i class="fa-solid fa-map-location-dot card-icon"></i>
+                            <h3 class="card-title">Wegweiser & Navigation</h3>
+                        </div>
+                        <div class="card-body">
+                            <ul class="feature-list">
+                                <li><strong>Auto-Marker:</strong> Setze automatisch passende Wegweiser für die aktuelle Karte.</li>
+                                <li><strong>Marktplatz:</strong> Finde Händler und Community-Orte.</li>
+                                <li><strong>Abenteuer:</strong> Zeigt Cave-Eingänge, Artefakte und öffentliche Orte auf ASA Karten an.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Custom Rüstungsanzeige (Verschoben aus System) -->
+                    <div class="feature-card">
+                        <div class="card-img-container" onclick="openGallery(['https://i.postimg.cc/KzmTZXqD/image-1.webp'])">
+                            <img src="https://i.postimg.cc/KzmTZXqD/image-1.webp" alt="Armor HUD">
+                            <div class="zoom-hint"><i class="fa-solid fa-magnifying-glass-plus"></i> Vergrößern</div>
+                        </div>
+                        <div class="card-header-row">
+                            <i class="fa-solid fa-shield-halved card-icon"></i>
+                            <h3 class="card-title">Custom Rüstungsanzeige</h3>
+                        </div>
+                        <div class="card-body">
+                            <p>Wir haben die Standard Tek-Anzeige ersetzt!</p>
+                            <ul class="feature-list">
+                                <li>Sichtbare Haltbarkeitsanzeige.</li>
+                                <li>Dynamische Rot-Färbung bei Beschädigung.</li>
+                                <li>Unterstützung für Schilde und Tek-Aufladungen.</li>
+                                <li>Kann über das Radial-Menü ein-/ausgeblendet werden.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Ingame Regelwerk (NEU) -->
+                    <div class="feature-card">
+                        <div class="card-img-container" onclick="openGallery(['https://i.postimg.cc/Fzmkt6ng/image.png'])">
+                            <img src="https://i.postimg.cc/Fzmkt6ng/image.png" alt="Regelwerk">
+                            <div class="zoom-hint"><i class="fa-solid fa-magnifying-glass-plus"></i> Vergrößern</div>
+                        </div>
+                        <div class="card-header-row">
+                            <i class="fa-solid fa-book-open card-icon"></i>
+                            <h3 class="card-title">Ingame Regelwerk</h3>
+                        </div>
+                        <div class="card-body">
+                            <p>Keine Ausreden mehr!</p>
+                            <ul class="feature-list">
+                                <li>Öffne das komplette Server-Regelwerk direkt im Spiel.</li>
+                                <li>Über den Button oben links in der IOP UI.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Lost & Found (Verschoben aus Community) -->
+                    <div class="feature-card">
+                        <div class="card-img-container" onclick="openGallery(['https://i.postimg.cc/cCtk61pq/image.png'])">
+                            <img src="https://i.postimg.cc/cCtk61pq/image.png" alt="Lost and Found">
+                            <div class="zoom-hint"><i class="fa-solid fa-magnifying-glass-plus"></i> Vergrößern</div>
+                        </div>
+                        <div class="card-header-row">
+                            <i class="fa-solid fa-magnifying-glass card-icon"></i>
+                            <h3 class="card-title">Lost & Found</h3>
+                        </div>
+                        <div class="card-body">
+                            <p>Etwas verloren oder gefunden? Melde es direkt!</p>
+                            <ul class="feature-list">
+                                <li>Klicke auf die Lupe im Radial-Menü.</li>
+                                <li>Fülle das Formular aus.</li>
+                                <li>Sendet automatisch Koordinaten an unser Team in den Discord.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Cluster Bewertung (Verschoben aus Community) -->
+                    <div class="feature-card">
+                        <div class="card-img-container" onclick="openGallery(['https://i.postimg.cc/MK2XTPBN/Bewertung.png'])">
+                            <img src="https://i.postimg.cc/MK2XTPBN/Bewertung.png" alt="Rating">
+                            <div class="zoom-hint"><i class="fa-solid fa-magnifying-glass-plus"></i> Vergrößern</div>
+                        </div>
+                        <div class="card-header-row">
+                            <i class="fa-solid fa-star card-icon"></i>
+                            <h3 class="card-title">Cluster Bewertung</h3>
+                        </div>
+                        <div class="card-body">
+                            <p>Dein Feedback hilft uns!</p>
+                            <ul class="feature-list">
+                                <li>Bewerte verschiedene Aspekte des Servers direkt Ingame.</li>
+                                <li>Hinterlasse Kommentare.</li>
+                                <li>Wird direkt in den Discord Server-Review Kanal gesendet.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- 3. RADIAL MENÜ -->
+            <div id="radial" class="section">
+                
+                <div class="info-box" style="margin-bottom: 20px; text-align: center; background-color: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px;">
+                    <p style="color: #ccc;">Zugriff auf wichtige Funktionen direkt über das <strong>Radial-Menü</strong> (langes Drücken der Reload-Taste 'R' / Konsole 'X' oder 'Viereck').</p>
+                </div>
+
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="card-img-container" onclick="openGallery(['https://i.postimg.cc/QdT2gv8D/Radial-Menu-IOP.webp'])">
+                            <img src="https://i.postimg.cc/QdT2gv8D/Radial-Menu-IOP.webp" alt="Radial Menu">
+                            <div class="zoom-hint"><i class="fa-solid fa-magnifying-glass-plus"></i> Vergrößern</div>
+                        </div>
+                        <div class="card-header-row">
+                            <i class="fa-solid fa-circle-notch card-icon"></i>
+                            <h3 class="card-title">Funktions-Paket</h3>
+                        </div>
+                        <div class="card-body">
+                            <ul class="feature-list">
+                                <li><strong>Dead Bodies:</strong> Finde deine Leichen und Item-Beutel.</li>
+                                <li><strong>Note Tracker:</strong> Aktiviere 3D-Pfeile, die dich zu Explorer Notes führen.</li>
+                                <li><strong>Questbook:</strong> Direktzugriff auf das Questbuch.</li>
+                                <li><strong>Favoriten:</strong> Markiere Befehle mit einem Stern, um sie ins Hauptmenü zu pinnen.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. SYSTEM & HUD -->
+            <div id="system" class="section">
+                <div class="feature-grid">
+                    <!-- Pause Menü mit neuem Bild -->
+                    <div class="feature-card">
+                        <div class="card-img-container" onclick="openGallery(['https://i.postimg.cc/kMyXb62w/image2.png'])">
+                            <img src="https://i.postimg.cc/kMyXb62w/image2.png" alt="Pause Menu">
+                            <div class="zoom-hint"><i class="fa-solid fa-magnifying-glass-plus"></i> Vergrößern</div>
+                        </div>
+                        <div class="card-header-row">
+                            <i class="fa-solid fa-pause card-icon"></i>
+                            <h3 class="card-title">Überarbeitetes Pause-Menü</h3>
+                        </div>
+                        <div class="card-body">
+                            <ul class="feature-list">
+                                <li><strong>ID-Fenster (Rechts):</strong> Zeigt alle wichtigen IDs für Support-Tickets.</li>
+                                <li><strong>Shortcuts:</strong> Buttons für IOP Ui und Support Shop.</li>
+                                <li><strong>Exit Button:</strong> Rot eingefärbt zur besseren Sichtbarkeit.</li>
+                                <li><strong>QR Codes:</strong> Für Konsolenspieler (Website/Discord via Handy öffnen).</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5. IOP QoL+ Items & Strukturen -->
+            <div id="items" class="section">
+                <div class="feature-grid">
+                    
+                    <!-- IOP Propagator (NEU) -->
+                    <div class="feature-card">
+                        <div class="card-img-container" onclick="openGallery(['https://i.postimg.cc/xTBJnq78/1.png', 'https://i.postimg.cc/xd2XNh92/2.png', 'https://i.postimg.cc/HL9VwzL2/3.png', 'https://i.postimg.cc/DZfmBGWx/4.png'])">
+                            <img src="https://i.postimg.cc/xTBJnq78/1.png" alt="IOP Propagator">
+                            <div class="zoom-hint"><i class="fa-solid fa-images"></i> 4 Bilder ansehen</div>
+                        </div>
+                        <div class="card-header-row">
+                            <i class="fa-solid fa-dna card-icon"></i>
+                            <h3 class="card-title">IOP Propagator (Beta)</h3>
+                        </div>
+                        <div class="card-body">
+                            <p>Optimiertes Breeding mit Balancing!</p>
+                            <ul class="feature-list">
+                                <li><strong>Breeding Impuls:</strong> Sofort/Instant, 0 Element Kosten.</li>
+                                <li><strong>Traits & Stats:</strong> Berücksichtigt Gene, Farben und Mutations-Boosts.</li>
+                                <li><strong>Cooldown:</strong> 30 Min. nach Breeding (im Tooltip sichtbar).</li>
+                                <li><strong>Details:</strong> 50 Slots (bis 300), Lvl 100, 1 Ele/h, 1x pro Map.</li>
+                                <li><strong>Achtung:</strong> Keine Reaper/Achatina. Nur PCS Cryos.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- IOP Kreaturen Schrumpfer (NEU) -->
+                    <div class="feature-card">
+                        <div class="card-img-container" onclick="openGallery(['https://i.postimg.cc/HnqYD8xx/1.png', 'https://i.postimg.cc/4xTfWcq5/2.png'])">
+                            <img src="https://i.postimg.cc/HnqYD8xx/1.png" alt="Shrink Gun">
+                            <div class="zoom-hint"><i class="fa-solid fa-images"></i> 2 Bilder ansehen</div>
+                        </div>
+                        <div class="card-header-row">
+                            <i class="fa-solid fa-compress card-icon"></i>
+                            <h3 class="card-title">IOP Kreaturen Schrumpfer</h3>
+                        </div>
+                        <div class="card-body">
+                            <p>Mach deine Dinos klein!</p>
+                            <ul class="feature-list">
+                                <li><strong>Effekt:</strong> -50% Größe.</li>
+                                <li><strong>Debuff:</strong> 0 Schaden Output, -50% Movement Speed.</li>
+                                <li><strong>Ausnahmen:</strong> Bosse, Titanen, Babies, Oasis, Plattform-Sattel (muss ab).</li>
+                                <li><strong>Kosten:</strong> 1 Stroh (Lvl 1).</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- IOP Potions (Zusammengefasst) -->
+                    <div class="feature-card">
+                        <div class="card-img-placeholder" onclick="openGallery(['https://i.postimg.cc/CKzQDP7H/image.png'])">
+                            <i class="fa-solid fa-flask"></i>
+                        </div>
+                        <div class="card-header-row">
+                            <i class="fa-solid fa-flask card-icon"></i>
+                            <h3 class="card-title">IOP Potions</h3>
+                        </div>
+                        <div class="card-body">
+                            <p>Gaia Vervollständigung: Neue Tränke für Zucht & Crafting.</p>
+                            <ul class="feature-list">
+                                <li><strong>Imprint:</strong> 100% Imprint auf dich (Dino Inventar).</li>
+                                <li><strong>Taming:</strong> Setzt Hunger auf 0 (Dino Inventar).</li>
+                                <li><strong>Wake Up:</strong> Setzt Torpor auf 20 (Dino Inventar).</li>
+                                <li><strong>Crafting:</strong> 10 Min. max Crafting Skill (Spieler).</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <!-- Live Maps & IOP Flagge -->
+                    <div class="feature-card">
+                        <div class="card-img-container" onclick="openGallery(['https://i.postimg.cc/MK9M4d0M/image.png', 'https://i.postimg.cc/nzKM1kcr/image.png'])">
+                            <img src="https://i.postimg.cc/MK9M4d0M/image.png" alt="Live Maps">
+                            <div class="zoom-hint"><i class="fa-solid fa-images"></i> 2 Bilder ansehen</div>
+                        </div>
+                        <div class="card-header-row">
+                            <i class="fa-solid fa-map card-icon"></i>
+                            <h3 class="card-title">Live Maps & IOP Flagge</h3>
+                        </div>
+                        <div class="card-body">
+                            <ul class="feature-list">
+                                <li><strong>Live Positionen:</strong> Seht die Live-Positionen aller Spieler auf <u>allen</u> Karten.</li>
+                                <li><strong>Base Finder:</strong> IOP Flaggen zeigen Base-Standorte aller Spieler an.</li>
+                                <li><strong>Nutzen:</strong> Perfekt für Admins, zum Finden freier Bauplätze oder Handelspartner.</li>
+                                <li><strong>Pflicht:</strong> Jede Basis (Haupt, Wasser, Spawn) muss mit Flagge und Schild markiert sein!</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- IOP Offhand Spyglass -->
+                    <div class="feature-card">
+                        <div class="card-img-container" onclick="openGallery(['https://i.postimg.cc/W3zfG97G/2.png', 'https://i.postimg.cc/SsP1DWTx/1.png'])">
+                            <img src="https://i.postimg.cc/W3zfG97G/2.png" alt="Spyglass">
+                            <div class="zoom-hint"><i class="fa-solid fa-images"></i> 2 Bilder ansehen</div>
+                        </div>
+                        <div class="card-header-row">
+                            <i class="fa-solid fa-glasses card-icon"></i>
+                            <h3 class="card-title">IOP Offhand Spyglass</h3>
+                        </div>
+                        <div class="card-body">
+                            <p>Ein Tek Spyglass, das deine Hände frei lässt! Ab Level 1.</p>
+                            <ul class="feature-list">
+                                <li><strong>Offhand:</strong> Funktioniert passiv, Hände bleiben frei für Waffen.</li>
+                                <li><strong>High-Tech:</strong> Präziser Mesh-Scan (erkennt auch Schwanz/Hals) & hohe Render-Reichweite.</li>
+                                <li><strong>Tracking UI:</strong> Markiere Ziele (PC: 'N', Konsole: Taschenlampe).</li>
+                                <li><strong>Crosshair:</strong> Punkt an/aus via Radialmenü.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- IOP Kreaturen Einfärbung -->
+                    <div class="feature-card">
+                        <div class="card-img-container" onclick="openGallery(['https://i.postimg.cc/Vkxsyqvw/image.png'])">
+                            <img src="https://i.postimg.cc/Vkxsyqvw/image.png" alt="Färbe Tool">
+                            <div class="zoom-hint"><i class="fa-solid fa-magnifying-glass-plus"></i> Vergrößern</div>
+                        </div>
+                        <div class="card-header-row">
+                            <i class="fa-solid fa-palette card-icon"></i>
+                            <h3 class="card-title">IOP Kreaturen Einfärbung</h3>
+                        </div>
+                        <div class="card-body">
+                            <p>Individuelle Looks für deine Dinos!</p>
+                            <ul class="feature-list">
+                                <li><strong>Vorschau-Modus:</strong> Teste Farben live am Dino, bevor du dich entscheidest.</li>
+                                <li><strong>Farb-IDs:</strong> Direkt integriert für einfaches Finden.</li>
+                                <li><strong>Timer:</strong> Nach Aktivierung hast du 1 Stunde Zeit zum Testen. Bei Anwendung verbraucht sich das Tool.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- IOP Unzerstörbare Leuchtpistole -->
+                    <div class="feature-card">
+                        <div class="card-img-container" onclick="openGallery(['https://i.postimg.cc/gJKkh2Ns/image.png'])">
+                            <img src="https://i.postimg.cc/gJKkh2Ns/image.png" alt="Flaregun">
+                            <div class="zoom-hint"><i class="fa-solid fa-magnifying-glass-plus"></i> Vergrößern</div>
+                        </div>
+                        <div class="card-header-row">
+                            <i class="fa-solid fa-fire-burner card-icon"></i>
+                            <h3 class="card-title">IOP Unzerstörbare Leuchtpistole</h3>
+                        </div>
+                        <div class="card-body">
+                            <p>Verliere nie wieder deine Freunde!</p>
+                            <ul class="feature-list">
+                                <li><strong>Unzerstörbar:</strong> Geht niemals kaputt.</li>
+                                <li><strong>Zweck:</strong> Ideal, um sich gegenseitig auf der Karte zu finden oder Signale zu geben.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- IOP Cave Tribe Tower -->
+                    <div class="feature-card">
+                        <div class="card-img-container" onclick="openGallery(['https://i.postimg.cc/HLhFhDjY/image.png'])">
+                            <img src="https://i.postimg.cc/HLhFhDjY/image.png" alt="Cave Tower">
+                            <div class="zoom-hint"><i class="fa-solid fa-magnifying-glass-plus"></i> Vergrößern</div>
+                        </div>
+                        <div class="card-header-row">
+                            <i class="fa-solid fa-tower-broadcast card-icon"></i>
+                            <h3 class="card-title">IOP Cave Tribe Tower</h3>
+                        </div>
+                        <div class="card-body">
+                            <p>Für Höhlen und Spawnbasen optimiert!</p>
+                            <ul class="feature-list">
+                                <li><strong>Größe:</strong> 50% kleiner als der normale Tribe Tower.</li>
+                                <li><strong>Indoor:</strong> Benötigt keinen freien Himmel, kann in Höhlen aufgestellt werden.</li>
+                                <li><strong>Austausch:</strong> Bitte ersetzt bestehende Türme in Höhlen mit dieser Variante.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+        <!-- MODAL (Image Gallery Popup) -->
+        <div id="imgModal" class="modal">
+            <div class="modal-content">
+                <span class="close-btn" onclick="closeModal()">&times;</span>
+                <div class="modal-img-wrapper" id="modalImgWrapper">
+                    <!-- Images will be injected here -->
+                </div>
+                <div class="gallery-controls" id="galleryControls">
+                    <!-- Dots will be injected here -->
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        function showSection(sectionId, tabElement) {
+            document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+            tabElement.classList.add('active');
+        }
+
+        /* --- MODAL LOGIC (Gallery Support) --- */
+        const modal = document.getElementById('imgModal');
+        const modalImgWrapper = document.getElementById('modalImgWrapper');
+        const galleryControls = document.getElementById('galleryControls');
+        let currentImages = [];
+
+        function openGallery(imgSrcArray) {
+            currentImages = imgSrcArray;
+            renderGallery(0);
+            modal.classList.add('active');
+        }
+
+        function renderGallery(activeIndex) {
+            modalImgWrapper.innerHTML = '';
+            galleryControls.innerHTML = '';
+
+            // Render Images
+            currentImages.forEach((src, index) => {
+                const img = document.createElement('img');
+                img.src = src;
+                if (index === activeIndex) img.classList.add('active');
+                modalImgWrapper.appendChild(img);
+            });
+
+            // Render Controls (only if more than 1 image)
+            if (currentImages.length > 1) {
+                galleryControls.style.display = 'flex';
+                currentImages.forEach((_, index) => {
+                    const dot = document.createElement('div');
+                    dot.className = `gallery-dot ${index === activeIndex ? 'active' : ''}`;
+                    dot.onclick = () => renderGallery(index);
+                    galleryControls.appendChild(dot);
+                });
+            } else {
+                galleryControls.style.display = 'none';
+            }
+        }
+
+        function closeModal() {
+            modal.classList.remove('active');
+        }
+
+        modal.addEventListener('click', (e) => {
+            if(e.target === modal) closeModal();
+        });
+    </script>
+</body>
+</html>
