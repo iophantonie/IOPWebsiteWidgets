@@ -369,30 +369,53 @@
             border-radius: 6px;
         }
 
-        .chip-container {
+        /* NEW: CLICKABLE EFFECT BUTTONS */
+        .effect-category-title {
+            font-size: 0.9rem;
+            color: #aaa;
+            margin-top: 15px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 4px;
+        }
+        
+        .effect-buttons-grid {
             display: flex;
             flex-wrap: wrap;
-            gap: 5px;
-            margin-bottom: 15px;
+            gap: 8px;
         }
 
-        .chip {
+        .effect-btn {
             background: #333;
             border: 1px solid #555;
-            padding: 5px 10px;
+            color: #ddd;
+            padding: 6px 12px;
             border-radius: 15px;
-            font-size: 0.8rem;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
             display: flex;
             align-items: center;
             gap: 5px;
-            color: #ddd;
         }
-        .chip button {
-            background: none;
-            border: none;
-            color: #ff5555;
-            cursor: pointer;
-            font-weight: bold;
+
+        .effect-btn:hover {
+            background: #444;
+            border-color: #777;
+            transform: translateY(-2px);
+        }
+
+        .effect-btn.active {
+            background: rgba(76, 175, 80, 0.2);
+            border-color: #4CAF50;
+            color: #fff;
+            box-shadow: 0 0 8px rgba(76, 175, 80, 0.4);
+        }
+
+        .effect-btn i {
+            font-size: 0.7rem;
         }
 
         .result-stat {
@@ -543,6 +566,15 @@
             white-space: pre-line; 
         }
 
+        /* Image Zoom Styling */
+        .zoomable-img {
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .zoomable-img:hover {
+            transform: scale(1.02);
+        }
+
         @media (max-width: 900px) {
             .modal-content { flex-direction: column; }
             .modal-left { flex: none; height: 35vh; border-right: none; border-bottom: 1px solid rgba(255,255,255,0.1); }
@@ -604,7 +636,8 @@
                             </p>
                         </div>
                         <div style="text-align: center; flex-basis: 300px;">
-                            <img src="https://i.postimg.cc/T3rXpxtM/Bild-2024-05-23-022659420.png" alt="Shiny Essenz" style="width: 100%; max-width: 400px; border-radius: 8px; box-shadow: 0 0 15px rgba(156, 39, 176, 0.6);">
+                            <img src="https://i.postimg.cc/T3rXpxtM/Bild-2024-05-23-022659420.png" alt="Shiny Essenz" class="zoomable-img" style="width: 100%; max-width: 400px; border-radius: 8px; box-shadow: 0 0 15px rgba(156, 39, 176, 0.6);" onclick="openImageModal(this.src, 'Shiny Essenz & Prod')">
+                            <p style="font-size: 0.8rem; color: #aaa; margin-top: 5px;">(Klicken zum Vergrößern)</p>
                         </div>
                     </div>
                 </div>
@@ -840,35 +873,6 @@
                 </div>
             </div>
 
-            <!-- 4. TINIES & STATS -->
-            <div id="tinies" class="section">
-                <div class="info-box">
-                    <h3><i class="fa-solid fa-paw"></i> Tinies (Nur Shoulder Pets)</h3>
-                    <p>Spezielle Varianten, die nur für Schulter-Tiere verfügbar sind und dem Träger Boni verleihen.</p>
-                    <div class="tiny-grid" style="margin-top: 15px;">
-                        <div class="tiny-card"><h4>Bolstering</h4><p>Reduziert das Gewicht im Inventar.</p></div>
-                        <div class="tiny-card"><h4>Hydrating</h4><p>Reduziert den Wasserverbrauch.</p></div>
-                        <div class="tiny-card"><h4>Invigorating</h4><p>Stellt Ausdauer wieder her.</p></div>
-                        <div class="tiny-card"><h4>Obscured</h4><p>Reduziert Aggro-Reichweite wilder Dinos.</p></div>
-                        <div class="tiny-card"><h4>Pyrethrous</h4><p>Hält Insekten fern.</p></div>
-                        <div class="tiny-card"><h4>Revitalizing</h4><p>Regeneriert Gesundheit.</p></div>
-                        <div class="tiny-card"><h4>Serene</h4><p>Hilft beim Konzentrieren (Crafting).</p></div>
-                    </div>
-                </div>
-                <div class="info-box">
-                    <h3><i class="fa-solid fa-chart-bar"></i> Stat-Booster Varianten</h3>
-                    <p>Diese Dinos haben eine höhere Chance auf außergewöhnlich hohe Wild-Werte in einem bestimmten Attribut.</p>
-                    <div class="tiny-grid" style="margin-top: 15px;">
-                        <div class="tiny-card"><h4 style="color: #4CAF50;">Hardy</h4><p>Gesundheit</p></div>
-                        <div class="tiny-card"><h4 style="color: #FFC107;">Stalwart</h4><p>Ausdauer</p></div>
-                        <div class="tiny-card"><h4 style="color: #03A9F4;">Inspired</h4><p>Sauerstoff</p></div>
-                        <div class="tiny-card"><h4 style="color: #FF5722;">Satiate</h4><p>Nahrung</p></div>
-                        <div class="tiny-card"><h4 style="color: #9E9E9E;">Hefty</h4><p>Gewicht</p></div>
-                        <div class="tiny-card"><h4 style="color: #F44336;">Fierce</h4><p>Nahkampfschaden</p></div>
-                    </div>
-                </div>
-            </div>
-
             <!-- NEW: COLOR SETS SECTION -->
             <div id="colors" class="section">
                 <div class="info-box">
@@ -888,73 +892,28 @@
             <div id="checker" class="section">
                 <div class="info-box">
                     <h3><i class="fa-solid fa-flask"></i> Shiny Checker</h3>
-                    <p>Hier kannst du die Effekte deines Shinys zusammenstellen und sehen, welche Boni es erhält.</p>
+                    <p>Wähle Eigenschaften durch Anklicken aus, um die Boni zu sehen (Maximal 5).</p>
                     
                     <div class="builder-container">
                         <!-- Controls -->
                         <div class="builder-section">
-                            <h4 style="color:var(--color-gold); margin-top:0;">Eigenschaften hinzufügen</h4>
-                            <select id="effectSelect" class="builder-select">
-                                <option value="">-- Wähle Effekt --</option>
-                                <optgroup label="Visual/Effect">
-                                    <option value="Burning">Burning</option>
-                                    <option value="Frozen">Frozen</option>
-                                    <option value="Electro">Electro</option>
-                                    <option value="Toxic">Toxic</option>
-                                    <option value="Radioactive">Radioactive</option>
-                                    <option value="Spectral">Spectral</option>
-                                    <option value="Holographic">Holographic</option>
-                                    <option value="Rubber">Rubber</option>
-                                    <option value="Dazzling">Dazzling</option>
-                                    <option value="Nightmare">Nightmare</option>
-                                    <option value="Crystalline">Crystalline</option>
-                                    <option value="Skeletal">Skeletal</option>
-                                </optgroup>
-                                <optgroup label="Abilities">
-                                    <option value="Shinobi">Shinobi</option>
-                                    <option value="Fathomless">Fathomless</option>
-                                    <option value="Endurant">Endurant</option>
-                                    <option value="Lunar">Lunar</option>
-                                    <option value="Floral">Floral</option>
-                                </optgroup>
-                                <optgroup label="Stat Boosts">
-                                    <option value="Hardy">Hardy (HP)</option>
-                                    <option value="Stalwart">Stalwart (Stam)</option>
-                                    <option value="Inspired">Inspired (Oxy)</option>
-                                    <option value="Satiate">Satiate (Food)</option>
-                                    <option value="Hefty">Hefty (Weight)</option>
-                                    <option value="Fierce">Fierce (Melee)</option>
-                                </optgroup>
-                                <optgroup label="Tinies (Shoulder)">
-                                    <option value="Bolstering">Bolstering</option>
-                                    <option value="Hydrating">Hydrating</option>
-                                    <option value="Invigorating">Invigorating</option>
-                                    <option value="Obscured">Obscured</option>
-                                    <option value="Pyrethrous">Pyrethrous</option>
-                                    <option value="Revitalizing">Revitalizing</option>
-                                    <option value="Serene">Serene</option>
-                                </optgroup>
-                                <optgroup label="Size">
-                                    <option value="Colossal">Colossal</option>
-                                    <option value="Pygmy">Pygmy</option>
-                                </optgroup>
-                            </select>
-                            <button onclick="addEffect()" class="sheet-link-btn" style="width:100%; margin-top:0; margin-bottom:20px;">Hinzufügen</button>
+                            <h4 style="color:var(--color-gold); margin-top:0;">1. Eigenschaften wählen</h4>
+                            <div id="effectPicker">
+                                <!-- JS Generated Buttons -->
+                            </div>
 
-                            <h4 style="color:var(--color-gold);">Farb-Set auswählen</h4>
+                            <h4 style="color:var(--color-gold); margin-top:20px;">2. Farb-Set auswählen</h4>
                             <select id="colorSetSelect" class="builder-select" onchange="updateBuilder()">
                                 <option value="">-- Kein Set --</option>
                                 <!-- Populated by JS -->
                             </select>
-
-                            <div id="selectedChips" class="chip-container"></div>
                         </div>
 
                         <!-- Results -->
                         <div class="builder-section">
                             <h4 style="color:#2196F3; margin-top:0; border-bottom:1px solid #444; padding-bottom:10px;">Ergebnis</h4>
                             <div id="builderResults">
-                                <p style="color:#666; font-style:italic;">Füge Effekte hinzu um Boni zu sehen...</p>
+                                <p style="color:#666; font-style:italic;">Klicke auf Effekte links, um Boni zu sehen...</p>
                             </div>
                             
                             <div id="builderColorPreview" style="margin-top:20px; display:none;">
@@ -1172,9 +1131,9 @@
                 </div>
                 <div class="modal-right">
                     <h2 class="modal-title" id="modalTitle">Titel</h2>
-                    <div class="modal-section-title"><i class="fa-solid fa-scroll"></i> Geschichte</div>
+                    <div class="modal-section-title" id="loreSectionTitle"><i class="fa-solid fa-scroll"></i> Geschichte</div>
                     <p class="modal-text" id="modalLore">Lore Text...</p>
-                    <div class="modal-section-title"><i class="fa-solid fa-bolt"></i> Fähigkeiten</div>
+                    <div class="modal-section-title" id="abilitiesSectionTitle"><i class="fa-solid fa-bolt"></i> Fähigkeiten</div>
                     <p class="modal-text" id="modalAbilities">Abilities...</p>
                 </div>
             </div>
@@ -1186,41 +1145,42 @@
         // --- DATA ---
         // Effects data for the builder
         const EFFECT_DATA = {
-            "Burning": { desc: "Feuer-Aura", stats: ["Feuerresistenz +50%", "Rückwurfschaden (Feuer)"] },
-            "Frozen": { desc: "Eis-Aura", stats: ["Eisresistenz +50%", "Verlangsamt Angreifer"] },
-            "Electro": { desc: "Elektro-Schocks", stats: ["Immun gegen Schock", "Betäubt Angreifer"] },
-            "Toxic": { desc: "Gift-Aura", stats: ["Giftresistenz", "Stapelbarer Giftschaden"] },
-            "Radioactive": { desc: "Strahlung", stats: ["AoE Strahlungsschaden", "Licht im Dunkeln"] },
-            "Spectral": { desc: "Geist", stats: ["Kein Fallschaden", "Durchlässig für Projektile"] },
-            "Holographic": { desc: "Tech", stats: ["Tek-Scan Umgebung", "Coole Optik"] },
-            "Rubber": { desc: "Gummi", stats: ["Springt hoch", "Reflektiert Schaden"] },
-            "Dazzling": { desc: "Blendend", stats: ["Blendet Angreifer", "Strahlungsresistenz"] },
-            "Nightmare": { desc: "Albtraum", stats: ["Verursacht Angst", "Unsichtbar im Dunkeln"] },
-            "Crystalline": { desc: "Kristall", stats: ["Glaskanone (Mehr Dmg rein/raus)", "Reflektiert"] },
-            "Skeletal": { desc: "Skelett", stats: ["Kein Futter nötig", "Hohe Fernkampf-Resistenz"] },
-            "Shinobi": { desc: "Stealth", stats: ["Aggro Reichweite reduziert", "Schwer zu entdecken"] },
-            "Fathomless": { desc: "Wasser", stats: ["Unendlicher Sauerstoff", "Schnelles Schwimmen"] },
-            "Endurant": { desc: "Ausdauer", stats: ["Unendlicher Sprint"] },
-            "Lunar": { desc: "Mond", stats: ["Geringe Schwerkraft", "Hohe Sprünge"] },
-            "Floral": { desc: "Heilung", stats: ["HP Regeneration Aura"] },
-            // Correct Stat Boosts
-            "Hardy": { desc: "Stat Boost", stats: ["Gesundheit (HP) +"] },
-            "Stalwart": { desc: "Stat Boost", stats: ["Ausdauer (Stam) +"] },
-            "Inspired": { desc: "Stat Boost", stats: ["Sauerstoff (Oxy) +"] },
-            "Satiate": { desc: "Stat Boost", stats: ["Nahrung (Food) +"] },
-            "Hefty": { desc: "Stat Boost", stats: ["Gewicht (Weight) +"] },
-            "Fierce": { desc: "Stat Boost", stats: ["Nahkampfschaden (Melee) +"] },
-            // Tinies
-            "Bolstering": { desc: "Tiny Utility", stats: ["Reduziert Inventar-Gewicht"] },
-            "Hydrating": { desc: "Tiny Utility", stats: ["Reduziert Wasserverbrauch"] },
-            "Invigorating": { desc: "Tiny Utility", stats: ["Stellt Ausdauer her"] },
-            "Obscured": { desc: "Tiny Utility", stats: ["Reduziert Aggro"] },
-            "Pyrethrous": { desc: "Tiny Utility", stats: ["Insektenschutz"] },
-            "Revitalizing": { desc: "Tiny Utility", stats: ["Regeneriert Gesundheit"] },
-            "Serene": { desc: "Tiny Utility", stats: ["Crafting Fokus"] },
+            "Burning": { desc: "Feuer-Aura", stats: ["Feuerresistenz +50%", "Rückwurfschaden (Feuer)"], group: "Visual/Effect" },
+            "Frozen": { desc: "Eis-Aura", stats: ["Eisresistenz +50%", "Verlangsamt Angreifer"], group: "Visual/Effect" },
+            "Electro": { desc: "Elektro-Schocks", stats: ["Immun gegen Schock", "Betäubt Angreifer"], group: "Visual/Effect" },
+            "Toxic": { desc: "Gift-Aura", stats: ["Giftresistenz", "Stapelbarer Giftschaden"], group: "Visual/Effect" },
+            "Radioactive": { desc: "Strahlung", stats: ["AoE Strahlungsschaden", "Licht im Dunkeln"], group: "Visual/Effect" },
+            "Spectral": { desc: "Geist", stats: ["Kein Fallschaden", "Durchlässig für Projektile"], group: "Visual/Effect" },
+            "Holographic": { desc: "Tech", stats: ["Tek-Scan Umgebung", "Coole Optik"], group: "Visual/Effect" },
+            "Rubber": { desc: "Gummi", stats: ["Springt hoch", "Reflektiert Schaden"], group: "Visual/Effect" },
+            "Dazzling": { desc: "Blendend", stats: ["Blendet Angreifer", "Strahlungsresistenz"], group: "Visual/Effect" },
+            "Nightmare": { desc: "Albtraum", stats: ["Verursacht Angst", "Unsichtbar im Dunkeln"], group: "Visual/Effect" },
+            "Crystalline": { desc: "Kristall", stats: ["Glaskanone (Mehr Dmg rein/raus)", "Reflektiert"], group: "Visual/Effect" },
+            "Skeletal": { desc: "Skelett", stats: ["Kein Futter nötig", "Hohe Fernkampf-Resistenz"], group: "Visual/Effect" },
             
-            "Colossal": { desc: "Size Mod", stats: ["Größe +50%", "HP +++", "Speed ---"] },
-            "Pygmy": { desc: "Size Mod", stats: ["Größe -30%", "Speed ++", "HP -"] }
+            "Shinobi": { desc: "Stealth", stats: ["Aggro Reichweite reduziert", "Schwer zu entdecken"], group: "Abilities" },
+            "Fathomless": { desc: "Wasser", stats: ["Unendlicher Sauerstoff", "Schnelles Schwimmen"], group: "Abilities" },
+            "Endurant": { desc: "Ausdauer", stats: ["Unendlicher Sprint"], group: "Abilities" },
+            "Lunar": { desc: "Mond", stats: ["Geringe Schwerkraft", "Hohe Sprünge"], group: "Abilities" },
+            "Floral": { desc: "Heilung", stats: ["HP Regeneration Aura"], group: "Abilities" },
+            
+            "Hardy": { desc: "Stat Boost", stats: ["Gesundheit (HP) +"], group: "Stat Boosts" },
+            "Stalwart": { desc: "Stat Boost", stats: ["Ausdauer (Stam) +"], group: "Stat Boosts" },
+            "Inspired": { desc: "Stat Boost", stats: ["Sauerstoff (Oxy) +"], group: "Stat Boosts" },
+            "Satiate": { desc: "Stat Boost", stats: ["Nahrung (Food) +"], group: "Stat Boosts" },
+            "Hefty": { desc: "Stat Boost", stats: ["Gewicht (Weight) +"], group: "Stat Boosts" },
+            "Fierce": { desc: "Stat Boost", stats: ["Nahkampfschaden (Melee) +"], group: "Stat Boosts" },
+            
+            "Bolstering": { desc: "Tiny Utility", stats: ["Reduziert Inventar-Gewicht"], group: "Tinies (Shoulder)" },
+            "Hydrating": { desc: "Tiny Utility", stats: ["Reduziert Wasserverbrauch"], group: "Tinies (Shoulder)" },
+            "Invigorating": { desc: "Tiny Utility", stats: ["Stellt Ausdauer her"], group: "Tinies (Shoulder)" },
+            "Obscured": { desc: "Tiny Utility", stats: ["Reduziert Aggro"], group: "Tinies (Shoulder)" },
+            "Pyrethrous": { desc: "Tiny Utility", stats: ["Insektenschutz"], group: "Tinies (Shoulder)" },
+            "Revitalizing": { desc: "Tiny Utility", stats: ["Regeneriert Gesundheit"], group: "Tinies (Shoulder)" },
+            "Serene": { desc: "Tiny Utility", stats: ["Crafting Fokus"], group: "Tinies (Shoulder)" },
+            
+            "Colossal": { desc: "Size Mod", stats: ["Größe +50%", "HP +++", "Speed ---"], group: "Size" },
+            "Pygmy": { desc: "Size Mod", stats: ["Größe -30%", "Speed ++", "HP -"], group: "Size" }
         };
 
         const COLOR_SETS = [
@@ -1414,7 +1374,26 @@
             document.getElementById('modalTitle').innerText = title;
             document.getElementById('modalLore').innerHTML = lore;
             document.getElementById('modalAbilities').innerHTML = abilities;
+            
+            // Show all sections
+            document.getElementById('loreSectionTitle').style.display = 'block';
+            document.getElementById('abilitiesSectionTitle').style.display = 'block';
+            document.getElementById('modalLore').style.display = 'block';
+            document.getElementById('modalAbilities').style.display = 'block';
 
+            modal.classList.add('active');
+        }
+        
+        function openImageModal(imgSrc, title) {
+            document.getElementById('modalImg').src = imgSrc;
+            document.getElementById('modalTitle').innerText = title;
+            
+            // Hide text sections for image only view
+            document.getElementById('loreSectionTitle').style.display = 'none';
+            document.getElementById('abilitiesSectionTitle').style.display = 'none';
+            document.getElementById('modalLore').style.display = 'none';
+            document.getElementById('modalAbilities').style.display = 'none';
+            
             modal.classList.add('active');
         }
 
@@ -1491,7 +1470,40 @@
         let activeColorSet = "";
 
         function initBuilder() {
-            // Populate Color Set Dropdown
+            // 1. Generate Effect Buttons
+            const pickerContainer = document.getElementById('effectPicker');
+            pickerContainer.innerHTML = '';
+
+            // Group effects by category
+            const groups = {};
+            for (const [key, val] of Object.entries(EFFECT_DATA)) {
+                const gName = val.group || "Other";
+                if (!groups[gName]) groups[gName] = [];
+                groups[gName].push(key);
+            }
+
+            // Render groups
+            for (const [groupName, effects] of Object.entries(groups)) {
+                const groupTitle = document.createElement('div');
+                groupTitle.className = 'effect-category-title';
+                groupTitle.innerText = groupName;
+                pickerContainer.appendChild(groupTitle);
+
+                const grid = document.createElement('div');
+                grid.className = 'effect-buttons-grid';
+                
+                effects.sort().forEach(eff => {
+                    const btn = document.createElement('div');
+                    btn.className = 'effect-btn';
+                    btn.setAttribute('data-effect', eff);
+                    btn.innerHTML = `<i class="fa-solid fa-plus"></i> ${eff}`;
+                    btn.onclick = () => toggleEffect(eff, btn);
+                    grid.appendChild(btn);
+                });
+                pickerContainer.appendChild(grid);
+            }
+
+            // 2. Populate Color Set Dropdown
             const select = document.getElementById('colorSetSelect');
             COLOR_SETS.forEach(set => {
                 const opt = document.createElement('option');
@@ -1501,39 +1513,26 @@
             });
         }
 
-        function addEffect() {
-            const select = document.getElementById('effectSelect');
-            const val = select.value;
-            if(!val) return;
-
-            if(selectedEffects.size >= 4) {
-                alert("Maximal 4 Effekte erlaubt!");
-                return;
+        function toggleEffect(eff, btnElement) {
+            if (selectedEffects.has(eff)) {
+                // Remove
+                selectedEffects.delete(eff);
+                btnElement.classList.remove('active');
+                btnElement.innerHTML = `<i class="fa-solid fa-plus"></i> ${eff}`;
+            } else {
+                // Add
+                if (selectedEffects.size >= 5) {
+                    alert("Maximal 5 Effekte erlaubt!");
+                    return;
+                }
+                selectedEffects.add(eff);
+                btnElement.classList.add('active');
+                btnElement.innerHTML = `<i class="fa-solid fa-check"></i> ${eff}`;
             }
-            if(selectedEffects.has(val)) return;
-
-            selectedEffects.add(val);
-            renderBuilderChips();
-            updateBuilder();
-            select.value = ""; // Reset dropdown
-        }
-
-        function removeEffect(eff) {
-            selectedEffects.delete(eff);
-            renderBuilderChips();
             updateBuilder();
         }
 
-        function renderBuilderChips() {
-            const container = document.getElementById('selectedChips');
-            container.innerHTML = "";
-            selectedEffects.forEach(eff => {
-                const div = document.createElement('div');
-                div.className = 'chip';
-                div.innerHTML = `${eff} <button onclick="removeEffect('${eff}')">&times;</button>`;
-                container.appendChild(div);
-            });
-        }
+        // Removed addEffect/removeEffect/renderBuilderChips since we use toggles now
 
         function updateBuilder() {
             const resultDiv = document.getElementById('builderResults');
@@ -1542,7 +1541,7 @@
 
             // Render Bonuses
             if(selectedEffects.size === 0 && !activeColorSet) {
-                resultDiv.innerHTML = '<p style="color:#666; font-style:italic;">Füge Effekte hinzu um Boni zu sehen...</p>';
+                resultDiv.innerHTML = '<p style="color:#666; font-style:italic;">Klicke auf Effekte links, um Boni zu sehen...</p>';
             } else {
                 resultDiv.innerHTML = "";
                 selectedEffects.forEach(eff => {
