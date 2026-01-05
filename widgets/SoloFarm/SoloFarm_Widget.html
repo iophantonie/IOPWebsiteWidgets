@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IOP Solo Farm Integration</title>
+    <link href="https://fonts.googleapis.com/css2?family=Acme&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* --- VARIABLES --- */
+        :root {
+            --c-fire: #ff3300;
+            --c-bg: #050505;
+            --c-panel: #121212;
+            --c-content: #1a1a1a;
+            --c-text: #e0e0e0;
+            --c-dim: #888;
+            --c-border: #333;
+            
+            --f-head: 'Acme', sans-serif;
+            --f-body: 'Roboto', sans-serif;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0; padding: 0;
+            background-color: transparent; 
+            color: var(--c-text);
+            font-family: var(--f-body);
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        /* Animationen */
+        @keyframes fire-border-pulse {
+            0% { box-shadow: 0 0 10px rgba(255, 51, 0, 0.2); border-color: rgba(255, 51, 0, 0.5); }
+            50% { box-shadow: 0 0 25px rgba(255, 51, 0, 0.5); border-color: rgba(255, 51, 0, 1); }
+            100% { box-shadow: 0 0 10px rgba(255, 51, 0, 0.2); border-color: rgba(255, 51, 0, 0.5); }
+        }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- WIDGET CONTAINER --- */
+        .widget-container {
+            display: flex;
+            width: 98%; 
+            height: 95vh;
+            background-color: var(--c-bg);
+            border: 2px solid var(--c-fire);
+            border-radius: 12px;
+            animation: fire-border-pulse 4s infinite ease-in-out;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 0 50px rgba(0,0,0,0.9);
+        }
+
+        /* --- SIDEBAR --- */
+        .sidebar {
+            width: 260px;
+            background-color: var(--c-panel);
+            border-right: 1px solid var(--c-border);
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            z-index: 10;
+        }
+
+        .header-area {
+            padding: 30px 20px;
+            text-align: center;
+            border-bottom: 1px solid var(--c-border);
+            background: linear-gradient(180deg, rgba(255,51,0,0.1) 0%, transparent 100%);
+        }
+
+        .title {
+            font-family: var(--f-head);
+            font-size: 1.8rem;
+            color: var(--c-fire);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 0;
+            line-height: 1.1;
+            text-shadow: 0 0 10px rgba(255, 51, 0, 0.4);
+        }
+
+        .subtitle {
+            font-size: 0.8rem;
+            color: var(--c-dim);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 8px;
+            display: block;
+        }
+
+        .nav-menu {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+            flex-grow: 1;
+        }
+
+        .nav-btn {
+            width: 100%;
+            padding: 18px 25px;
+            background: transparent;
+            border: none;
+            border-left: 4px solid transparent;
+            color: var(--c-dim);
+            font-family: var(--f-head);
+            font-size: 1.2rem;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .nav-btn:hover { background-color: rgba(255,255,255,0.03); color: #fff; }
+
+        .nav-btn.active {
+            background: linear-gradient(90deg, rgba(255,51,0,0.15) 0%, transparent 100%);
+            border-left-color: var(--c-fire);
+            color: #fff;
+            text-shadow: 0 0 10px rgba(255,51,0,0.5);
+        }
+
+        /* --- CONTENT AREA --- */
+        .content-area {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 40px;
+            background-color: var(--c-bg);
+            background-image: radial-gradient(circle at 50% 50%, rgba(255,51,0,0.02) 0%, transparent 40%);
+        }
+        .content-area::-webkit-scrollbar { width: 8px; }
+        .content-area::-webkit-scrollbar-thumb { background-color: #333; border-radius: 4px; }
+
+        /* Sections */
+        .section { display: none; animation: fadeIn 0.4s ease; max-width: 900px; margin: 0 auto; }
+        .section.active { display: block; }
+
+        .section-header {
+            border-bottom: 1px solid var(--c-border);
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .section-title {
+            font-family: var(--f-head);
+            font-size: 2.2rem;
+            color: #fff;
+            margin: 0;
+        }
+
+        .section-icon { color: var(--c-fire); font-size: 2rem; opacity: 0.8; }
+
+        /* Info Blocks */
+        .info-block {
+            background-color: var(--c-content);
+            border: 1px solid var(--c-border);
+            border-radius: 6px;
+            padding: 25px;
+            margin-bottom: 25px;
+            line-height: 1.6;
+            color: #ccc;
+            font-size: 1rem;
+        }
+
+        .info-block strong { color: var(--c-fire); }
+        .info-block ul { padding-left: 20px; margin: 15px 0; }
+        .info-block li { margin-bottom: 8px; }
+
+        /* Creature List */
+        .creature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+        }
+        .creature-card {
+            background: #202020;
+            padding: 15px;
+            border-radius: 4px;
+            border: 1px solid var(--c-border);
+            text-align: center;
+            font-family: var(--f-head);
+            font-size: 1.1rem;
+            color: #eee;
+            transition: transform 0.2s;
+        }
+        .creature-card:hover { transform: translateY(-3px); border-color: var(--c-fire); }
+        
+        /* Commands */
+        .cmd-box {
+            background: #111;
+            border-left: 4px solid var(--c-fire);
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 0 6px 6px 0;
+        }
+        .cmd-code {
+            display: block;
+            margin-top: 8px;
+            font-family: monospace;
+            background: #252525;
+            padding: 10px;
+            border-radius: 4px;
+            color: #ffae00;
+            font-size: 1.2rem;
+            border: 1px solid #444;
+        }
+
+        /* Image Styling */
+        .content-img {
+            width: 100%;
+            max-width: 800px;
+            height: auto;
+            border-radius: 8px;
+            border: 1px solid #333;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.6);
+            display: block;
+            margin: 20px auto;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .content-img:hover { transform: scale(1.01); }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal.open { display: flex; }
+        .modal img { max-width: 95%; max-height: 95%; border: 2px solid var(--c-fire); border-radius: 6px; box-shadow: 0 0 50px rgba(255,51,0,0.2); }
+        .close-btn { position: absolute; top: 20px; right: 20px; color: #fff; font-size: 3rem; cursor: pointer; line-height: 1; }
+
+        @media (max-width: 900px) {
+            .widget-container { flex-direction: column; width: 100%; height: 100vh; border: none; border-radius: 0; }
+            .sidebar { width: 100%; height: auto; border-right: none; border-bottom: 2px solid var(--c-fire); }
+            .nav-menu { display: flex; margin: 0; }
+            .nav-btn { justify-content: center; padding: 15px; font-size: 1rem; }
+            .content-area { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="widget-container">
+        
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+            <div class="header-area">
+                <h1 class="title">Solo Farm</h1>
+                <span class="subtitle">System Integration</span>
+            </div>
+            
+            <ul class="nav-menu">
+                <li>
+                    <button class="nav-btn active" onclick="showTab('info', this)">
+                        <i class="fa-solid fa-info-circle"></i> Informationen
+                    </button>
+                </li>
+                <li>
+                    <button class="nav-btn" onclick="showTab('creatures', this)">
+                        <i class="fa-solid fa-dragon"></i> Kreaturen
+                    </button>
+                </li>
+                <li>
+                    <button class="nav-btn" onclick="showTab('commands', this)">
+                        <i class="fa-solid fa-terminal"></i> Befehle
+                    </button>
+                </li>
+            </ul>
+        </div>
+
+        <!-- CONTENT -->
+        <div class="content-area">
+
+            <!-- TAB: INFO -->
+            <div id="info" class="section active">
+                <div class="section-header">
+                    <i class="fa-solid fa-info-circle section-icon"></i>
+                    <h2 class="section-title">Allgemeine Informationen</h2>
+                </div>
+
+                <div class="info-block">
+                    Dieses System ermöglicht es Einzelspielern oder kleinen Gruppen, effizient Ressourcen zu farmen, indem Dinos automatisch sammeln, wenn sie getragen werden.
+                </div>
+
+                <div class="info-block">
+                    <h3 style="color:#fff; margin-top:0;">Wichtige Regeln & Einschränkungen:</h3>
+                    <ul>
+                        <li><strong>Voraussetzung:</strong> Nur nutzbar von verifizierten Spielern.</li>
+                        <li><strong>Tribe Limit:</strong> Nur möglich in Tribes mit maximal <strong>6 Spielern</strong>.</li>
+                        <li><strong>Limitierung:</strong> Maximal <strong>1 Farm-Kreatur</strong> gleichzeitig nutzbar.</li>
+                        <li><strong>Stamina:</strong> Kreaturen verbrauchen weiterhin ihre Ausdauer.</li>
+                        <li><strong>Gewicht:</strong> Die Extra-Gewichtsreduzierung ist bei diesem Modus deaktiviert.</li>
+                        <li><strong>Überladung:</strong> Überladen ist möglich (Achtung beim Transport!).</li>
+                    </ul>
+                </div>
+
+                <div class="info-block">
+                    <h3 style="color:#fff; margin-top:0;">Wie funktioniert es?</h3>
+                    <p>Du kannst das Farmen durch <strong>Ansehen der Kreatur</strong> aktivieren. Die Kreatur fängt jedoch erst an zu farmen bzw. anzugreifen, wenn du sie mit einem anderen Dino (z.B. Argentavis, Karkinos, Wyvern) gegriffen hast.</p>
+                </div>
+
+                <img src="https://i.postimg.cc/x1kDTNHd/Bild-2024-05-17-204340090.png" class="content-img" onclick="openModal(this.src)" alt="Solo Farm Preview">
+            </div>
+
+            <!-- TAB: CREATURES -->
+            <div id="creatures" class="section">
+                <div class="section-header">
+                    <i class="fa-solid fa-paw section-icon"></i>
+                    <h2 class="section-title">Unterstützte Kreaturen</h2>
+                </div>
+
+                <div class="info-block">
+                    Das Solo-Farm System funktioniert nur mit folgenden ausgewählten Dinos:
+                </div>
+
+                <div class="creature-grid">
+                    <div class="creature-card">Therizinosaurus<br><span style="font-size:0.8em; color:#888;">(auch S-Variante)</span></div>
+                    <div class="creature-card">Doedicurus<br><span style="font-size:0.8em; color:#888;">(auch Aberrant & S-Variante)</span></div>
+                    <div class="creature-card">Ankylosaurus<br><span style="font-size:0.8em; color:#888;">(auch Aberrant & S-Variante)</span></div>
+                    <div class="creature-card">Castoroides<br><span style="font-size:0.8em; color:#888;">(Biber)</span></div>
+                    <div class="creature-card">Mammut</div>
+                    <div class="creature-card">Rollratte</div>
+                    <div class="creature-card">Thorny Dragon</div>
+                </div>
+            </div>
+
+            <!-- TAB: COMMANDS -->
+            <div id="commands" class="section">
+                <div class="section-header">
+                    <i class="fa-solid fa-keyboard section-icon"></i>
+                    <h2 class="section-title">Chat Befehle</h2>
+                </div>
+
+                <div class="cmd-box">
+                    <div style="font-family:var(--f-head); font-size:1.4rem; color:#fff; margin-bottom:5px;">Aktivieren</div>
+                    <div style="color:#ccc; margin-bottom:10px;">Schau die Kreatur an und tippe:</div>
+                    <span class="cmd-code">/farm</span>
+                </div>
+
+                <div class="cmd-box">
+                    <div style="font-family:var(--f-head); font-size:1.4rem; color:#fff; margin-bottom:5px;">Deaktivieren</div>
+                    <div style="color:#ccc; margin-bottom:10px;">Stoppt alle aktiven Farm-Modi:</div>
+                    <span class="cmd-code">/stopall</span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="imgModal" class="modal">
+        <span class="close-btn" onclick="closeModal()">&times;</span>
+        <img id="modalImg" src="">
+    </div>
+
+    <script>
+        function showTab(tabId, btn) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+            
+            // Deactivate buttons
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            
+            // Activate selected
+            document.getElementById(tabId).classList.add('active');
+            btn.classList.add('active');
+        }
+
+        // Modal Logic
+        const modal = document.getElementById('imgModal');
+        const modalImg = document.getElementById('modalImg');
+
+        function openModal(src) {
+            modalImg.src = src;
+            modal.classList.add('open');
+        }
+
+        function closeModal() {
+            modal.classList.remove('open');
+        }
+
+        modal.addEventListener('click', (e) => {
+            if(e.target === modal) closeModal();
+        });
+    </script>
+
+</body>
+</html>
