@@ -16,6 +16,7 @@
             --color-text: #f7f7f7;
             --color-gold: #FFEB3B;
             --color-info: #2196F3;
+            --color-success: #4CAF50;
             
             /* Rainbow Gradient für Texte */
             --rainbow-gradient: linear-gradient(90deg, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000);
@@ -59,8 +60,8 @@
         .shiny-container {
             background-color: var(--color-dark);
             border-radius: 8px; 
-            border: 2px solid transparent; /* Wird durch Animation gesteuert */
-            animation: shiny-pulse 8s linear infinite; /* Langsamerer Loop für den Container */
+            border: 2px solid transparent;
+            animation: shiny-pulse 8s linear infinite;
             width: 100%;
             height: 100%;
             display: flex;
@@ -343,6 +344,97 @@
         /* Highlight Search Result */
         .hidden { display: none !important; }
 
+        /* === NEW: SHINY BUILDER STYLES === */
+        .builder-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        @media (max-width: 800px) { .builder-container { grid-template-columns: 1fr; } }
+
+        .builder-section {
+            background: rgba(0,0,0,0.3);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .builder-select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            background: #222;
+            color: #fff;
+            border: 1px solid #555;
+            border-radius: 6px;
+        }
+
+        .chip-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-bottom: 15px;
+        }
+
+        .chip {
+            background: #333;
+            border: 1px solid #555;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: #ddd;
+        }
+        .chip button {
+            background: none;
+            border: none;
+            color: #ff5555;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .result-stat {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            font-size: 0.9rem;
+        }
+        .result-stat span:last-child { color: var(--color-success); font-weight: bold; }
+
+        /* === NEW: COLOR SET GRID === */
+        .color-set-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .color-set-card:hover {
+            background: rgba(255,255,255,0.08);
+            transform: translateY(-3px);
+        }
+        .color-set-title {
+            font-family: var(--font-header);
+            font-size: 1.1rem;
+            color: #fff;
+            margin-bottom: 10px;
+        }
+        .color-circles {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+        .color-circle {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 1px solid #555;
+        }
+
         /* === MODAL STYLING === */
         .modal {
             display: none;
@@ -474,7 +566,7 @@
                 
                 <div class="search-container">
                     <i class="fa-solid fa-search search-icon"></i>
-                    <input type="text" id="searchInput" class="search-input" placeholder="Shiny Art suchen (z.B. Radioactive, Frozen)...">
+                    <input type="text" id="searchInput" class="search-input" placeholder="Shiny Art oder Color Set suchen...">
                 </div>
             </div>
         </div>
@@ -482,6 +574,8 @@
         <!-- Navigation -->
         <div class="nav-tabs">
             <div class="nav-tab active" onclick="showSection('faq')"><i class="fa-solid fa-circle-question"></i> Info & FAQ</div>
+            <div class="nav-tab" onclick="showSection('checker')"><i class="fa-solid fa-flask"></i> Shiny Checker</div>
+            <div class="nav-tab" onclick="showSection('colors')"><i class="fa-solid fa-palette"></i> Farb Sets</div>
             <div class="nav-tab" onclick="showSection('variants')"><i class="fa-solid fa-dna"></i> Shiny Arten</div>
             <div class="nav-tab" onclick="showSection('combos')"><i class="fa-solid fa-layer-group"></i> Kombinationen</div>
             <div class="nav-tab" onclick="showSection('tinies')"><i class="fa-solid fa-paw"></i> Tinies & Stats</div>
@@ -521,6 +615,95 @@
                         <li><strong>Reisen:</strong> Shinys können wie normale Dinos zwischen Karten reisen.</li>
                         <li><strong>Gesperrt:</strong> "Filthy" (wegen Level-Cap) und "Only Colored" (keine Fähigkeiten) Shinys sind deaktiviert.</li>
                     </ul>
+                </div>
+            </div>
+
+            <!-- NEW: SHINY CHECKER SECTION (Renamed from Builder) -->
+            <div id="checker" class="section">
+                <div class="info-box">
+                    <h3><i class="fa-solid fa-flask"></i> Shiny Checker</h3>
+                    <p>Hier kannst du die Effekte deines Shinys zusammenstellen und sehen, welche Boni es erhält.</p>
+                    
+                    <div class="builder-container">
+                        <!-- Controls -->
+                        <div class="builder-section">
+                            <h4 style="color:var(--color-gold); margin-top:0;">Eigenschaften hinzufügen</h4>
+                            <select id="effectSelect" class="builder-select">
+                                <option value="">-- Wähle Effekt --</option>
+                                <optgroup label="Visual/Effect">
+                                    <option value="Burning">Burning</option>
+                                    <option value="Frozen">Frozen</option>
+                                    <option value="Electro">Electro</option>
+                                    <option value="Toxic">Toxic</option>
+                                    <option value="Radioactive">Radioactive</option>
+                                    <option value="Spectral">Spectral</option>
+                                    <option value="Holographic">Holographic</option>
+                                    <option value="Rubber">Rubber</option>
+                                    <option value="Dazzling">Dazzling</option>
+                                    <option value="Nightmare">Nightmare</option>
+                                    <option value="Crystalline">Crystalline</option>
+                                    <option value="Skeletal">Skeletal</option>
+                                </optgroup>
+                                <optgroup label="Abilities">
+                                    <option value="Shinobi">Shinobi</option>
+                                    <option value="Fathomless">Fathomless</option>
+                                    <option value="Endurant">Endurant</option>
+                                    <option value="Lunar">Lunar</option>
+                                    <option value="Floral">Floral</option>
+                                </optgroup>
+                                <optgroup label="Stats">
+                                    <option value="Strong">Strong (Melee)</option>
+                                    <option value="Fast">Fast (Speed)</option>
+                                    <option value="Durable">Durable (Resist)</option>
+                                    <option value="Heavy">Heavy (Weight)</option>
+                                    <option value="Intelligent">Intelligent (XP)</option>
+                                </optgroup>
+                                <optgroup label="Size">
+                                    <option value="Tiny">Tiny</option>
+                                    <option value="Massive">Massive</option>
+                                    <option value="Colossal">Colossal</option>
+                                    <option value="Pygmy">Pygmy</option>
+                                </optgroup>
+                            </select>
+                            <button onclick="addEffect()" class="sheet-link-btn" style="width:100%; margin-top:0; margin-bottom:20px;">Hinzufügen</button>
+
+                            <h4 style="color:var(--color-gold);">Farb-Set auswählen</h4>
+                            <select id="colorSetSelect" class="builder-select" onchange="updateBuilder()">
+                                <option value="">-- Kein Set --</option>
+                                <!-- Populated by JS -->
+                            </select>
+
+                            <div id="selectedChips" class="chip-container"></div>
+                        </div>
+
+                        <!-- Results -->
+                        <div class="builder-section">
+                            <h4 style="color:#2196F3; margin-top:0; border-bottom:1px solid #444; padding-bottom:10px;">Ergebnis</h4>
+                            <div id="builderResults">
+                                <p style="color:#666; font-style:italic;">Füge Effekte hinzu um Boni zu sehen...</p>
+                            </div>
+                            
+                            <div id="builderColorPreview" style="margin-top:20px; display:none;">
+                                <h4 style="color:#ff00ff; margin-bottom:10px;">Farb-Vorschau</h4>
+                                <div id="builderColorCircles" class="color-circles"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- NEW: COLOR SETS SECTION -->
+            <div id="colors" class="section">
+                <div class="info-box">
+                    <h3><i class="fa-solid fa-palette"></i> Farb-Sets Bibliothek</h3>
+                    <p>Eine Übersicht aller bekannten Shiny-Farbkombinationen.</p>
+                    <a href="https://docs.google.com/spreadsheets/d/1imxJ6Y6LxaqLiEpKrK2p2fvrVl06SEN7PhPhY8kpQNg/edit?gid=0#gid=0" target="_blank" class="sheet-link-btn" style="margin-bottom:20px;">
+                        <i class="fa-solid fa-table"></i> Zur Farb-Tabelle (Google Sheets)
+                    </a>
+                    
+                    <div id="colorSetGrid" class="shiny-grid">
+                        <!-- Populated by JS -->
+                    </div>
                 </div>
             </div>
 
@@ -936,7 +1119,111 @@
     </div>
 
     <script>
-        // NAVIGATION
+        // --- DATA ---
+        // Effects data for the builder
+        const EFFECT_DATA = {
+            "Burning": { desc: "Feuer-Aura", stats: ["Feuerresistenz +50%", "Rückwurfschaden (Feuer)"] },
+            "Frozen": { desc: "Eis-Aura", stats: ["Eisresistenz +50%", "Verlangsamt Angreifer"] },
+            "Electro": { desc: "Elektro-Schocks", stats: ["Immun gegen Schock", "Betäubt Angreifer"] },
+            "Toxic": { desc: "Gift-Aura", stats: ["Giftresistenz", "Stapelbarer Giftschaden"] },
+            "Radioactive": { desc: "Strahlung", stats: ["AoE Strahlungsschaden", "Licht im Dunkeln"] },
+            "Spectral": { desc: "Geist", stats: ["Kein Fallschaden", "Durchlässig für Projektile"] },
+            "Holographic": { desc: "Tech", stats: ["Tek-Scan Umgebung", "Coole Optik"] },
+            "Rubber": { desc: "Gummi", stats: ["Springt hoch", "Reflektiert Schaden"] },
+            "Dazzling": { desc: "Blendend", stats: ["Blendet Angreifer", "Strahlungsresistenz"] },
+            "Nightmare": { desc: "Albtraum", stats: ["Verursacht Angst", "Unsichtbar im Dunkeln"] },
+            "Crystalline": { desc: "Kristall", stats: ["Glaskanone (Mehr Dmg rein/raus)", "Reflektiert"] },
+            "Skeletal": { desc: "Skelett", stats: ["Kein Futter nötig", "Hohe Fernkampf-Resistenz"] },
+            "Shinobi": { desc: "Stealth", stats: ["Aggro Reichweite reduziert", "Schwer zu entdecken"] },
+            "Fathomless": { desc: "Wasser", stats: ["Unendlicher Sauerstoff", "Schnelles Schwimmen"] },
+            "Endurant": { desc: "Ausdauer", stats: ["Unendlicher Sprint"] },
+            "Lunar": { desc: "Mond", stats: ["Geringe Schwerkraft", "Hohe Sprünge"] },
+            "Floral": { desc: "Heilung", stats: ["HP Regeneration Aura"] },
+            "Strong": { desc: "Stat Boost", stats: ["Nahkampfschaden +25%"] },
+            "Fast": { desc: "Stat Boost", stats: ["Geschwindigkeit +20%"] },
+            "Durable": { desc: "Stat Boost", stats: ["Erlittener Schaden -20%"] },
+            "Heavy": { desc: "Stat Boost", stats: ["Gewicht +50%"] },
+            "Intelligent": { desc: "Stat Boost", stats: ["Erfahrungsgewinn +50%"] },
+            "Tiny": { desc: "Size Mod", stats: ["Größe -50%", "Speed +10%", "Traglast -20%"] },
+            "Massive": { desc: "Size Mod", stats: ["Größe +30%", "HP +20%", "Speed -10%"] },
+            "Colossal": { desc: "Size Mod", stats: ["Größe +50%", "HP +++", "Speed ---"] },
+            "Pygmy": { desc: "Size Mod", stats: ["Größe -30%", "Speed ++", "HP -"] }
+        };
+
+        const COLOR_SETS = [
+            { name: "Abominable", ids: [214, 33, 23, 34, 96, 25] },
+            { name: "All Hallow's", ids: [4, 14, 34, 62, 75, 76] },
+            { name: "Azure", ids: [28, 215, 95, 53, 54, 93] },
+            { name: "Bright Rainbow", ids: [1, 4, 54, 84, 95, 207, 208] },
+            { name: "Candy", ids: [4, 11, 18, 36, 74, 75] },
+            { name: "Caribbean", ids: [53, 58, 59, 94, 95, 96] },
+            { name: "Chalcedony", ids: [40, 33, 41, 34, 64] },
+            { name: "Charnel", ids: [226, 63, 64, 97, 209, 47] },
+            { name: "Cheep", ids: [11, 19, 25, 68] },
+            { name: "Dreary Rainbow", ids: [24, 44, 70, 85, 89, 94] },
+            { name: "Ectoplasm", ids: [7, 11, 18, 23, 25, 83] },
+            { name: "Eldritch", ids: [79, 56, 61, 86, 26, 84] },
+            { name: "Fudge Brownie", ids: [15, 71, 34, 100] },
+            { name: "Ghoulish/Vampyre", ids: [79, 73, 81, 226, 80, 17] },
+            { name: "Gilded", ids: [8, 10, 11, 36, 55, 216] },
+            { name: "Ginger", ids: [32, 10, 208, 44, 217, 22, 15] },
+            { name: "Goth", ids: [62, 69, 70, 79, 89, 90] },
+            { name: "Indigo", ids: [28, 30, 31, 49, 50, 89] },
+            { name: "Jack O' Lantern", ids: [75, 76, 79, 82, 89, 90] },
+            { name: "Luna", ids: [25, 24, 26, 66, 27, 87] },
+            { name: "Midnight", ids: [57, 80, 81, 52, 51, 29] },
+            { name: "Mint Chocolate Chip", ids: [84, 100, 15] },
+            { name: "Mossy", ids: [23, 46, 26, 45, 78, 98] },
+            { name: "Motley", ids: [25, 31, 50, 59, 71, 208] },
+            { name: "Neopolitan", ids: [19, 100, 33] },
+            { name: "Noir", ids: [13, 14, 35, 56, 60, 79] },
+            { name: "Paisley", ids: [13, 81, 85, 213, 216, 221] },
+            { name: "Polar", ids: [18, 55, 8, 28, 215, 59] },
+            { name: "Poppy", ids: [12, 19, 56, 70, 71, 73] },
+            { name: "Princess", ids: [30, 67, 69, 91, 210, 220] },
+            { name: "Pumpkin", ids: [16, 74, 75, 76, 88, 222] },
+            { name: "Rainbow", ids: [10, 11, 12, 26, 50, 73, 215] },
+            { name: "Rockwell", ids: [30, 50, 67, 82, 89, 90, 213] },
+            { name: "Rocky Road", ids: [32, 42, 34, 36] },
+            { name: "Rose", ids: [12, 19, 38, 39, 21, 43] },
+            { name: "Roynish", ids: [89, 90, 71, 72, 93, 56] },
+            { name: "Russet", ids: [21, 20, 77, 72, 70, 71] },
+            { name: "Saffron", ids: [209, 11, 10, 222, 76, 77] },
+            { name: "Sanna Claws", ids: [70, 71, 1, 18, 68] },
+            { name: "Spice", ids: [39, 43, 75, 72, 71, 62] },
+            { name: "Squamous", ids: [80, 57, 69, 29, 82, 62] },
+            { name: "Sunset", ids: [31, 72, 74, 76, 89, 224] },
+            { name: "Tatterdemalion", ids: [10, 17, 22, 26, 32, 224] },
+            { name: "Tiger", ids: [36, 38, 10, 221, 44, 56] },
+            { name: "Verdant", ids: [25, 66, 85, 88, 84, 27, 58] },
+            { name: "Xanthic", ids: [216, 11, 209, 32, 9, 33] },
+        ];
+
+        const ARK_COLORS = {
+            1: "#ff0000", 2: "#0000ff", 3: "#00ff00", 4: "#ffff00", 5: "#00ffff", 6: "#ff00ff", 
+            7: "#c0ffba", 8: "#c8caca", 9: "#786759", 10: "#ffb46c", 11: "#fffa8a", 12: "#ff756c",
+            13: "#7b7b7b", 14: "#3b3b3b", 15: "#593a2a", 16: "#224900", 17: "#812118", 18: "#ffffff",
+            19: "#ffa8a8", 20: "#592b2b", 21: "#ffb694", 22: "#88532f", 23: "#cacaa0", 24: "#94946c",
+            25: "#e0ffe0", 26: "#799479", 27: "#224122", 28: "#d9e0ff", 29: "#394263", 30: "#e4d9ff",
+            31: "#403459", 32: "#ffe0ba", 33: "#684423", 34: "#a0a0a0", 35: "#383838", 36: "#f8f8f8",
+            38: "#ffe0d0", 39: "#6b4d37", 40: "#b09c87", 41: "#604733", 42: "#917760", 43: "#c1a58d",
+            44: "#683318", 45: "#3e281b", 46: "#271b12", 47: "#731f06", 48: "#141414", 49: "#2a1d5e",
+            50: "#17122e", 51: "#3e4f63", 52: "#1f2a36", 53: "#546e8c", 54: "#1e3752", 55: "#b5d4f2",
+            56: "#343434", 57: "#141725", 58: "#002a1d", 59: "#009069", 60: "#0c1911", 61: "#0b130c",
+            62: "#0a0909", 63: "#181616", 64: "#544a48", 65: "#141a17", 66: "#415c4e", 67: "#cd70ff",
+            68: "#ff0053", 69: "#2c000f", 70: "#7a000d", 71: "#360702", 72: "#660600", 73: "#dc0600",
+            74: "#ff1807", 75: "#ff3700", 76: "#ff630a", 77: "#6d2a00", 78: "#4c4c04", 79: "#000000",
+            80: "#010208", 81: "#010509", 82: "#060306", 83: "#65ff0d", 84: "#09cf3c", 85: "#003f0c",
+            86: "#001605", 87: "#001a11", 88: "#003322", 89: "#380004", 90: "#590006", 91: "#380000",
+            92: "#2a0000", 93: "#38081a", 94: "#21000e", 95: "#6e68bd", 96: "#6b2165", 97: "#5b5b5b",
+            98: "#545145", 99: "#60563b", 100: "#3d362d", 201: "#1f1f1f", 202: "#0000ff", 207: "#6c00ba",
+            208: "#ff8800", 209: "#ffffba", 210: "#ff7be1", 213: "#7b00a8", 214: "#e0e0e0", 215: "#bad4ff",
+            216: "#ffed82", 217: "#ad652c", 220: "#e71fd9", 221: "#94341f", 222: "#ff9a00", 223: "#473b2b",
+            224: "#34346c", 225: "#baba59", 226: "#595959"
+        };
+        const getColorHex = (id) => ARK_COLORS[id] || '#555';
+
+        // --- NAVIGATION ---
         function showSection(sectionId) {
             document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
@@ -950,18 +1237,14 @@
             });
         }
 
-        // SEARCH
+        // --- SEARCH ---
         const searchInput = document.getElementById('searchInput');
-        const cards = document.querySelectorAll('.shiny-card');
-
+        const shinyCards = document.querySelectorAll('.shiny-card');
+        
         searchInput.addEventListener('keyup', (e) => {
             const term = e.target.value.toLowerCase();
-            if(term.length > 0) {
-                if(document.querySelector('.section.active').id !== 'variants') {
-                    showSection('variants');
-                }
-            }
-            cards.forEach(card => {
+            // Filter Shiny Cards (if in variants tab)
+            shinyCards.forEach(card => {
                 const title = card.querySelector('.card-title').innerText.toLowerCase();
                 const desc = card.querySelector('.card-short-desc').innerText.toLowerCase();
                 if(title.includes(term) || desc.includes(term)) {
@@ -970,9 +1253,15 @@
                     card.classList.add('hidden');
                 }
             });
+            // Filter Color Sets (if in colors tab)
+            document.querySelectorAll('.color-set-card').forEach(card => {
+                const title = card.querySelector('.color-set-title').innerText.toLowerCase();
+                if(title.includes(term)) card.style.display = 'block';
+                else card.style.display = 'none';
+            });
         });
 
-        // MODAL
+        // --- MODAL ---
         const modal = document.getElementById('shinyModal');
 
         function openModal(card) {
@@ -997,7 +1286,7 @@
             if(e.target === modal) closeModal();
         });
 
-        // COMBO CHECKER LOGIC
+        // --- OLD COMBO CHECKER LOGIC ---
         function checkCombo() {
             const sel1 = document.getElementById('combo1');
             const sel2 = document.getElementById('combo2');
@@ -1013,16 +1302,14 @@
                 return;
             }
 
-            // Get Categories and Names
             const cat1 = sel1.options[sel1.selectedIndex].getAttribute('data-cat');
             const cat2 = sel2.options[sel2.selectedIndex].getAttribute('data-cat');
             
             let status = 'ok';
             let message = 'Diese Kombination ist möglich!';
             let icon = '<i class="fa-solid fa-check-circle" style="font-size: 2rem; margin-bottom: 10px;"></i>';
-            let color = '#4CAF50'; // Green
+            let color = '#4CAF50'; 
 
-            // Logic Rules
             if (val1 === val2) {
                 status = 'error';
                 message = 'Du kannst nicht zweimal dieselbe Essenz verwenden.';
@@ -1039,29 +1326,149 @@
                 status = 'error';
                 message = 'Nicht möglich: Tiny/Stat Boosts sind nicht mit Größenänderungen kombinierbar.';
             }
-            // Special Case: Skeletal
             else if (val1 === 'Skeletal' || val2 === 'Skeletal') {
                 const otherCat = val1 === 'Skeletal' ? cat2 : cat1;
                 if (otherCat === 'size' || otherCat === 'tiny') {
                     status = 'warning';
-                    message = 'Eingeschränkt: Skeletal ändert das Mesh komplett. In Kombination mit Größe oder Tiny kann es zu Problemen kommen (oft nicht möglich).';
-                    color = '#FFC107'; // Amber
+                    message = 'Eingeschränkt: Skeletal ändert das Mesh. Oft inkompatibel mit Größe/Tiny.';
+                    color = '#FFC107'; 
                     icon = '<i class="fa-solid fa-triangle-exclamation" style="font-size: 2rem; margin-bottom: 10px;"></i>';
                 }
             }
 
-            // Render Result
             if (status === 'error') {
                 color = '#F44336';
                 icon = '<i class="fa-solid fa-circle-xmark" style="font-size: 2rem; margin-bottom: 10px;"></i>';
-            } else if (status === 'warning') {
-                // Warning attributes set above
             }
 
             resDiv.innerHTML = `<div style="color: ${color}; font-weight: bold;">${icon}<br>${message}</div>`;
-            resDiv.style.backgroundColor = `${color}22`; // 22 = Low Opacity hex
+            resDiv.style.backgroundColor = `${color}22`;
             resDiv.style.border = `1px solid ${color}`;
         }
+
+        // --- NEW: SHINY CHECKER LOGIC ---
+        const selectedEffects = new Set();
+        let activeColorSet = "";
+
+        function initBuilder() {
+            // Populate Color Set Dropdown
+            const select = document.getElementById('colorSetSelect');
+            COLOR_SETS.forEach(set => {
+                const opt = document.createElement('option');
+                opt.value = set.name;
+                opt.text = set.name;
+                select.appendChild(opt);
+            });
+        }
+
+        function addEffect() {
+            const select = document.getElementById('effectSelect');
+            const val = select.value;
+            if(!val) return;
+
+            if(selectedEffects.size >= 4) {
+                alert("Maximal 4 Effekte erlaubt!");
+                return;
+            }
+            if(selectedEffects.has(val)) return;
+
+            selectedEffects.add(val);
+            renderBuilderChips();
+            updateBuilder();
+            select.value = ""; // Reset dropdown
+        }
+
+        function removeEffect(eff) {
+            selectedEffects.delete(eff);
+            renderBuilderChips();
+            updateBuilder();
+        }
+
+        function renderBuilderChips() {
+            const container = document.getElementById('selectedChips');
+            container.innerHTML = "";
+            selectedEffects.forEach(eff => {
+                const div = document.createElement('div');
+                div.className = 'chip';
+                div.innerHTML = `${eff} <button onclick="removeEffect('${eff}')">&times;</button>`;
+                container.appendChild(div);
+            });
+        }
+
+        function updateBuilder() {
+            const resultDiv = document.getElementById('builderResults');
+            const colorSetSelect = document.getElementById('colorSetSelect');
+            activeColorSet = colorSetSelect.value;
+
+            // Render Bonuses
+            if(selectedEffects.size === 0 && !activeColorSet) {
+                resultDiv.innerHTML = '<p style="color:#666; font-style:italic;">Füge Effekte hinzu um Boni zu sehen...</p>';
+            } else {
+                resultDiv.innerHTML = "";
+                selectedEffects.forEach(eff => {
+                    const data = EFFECT_DATA[eff] || { desc: "Unbekannt", stats: [] };
+                    const item = document.createElement('div');
+                    item.style.marginBottom = "10px";
+                    item.innerHTML = `
+                        <div style="font-weight:bold; color:#fff;">${eff}</div>
+                        <div style="font-size:0.8rem; color:#aaa; margin-bottom:4px;">${data.desc}</div>
+                        ${data.stats.map(s => `<div class="result-stat"><span>Bonus</span><span>${s}</span></div>`).join('')}
+                    `;
+                    resultDiv.appendChild(item);
+                });
+            }
+
+            // Render Color Preview
+            const previewContainer = document.getElementById('builderColorPreview');
+            const circlesContainer = document.getElementById('builderColorCircles');
+            
+            if(activeColorSet) {
+                previewContainer.style.display = 'block';
+                const setData = COLOR_SETS.find(s => s.name === activeColorSet);
+                if(setData) {
+                    circlesContainer.innerHTML = setData.ids.map(id => 
+                        `<div class="color-circle" style="background-color:${getColorHex(id)}" title="ID: ${id}"></div>`
+                    ).join('');
+                }
+            } else {
+                previewContainer.style.display = 'none';
+            }
+        }
+
+        // --- NEW: COLOR SET BROWSER LOGIC ---
+        function initColorBrowser() {
+            const grid = document.getElementById('colorSetGrid');
+            grid.innerHTML = "";
+            
+            COLOR_SETS.forEach(set => {
+                const card = document.createElement('div');
+                card.className = 'color-set-card';
+                card.onclick = () => {
+                    // Jump to builder and select this color
+                    showSection('checker');
+                    document.getElementById('colorSetSelect').value = set.name;
+                    updateBuilder();
+                };
+
+                const circles = set.ids.map(id => 
+                    `<div class="color-circle" style="background-color:${getColorHex(id)}" title="ID: ${id}"></div>`
+                ).join('');
+
+                card.innerHTML = `
+                    <div class="color-set-title">${set.name}</div>
+                    <div class="color-circles">${circles}</div>
+                    <div style="font-size:0.8rem; color:#666; margin-top:8px;">IDs: ${set.ids.join(', ')}</div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Init all
+        document.addEventListener('DOMContentLoaded', () => {
+            initBuilder();
+            initColorBrowser();
+        });
+
     </script>
 </body>
 </html>
