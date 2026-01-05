@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IOP Server Features</title>
+    <link href="https://fonts.googleapis.com/css2?family=Acme&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* IOP Style Variables */
+        :root {
+            --color-fire: #ff3300; /* Das neue Feuerrot */
+            --color-dark: rgba(20, 20, 20, 0.98);
+            --color-card-bg: rgba(40, 40, 40, 0.6);
+            --color-text: #f7f7f7;
+            --color-gold: #FFEB3B;
+            --color-info: #2196F3;
+            --font-main: sans-serif;
+            --font-header: 'Acme', sans-serif;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            background-color: transparent;
+            font-family: var(--font-main);
+            color: var(--color-text);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+        }
+
+        /* Animationen - Dezent & Einfarbig */
+        @keyframes fire-pulse {
+            0% { box-shadow: 0 0 5px rgba(255, 51, 0, 0.3); border-color: rgba(255, 51, 0, 0.6); }
+            50% { box-shadow: 0 0 15px rgba(255, 51, 0, 0.6); border-color: rgba(255, 51, 0, 1); }
+            100% { box-shadow: 0 0 5px rgba(255, 51, 0, 0.3); border-color: rgba(255, 51, 0, 0.6); }
+        }
+
+        /* Container */
+        .app-container {
+            background-color: var(--color-dark);
+            border-radius: 8px;
+            border: 2px solid var(--color-fire); /* Statisches Rot als Basis */
+            animation: fire-pulse 4s infinite ease-in-out; /* Nur der Glow pulsiert */
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Header - Schwarz & Schlicht */
+        .header {
+            background-color: #000000;
+            padding: 15px;
+            text-align: center;
+            flex-shrink: 0;
+            border-bottom: 2px solid #222;
+        }
+
+        .title {
+            font-family: var(--font-header);
+            font-size: 2.2rem;
+            text-transform: uppercase;
+            margin: 0 0 5px 0;
+            letter-spacing: 2px;
+            color: var(--color-fire); /* Einfarbig Feuerrot */
+            text-shadow: 0 0 10px rgba(255, 51, 0, 0.4);
+            line-height: 1.2;
+        }
+
+        .subtitle {
+            color: #aaa;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+            font-style: italic;
+        }
+
+        /* Search & Filter Bar */
+        .controls-area {
+            background-color: rgba(25, 25, 25, 0.95);
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            border-bottom: 1px solid #333;
+            flex-shrink: 0;
+        }
+
+        .search-wrapper {
+            position: relative;
+            max-width: 600px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px 15px 10px 40px;
+            border-radius: 20px;
+            border: 1px solid #444;
+            background-color: rgba(10, 10, 10, 0.5);
+            color: #fff;
+            font-family: var(--font-main);
+            font-size: 0.95rem;
+            outline: none;
+            transition: border 0.3s, box-shadow 0.3s;
+        }
+        .search-input:focus { 
+            border-color: var(--color-fire); 
+            box-shadow: 0 0 5px rgba(255, 51, 0, 0.3);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #888;
+            font-size: 1rem;
+        }
+
+        .filter-buttons {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .filter-btn {
+            background: #2a2a2a;
+            border: 1px solid #444;
+            color: #ccc;
+            padding: 6px 14px;
+            border-radius: 14px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: var(--font-header);
+            text-transform: uppercase;
+        }
+
+        .filter-btn:hover { background: #333; color: #fff; border-color: #666; }
+        .filter-btn.active {
+            background: var(--color-fire);
+            border-color: var(--color-fire);
+            color: #fff; /* Weißer Text auf rotem Grund */
+            box-shadow: 0 2px 8px rgba(255, 51, 0, 0.4);
+        }
+
+        /* Content Grid */
+        .content-area {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
+            align-content: start;
+        }
+        .content-area::-webkit-scrollbar { width: 8px; }
+        .content-area::-webkit-scrollbar-thumb { background-color: #444; border-radius: 4px; }
+
+        /* Feature Card - KOMPAKT & SCHLICHT */
+        .feature-card {
+            background-color: var(--color-card-bg);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 6px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+            position: relative;
+            min-height: 140px;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            border-color: var(--color-fire); /* Roter Rand beim Hover */
+        }
+
+        .card-body {
+            padding: 15px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            background: linear-gradient(180deg, rgba(40,40,40,0.5), rgba(25,25,25,0.8));
+        }
+
+        .card-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+
+        .card-tag {
+            background: #222;
+            color: #999;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            border: 1px solid #444;
+            white-space: nowrap;
+        }
+
+        /* Titel jetzt auch Weiß/Hell für bessere Lesbarkeit */
+        .card-title {
+            font-family: var(--font-header);
+            font-size: 1.25rem;
+            color: #fff; 
+            margin: 0 0 8px 0;
+            line-height: 1.3;
+        }
+
+        .card-preview {
+            font-size: 0.9rem;
+            color: #bbb;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+
+        .read-more {
+            margin-top: auto; 
+            padding-top: 10px; 
+            font-size: 0.85rem; 
+            color: var(--color-fire); 
+            text-align: right;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 5px;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.95);
+            z-index: 2000;
+            backdrop-filter: blur(5px);
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .modal.active { display: flex; opacity: 1; }
+
+        .modal-content {
+            background-color: #181818;
+            border: 1px solid #333;
+            border-radius: 8px;
+            width: 95%;
+            max-width: 900px;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 0 50px rgba(0,0,0,0.9);
+            transform: scale(0.95);
+            transition: transform 0.3s;
+        }
+        .modal.active .modal-content { transform: scale(1); }
+
+        .modal-header {
+            padding: 15px 20px;
+            background: #222;
+            border-bottom: 1px solid #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-family: var(--font-header);
+            font-size: 1.6rem;
+            color: var(--color-fire);
+            margin: 0;
+        }
+
+        .close-btn {
+            cursor: pointer;
+            font-size: 1.8rem;
+            color: #888;
+            transition: color 0.2s;
+        }
+        .close-btn:hover { color: #fff; }
+
+        .modal-body {
+            padding: 25px;
+            overflow-y: auto;
+            color: #ddd;
+            line-height: 1.7;
+            font-size: 1rem;
+        }
+
+        .modal-img {
+            max-width: 100%;
+            height: auto;
+            max-height: 400px;
+            object-fit: contain;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.6);
+            background: #000;
+        }
+
+        .modal-text h4 { color: var(--color-fire); margin-top: 20px; margin-bottom: 8px; font-size: 1.2rem; border-bottom: 1px solid #333; padding-bottom: 5px; }
+        .modal-text ul { padding-left: 20px; margin-bottom: 15px; }
+        .modal-text li { margin-bottom: 5px; }
+        .modal-text code { background: #333; padding: 3px 6px; border-radius: 4px; font-family: monospace; color: #ffcc00; border: 1px solid #444; }
+        .modal-text a { color: var(--color-success); text-decoration: none; border-bottom: 1px dashed var(--color-success); }
+        .modal-text a:hover { color: #fff; border-bottom-style: solid; }
+
+        .hidden { display: none; }
+
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <div class="header">
+            <h1 class="title">Infinity of Phoenix</h1>
+            <div class="subtitle">Features, Custom Content & Highlights</div>
+        </div>
+
+        <div class="controls-area">
+            <div class="search-wrapper">
+                <i class="fa-solid fa-search search-icon"></i>
+                <input type="text" id="searchInput" class="search-input" placeholder="Suche nach Feature (z.B. Shop, Decay, Mating)...">
+            </div>
+            
+            <div class="filter-buttons" id="filterContainer">
+                <button class="filter-btn active" data-cat="all">Alle</button>
+                <button class="filter-btn" data-cat="general">Allgemein</button>
+                <button class="filter-btn" data-cat="creature">Kreaturen</button>
+                <button class="filter-btn" data-cat="structure">Strukturen</button>
+                <button class="filter-btn" data-cat="shop">Shop & Items</button>
+                <button class="filter-btn" data-cat="gameplay">Gameplay</button>
+            </div>
+        </div>
+
+        <div class="content-area" id="featuresGrid">
+            <!-- JS will populate this -->
+        </div>
+
+        <!-- Modal -->
+        <div id="featureModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title" id="mTitle">Feature Title</h2>
+                    <i class="fa-solid fa-times close-btn" onclick="closeModal()"></i>
+                </div>
+                <div class="modal-body">
+                    <img id="mImg" class="modal-img" src="" alt="">
+                    <div id="mText" class="modal-text"></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // --- DATA ---
+        const features = [
+            // --- ALLGEMEIN ---
+            {
+                title: "Professionelles Team",
+                cat: "general",
+                img: "https://infinityofphoenix-asa.com/images/logo.png",
+                desc: "Erfahrene Admins, Developer & Modder.",
+                content: "Unser Team ist professionell strukturiert und umfasst hauseigene Developer, Modder und Map-Creator, die für einzigartigen Content sorgen."
+            },
+            {
+                title: "High-Performance Server",
+                cat: "general",
+                img: "https://i.postimg.cc/ZqcqvQnK/5db9f40884238add80ae2f50.png", // Tech/Server look
+                desc: "Root Server & Sicherheit.",
+                content: "Wir nutzen die besten Hochleistungs-Root Server für maximale Performance (150+ Spieler).<br><strong>Sicherheit:</strong><br>- Automatische Serverrestarts bei Crash/Problemen.<br>- Charakter- & Item-Verlust-Sicherungen.<br>- Rollback-Schutz."
+            },
+            {
+                title: "Komplett neues Server-Konzept",
+                cat: "general",
+                img: "https://infinityofphoenix-asa.com/images/logo.png",
+                desc: "Vanilla-nahe mit Progression.",
+                content: "Spiele nahe am Vanilla Stil, mit progressivem Zugang zu zusätzlichen Mod-Inhalten wie einem eigenen Masterbreeding System und einzigartigen Kreaturen."
+            },
+            {
+                title: "Cluster Scoreboards",
+                cat: "general",
+                img: "https://infinityofphoenix-asa.com/images/logo.png",
+                desc: "Wer ist der Beste?",
+                content: "Vergleiche dich mit anderen Spielern auf unseren Cluster-weiten Bestenlisten."
+            },
+            {
+                title: "Tribe-Log im Discord",
+                cat: "general",
+                img: "https://i.postimg.cc/NjnKdmD1/Bild-2024-05-17-214812864.png",
+                desc: "Logs auf dein Handy.",
+                content: "Lass dir dein Ingame-Log in einen Discord-Channel senden. Egal ob auf unserem Discord oder deinem privaten!<br>Befehl: <code>/tribelog [Webhook-URL]</code>."
+            },
+            {
+                title: "2Wege-CrossChat",
+                cat: "general",
+                img: "https://i.postimg.cc/qqcmLkd3/Bild-2024-05-17-214937689.png",
+                desc: "Chatte Cluster-weit und mit Discord.",
+                content: "Ihr könnt über alle Karten miteinander schreiben und sogar über den Discord-Kanal mit Leuten Ingame kommunizieren."
+            },
+            {
+                title: "Livestatus",
+                cat: "general",
+                img: "https://i.postimg.cc/nrYgMVsz/Vn-timoradulla331-6-chibi-sticker4.png",
+                desc: "Wer ist online?",
+                content: "Checke im Discord Channel 🟢│𝐋𝐢𝐯𝐞𝐬𝐭𝐚𝐭𝐮𝐬, wer wo spielt und ob die Server online sind."
+            },
+            {
+                title: "Multi-Charakter-Block",
+                cat: "general",
+                img: "https://i.postimg.cc/LXHNPHmp/Bild-2024-05-21-225911743.png",
+                desc: "1 Char pro Cluster.",
+                content: "Es ist nur ein Charakter erlaubt (Ausnahme: ClubArk). Solltest du vergessen haben wo du warst, wirst du beim Login informiert."
+            },
+            {
+                title: "Charakter-Namensänderung",
+                cat: "general",
+                img: "https://i.postimg.cc/KzcDYm8Q/3t-NBcp-HWd-HZEn-H3-RDHuiioth-Pt8-E1f6-QE9-Fqlqc-A.webp",
+                desc: "Alle 3 Monate verfügbar.",
+                content: "Du kannst dir im Shop alle 3 Monate eine Namensänderung kaufen und diese via Token im Spiel durchführen."
+            },
+            {
+                title: "IOP Cluster Explorer",
+                cat: "general",
+                img: "https://infinityofphoenix-asa.com/images/logo.png",
+                desc: "Ingame Wiki.",
+                content: "Eine eigene Wiki, nur auf das Cluster zugeschnitten und mit extra Inhalten befüllt."
+            },
+            {
+                title: "Discord-Booster-Belohnung",
+                cat: "general",
+                img: "https://i.postimg.cc/X7cj3Wtp/56-IA1-C4-Ijwugg0-T0-HMUGGZS0c-B4i8z-W8-Ga-Hi0-Hpq.webp",
+                desc: "Stat-Bonus und Icon für Booster.",
+                content: "Jeder Booster erhält eine Rolle und eine lila Flamme im Chat.<br><strong>Bonus:</strong><br>+10% Resistenz<br>+20% Gewicht<br>+20% Wasser & Nahrung.<br>(Stackbar mit anderen Boosts)."
+            },
+            {
+                title: "Unstuck-Teleportationen",
+                cat: "general",
+                img: "https://i.postimg.cc/0NnHnW6W/s-I0vg-QRCi-Wk-Sd-LMk-Mpbk-Owg5-Io-CE4fu-RJBha7-Poz.webp",
+                desc: "1x Täglich zum Obelisken.",
+                content: "Du kannst dich 1x pro Tag im Shop zu einem Obelisken (oder Public Spot auf Aberration) teleportieren lassen (3 Min Delay)."
+            },
+            {
+                title: "Suicide",
+                cat: "general",
+                img: "https://i.postimg.cc/ZqcqvQnK/5db9f40884238add80ae2f50.png",
+                desc: "Wenn man feststeckt.",
+                content: "Befehl: <code>/suicide</code> (Wie gewohnt, um sich selbst zu töten)."
+            },
+            {
+                title: "Weitere Spieleserver",
+                cat: "general",
+                img: "https://i.postimg.cc/LXHNPHmp/Bild-2024-05-21-225911743.png",
+                desc: "Abwechslung im Cluster.",
+                content: "Wir bieten mehr als nur Ark: Primal Ark, Mod-Rotationskarte (Season), PVP/PVE, Minecraft, Palworld und mehr!"
+            },
+
+            // --- GAMEPLAY ---
+            {
+                title: "Progressive Spieler Systeme",
+                cat: "gameplay",
+                img: "https://i.postimg.cc/NGHZqxZM/Bc-GYR9-Ha6-Evsf3iu-HBZUT7zs-Lu7-Zp-AFf-Kt-E4-K0-QP.webp",
+                desc: "Quests, Bosse & Decay.",
+                content: "Erlebe Quest-Systeme, World Bosse und erweiterbare Strukturenlimits durch Gameplay."
+            },
+            {
+                title: "IOP UI",
+                cat: "gameplay",
+                img: "https://i.postimg.cc/bJGRXfsV/Ui-Menu-IOP.webp",
+                desc: "Dein ultimativer Ingame-Helfer.",
+                content: "Unsere Ingame Spieler UI unterstützt dich in allem:<br>- Performance Commands (Wolken/Nebel)<br>- Wegweiser mit Auto-Marker zu Points of Interest<br>- Ingame Regelwerk<br>- Live-Server Raten Anzeige"
+            },
+            {
+                title: "Radialmenü Pack",
+                cat: "gameplay",
+                img: "https://i.postimg.cc/bJGRXfsV/Ui-Menu-IOP.webp",
+                desc: "Wichtige Tools auf Tastendruck.",
+                content: "Zugriff auf:<br>- Leichenfinder (Dead Body)<br>- Explorer Note Tracker<br>- Questbuch<br>- IOP UI<br>- <strong>Lost & Found Meldungen</strong>"
+            },
+            {
+                title: "Direkte Solo Farm Integration",
+                cat: "gameplay",
+                img: "https://i.postimg.cc/VLFZQqNt/Bild-2024-05-17-205400232.png",
+                desc: "Hilfe für Einzelspieler.",
+                content: "Spezielle Integrationen, damit auch Solo-Spieler effizient farmen können."
+            },
+            {
+                title: "Automatische Wochenendraten",
+                cat: "gameplay",
+                img: "https://i.postimg.cc/QMwMnbWD/7-RRVha-OOu8dt-Qfmbz-F4v-UWp-LOq-Od1h-UH9l-Yj7-Wq6.webp",
+                desc: "Jedes Wochenende x2.",
+                content: "Automatisch erhöhte Raten am Wochenende für mehr Fortschritt."
+            },
+            {
+                title: "Anti PVE Griefing",
+                cat: "gameplay",
+                img: "https://i.postimg.cc/T349tPP5/220-F-634532179-1-Hd-Qpxn-FYAqae9-Rh-OFpq-TICat39-JCz-Po.jpg",
+                desc: "Schutz vor Trollen.",
+                content: "Du wirst nicht bestohlen, getrollt oder genervt.<br>Fremde können:<br>- Keine Dinos zum Breeden dazu stellen.<br>- Keine Items klauen.<br>- Keine Körper ziehen.<br>Innerhalb der Allianz funktioniert alles wie gewohnt."
+            },
+            {
+                title: "WildDino-Kills",
+                cat: "gameplay",
+                img: "https://i.postimg.cc/0NXLN78S/pngimg-com-death-PNG66.png",
+                desc: "Regelmäßige Respawns.",
+                content: "- Custom Kill (behält 130+ Dinos): Täglich 01:00 Uhr.<br>- Total Kill: Alle 3 Tage 01:00 Uhr."
+            },
+            {
+                title: "Geistheiler",
+                cat: "gameplay",
+                img: "https://i.postimg.cc/0NXLN78S/pngimg-com-death-PNG66.png",
+                desc: "Hole dein Gear zurück.",
+                content: "Du bist gestorben und hast dein bestes Gear verloren? Wenn du genügend Tokens gesammelt hast, kannst du es dir wiederbringen lassen!"
+            },
+            {
+                title: "IOP Arenas",
+                cat: "gameplay",
+                img: "https://infinityofphoenix-asa.com/images/logo.png",
+                desc: "Endgame Kämpfe (Coming Soon).",
+                content: "Kämpfe dich Arena für Arena im Endgame frei."
+            },
+            {
+                title: "IOP Cluster Games",
+                cat: "gameplay",
+                img: "https://i.postimg.cc/Z5rjrY4F/Bild-2024-05-17-214332739.png",
+                desc: "Stündliche Challenges.",
+                content: "Erledige stündlich laufende Cluster-Challenges für tolle Belohnungen!"
+            },
+            {
+                title: "Sonntags Perks",
+                cat: "gameplay",
+                img: "https://i.postimg.cc/QMwMnbWD/7-RRVha-OOu8dt-Qfmbz-F4v-UWp-LOq-Od1h-UH9l-Yj7-Wq6.webp",
+                desc: "Boni am Sonntag.",
+                content: "Spezielle Perks für Spieler jeden Sonntag."
+            },
+            {
+                title: "Drop & Vain Info",
+                cat: "gameplay",
+                img: "https://i.postimg.cc/C5bHtXWv/Bild-2025-02-01-173833957.png",
+                desc: "Extinction & Astraeos Live.",
+                content: "Prüfe im Discord, welche Drops und Elementadern auf Extinction und Astraeos aktiv sind."
+            },
+            {
+                title: "Custom-Transfer-System",
+                cat: "gameplay",
+                img: "https://i.postimg.cc/jd0zvQDy/Bild-2024-05-17-213356289.png",
+                desc: "Sicheres Reisen.",
+                content: "Überarbeitetes System ohne Item-Verlust. Rüstung wird auto-unequipped. Element und Tribute sind transferierbar."
+            },
+            {
+                title: "Schwarzmarkt Eventkarte",
+                cat: "gameplay",
+                img: "https://i.postimg.cc/hjbVWvWp/image.png",
+                desc: "Hauseigene Map im Ultimate Stil.",
+                content: "Besuche unsere eigens gestaltete Event-Karte. <a href='https://infinityofphoenix-asa.com/page/110561-IoP_Schwarzmarkt_Karte' target='_blank'>Mehr Infos auf der Webseite</a>."
+            },
+            {
+                title: "Engrams Reloaded",
+                cat: "gameplay",
+                img: "https://i.postimg.cc/6pf8hQYt/Bild-2024-05-17-205621204.png",
+                desc: "Alles automatisch lernen.",
+                content: "Mit <code>/giveengrams</code> lernst du alle verfügbaren Engramme deines Levels (außer Tek). Reskill via Mindwipe."
+            },
+            {
+                title: "Biberdämme Reloaded",
+                cat: "gameplay",
+                img: "https://i.postimg.cc/VLFZQqNt/Bild-2024-05-17-205400232.png",
+                desc: "Keine vollen Holzdämme mehr.",
+                content: "Wenn nur Holz im Damm bleibt, wird er automatisch zerstört. Das Holz wird als Itembeutel fallen gelassen."
+            },
+            {
+                title: "Custom Content",
+                cat: "gameplay",
+                img: "https://infinityofphoenix-asa.com/images/logo.png",
+                desc: "Items & Bosse.",
+                content: "Eigener balanced Propagator, eigenes Spyglass, Tribe-Cave Tower, World Bosse und mehr!"
+            },
+
+            // --- KREATUREN ---
+            {
+                title: "Globaler Mating Timer",
+                cat: "creature",
+                img: "https://i.postimg.cc/7YT0qNPh/adorable-dinosaur-couple-love-two-cute-baby-dinosaurs-one-green-blue-nuzzle-affectionately-symbolizi.png",
+                desc: "Kein hoch/runterladen nötig!",
+                content: "Serverübergreifend: Mo-Do 12h, Wochenende 6h. Mit Breeding-Boost auch unter der Woche 6h."
+            },
+            {
+                title: "Paleo TLC System",
+                cat: "creature",
+                img: "https://i.postimg.cc/7YT0qNPh/adorable-dinosaur-couple-love-two-cute-baby-dinosaurs-one-green-blue-nuzzle-affectionately-symbolizi.png",
+                desc: "Vielfältige Dino-Varianten.",
+                content: "Spiele mit Paleo-Varianten, Vanilla-Varianten sowie den beliebten S-Kreaturen & Shinys!"
+            },
+            {
+                title: "Legendarys & Rares",
+                cat: "creature",
+                img: "https://i.postimg.cc/V6mRQ2WZ/GIx7-Qke97um1b-Cv-Nq-ESylaz0gdsd-HDb-Bb-Wd5-Fs0i.webp",
+                desc: "Max Level Tames & Alphas.",
+                content: "Suche und zähme random spawnende Level 150 Max Tames oder kämpfe gegen Level 190 Alpha XP Bomben!"
+            },
+            {
+                title: "Mjölnirs Segen",
+                cat: "creature",
+                img: "https://i.postimg.cc/HkM4JTSP/output-onlinepngtools.png",
+                desc: "Heile deine Kreaturen sofort.",
+                content: "Bitte Thor um Hilfe in der 'Hall of Thunder' (Spielermarkt/Schwarzmarkt). Heilt Dinos in 1.5 Minuten auf 100%."
+            },
+            {
+                title: "Kreaturenbeschwörungen",
+                cat: "creature",
+                img: "https://i.postimg.cc/V6mRQ2WZ/GIx7-Qke97um1b-Cv-Nq-ESylaz0gdsd-HDb-Bb-Wd5-Fs0i.webp",
+                desc: "Beschwöre Bosse selbst.",
+                content: "Im Shop kannst du Alpha Wyvern, Oasis und mehr gegen Tokens spawnen lassen."
+            },
+            {
+                title: "Schultertierretter",
+                cat: "creature",
+                img: "https://i.postimg.cc/Hk2XYrTK/Bild-2024-05-17-214138093.png",
+                desc: "Auto-Pack beim Reisen.",
+                content: "Dein Schultertier wird beim Transfer automatisch in eine Kryokapsel gepackt. (Kryo wird beim Auswerfen verbraucht)."
+            },
+            {
+                title: "Gedroppte Wyverneier",
+                cat: "creature",
+                img: "https://i.postimg.cc/c1bZbNVn/Wyvern-Egg-Lightning-29.png",
+                desc: "Aufräum-Mechanik.",
+                content: "Eier am Boden ohne Klima/Feuer in der Nähe despawnen nach 5 Minuten."
+            },
+            {
+                title: "Breeding/Taming Setter",
+                cat: "creature",
+                img: "https://i.postimg.cc/XvXGBzfj/Bild-2024-05-17-152828974.png",
+                desc: "Komfort-Funktionen.",
+                content: "Auto-Unfollow, kein 'Spieler ansehen' und kein Namensfenster-Pop-up."
+            },
+            {
+                title: "Keine Karkinos Babys",
+                cat: "creature",
+                img: "https://i.postimg.cc/gjQFGSmc/karkinos.png",
+                desc: "Nur Wild-Tame auf Aberration.",
+                content: "Karkinos und Basilisk können auf Aberration nicht gezüchtet werden."
+            },
+
+            // --- STRUKTUREN ---
+            {
+                title: "Marktlizenz",
+                cat: "structure",
+                img: "https://i.postimg.cc/1trv8yzZ/gy-H8-Rd-QZJw-AL5-R33-IYOkx-Xriuq1-ENIbvs-Wlze-DA2.webp",
+                desc: "Dein eigenes Haus.",
+                content: "Miete ein Haus im Community Center. Max 1 pro Stamm. Anmeldung im Discord erforderlich."
+            },
+            {
+                title: "Decay System",
+                cat: "structure",
+                img: "https://i.postimg.cc/3Rn14y8d/Bild-2024-05-17-212541692.png",
+                desc: "Clusterweiter Sync.",
+                content: "14 Tage (Unverifiziert), 30 Tage (Verifiziert). Timer synchronisieren sich clusterweit!"
+            },
+            {
+                title: "Strukturenlimits",
+                cat: "structure",
+                img: "https://i.postimg.cc/HLRG6pCK/Unbenannt.png",
+                desc: "Überprüfe deine Limits.",
+                content: "Befehle:<br><code>/strukturenlimits</code><br><code>/strukturenmenge</code>"
+            },
+            {
+                title: "Auto-Unlocked Structures",
+                cat: "structure",
+                img: "https://i.postimg.cc/02rMybdb/Oil-Pump.png",
+                desc: "Öffentliche Ressourcen.",
+                content: "1 Ölpumpe/Gassammler pro Tribe, unverschließbar für alle."
+            },
+            {
+                title: "Offline Schutz",
+                cat: "structure",
+                img: "https://i.postimg.cc/3Rn14y8d/Bild-2024-05-17-212541692.png",
+                desc: "Sicher nach 5 Minuten.",
+                content: "Deine Basis ist 5 Minuten nach dem Ausloggen geschützt."
+            },
+            {
+                title: "IOP Livemaps",
+                cat: "structure",
+                img: "https://infinityofphoenix-asa.com/images/logo.png",
+                desc: "Finde Bauplätze.",
+                content: "Web-Karte um freie Spots zu finden oder Spieler zu orten. <a href='https://discord.com/channels/811710111725912085/1330642139650195548'>Discord Link</a>"
+            },
+
+            // --- SHOP & ITEMS ---
+            {
+                title: "Websiteshop & Tokens",
+                cat: "shop",
+                img: "https://i.postimg.cc/fL0P284P/Bild-2024-05-30-165653153.png",
+                desc: "Verdiene Tokens durch Spielzeit.",
+                content: "Tokens für Spielzeit (alle 30min), Level-Ups, Voten etc. Kaufe Items, Skins und Boosts."
+            },
+            {
+                title: "Serverwährung",
+                cat: "shop",
+                img: "https://i.postimg.cc/Z5rjrY4F/Bild-2024-05-17-214332739.png",
+                desc: "Tokens, Gold & Edelsteine.",
+                content: "<strong>Tokens:</strong> Shop.<br><strong>Gold:</strong> Casino/Tribute.<br><strong>Edelsteine:</strong> Quests & Bosse."
+            },
+            {
+                title: "Ingame Casino",
+                cat: "shop",
+                img: "https://i.postimg.cc/Z5rjrY4F/Bild-2024-05-17-214332739.png",
+                desc: "Versuche dein Glück.",
+                content: "Setze Gold und gewinne Preise in unserem eigenen Ingame Casino."
+            },
+            {
+                title: "Unzerstörbare Leuchtpistole",
+                cat: "shop",
+                img: "https://i.postimg.cc/NGxwstWV/Bild-2024-05-17-214538394.png",
+                desc: "Ideal um sich zu finden.",
+                content: "Die FlareGun geht nicht kaputt und verursacht keinen Schaden (gegen Abuse)."
+            },
+            {
+                title: "Tek-Fernglas",
+                cat: "shop",
+                img: "https://i.postimg.cc/L5qw4rYb/Bild-2024-05-17-204603846.png",
+                desc: "Ab Level 1 nutzbar.",
+                content: "Freigeschaltet ab Lvl 1. Herstellbar im Replikator oder kaufbar im Shop."
+            },
+            {
+                title: "Wyvernmilch & Gift",
+                cat: "shop",
+                img: "https://i.postimg.cc/FRqdJLzH/Bild-2024-05-17-205114510.png",
+                desc: "Längere Haltbarkeit.",
+                content: "Milch wird benötigt, hält aber länger (bis zu 46 Tage im QoL+ Kühlschrank)."
+            },
+            {
+                title: "Zaubertränke",
+                cat: "shop",
+                img: "https://i.postimg.cc/KjjzjHTd/Ye9pm-Zryehqhg6k-VXv-Of-ACm-Y1-BRb2-Q1-Gn-HRzt0-U7.webp",
+                desc: "Magische Hilfsmittel.",
+                content: "Crafting-Skill Potion, Potions, Server Boosts und mehr."
+            },
+            {
+                title: "Kartenereignisse",
+                cat: "shop",
+                img: "https://i.postimg.cc/QMwMnbWD/7-RRVha-OOu8dt-Qfmbz-F4v-UWp-LOq-Od1h-UH9l-Yj7-Wq6.webp",
+                desc: "Trigger Wetter selbst.",
+                content: "Löse Hitzewellen oder Regen gegen Tokens aus."
+            },
+            {
+                title: "Kreatureneinfärbungen",
+                cat: "shop",
+                img: "https://i.postimg.cc/jqvpxjZw/u-Ebu-YYjsk7wq8-Ax-V3cd-A0b-IFv-Aa5-BMUAv-SYf-Sm-YK.webp",
+                desc: "Färbe deine Dinos.",
+                content: "Kaufe Färbungen, die auch vererbt werden!"
+            },
+            {
+                title: "Serverboosts",
+                cat: "shop",
+                img: "https://i.postimg.cc/NGHZqxZM/Bc-GYR9-Ha6-Evsf3iu-HBZUT7zs-Lu7-Zp-AFf-Kt-E4-K0-QP.webp",
+                desc: "Booste Raten (Mo-Do).",
+                content: "Kaufe Boosts (1h-12h), um Raten unter der Woche zu erhöhen."
+            },
+            {
+                title: "Community Center Extended",
+                cat: "general",
+                img: "https://i.postimg.cc/1trv8yzZ/gy-H8-Rd-QZJw-AL5-R33-IYOkx-Xriuq1-ENIbvs-Wlze-DA2.webp",
+                desc: "Events & Marktplatz.",
+                content: "Von Eastereggs über Events bis hin zum kompletten Marktsystem mit mietbaren Häusern."
+            }
+        ];
+
+        // --- RENDER LOGIC ---
+        const grid = document.getElementById('featuresGrid');
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const searchInput = document.getElementById('searchInput');
+        const modal = document.getElementById('featureModal');
+
+        function render(filterCat = 'all', searchText = '') {
+            grid.innerHTML = '';
+            
+            const filtered = features.filter(f => {
+                const matchCat = filterCat === 'all' || f.cat === filterCat;
+                const matchSearch = f.title.toLowerCase().includes(searchText) || f.desc.toLowerCase().includes(searchText) || f.content.toLowerCase().includes(searchText);
+                return matchCat && matchSearch;
+            });
+
+            if(filtered.length === 0) {
+                grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; color:#888; margin-top:50px;">Keine Features gefunden.</div>';
+                return;
+            }
+
+            filtered.forEach(f => {
+                const card = document.createElement('div');
+                card.className = 'feature-card';
+                card.onclick = () => openModal(f);
+
+                // Determine tag text
+                let tagText = "";
+                if(f.cat === 'general') tagText = "Allgemein";
+                if(f.cat === 'creature') tagText = "Kreatur";
+                if(f.cat === 'structure') tagText = "Bau";
+                if(f.cat === 'shop') tagText = "Shop";
+                if(f.cat === 'gameplay') tagText = "Gameplay";
+
+                // NO IMAGE IN CARD PREVIEW - TITLE & DESCRIPTION ONLY
+                card.innerHTML = `
+                    <div class="card-body">
+                        <div class="card-header-row">
+                            <span class="card-tag">${tagText}</span>
+                        </div>
+                        <div class="card-title">${f.title}</div>
+                        <div class="card-preview">${f.desc}</div>
+                        <div class="read-more">Mehr Infos <i class="fa-solid fa-arrow-right"></i></div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // --- FILTER ---
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                filterBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                render(btn.dataset.cat, searchInput.value.toLowerCase());
+            });
+        });
+
+        // --- SEARCH ---
+        searchInput.addEventListener('input', (e) => {
+            const activeCat = document.querySelector('.filter-btn.active').dataset.cat;
+            render(activeCat, e.target.value.toLowerCase());
+        });
+
+        // --- MODAL ---
+        function openModal(feature) {
+            document.getElementById('mTitle').innerText = feature.title;
+            document.getElementById('mImg').src = feature.img;
+            document.getElementById('mText').innerHTML = `<h4>${feature.desc}</h4><p>${feature.content}</p>`;
+            modal.classList.add('active');
+        }
+
+        function closeModal() {
+            modal.classList.remove('active');
+        }
+
+        modal.addEventListener('click', (e) => {
+            if(e.target === modal) closeModal();
+        });
+
+        // Init
+        render();
+
+    </script>
+</body>
+</html>
