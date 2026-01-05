@@ -84,12 +84,10 @@
             align-items: center;
             gap: 10px;
             position: relative;
-            /* Überschreibe box-shadow und color von der Animation für den Header-Container */
             box-shadow: none !important; 
             color: var(--color-text) !important;
         }
         
-        /* Overlay für Lesbarkeit auf dem Banner */
         .header::before {
             content: '';
             position: absolute;
@@ -113,16 +111,14 @@
             text-transform: uppercase;
             margin: 0;
             letter-spacing: 2px;
-            
-            /* Rainbow Text Effect */
             background: var(--rainbow-gradient);
             background-size: 200% auto;
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
             animation: rainbow-text-move 4s linear infinite;
-            text-shadow: none; /* Text-Shadow stört bei Gradient-Text */
-            filter: drop-shadow(0 0 5px rgba(255,255,255,0.3)); /* Alternativer Schatten */
+            text-shadow: none; 
+            filter: drop-shadow(0 0 5px rgba(255,255,255,0.3));
         }
 
         .subtitle {
@@ -153,7 +149,6 @@
 
         .search-input:focus {
             outline: none;
-            /* Rainbow Focus */
             animation: shiny-pulse 4s linear infinite;
         }
 
@@ -191,17 +186,14 @@
         .nav-tab:hover { color: #fff; background-color: rgba(255,255,255,0.05); }
         .nav-tab.active {
             background-color: rgba(255,255,255,0.05);
-            /* Rainbow Border Bottom */
             border-bottom-width: 3px;
             border-bottom-style: solid;
             animation: shiny-pulse 4s linear infinite;
-            /* Text auch Rainbow */
             background: var(--rainbow-gradient);
             background-size: 200% auto;
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
-            /* Box-Shadow entfernen, da wir nur Text und Border wollen */
             box-shadow: none !important; 
         }
 
@@ -211,7 +203,6 @@
             overflow-y: auto;
             padding: 20px;
             scrollbar-width: thin;
-            /* Scrollbar Farbe schwer zu animieren, nehmen wir einen neutralen Ton oder lila */
             scrollbar-color: #9C27B0 transparent;
         }
         .content-area::-webkit-scrollbar { width: 8px; }
@@ -235,8 +226,6 @@
             font-family: var(--font-header); 
             border-bottom: 1px solid rgba(255,255,255,0.1); 
             padding-bottom: 10px; 
-            
-            /* Rainbow Title */
             background: var(--rainbow-gradient);
             background-size: 200% auto;
             -webkit-background-clip: text;
@@ -248,21 +237,21 @@
         .info-box li { margin-bottom: 8px; line-height: 1.5; }
         .info-box p { color: #ccc; line-height: 1.5; }
 
-        /* FAQ Styling */
-        .faq-item {
-            background-color: var(--color-light-dark);
-            margin-bottom: 10px;
+        /* Sheet Link Button */
+        .sheet-link-btn {
+            display: inline-block;
+            background: #2a6f3f;
+            color: #fff;
+            padding: 12px 20px;
             border-radius: 6px;
-            border-left: 4px solid #fff; /* Neutraler Start */
-            padding: 15px;
-            /* Leichter Rainbow Hover auf Border */
-            transition: border-color 0.3s;
+            text-decoration: none;
+            font-weight: bold;
+            font-family: var(--font-header);
+            margin-top: 15px;
+            transition: all 0.2s;
+            border: 1px solid rgba(255,255,255,0.2);
         }
-        .faq-item:hover {
-            border-left-color: #FFEB3B; /* Gold beim Hover oder Rainbow via JS schwerer, lassen wir Gold */
-        }
-        .faq-question { font-weight: bold; color: #fff; margin-bottom: 5px; display: block; }
-        .faq-answer { color: #ccc; font-size: 0.95rem; line-height: 1.4; }
+        .sheet-link-btn:hover { background: #338a4e; transform: translateY(-2px); }
 
         /* Shiny Grid */
         .shiny-grid {
@@ -286,7 +275,6 @@
 
         .shiny-card:hover {
             transform: translateY(-5px);
-            /* Rainbow Border & Glow beim Hover */
             animation: shiny-pulse 2s linear infinite;
         }
 
@@ -297,9 +285,8 @@
             border-bottom: 2px solid rgba(255,255,255,0.1);
             background-color: #111;
         }
-        /* Wenn Card gehovert wird, soll auch der Border unter dem Bild leuchten */
         .shiny-card:hover .card-img {
-            border-bottom-color: transparent; /* Die Card Animation übernimmt */
+            border-bottom-color: transparent;
         }
 
         .card-content {
@@ -310,13 +297,12 @@
         .card-title {
             font-family: var(--font-header);
             font-size: 1.5rem;
-            color: #fff; /* Standard Weiß */
+            color: #fff;
             margin: 0 0 5px 0;
             transition: color 0.3s;
         }
         
         .shiny-card:hover .card-title {
-            /* Rainbow Text beim Hover */
             background: var(--rainbow-gradient);
             background-size: 200% auto;
             -webkit-background-clip: text;
@@ -390,8 +376,6 @@
             position: relative;
             transform: scale(0.95);
             transition: transform 0.3s;
-            
-            /* Rainbow Border Animation */
             animation: shiny-pulse 6s linear infinite;
         }
 
@@ -418,7 +402,6 @@
             align-items: center;
             justify-content: center;
             border-right: 2px solid transparent;
-            /* Nutzt Parent Border Color durch Animation nicht direkt, daher statisch oder leicht transparent */
             border-right-color: rgba(255,255,255,0.1); 
             overflow: hidden;
         }
@@ -443,8 +426,6 @@
             margin: 0 0 20px 0;
             border-bottom: 1px solid rgba(255,255,255,0.1);
             padding-bottom: 10px;
-            
-            /* Rainbow Text */
             background: var(--rainbow-gradient);
             background-size: 200% auto;
             -webkit-background-clip: text;
@@ -502,6 +483,7 @@
         <div class="nav-tabs">
             <div class="nav-tab active" onclick="showSection('faq')"><i class="fa-solid fa-circle-question"></i> Info & FAQ</div>
             <div class="nav-tab" onclick="showSection('variants')"><i class="fa-solid fa-dna"></i> Shiny Arten</div>
+            <div class="nav-tab" onclick="showSection('combos')"><i class="fa-solid fa-layer-group"></i> Kombinationen</div>
             <div class="nav-tab" onclick="showSection('tinies')"><i class="fa-solid fa-paw"></i> Tinies & Stats</div>
         </div>
 
@@ -509,7 +491,6 @@
 
             <!-- 1. INFO & FAQ -->
             <div id="faq" class="section active">
-                
                 <div class="info-box">
                     <h3><i class="fa-solid fa-star"></i> Was sind Shinys?</h3>
                     <p>
@@ -518,7 +499,6 @@
                         Es können immer nur <strong>2 Shinys gleichzeitig</strong> auf einer Map sein.
                     </p>
                 </div>
-
                 <div class="info-box">
                     <h3><i class="fa-solid fa-flask"></i> Shiny Essenz & Items</h3>
                     <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: center;">
@@ -526,16 +506,14 @@
                             <p>
                                 <strong>Rohe Essenz:</strong> Erhältlich durch das Töten von <em>Enraged Shinys</em>. Wird benötigt, um den <em>Shiny Prod</em> (Speer) zu craften.<br><br>
                                 <strong>Essenz Extrahieren:</strong> Mit dem Shiny Prod können Fähigkeiten von <em>wilden</em> Shinys extrahiert werden. Diese Essenz kann dann auf eigene Dinos <strong>derselben Art</strong> angewendet werden (z.B. Raptor-Essenz auf Raptor).<br>
-                                <em>Hinweis: Bis zu zwei Essenzen können gestapelt werden (1x Visuell + 1x Fähigkeit).</em>
+                                <em>Hinweis: Bis zu zwei Essenzen können gestapelt werden. Weitere Details zu erlaubten Kombinationen findest du im Reiter "Kombinationen".</em>
                             </p>
                         </div>
                         <div style="text-align: center; flex-basis: 300px;">
-                            <!-- Bild vergrößert -->
                             <img src="https://i.postimg.cc/T3rXpxtM/Bild-2024-05-23-022659420.png" alt="Shiny Essenz" style="width: 100%; max-width: 400px; border-radius: 8px; box-shadow: 0 0 15px rgba(156, 39, 176, 0.6);">
                         </div>
                     </div>
                 </div>
-
                 <div class="info-box">
                     <h3><i class="fa-solid fa-circle-exclamation"></i> Wichtige Regeln</h3>
                     <ul>
@@ -544,378 +522,371 @@
                         <li><strong>Gesperrt:</strong> "Filthy" (wegen Level-Cap) und "Only Colored" (keine Fähigkeiten) Shinys sind deaktiviert.</li>
                     </ul>
                 </div>
-
             </div>
 
             <!-- 2. SHINY ARTEN (VARIANTS) -->
             <div id="variants" class="section">
-                
                 <div class="shiny-grid">
-                    
+                    <!-- Cards are generated here... -->
                     <!-- RADIOACTIVE -->
                     <div class="shiny-card" onclick="openModal(this)">
                         <img src="https://i.postimg.cc/nzs9ZzK6/Bild-2024-09-14-132637655.png" class="card-img" alt="Radioactive">
                         <div class="card-content">
                             <h3 class="card-title">Radioactive</h3>
                             <div class="card-short-desc">Gefährliche Aura, erhöht Mutationschance.</div>
-                            
-                            <!-- Hidden Content for Modal -->
                             <div class="hidden-details hidden">
-                                <div class="lore">
-                                    Man könnte meinen, dass eine wundersame Versetzung in ein Land, das von einem Mischmasch ausgestorbener Kreaturen bevölkert ist, die Leute davon abhalten könnte, Ereignisse auf Hexerei zu schieben...
-                                    Dieser Dilo ist von einer miasmatischen Diffusion umgeben. Es ist radioaktiv – und zwar extrem.
-                                </div>
-                                <div class="abilities">
-                                    • Strahlungsimpuls verursacht Schaden im Umkreis.
-                                    • Erhöht die Mutationswahrscheinlichkeit von Babys um ca. 10% (nicht kumulativ).
-                                    • Immun gegen Strahlung.
-                                </div>
+                                <div class="lore">Dieser Dilo ist von einer miasmatischen Diffusion umgeben. Es ist radioaktiv – und zwar extrem.</div>
+                                <div class="abilities">• Strahlungsimpuls verursacht Schaden im Umkreis.<br>• Erhöht die Mutationswahrscheinlichkeit von Babys um ca. 10% (nicht kumulativ).<br>• Immun gegen Strahlung.</div>
                             </div>
                         </div>
                     </div>
-
                     <!-- SHINOBI -->
                     <div class="shiny-card" onclick="openModal(this)">
                         <img src="https://i.postimg.cc/k4S8FF7V/Bild-2024-05-23-012449351.png" class="card-img" alt="Shinobi">
                         <div class="card-content">
                             <h3 class="card-title">Shinobi</h3>
                             <div class="card-short-desc">Meister der Tarnung, reduzierte Aggro.</div>
-                            
                             <div class="hidden-details hidden">
-                                <div class="lore">
-                                    Ein prächtiges Männchen, das in aller Ruhe durch den Ort läuft und völlig unbehelligt bleibt. Raubtiere scheinen ihn einfach zu ignorieren...
-                                </div>
-                                <div class="abilities">
-                                    • Deutlich reduzierte Aggro-Reichweite für wilde Dinos.
-                                    • Raubtiere müssen sehr nah kommen, um anzugreifen.
-                                    • Ideal, um Bedrohungen zu umgehen.
-                                </div>
+                                <div class="lore">Ein prächtiges Männchen, das in aller Ruhe durch den Ort läuft und völlig unbehelligt bleibt.</div>
+                                <div class="abilities">• Deutlich reduzierte Aggro-Reichweite für wilde Dinos.<br>• Raubtiere müssen sehr nah kommen, um anzugreifen.</div>
                             </div>
                         </div>
                     </div>
-
                     <!-- CRYSTALLINE -->
                     <div class="shiny-card" onclick="openModal(this)">
                         <img src="https://i.postimg.cc/v86dNWBM/image.webp" class="card-img" alt="Crystalline">
                         <div class="card-content">
                             <h3 class="card-title">Crystalline</h3>
                             <div class="card-short-desc">Glaskanone: Viel Schaden, wenig Defense.</div>
-                            
                             <div class="hidden-details hidden">
-                                <div class="lore">
-                                    Wesen, die aus Kristallen und Edelsteinen bestehen. Wunderschön, aber zerbrechlich.
-                                </div>
-                                <div class="abilities">
-                                    • "Glaskanone": Verursacht mehr Schaden, erleidet aber auch mehr Schaden.
-                                    • Reflektiert Nahkampfschaden auf den Angreifer zurück.
-                                    • Kristalle können bei Treffern abbrechen.
-                                </div>
+                                <div class="lore">Wesen, die aus Kristallen und Edelsteinen bestehen. Wunderschön, aber zerbrechlich.</div>
+                                <div class="abilities">• "Glaskanone": Verursacht mehr Schaden, erleidet aber auch mehr Schaden.<br>• Reflektiert Nahkampfschaden auf den Angreifer zurück.<br>• Kristalle können bei Treffern abbrechen.</div>
                             </div>
                         </div>
                     </div>
-
                     <!-- NIGHTMARE -->
                     <div class="shiny-card" onclick="openModal(this)">
                         <img src="https://i.postimg.cc/prjfJrZt/Bild-2024-07-07-142809912.png" class="card-img" alt="Nightmare">
                         <div class="card-content">
                             <h3 class="card-title">Nightmare</h3>
                             <div class="card-short-desc">Pechschwarz, verursacht Angst & Blindheit.</div>
-                            
                             <div class="hidden-details hidden">
-                                <div class="lore">
-                                    Diese pechschwarzen Dinos kommen direkt aus einem Albtraum. Im Dunkeln fast unsichtbar, bis auf ihre leuchtenden Augen.
-                                </div>
-                                <div class="abilities">
-                                    • Saugt Wärme aus der Umgebung.
-                                    • Kackt gelegentlich Schwarze Perlen.
-                                    • Angriffe können einen "Angstzustand" verursachen, der dem Opfer die Sicht raubt.
-                                </div>
+                                <div class="lore">Diese pechschwarzen Dinos kommen direkt aus einem Albtraum. Im Dunkeln fast unsichtbar.</div>
+                                <div class="abilities">• Saugt Wärme aus der Umgebung.<br>• Kackt gelegentlich Schwarze Perlen.<br>• Angriffe können einen "Angstzustand" verursachen.</div>
                             </div>
                         </div>
                     </div>
-
                     <!-- FATHOMLESS -->
                     <div class="shiny-card" onclick="openModal(this)">
                         <img src="https://i.postimg.cc/Pr7wcRNL/Bild-2024-05-23-012957933.png" class="card-img" alt="Fathomless">
                         <div class="card-content">
                             <h3 class="card-title">Fathomless</h3>
                             <div class="card-short-desc">Blau gefärbt, enorme Tragekraft.</div>
-                            
                             <div class="hidden-details hidden">
-                                <div class="lore">
-                                    Tiere, die über eine ungeheure Kraft verfügen, weit über das hinaus, was ihre Größe vermuten lässt. Innen größer als außen.
-                                </div>
-                                <div class="abilities">
-                                    • Gewicht aller Gegenstände im Inventar ist um 80% reduziert.
-                                    • Einer der nützlichsten Farmer/Transporter.
-                                </div>
+                                <div class="lore">Tiere, die über eine ungeheure Kraft verfügen. Innen größer als außen.</div>
+                                <div class="abilities">• Gewicht aller Gegenstände im Inventar ist um 80% reduziert.<br>• Einer der nützlichsten Farmer/Transporter.</div>
                             </div>
                         </div>
                     </div>
-
                     <!-- ENDURANT -->
                     <div class="shiny-card" onclick="openModal(this)">
                         <img src="https://i.postimg.cc/gkKhDH65/Bild-2024-05-23-013632425.png" class="card-img" alt="Endurant">
                         <div class="card-content">
                             <h3 class="card-title">Endurant</h3>
                             <div class="card-short-desc">Unendliche Sprint-Ausdauer.</div>
-                            
                             <div class="hidden-details hidden">
-                                <div class="lore">
-                                    Ein Tier, das unermüdlich den ganzen Tag und die ganze Nacht laufen kann, wenn es sein muss.
-                                </div>
-                                <div class="abilities">
-                                    • Kann unbegrenzt sprinten, ohne Ausdauer zu verlieren.
-                                    • (Angriffe verbrauchen weiterhin Ausdauer).
-                                </div>
+                                <div class="lore">Ein Tier, das unermüdlich den ganzen Tag und die ganze Nacht laufen kann.</div>
+                                <div class="abilities">• Kann unbegrenzt sprinten, ohne Ausdauer zu verlieren.<br>• (Angriffe verbrauchen weiterhin Ausdauer).</div>
                             </div>
                         </div>
                     </div>
-
                     <!-- BURNING -->
                     <div class="shiny-card" onclick="openModal(this)">
                         <img src="https://i.postimg.cc/fL9sz5NR/Bild-2024-05-23-014009009.png" class="card-img" alt="Burning">
                         <div class="card-content">
                             <h3 class="card-title">Burning</h3>
                             <div class="card-short-desc">Brennt permanent, Feuer-Explosion.</div>
-                            
                             <div class="hidden-details hidden">
-                                <div class="lore">
-                                    Sein Körper war von Flammen umhüllt, die ihm jedoch keinen Schaden zufügten. Als eine Katze zusprang, explodierte das Pferd in Flammen.
-                                </div>
-                                <div class="abilities">
-                                    • Immun gegen Feuer- und Lavaschaden.
-                                    • Kann eine Feuerexplosion (AoE) auslösen (Strg / Spezialangriff).
-                                    • Visuell permanent am Brennen.
-                                </div>
+                                <div class="lore">Sein Körper war von Flammen umhüllt, die ihm jedoch keinen Schaden zufügten.</div>
+                                <div class="abilities">• Immun gegen Feuer- und Lavaschaden.<br>• Kann eine Feuerexplosion (AoE) auslösen (Strg / Spezialangriff).<br>• Visuell permanent am Brennen.</div>
                             </div>
                         </div>
                     </div>
-
                     <!-- FROZEN -->
                     <div class="shiny-card" onclick="openModal(this)">
                         <img src="https://i.postimg.cc/sDDTrxyM/Bild-2024-05-23-014324358.png" class="card-img" alt="Frozen">
                         <div class="card-content">
                             <h3 class="card-title">Frozen</h3>
                             <div class="card-short-desc">Lebender Kühlschrank, Tanky.</div>
-                            
                             <div class="hidden-details hidden">
-                                <div class="lore">
-                                    Kreaturen, die vollständig aus Eis bestehen. Die Kälte hat ihnen nie etwas ausgemacht.
-                                </div>
-                                <div class="abilities">
-                                    • Hält verderbliche Waren im Inventar frisch (wie ein Kühlschrank).
-                                    • Erleidet weniger Schaden (Tanky).
-                                    • Anfällig für Feuer.
-                                    • Etwas langsamer in der Bewegung.
-                                </div>
+                                <div class="lore">Kreaturen, die vollständig aus Eis bestehen. Die Kälte hat ihnen nie etwas ausgemacht.</div>
+                                <div class="abilities">• Hält verderbliche Waren im Inventar frisch.<br>• Erleidet weniger Schaden (Tanky).<br>• Anfällig für Feuer.</div>
                             </div>
                         </div>
                     </div>
-
                     <!-- SPECTRAL -->
                     <div class="shiny-card" onclick="openModal(this)">
                         <img src="https://i.postimg.cc/4dQjW0vq/Bild-2024-05-23-014717251.png" class="card-img" alt="Spectral">
                         <div class="card-content">
                             <h3 class="card-title">Spectral</h3>
                             <div class="card-short-desc">Geist, kein Fallschaden, spezielle Drops.</div>
-                            
                             <div class="hidden-details hidden">
-                                <div class="lore">
-                                    Durchsichtig und ätherisch wie Nebel. Man kann durch sie hindurchgreifen. Verbunden mit der Geisterebene.
-                                </div>
-                                <div class="abilities">
-                                    • Kein Fallschaden.
-                                    • Bewegt sich völlig lautlos.
-                                    • Man kann durch sie hindurchgehen (Kollision deaktiviert für Spieler).
-                                    • Kackt "spektralen Kot", der zufällige Items enthält.
-                                </div>
+                                <div class="lore">Durchsichtig und ätherisch wie Nebel. Man kann durch sie hindurchgreifen.</div>
+                                <div class="abilities">• Kein Fallschaden.<br>• Bewegt sich völlig lautlos.<br>• Man kann durch sie hindurchgehen.<br>• Kackt "spektralen Kot".</div>
                             </div>
                         </div>
                     </div>
-
                     <!-- HOLOGRAPHIC -->
                     <div class="shiny-card" onclick="openModal(this)">
                         <img src="https://i.postimg.cc/wTj3Q8cK/Bild-2024-05-23-015222386.png" class="card-img" alt="Holographic">
                         <div class="card-content">
                             <h3 class="card-title">Holographic</h3>
                             <div class="card-short-desc">Tech-Scanner, findet High-Lvl Dinos.</div>
-                            
                             <div class="hidden-details hidden">
-                                <div class="lore">
-                                    Aus einer Simulation entkommen. Ein Fehler im Code, der lebendig wurde und teilweise aus Licht besteht.
-                                </div>
-                                <div class="abilities">
-                                    • Verleiht dem Reiter einen Tek-Helm-ähnlichen Scan.
-                                    • Hilft beim Erkennen von Bedrohungen und Finden von High-Level Dinos.
-                                </div>
+                                <div class="lore">Aus einer Simulation entkommen. Ein Fehler im Code, der lebendig wurde.</div>
+                                <div class="abilities">• Verleiht dem Reiter einen Tek-Helm-ähnlichen Scan.<br>• Hilft beim Erkennen von Bedrohungen und High-Level Dinos.</div>
                             </div>
                         </div>
                     </div>
-
                     <!-- SKELETAL -->
                     <div class="shiny-card" onclick="openModal(this)">
                         <img src="https://i.postimg.cc/NFwCvkDT/Bild-2024-05-23-015442688.png" class="card-img" alt="Skeletal">
                         <div class="card-content">
                             <h3 class="card-title">Skeletal</h3>
                             <div class="card-short-desc">Kein Futter nötig, Pfeil-Resistent.</div>
-                            
                             <div class="hidden-details hidden">
-                                <div class="lore">
-                                    Ein wandelndes Museumsstück, nur Knochen, kein Fleisch. Zusammengehalten von einer unbekannten Kraft.
-                                </div>
-                                <div class="abilities">
-                                    • Muss nicht fressen und atmet nicht.
-                                    • Kackt nicht (sauberes Haustier).
-                                    • Hohe Resistenz gegen Fernkampfwaffen (Pfeile fliegen durch).
-                                    • Nur bestimmte Dinos können Skelette sein (Rex, Trike, Bronto, etc.).
-                                </div>
+                                <div class="lore">Ein wandelndes Museumsstück, nur Knochen, kein Fleisch.</div>
+                                <div class="abilities">• Muss nicht fressen und atmet nicht.<br>• Kackt nicht (sauberes Haustier).<br>• Hohe Resistenz gegen Fernkampfwaffen.</div>
                             </div>
                         </div>
                     </div>
-
                     <!-- TASER -->
                     <div class="shiny-card" onclick="openModal(this)">
                         <img src="https://i.postimg.cc/pTgrWp5K/Bild-2024-05-23-015731802.png" class="card-img" alt="Taser">
                         <div class="card-content">
                             <h3 class="card-title">Taser</h3>
                             <div class="card-short-desc">Elektrische Verteidigung, betäubt Angreifer.</div>
-                            
                             <div class="hidden-details hidden">
-                                <div class="lore">
-                                    Energie sprüht um seinen Körper. Ein natürlicher Verteidigungsmechanismus, der Angreifer mit Kettenblitzen zurückwirft.
-                                </div>
-                                <div class="abilities">
-                                    • Schockt und betäubt jeden Angreifer bei Kontakt.
-                                    • Kann Elektrizität auf nahe Ziele überspringen lassen.
-                                </div>
+                                <div class="lore">Energie sprüht um seinen Körper. Ein natürlicher Verteidigungsmechanismus.</div>
+                                <div class="abilities">• Schockt und betäubt jeden Angreifer bei Kontakt.<br>• Kann Elektrizität auf nahe Ziele überspringen lassen.</div>
                             </div>
                         </div>
                     </div>
-
                     <!-- PSYCHOTROP -->
                     <div class="shiny-card" onclick="openModal(this)">
                         <img src="https://i.postimg.cc/zBbtHX0J/Bild-2024-05-23-020136937.png" class="card-img" alt="Psychotrop">
                         <div class="card-content">
                             <h3 class="card-title">Psychotrop</h3>
                             <div class="card-short-desc">Regenbogen-Effekt, Biotoxin.</div>
-                            
                             <div class="hidden-details hidden">
-                                <div class="lore">
-                                    Ein hypnotisierender, belebter Regenbogen-Effekt von seltsamer Schönheit.
-                                </div>
-                                <div class="abilities">
-                                    • Visueller "Trip"-Effekt.
-                                    • Produziert Biotoxin im Inventar.
-                                </div>
+                                <div class="lore">Ein hypnotisierender, belebter Regenbogen-Effekt von seltsamer Schönheit.</div>
+                                <div class="abilities">• Visueller "Trip"-Effekt.<br>• Produziert Biotoxin im Inventar.</div>
                             </div>
                         </div>
                     </div>
-
                     <!-- LUNAR -->
                     <div class="shiny-card" onclick="openModal(this)">
                         <img src="https://i.postimg.cc/vT0tG18s/cc0aca80-188e-4a19-bd6d-d2c383f0450f.webp" class="card-img" alt="Lunar">
                         <div class="card-content">
                             <h3 class="card-title">Lunar</h3>
                             <div class="card-short-desc">Geringe Schwerkraft, Mond-Sprünge.</div>
-                            
                             <div class="hidden-details hidden">
-                                <div class="lore">
-                                    Es fiel wie in Zeitlupe und prallte ab. Verfügt über eine Art natürlichen Auftrieb, als wäre es auf dem Mond.
-                                </div>
-                                <div class="abilities">
-                                    • Trotzt der Schwerkraft: Hohe Sprünge, langsames Fallen.
-                                    • Kein visueller Skin (sieht normal aus, bewegt sich aber anders).
-                                </div>
+                                <div class="lore">Verfügt über eine Art natürlichen Auftrieb, als wäre es auf dem Mond.</div>
+                                <div class="abilities">• Trotzt der Schwerkraft: Hohe Sprünge, langsames Fallen.<br>• Kein visueller Skin (sieht normal aus).</div>
                             </div>
                         </div>
                     </div>
-
                     <!-- RUBBER -->
                     <div class="shiny-card" onclick="openModal(this)">
                         <img src="https://i.postimg.cc/5NG8pW6n/20230228192909-1.webp" class="card-img" alt="Rubber">
                         <div class="card-content">
                             <h3 class="card-title">Rubber</h3>
                             <div class="card-short-desc">Bunt wie ein Gummiball, springt, reflektiert.</div>
-                            
                             <div class="hidden-details hidden">
-                                <div class="lore">
-                                    Boing! Quietscht wie Gummi beim Laufen und hat ein wirbelndes Farbmuster wie ein Gummiball.
-                                </div>
-                                <div class="abilities">
-                                    • Kein Fallschaden (prallt ab).
-                                    • Reflektiert Nahkampfangriffe.
-                                    • Macht Quietsch-Geräusche.
-                                </div>
+                                <div class="lore">Boing! Quietscht wie Gummi beim Laufen und hat ein wirbelndes Farbmuster.</div>
+                                <div class="abilities">• Kein Fallschaden (prallt ab).<br>• Reflektiert Nahkampfangriffe.<br>• Macht Quietsch-Geräusche.</div>
                             </div>
                         </div>
                     </div>
-
                     <!-- DAZZLING -->
                     <div class="shiny-card" onclick="openModal(this)">
                         <img src="https://i.postimg.cc/0ND4QNQ7/Bild-2024-05-23-020359325.png" class="card-img" alt="Dazzling">
                         <div class="card-content">
                             <h3 class="card-title">Dazzling</h3>
                             <div class="card-short-desc">Blendet Angreifer, Immun gegen Strahlung.</div>
-                            
                             <div class="hidden-details hidden">
-                                <div class="lore">
-                                    Gleicht einem polierten Edelstein, der Licht in alle Richtungen bricht. Kann einen Blitz erzeugen, der Angreifer blendet.
-                                </div>
-                                <div class="abilities">
-                                    • Immun gegen Strahlung.
-                                    • Defensive Fähigkeit: Blendet Angreifer (Flashbang Effekt).
-                                    • Sehr hell und farbenfroh.
-                                </div>
+                                <div class="lore">Gleicht einem polierten Edelstein. Kann einen Blitz erzeugen, der Angreifer blendet.</div>
+                                <div class="abilities">• Immun gegen Strahlung.<br>• Defensive Fähigkeit: Blendet Angreifer (Flashbang Effekt).</div>
                             </div>
                         </div>
                     </div>
-
                     <!-- ENRAGED -->
                     <div class="shiny-card" onclick="openModal(this)">
                         <img src="https://i.postimg.cc/PqXKbXrR/Screenshot-2024-02-09-235425.png" class="card-img" alt="Enraged">
                         <div class="card-content">
                             <h3 class="card-title">Enraged</h3>
                             <div class="card-short-desc">Alpha-Status, nicht zähmbar, droppt Essenz.</div>
-                            
                             <div class="hidden-details hidden">
-                                <div class="lore">
-                                    Die gefährlichste Form. Größer, stärker, schneller.
-                                </div>
-                                <div class="abilities">
-                                    • <strong>Nicht zähmbar!</strong>
-                                    • Droppt beim Tod besondere Beute und <strong>Shiny Essenz</strong>.
-                                    • Gibt Chibi-XP.
-                                </div>
+                                <div class="lore">Die gefährlichste Form. Größer, stärker, schneller.</div>
+                                <div class="abilities">• <strong>Nicht zähmbar!</strong><br>• Droppt beim Tod besondere Beute und <strong>Shiny Essenz</strong>.<br>• Gibt Chibi-XP.</div>
                             </div>
                         </div>
                     </div>
-
                     <!-- PYGMY & COLOSSAL -->
                     <div class="shiny-card" onclick="openModal(this)">
                         <img src="https://i.postimg.cc/3w0B1rDW/Bild-2024-05-23-020852847.png" class="card-img" alt="Pygmy & Colossal">
                         <div class="card-content">
                             <h3 class="card-title">Pygmy & Colossal</h3>
                             <div class="card-short-desc">Größenveränderungen mit Stat-Anpassungen.</div>
-                            
                             <div class="hidden-details hidden">
-                                <div class="lore">
-                                    Inselzwergwuchs und Gigantismus im selben Ökosystem.
-                                </div>
-                                <div class="abilities">
-                                    • <strong>Colossal:</strong> Größer, mehr HP/Melee, aber langsamer & mehr Ausdauerverbrauch.
-                                    • <strong>Pygmy:</strong> Kleiner, schneller, schwerer zu treffen.
-                                </div>
+                                <div class="lore">Inselzwergwuchs und Gigantismus im selben Ökosystem.</div>
+                                <div class="abilities">• <strong>Colossal:</strong> Größer, mehr HP/Melee, aber langsamer.<br>• <strong>Pygmy:</strong> Kleiner, schneller, schwerer zu treffen.</div>
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+            
+            <!-- 3. KOMBINATIONEN (NEU) -->
+            <div id="combos" class="section">
+                <div class="info-box">
+                    <h3><i class="fa-solid fa-calculator"></i> Shiny Kombinations-Check</h3>
+                    <p>
+                        Wähle hier zwei Shiny-Essenzen aus, um zu prüfen, ob sie miteinander kombinierbar sind.
+                    </p>
+                    
+                    <a href="https://docs.google.com/spreadsheets/d/1AnCezRIAvI-tTyAQTtkTfYqnIjD5XMnk4tCDQnuAsgw/edit?pli=1#gid=0" target="_blank" class="sheet-link-btn">
+                        <i class="fa-solid fa-table"></i> Zur Original Tabelle (Google Sheets)
+                    </a>
 
+                    <!-- INTERACTIVE CALCULATOR -->
+                    <div class="combo-calculator" style="background-color: rgba(0,0,0,0.3); padding: 20px; border-radius: 8px; border: 1px solid var(--color-gold); margin-top: 20px; text-align: center;">
+                        
+                        <div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; align-items: center; margin-bottom: 20px;">
+                            <select id="combo1" onchange="checkCombo()" style="padding: 10px; border-radius: 6px; background: #222; color: #fff; border: 1px solid #555; flex: 1; min-width: 200px;">
+                                <option value="">-- Wähle Essenz 1 --</option>
+                                <optgroup label="Abilities (Fähigkeiten)">
+                                    <option value="Shinobi" data-cat="ability">Shinobi</option>
+                                    <option value="Fathomless" data-cat="ability">Fathomless</option>
+                                    <option value="Endurant" data-cat="ability">Endurant</option>
+                                    <option value="Lunar" data-cat="ability">Lunar</option>
+                                </optgroup>
+                                <optgroup label="Visuals (Optik)">
+                                    <option value="Burning" data-cat="visual">Burning</option>
+                                    <option value="Frozen" data-cat="visual">Frozen</option>
+                                    <option value="Taser" data-cat="visual">Taser</option>
+                                    <option value="Psychotropic" data-cat="visual">Psychotropic</option>
+                                    <option value="Radioactive" data-cat="visual">Radioactive</option>
+                                    <option value="Spectral" data-cat="visual">Spectral</option>
+                                    <option value="Holographic" data-cat="visual">Holographic</option>
+                                    <option value="Rubber" data-cat="visual">Rubber</option>
+                                    <option value="Dazzling" data-cat="visual">Dazzling</option>
+                                    <option value="Nightmare" data-cat="visual">Nightmare</option>
+                                    <option value="Crystalline" data-cat="visual">Crystalline</option>
+                                    <option value="Skeletal" data-cat="visual">Skeletal (Spezial)</option>
+                                </optgroup>
+                                <optgroup label="Size (Größe)">
+                                    <option value="Colossal" data-cat="size">Colossal</option>
+                                    <option value="Pygmy" data-cat="size">Pygmy</option>
+                                </optgroup>
+                                <optgroup label="Tiny (Stat/Shoulder)">
+                                    <option value="Tiny" data-cat="tiny">Tiny / Stat Boost</option>
+                                </optgroup>
+                            </select>
+
+                            <i class="fa-solid fa-plus" style="color: #aaa;"></i>
+
+                            <select id="combo2" onchange="checkCombo()" style="padding: 10px; border-radius: 6px; background: #222; color: #fff; border: 1px solid #555; flex: 1; min-width: 200px;">
+                                <option value="">-- Wähle Essenz 2 --</option>
+                                <optgroup label="Abilities (Fähigkeiten)">
+                                    <option value="Shinobi" data-cat="ability">Shinobi</option>
+                                    <option value="Fathomless" data-cat="ability">Fathomless</option>
+                                    <option value="Endurant" data-cat="ability">Endurant</option>
+                                    <option value="Lunar" data-cat="ability">Lunar</option>
+                                </optgroup>
+                                <optgroup label="Visuals (Optik)">
+                                    <option value="Burning" data-cat="visual">Burning</option>
+                                    <option value="Frozen" data-cat="visual">Frozen</option>
+                                    <option value="Taser" data-cat="visual">Taser</option>
+                                    <option value="Psychotropic" data-cat="visual">Psychotropic</option>
+                                    <option value="Radioactive" data-cat="visual">Radioactive</option>
+                                    <option value="Spectral" data-cat="visual">Spectral</option>
+                                    <option value="Holographic" data-cat="visual">Holographic</option>
+                                    <option value="Rubber" data-cat="visual">Rubber</option>
+                                    <option value="Dazzling" data-cat="visual">Dazzling</option>
+                                    <option value="Nightmare" data-cat="visual">Nightmare</option>
+                                    <option value="Crystalline" data-cat="visual">Crystalline</option>
+                                    <option value="Skeletal" data-cat="visual">Skeletal (Spezial)</option>
+                                </optgroup>
+                                <optgroup label="Size (Größe)">
+                                    <option value="Colossal" data-cat="size">Colossal</option>
+                                    <option value="Pygmy" data-cat="size">Pygmy</option>
+                                </optgroup>
+                                <optgroup label="Tiny (Stat/Shoulder)">
+                                    <option value="Tiny" data-cat="tiny">Tiny / Stat Boost</option>
+                                </optgroup>
+                            </select>
+                        </div>
+
+                        <div id="comboResult" style="padding: 15px; border-radius: 6px; background-color: rgba(0,0,0,0.5); min-height: 80px; display: flex; align-items: center; justify-content: center; flex-direction: column;">
+                            <span style="color: #aaa; font-style: italic;">Wähle zwei Essenzen aus...</span>
+                        </div>
+
+                        <div style="margin-top: 20px; overflow-x: auto;">
+                            <h4 style="color: var(--color-gold); margin-top: 0; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">Kombinations-Matrix</h4>
+                            <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem; text-align: center;">
+                                <thead>
+                                    <tr>
+                                        <th style="padding: 10px; border-bottom: 2px solid #555; text-align: left;">Kombiniere...</th>
+                                        <th style="padding: 10px; border-bottom: 2px solid #555; color: #2196F3;">Abilities</th>
+                                        <th style="padding: 10px; border-bottom: 2px solid #555; color: #9C27B0;">Visuals</th>
+                                        <th style="padding: 10px; border-bottom: 2px solid #555; color: #FF5722;">Size</th>
+                                        <th style="padding: 10px; border-bottom: 2px solid #555; color: #4CAF50;">Tiny</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr style="background-color: rgba(33, 150, 243, 0.1);">
+                                        <td style="padding: 10px; border-bottom: 1px solid #444; font-weight: bold; color: #2196F3; text-align: left;">Abilities</td>
+                                        <td style="padding: 10px; border-bottom: 1px solid #444;"><i class="fa-solid fa-xmark" style="color: #E53935;"></i></td>
+                                        <td style="padding: 10px; border-bottom: 1px solid #444;"><i class="fa-solid fa-check" style="color: #4CAF50;"></i></td>
+                                        <td style="padding: 10px; border-bottom: 1px solid #444;"><i class="fa-solid fa-check" style="color: #4CAF50;"></i></td>
+                                        <td style="padding: 10px; border-bottom: 1px solid #444;"><i class="fa-solid fa-xmark" style="color: #E53935;"></i></td>
+                                    </tr>
+                                    <tr style="background-color: rgba(156, 39, 176, 0.1);">
+                                        <td style="padding: 10px; border-bottom: 1px solid #444; font-weight: bold; color: #9C27B0; text-align: left;">Visuals</td>
+                                        <td style="padding: 10px; border-bottom: 1px solid #444;"><i class="fa-solid fa-check" style="color: #4CAF50;"></i></td>
+                                        <td style="padding: 10px; border-bottom: 1px solid #444;"><i class="fa-solid fa-xmark" style="color: #E53935;"></i></td>
+                                        <td style="padding: 10px; border-bottom: 1px solid #444;"><i class="fa-solid fa-check" style="color: #4CAF50;"></i><sup style="color:#FFEB3B">*1</sup></td>
+                                        <td style="padding: 10px; border-bottom: 1px solid #444;"><i class="fa-solid fa-check" style="color: #4CAF50;"></i><sup style="color:#FFEB3B">*2</sup></td>
+                                    </tr>
+                                    <tr style="background-color: rgba(255, 87, 34, 0.1);">
+                                        <td style="padding: 10px; border-bottom: 1px solid #444; font-weight: bold; color: #FF5722; text-align: left;">Size</td>
+                                        <td style="padding: 10px; border-bottom: 1px solid #444;"><i class="fa-solid fa-check" style="color: #4CAF50;"></i></td>
+                                        <td style="padding: 10px; border-bottom: 1px solid #444;"><i class="fa-solid fa-check" style="color: #4CAF50;"></i><sup style="color:#FFEB3B">*1</sup></td>
+                                        <td style="padding: 10px; border-bottom: 1px solid #444;"><i class="fa-solid fa-xmark" style="color: #E53935;"></i></td>
+                                        <td style="padding: 10px; border-bottom: 1px solid #444;"><i class="fa-solid fa-xmark" style="color: #E53935;"></i></td>
+                                    </tr>
+                                    <tr style="background-color: rgba(76, 175, 80, 0.1);">
+                                        <td style="padding: 10px; border-bottom: 1px solid #444; font-weight: bold; color: #4CAF50; text-align: left;">Tiny</td>
+                                        <td style="padding: 10px; border-bottom: 1px solid #444;"><i class="fa-solid fa-xmark" style="color: #E53935;"></i></td>
+                                        <td style="padding: 10px; border-bottom: 1px solid #444;"><i class="fa-solid fa-check" style="color: #4CAF50;"></i><sup style="color:#FFEB3B">*2</sup></td>
+                                        <td style="padding: 10px; border-bottom: 1px solid #444;"><i class="fa-solid fa-xmark" style="color: #E53935;"></i></td>
+                                        <td style="padding: 10px; border-bottom: 1px solid #444;"><i class="fa-solid fa-xmark" style="color: #E53935;"></i></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div style="font-size: 0.8rem; color: #aaa; margin-top: 10px; text-align: left;">
+                                <p style="margin: 2px 0;"><sup style="color:#FFEB3B">*1</sup> <strong>Skeletal</strong> + Size Change ist ein Sonderfall (eingeschränkt kompatibel).</p>
+                                <p style="margin: 2px 0;"><sup style="color:#FFEB3B">*2</sup> <strong>Tiny</strong> funktioniert mit Visuals, aber <strong>Skeletal</strong> ist auch hier ein Sonderfall.</p>
+                            </div>
+                        </div>
+
+                    </div>
                 </div>
             </div>
 
-            <!-- 3. TINIES & STATS -->
+            <!-- 4. TINIES & STATS -->
             <div id="tinies" class="section">
-                
                 <div class="info-box">
                     <h3><i class="fa-solid fa-paw"></i> Tinies (Nur Shoulder Pets)</h3>
                     <p>Spezielle Varianten, die nur für Schulter-Tiere verfügbar sind und dem Träger Boni verleihen.</p>
@@ -929,7 +900,6 @@
                         <div class="tiny-card"><h4>Serene</h4><p>Hilft beim Konzentrieren (Crafting).</p></div>
                     </div>
                 </div>
-
                 <div class="info-box">
                     <h3><i class="fa-solid fa-chart-bar"></i> Stat-Booster Varianten</h3>
                     <p>Diese Dinos haben eine höhere Chance auf außergewöhnlich hohe Wild-Werte in einem bestimmten Attribut.</p>
@@ -942,7 +912,6 @@
                         <div class="tiny-card"><h4 style="color: #F44336;">Fierce</h4><p>Nahkampfschaden</p></div>
                     </div>
                 </div>
-
             </div>
 
         </div>
@@ -956,10 +925,8 @@
                 </div>
                 <div class="modal-right">
                     <h2 class="modal-title" id="modalTitle">Titel</h2>
-                    
                     <div class="modal-section-title"><i class="fa-solid fa-scroll"></i> Geschichte</div>
                     <p class="modal-text" id="modalLore">Lore Text...</p>
-
                     <div class="modal-section-title"><i class="fa-solid fa-bolt"></i> Fähigkeiten</div>
                     <p class="modal-text" id="modalAbilities">Abilities...</p>
                 </div>
@@ -994,7 +961,6 @@
                     showSection('variants');
                 }
             }
-
             cards.forEach(card => {
                 const title = card.querySelector('.card-title').innerText.toLowerCase();
                 const desc = card.querySelector('.card-short-desc').innerText.toLowerCase();
@@ -1030,6 +996,72 @@
         modal.addEventListener('click', (e) => {
             if(e.target === modal) closeModal();
         });
+
+        // COMBO CHECKER LOGIC
+        function checkCombo() {
+            const sel1 = document.getElementById('combo1');
+            const sel2 = document.getElementById('combo2');
+            const resDiv = document.getElementById('comboResult');
+
+            const val1 = sel1.value;
+            const val2 = sel2.value;
+
+            if (!val1 || !val2) {
+                resDiv.innerHTML = '<span style="color: #aaa; font-style: italic;">Wähle zwei Essenzen aus...</span>';
+                resDiv.style.backgroundColor = 'rgba(0,0,0,0.5)';
+                resDiv.style.border = 'none';
+                return;
+            }
+
+            // Get Categories and Names
+            const cat1 = sel1.options[sel1.selectedIndex].getAttribute('data-cat');
+            const cat2 = sel2.options[sel2.selectedIndex].getAttribute('data-cat');
+            
+            let status = 'ok';
+            let message = 'Diese Kombination ist möglich!';
+            let icon = '<i class="fa-solid fa-check-circle" style="font-size: 2rem; margin-bottom: 10px;"></i>';
+            let color = '#4CAF50'; // Green
+
+            // Logic Rules
+            if (val1 === val2) {
+                status = 'error';
+                message = 'Du kannst nicht zweimal dieselbe Essenz verwenden.';
+            } 
+            else if (cat1 === cat2) {
+                status = 'error';
+                message = 'Nicht möglich: Beide Essenzen stammen aus derselben Kategorie.';
+            }
+            else if ((cat1 === 'tiny' && cat2 === 'ability') || (cat2 === 'tiny' && cat1 === 'ability')) {
+                status = 'error';
+                message = 'Nicht möglich: Tiny/Stat Boosts sind nicht mit Fähigkeiten kombinierbar.';
+            }
+            else if ((cat1 === 'tiny' && cat2 === 'size') || (cat2 === 'tiny' && cat1 === 'size')) {
+                status = 'error';
+                message = 'Nicht möglich: Tiny/Stat Boosts sind nicht mit Größenänderungen kombinierbar.';
+            }
+            // Special Case: Skeletal
+            else if (val1 === 'Skeletal' || val2 === 'Skeletal') {
+                const otherCat = val1 === 'Skeletal' ? cat2 : cat1;
+                if (otherCat === 'size' || otherCat === 'tiny') {
+                    status = 'warning';
+                    message = 'Eingeschränkt: Skeletal ändert das Mesh komplett. In Kombination mit Größe oder Tiny kann es zu Problemen kommen (oft nicht möglich).';
+                    color = '#FFC107'; // Amber
+                    icon = '<i class="fa-solid fa-triangle-exclamation" style="font-size: 2rem; margin-bottom: 10px;"></i>';
+                }
+            }
+
+            // Render Result
+            if (status === 'error') {
+                color = '#F44336';
+                icon = '<i class="fa-solid fa-circle-xmark" style="font-size: 2rem; margin-bottom: 10px;"></i>';
+            } else if (status === 'warning') {
+                // Warning attributes set above
+            }
+
+            resDiv.innerHTML = `<div style="color: ${color}; font-weight: bold;">${icon}<br>${message}</div>`;
+            resDiv.style.backgroundColor = `${color}22`; // 22 = Low Opacity hex
+            resDiv.style.border = `1px solid ${color}`;
+        }
     </script>
 </body>
 </html>
