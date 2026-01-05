@@ -98,6 +98,41 @@
             z-index: 1;
         }
 
+        /* SEARCH BAR (NEU) */
+        .search-container {
+            width: 100%;
+            max-width: 500px;
+            position: relative;
+            margin-top: 10px;
+            z-index: 2;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px 15px 10px 40px;
+            border-radius: 20px;
+            border: 2px solid #555;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: #fff;
+            font-family: var(--font-main);
+            font-size: 1rem;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--color-boss-accent);
+            box-shadow: 0 0 15px rgba(124, 77, 255, 0.5);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #aaa;
+        }
+
         /* Navigation Tabs */
         .nav-tabs {
             display: flex;
@@ -143,6 +178,12 @@
         /* Sections */
         .section { display: none; animation: fadeIn 0.4s ease; }
         .section.active { display: block; }
+        
+        /* Suche Styles */
+        .content-area.searching .boss-section { display: block !important; }
+        .content-area.searching .info-section { display: none !important; }
+        .hidden { display: none !important; }
+
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         /* Info Cards */
@@ -410,6 +451,7 @@
         @media (max-width: 600px) {
             .title { font-size: 1.8rem; }
             .nav-tab { padding: 12px; font-size: 0.9rem; }
+            .search-container { max-width: 90%; }
         }
     </style>
 </head>
@@ -418,8 +460,13 @@
     <div class="boss-container">
         
         <div class="header">
-            <h1 class="title">IOP Worldbosse</h1>
+            <h1 class="title">Custom World Bosse</h1>
             <div class="subtitle">Map Spezifische MiniBosse & Custom Loot</div>
+            
+            <div class="search-container">
+                <i class="fa-solid fa-search search-icon"></i>
+                <input type="text" id="searchInput" class="search-input" placeholder="Boss suchen (z.B. Mantis, Rhino)...">
+            </div>
         </div>
 
         <!-- Navigation -->
@@ -429,10 +476,10 @@
             <div class="nav-tab" onclick="showSection('scorched', this)"><i class="fa-solid fa-sun"></i> Scorched Earth</div>
         </div>
 
-        <div class="content-area">
+        <div class="content-area" id="contentArea">
 
             <!-- 1. INFO SECTION -->
-            <div id="info" class="section active">
+            <div id="info" class="section info-section active">
                 
                 <div class="info-box">
                     <h3><i class="fa-solid fa-skull"></i> World-Boss Events</h3>
@@ -462,7 +509,7 @@
             </div>
 
             <!-- 2. THE ISLAND BOSSES -->
-            <div id="island" class="section">
+            <div id="island" class="section boss-section">
                 <div class="boss-grid">
                     
                     <!-- Beelzebufoking -->
@@ -529,7 +576,7 @@
             </div>
 
             <!-- 3. SCORCHED EARTH BOSSES -->
-            <div id="scorched" class="section">
+            <div id="scorched" class="section boss-section">
                 <div class="boss-grid">
                     
                     <!-- Scorpionking -->
@@ -627,6 +674,11 @@
 
     <script>
         function showSection(sectionId, tabElement) {
+            // Reset Suche
+            document.getElementById('searchInput').value = '';
+            document.getElementById('contentArea').classList.remove('searching');
+            document.querySelectorAll('.boss-card').forEach(c => c.classList.remove('hidden'));
+
             // Hide all sections
             document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
             // Remove active classes from tabs
@@ -635,8 +687,47 @@
             // Show target section
             document.getElementById(sectionId).classList.add('active');
             // Add active class to tab
-            tabElement.classList.add('active');
+            if(tabElement) tabElement.classList.add('active');
         }
+
+        /* --- SEARCH LOGIC --- */
+        const searchInput = document.getElementById('searchInput');
+        const contentArea = document.getElementById('contentArea');
+        const allBossCards = document.querySelectorAll('.boss-card');
+
+        searchInput.addEventListener('keyup', (e) => {
+            const term = e.target.value.toLowerCase();
+
+            if (term.length > 0) {
+                // Suche aktiv: Zeige beide Boss-Sektionen, verstecke Info
+                contentArea.classList.add('searching');
+                
+                allBossCards.forEach(card => {
+                    const title = card.querySelector('.boss-title').innerText.toLowerCase();
+                    if (title.includes(term)) {
+                        card.classList.remove('hidden');
+                    } else {
+                        card.classList.add('hidden');
+                    }
+                });
+            } else {
+                // Suche leer: Reset
+                contentArea.classList.remove('searching');
+                allBossCards.forEach(card => card.classList.remove('hidden'));
+                
+                // Stelle aktiven Tab wieder her
+                const activeTab = document.querySelector('.nav-tab.active');
+                if(activeTab) {
+                    // Wir müssen nicht klicken, nur die Sections resetten
+                    const targetId = activeTab.getAttribute('onclick').match(/'([^']+)'/)[1];
+                    // Hide all first
+                    document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+                    document.getElementById(targetId).classList.add('active');
+                } else {
+                    showSection('info', document.querySelector('.nav-tab'));
+                }
+            }
+        });
 
         /* --- MODAL LOGIC --- */
         const modal = document.getElementById('bossModal');
