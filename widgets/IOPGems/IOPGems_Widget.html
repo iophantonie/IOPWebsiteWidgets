@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IOP Edelsteine & Währung</title>
+    <title>IOP Edelsteine System</title>
     <link href="https://fonts.googleapis.com/css2?family=Acme&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -12,7 +12,8 @@
         :root {
             --c-fire: #ff3300;
             --c-bg: #050505;
-            --c-card: #141414;
+            --c-panel: #121212;
+            --c-content: #1a1a1a;
             --c-text: #e0e0e0;
             --c-dim: #888;
             --c-border: #333;
@@ -37,433 +38,442 @@
         }
 
         /* Animationen */
-        @keyframes border-glow {
-            0%, 100% { border-color: rgba(255, 51, 0, 0.4); box-shadow: 0 0 15px rgba(255, 51, 0, 0.1); }
-            50% { border-color: rgba(255, 51, 0, 0.8); box-shadow: 0 0 25px rgba(255, 51, 0, 0.3); }
+        @keyframes fire-border-pulse {
+            0% { box-shadow: 0 0 10px rgba(255, 51, 0, 0.2); border-color: rgba(255, 51, 0, 0.5); }
+            50% { box-shadow: 0 0 25px rgba(255, 51, 0, 0.5); border-color: rgba(255, 51, 0, 1); }
+            100% { box-shadow: 0 0 10px rgba(255, 51, 0, 0.2); border-color: rgba(255, 51, 0, 0.5); }
         }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-5px); }
-        }
-
-        /* --- CONTAINER --- */
+        /* --- WIDGET CONTAINER --- */
         .widget-container {
             display: flex;
-            flex-direction: column;
             width: 99%; 
             height: 98vh; 
             background-color: var(--c-bg);
             border: 2px solid var(--c-fire);
             border-radius: 12px;
-            animation: border-glow 4s infinite ease-in-out;
+            animation: fire-border-pulse 4s infinite ease-in-out;
             overflow: hidden;
             position: relative;
             box-shadow: 0 0 50px rgba(0,0,0,0.9);
         }
 
-        /* --- HEADER --- */
-        .header {
-            background-color: rgba(15, 15, 15, 0.95);
-            padding: 15px 30px;
-            border-bottom: 1px solid var(--c-border);
+        /* --- SIDEBAR --- */
+        .sidebar {
+            width: 280px;
+            background-color: var(--c-panel);
+            border-right: 1px solid var(--c-border);
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+            flex-direction: column;
             flex-shrink: 0;
-            background-image: linear-gradient(to bottom, rgba(255,51,0,0.05), transparent);
+            z-index: 10;
         }
 
-        .title-group h1 {
+        .header-area {
+            padding: 30px 20px;
+            text-align: center;
+            border-bottom: 1px solid var(--c-border);
+            background: linear-gradient(180deg, rgba(255,51,0,0.1) 0%, transparent 100%);
+        }
+
+        .title {
             font-family: var(--f-head);
             font-size: 2rem;
-            text-transform: uppercase;
-            margin: 0;
             color: var(--c-fire);
-            text-shadow: 0 0 10px rgba(255, 51, 0, 0.4);
-            line-height: 1;
+            text-transform: uppercase;
             letter-spacing: 1px;
+            margin: 0;
+            line-height: 1.1;
+            text-shadow: 0 0 10px rgba(255, 51, 0, 0.4);
         }
 
-        .title-group span {
-            font-size: 0.85rem;
+        .subtitle {
+            font-size: 0.8rem;
             color: var(--c-dim);
             text-transform: uppercase;
             letter-spacing: 2px;
+            margin-top: 8px;
+            display: block;
         }
 
-        /* Search */
-        .search-box {
-            position: relative;
-            width: 250px;
+        .nav-menu {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+            flex-grow: 1;
         }
-        .search-box input {
+
+        .nav-btn {
             width: 100%;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid var(--c-border);
-            padding: 8px 15px 8px 35px;
-            border-radius: 20px;
-            color: #fff;
-            outline: none;
-            font-family: var(--f-body);
-            transition: border-color 0.3s;
-        }
-        .search-box input:focus { border-color: var(--c-fire); }
-        .search-box i {
-            position: absolute;
-            left: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--c-dim);
-        }
-
-        /* --- TABS --- */
-        .tabs {
-            display: flex;
-            background-color: #111;
-            padding: 0 20px;
-            border-bottom: 1px solid var(--c-border);
-            overflow-x: auto;
-            flex-shrink: 0;
-            gap: 10px;
-        }
-
-        .tab-btn {
-            padding: 15px 20px;
-            background: none;
+            padding: 18px 25px;
+            background: transparent;
             border: none;
+            border-left: 4px solid transparent;
             color: var(--c-dim);
             font-family: var(--f-head);
-            font-size: 1.1rem;
+            font-size: 1.2rem;
+            text-align: left;
             cursor: pointer;
-            text-transform: uppercase;
-            border-bottom: 3px solid transparent;
             transition: all 0.2s;
-            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 15px;
         }
 
-        .tab-btn:hover { color: #fff; }
-        .tab-btn.active {
+        .nav-btn:hover { background-color: rgba(255,255,255,0.03); color: #fff; }
+
+        .nav-btn.active {
+            background: linear-gradient(90deg, rgba(255,51,0,0.15) 0%, transparent 100%);
+            border-left-color: var(--c-fire);
             color: #fff;
-            border-bottom-color: var(--c-fire);
-            background: linear-gradient(to top, rgba(255,51,0,0.1), transparent);
+            text-shadow: 0 0 10px rgba(255,51,0,0.5);
         }
 
-        /* --- CONTENT GRID --- */
+        /* --- CONTENT AREA --- */
         .content-area {
             flex-grow: 1;
             overflow-y: auto;
-            padding: 30px;
-            background-image: radial-gradient(circle at 50% 50%, #111 0%, #050505 100%);
+            padding: 40px;
+            background-color: var(--c-bg);
+            background-image: radial-gradient(circle at 50% 50%, rgba(255,51,0,0.02) 0%, transparent 40%);
         }
         .content-area::-webkit-scrollbar { width: 8px; }
         .content-area::-webkit-scrollbar-thumb { background-color: #333; border-radius: 4px; }
 
+        /* Sections */
+        .section { display: none; animation: fadeIn 0.4s ease; max-width: 1400px; margin: 0 auto; }
+        .section.active { display: block; }
+
+        .section-header {
+            border-bottom: 1px solid var(--c-border);
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .section-title {
+            font-family: var(--f-head);
+            font-size: 2.2rem;
+            color: #fff;
+            margin: 0;
+        }
+
+        .section-icon { color: var(--c-fire); font-size: 2rem; opacity: 0.8; }
+
+        /* Info Blocks */
+        .info-block {
+            background-color: var(--c-content);
+            border: 1px solid var(--c-border);
+            border-radius: 6px;
+            padding: 25px;
+            margin-bottom: 25px;
+            line-height: 1.6;
+            color: #ccc;
+            font-size: 1rem;
+        }
+
+        .info-block h3 { color: var(--c-fire); font-family: var(--f-head); margin-top: 0; }
+        .info-block strong { color: #fff; }
+        .info-block ul { padding-left: 20px; margin: 15px 0; }
+        .info-block li { margin-bottom: 8px; }
+
+        /* Gem Grid */
         .gem-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 25px;
-            max-width: 1400px;
-            margin: 0 auto;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
         }
 
-        /* --- GEM CARD --- */
         .gem-card {
-            background-color: var(--c-card);
+            background: #181818;
             border: 1px solid var(--c-border);
-            border-radius: 10px;
+            border-radius: 8px;
             overflow: hidden;
             display: flex;
-            flex-direction: column;
+            transition: transform 0.2s, box-shadow 0.2s;
             position: relative;
-            transition: transform 0.3s, box-shadow 0.3s;
         }
-
+        
         .gem-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-            border-color: rgba(255,255,255,0.2);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+            border-color: var(--gem-color);
         }
 
-        /* Glow Effect based on gem color (set via JS style) */
-        .gem-card::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; height: 160px;
-            background: radial-gradient(circle at 50% 120%, var(--glow-color, #fff), transparent 70%);
-            opacity: 0.15;
-            z-index: 0;
-            pointer-events: none;
-        }
-
-        .card-visual {
-            height: 160px;
+        .gem-img-container {
+            width: 120px;
+            background: #000;
             display: flex;
             align-items: center;
             justify-content: center;
+            border-right: 1px solid var(--c-border);
+            padding: 10px;
             position: relative;
-            z-index: 1;
-            background-color: #0a0a0a;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        
+        /* Glow behind image */
+        .gem-img-container::after {
+            content: '';
+            position: absolute;
+            width: 100%; height: 100%;
+            background: radial-gradient(circle, var(--gem-color) 0%, transparent 70%);
+            opacity: 0.2;
         }
 
-        .card-img {
-            width: 100px;
-            height: 100px;
+        .gem-img {
+            width: 80px;
+            height: 80px;
             object-fit: contain;
-            filter: drop-shadow(0 0 15px var(--glow-color));
-            animation: float 4s ease-in-out infinite;
-            cursor: pointer;
-            transition: transform 0.2s;
+            z-index: 1;
+            transition: transform 0.3s;
         }
-        .card-img:hover { transform: scale(1.1); }
+        .gem-card:hover .gem-img { transform: scale(1.1); }
 
-        .card-body {
-            padding: 20px;
-            flex-grow: 1;
+        .gem-content {
+            flex: 1;
+            padding: 15px;
             display: flex;
             flex-direction: column;
-            z-index: 1;
+            justify-content: center;
         }
 
-        .card-title {
+        .gem-title {
             font-family: var(--f-head);
-            font-size: 1.5rem;
-            margin: 0 0 10px 0;
-            color: #fff;
+            font-size: 1.4rem;
+            margin: 0 0 5px 0;
+            color: var(--gem-color);
         }
 
-        .card-desc {
-            font-size: 0.95rem;
-            color: #ccc;
-            margin-bottom: 15px;
-            line-height: 1.5;
-            flex-grow: 1;
+        .gem-desc {
+            font-size: 0.9rem;
+            color: #bbb;
+            margin-bottom: 10px;
+            line-height: 1.3;
         }
 
-        .card-meta {
-            background: rgba(0,0,0,0.3);
-            border-radius: 6px;
-            padding: 10px;
-            font-size: 0.85rem;
-            border: 1px solid rgba(255,255,255,0.05);
+        .gem-source {
+            font-size: 0.8rem;
+            color: #888;
+            background: rgba(255,255,255,0.05);
+            padding: 4px 8px;
+            border-radius: 4px;
+            display: inline-block;
         }
-
-        .meta-row {
-            display: flex;
-            margin-bottom: 5px;
-            align-items: flex-start;
-        }
-        .meta-row:last-child { margin-bottom: 0; }
-        .meta-icon { width: 20px; color: var(--c-dim); margin-top: 2px; }
-        .meta-text { color: #aaa; flex: 1; }
-        .meta-text strong { color: #fff; font-weight: normal; }
-
-        /* Modal */
-        .modal {
-            display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.95); z-index: 100; justify-content: center; align-items: center;
-        }
-        .modal.open { display: flex; }
-        .modal img { max-width: 80%; max-height: 80%; border: 2px solid var(--c-fire); border-radius: 6px; box-shadow: 0 0 50px rgba(255,51,0,0.3); }
-        .close-btn { position: absolute; top: 20px; right: 20px; color: #fff; font-size: 3rem; cursor: pointer; }
 
         @media (max-width: 900px) {
-            .widget-container { width: 100%; height: 100vh; border: none; border-radius: 0; }
-            .header { flex-direction: column; gap: 15px; text-align: center; }
-            .gem-grid { grid-template-columns: 1fr; }
+            .widget-container { flex-direction: column; width: 100%; height: 100vh; border: none; border-radius: 0; }
+            .sidebar { width: 100%; height: auto; border-right: none; border-bottom: 2px solid var(--c-fire); }
+            .nav-menu { display: flex; margin: 0; overflow-x: auto; }
+            .nav-btn { justify-content: center; padding: 15px; font-size: 1rem; width: auto; white-space: nowrap; }
+            .content-area { padding: 20px; }
+            .gem-card { flex-direction: column; }
+            .gem-img-container { width: 100%; height: 100px; border-right: none; border-bottom: 1px solid var(--c-border); }
         }
-
     </style>
 </head>
 <body>
 
     <div class="widget-container">
         
-        <!-- HEADER -->
-        <div class="header">
-            <div class="title-group">
-                <h1>IOP Edelsteine</h1>
-                <span>Währungssystem & Fundorte</span>
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+            <div class="header-area">
+                <h1 class="title">Edelsteine</h1>
+                <span class="subtitle">Währung & Loot</span>
             </div>
-            <div class="search-box">
-                <i class="fa-solid fa-search"></i>
-                <input type="text" id="searchInput" placeholder="Suche (z.B. Rubin, Boss)...">
-            </div>
-        </div>
-
-        <!-- TABS -->
-        <div class="tabs">
-            <button class="tab-btn active" onclick="filterGems('all', this)">Alle</button>
-            <button class="tab-btn" onclick="filterGems('basic', this)">Standard</button>
-            <button class="tab-btn" onclick="filterGems('boss', this)">Boss Drops</button>
-            <button class="tab-btn" onclick="filterGems('special', this)">Spezial</button>
+            
+            <ul class="nav-menu">
+                <li>
+                    <button class="nav-btn active" onclick="showTab('info', this)">
+                        <i class="fa-solid fa-info-circle"></i> Übersicht
+                    </button>
+                </li>
+                <li>
+                    <button class="nav-btn" onclick="showTab('standard', this)">
+                        <i class="fa-solid fa-coins"></i> Standard Gems
+                    </button>
+                </li>
+                <li>
+                    <button class="nav-btn" onclick="showTab('boss', this)">
+                        <i class="fa-solid fa-skull"></i> Boss & Spezial
+                    </button>
+                </li>
+            </ul>
         </div>
 
         <!-- CONTENT -->
-        <div class="content-area" id="gemGrid">
-            <!-- JS GENERATED -->
+        <div class="content-area">
+
+            <!-- TAB: INFO -->
+            <div id="info" class="section active">
+                <div class="section-header">
+                    <i class="fa-solid fa-info-circle section-icon"></i>
+                    <h2 class="section-title">Das Währungssystem</h2>
+                </div>
+
+                <div class="info-block">
+                    <h3>Allgemeines</h3>
+                    <p>Ihr könnt bei uns verschiedene Edelsteine, Kreaturen-Seelen und Tokens erhalten. Diese dienen als Währung auf dem <strong>Schwarzmarkt</strong>.</p>
+                    <p><strong>Verwendungszweck:</strong></p>
+                    <ul>
+                        <li>Kauf von verbesserten Waffen, Werkzeugen und Rüstungen.</li>
+                        <li>Erwerb von einzigartigen mythischen Skins, Pets und Zaubertränken.</li>
+                        <li>Kauf von legendären Kreaturen beim Reittierhändler.</li>
+                    </ul>
+                </div>
+
+                <div class="info-block">
+                    <h3>Wie erhalte ich Edelsteine?</h3>
+                    <p>Edelsteine können auf verschiedenste Weisen verdient werden:</p>
+                    <ul>
+                        <li>Bosskämpfe (Ark Bosse & Open World Minibosse)</li>
+                        <li>Quest-Belohnungen</li>
+                        <li>Events</li>
+                        <li>Abschluss von Tek Caves</li>
+                        <li>Verkauf von Tributen in der Spielerbank</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- TAB: STANDARD GEMS -->
+            <div id="standard" class="section">
+                <div class="section-header">
+                    <i class="fa-solid fa-coins section-icon"></i>
+                    <h2 class="section-title">Standard Edelsteine</h2>
+                </div>
+
+                <div class="gem-grid">
+                    <!-- Bernsteine -->
+                    <div class="gem-card" style="--gem-color: #f7ad6b;">
+                        <div class="gem-img-container">
+                            <img src="https://i.postimg.cc/T3g6Qq3q/Bernstein.png" class="gem-img">
+                        </div>
+                        <div class="gem-content">
+                            <h3 class="gem-title">Bernsteine</h3>
+                            <div class="gem-desc">Die niedrigste Währung. Wird für kleinere Händler und erste Markt-Strukturen benötigt.</div>
+                            <div class="gem-source"><strong>Quelle:</strong> Spielerbank (Tribute-Verkauf), Alpha Drops</div>
+                        </div>
+                    </div>
+
+                    <!-- Rubine -->
+                    <div class="gem-card" style="--gem-color: #ff0000;">
+                        <div class="gem-img-container">
+                            <img src="https://i.postimg.cc/xdm3X8gd/Rubin.png" class="gem-img">
+                        </div>
+                        <div class="gem-content">
+                            <h3 class="gem-title">Rubine</h3>
+                            <div class="gem-desc">Verdient durch Aktivität und Aufgaben.</div>
+                            <div class="gem-source">
+                                <strong>Quellen:</strong><br>
+                                - Daily Quest: 5x<br>
+                                - Weekly Quest: 15x<br>
+                                - Vote (The Island): 5x
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Amethyste -->
+                    <div class="gem-card" style="--gem-color: #9966cc;">
+                        <div class="gem-img-container">
+                            <img src="https://i.postimg.cc/YCMHnLG5/Anesthyt.png" class="gem-img">
+                        </div>
+                        <div class="gem-content">
+                            <h3 class="gem-title">Amethyste</h3>
+                            <div class="gem-desc">Eine mittlere Währung für diverse Händler.</div>
+                            <div class="gem-source"><strong>Quelle:</strong> Diverse Quellen & Händler</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB: BOSS & SPECIAL -->
+            <div id="boss" class="section">
+                <div class="section-header">
+                    <i class="fa-solid fa-skull section-icon"></i>
+                    <h2 class="section-title">Boss & Spezial Edelsteine</h2>
+                </div>
+
+                <div class="gem-grid">
+                    <!-- Smaragde -->
+                    <div class="gem-card" style="--gem-color: #00ff00;">
+                        <div class="gem-img-container">
+                            <img src="https://i.postimg.cc/X7ZGjhsj/Smaragd.png" class="gem-img">
+                        </div>
+                        <div class="gem-content">
+                            <h3 class="gem-title">Smaragde</h3>
+                            <div class="gem-desc">Von Open World Bossen. Wichtig für bessere Ausrüstung.</div>
+                            <div class="gem-source">
+                                <strong>Drops von:</strong><br>
+                                Mantisqueen, Scorpionking, Beelzebufo King, Rhinobeast
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Saphire -->
+                    <div class="gem-card" style="--gem-color: #0055ff;">
+                        <div class="gem-img-container">
+                            <img src="https://i.postimg.cc/sXvQMN34/Saphir.png" class="gem-img">
+                        </div>
+                        <div class="gem-content">
+                            <h3 class="gem-title">Saphire</h3>
+                            <div class="gem-desc">Tauschbar gegen Teleportsteine beim Magier.</div>
+                            <div class="gem-source">
+                                <strong>Drops:</strong><br>
+                                Rare Kill: 1x<br>
+                                Legendary Kill: 3x
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Diamanten -->
+                    <div class="gem-card" style="--gem-color: #00ffff;">
+                        <div class="gem-img-container">
+                            <img src="https://i.postimg.cc/0QqFQLYL/Diamant.png" class="gem-img">
+                        </div>
+                        <div class="gem-content">
+                            <h3 class="gem-title">Diamanten</h3>
+                            <div class="gem-desc">Der höchste Wert. Nur durch Ark Bosskämpfe zu erhalten.</div>
+                            <div class="gem-source">
+                                <strong>Boss Drops:</strong><br>
+                                Gamma: 1x | Beta: 2x | Alpha: 5x
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Arkensteine -->
+                    <div class="gem-card" style="--gem-color: #ff00ff;">
+                        <div class="gem-img-container">
+                            <img src="https://i.postimg.cc/DwTx1qJX/15.png" class="gem-img">
+                        </div>
+                        <div class="gem-content">
+                            <h3 class="gem-title">Arkensteine</h3>
+                            <div class="gem-desc">Mächtiges Artefakt. Löst bei Erhalt sofortige Server-Boosts aus.</div>
+                            <div class="gem-source"><strong>Quelle:</strong> Tek Cave Abschluss (Gamma/Beta/Alpha)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
-
-    </div>
-
-    <!-- MODAL -->
-    <div id="imgModal" class="modal">
-        <span class="close-btn" onclick="closeModal()">&times;</span>
-        <img id="modalImage" src="">
     </div>
 
     <script>
-        // DATA
-        const gems = [
-            {
-                title: "Bernsteine",
-                cat: "basic",
-                color: "#ffaa00",
-                img: "https://i.postimg.cc/T3g6Qq3q/Bernstein.png",
-                desc: "Die Einsteiger-Währung. Nutze sie für kleinere Händler und um deine ersten Strukturen auf dem Markt zu erwerben.",
-                source: "Spielerbank (Verkauf von Tributen), Alpha Drops.",
-                loot: ""
-            },
-            {
-                title: "Rubine",
-                cat: "basic",
-                color: "#ff0000",
-                img: "https://i.postimg.cc/xdm3X8gd/Rubin.png",
-                desc: "Die Standard-Währung für fleißige Spieler. Hauptsächlich durch Quests und Aktivität zu verdienen.",
-                source: "Quests & Voting.",
-                loot: "1x Vote (The Island): 5 Rubine<br>Daily Quest: 5 Rubine<br>Weekly Quest: 15 Rubine"
-            },
-            {
-                title: "Amethyste",
-                cat: "basic",
-                color: "#b042f5",
-                img: "https://i.postimg.cc/YCMHnLG5/Anesthyt.png",
-                desc: "Eine mittlere Währung, die bei diversen Händlern und Quellen gefunden werden kann.",
-                source: "Diverse Quellen & Händler.",
-                loot: ""
-            },
-            {
-                title: "Smaragde",
-                cat: "boss",
-                color: "#00ff00",
-                img: "https://i.postimg.cc/X7ZGjhsj/Smaragd.png",
-                desc: "Wird von den Open World Bossen fallen gelassen. Essentiell für bessere Ausrüstung.",
-                source: "Mantisqueen, Scorpionking, Beelzebufo King, Rhinobeast.",
-                loot: "Jeder Kill bringt Smaragde (Menge variiert)."
-            },
-            {
-                title: "Saphire",
-                cat: "boss",
-                color: "#0055ff",
-                img: "https://i.postimg.cc/sXvQMN34/Saphir.png",
-                desc: "Ein seltener Stein, der gegen Teleportsteine eingetauscht werden kann.",
-                source: "Rare & Legendary Kreaturen.",
-                loot: "Rare Kill: 1x<br>Legendary Kill: 3x"
-            },
-            {
-                title: "Diamanten",
-                cat: "boss",
-                color: "#00ffff",
-                img: "https://i.postimg.cc/0QqFQLYL/Diamant.png",
-                desc: "Der wertvollste Edelstein. Nur durch die härtesten Herausforderungen zu bekommen.",
-                source: "Ark Bosskämpfe.",
-                loot: "Gamma: 1x | Beta: 2x | Alpha: 5x"
-            },
-            {
-                title: "Arkensteine",
-                cat: "special",
-                color: "#ff00ff",
-                img: "https://i.postimg.cc/DwTx1qJX/15.png",
-                desc: "Ein mächtiges Artefakt. Löst bei Erhalt sofort globale Server-Boosts für alle aus.",
-                source: "Tek Cave Abschluss (Gamma/Beta/Alpha).",
-                loot: "Globaler Server Boost Event."
-            }
-        ];
-
-        // RENDER
-        function render(filterCat = 'all', searchText = '') {
-            const container = document.getElementById('gemGrid');
-            container.innerHTML = '';
-
-            const filtered = gems.filter(g => {
-                const matchCat = filterCat === 'all' || g.cat === filterCat;
-                const matchSearch = g.title.toLowerCase().includes(searchText) || g.desc.toLowerCase().includes(searchText) || g.source.toLowerCase().includes(searchText);
-                return matchCat && matchSearch;
-            });
-
-            if(filtered.length === 0) {
-                container.innerHTML = '<div style="grid-column:1/-1; text-align:center; color:#666; margin-top:50px;">Keine Edelsteine gefunden.</div>';
-                return;
-            }
-
-            filtered.forEach(g => {
-                const card = document.createElement('div');
-                card.className = 'gem-card';
-                // Set custom glow color variable
-                card.style.setProperty('--glow-color', g.color);
-                
-                let lootHtml = g.loot ? 
-                    `<div class="meta-row">
-                        <div class="meta-icon"><i class="fa-solid fa-gift"></i></div>
-                        <div class="meta-text">${g.loot}</div>
-                     </div>` : '';
-
-                card.innerHTML = `
-                    <div class="card-visual">
-                        <img src="${g.img}" class="card-img" onclick="openModal('${g.img}')" alt="${g.title}">
-                    </div>
-                    <div class="card-body">
-                        <h3 class="card-title" style="color:${g.color}">${g.title}</h3>
-                        <div class="card-desc">${g.desc}</div>
-                        <div class="card-meta">
-                            <div class="meta-row">
-                                <div class="meta-icon"><i class="fa-solid fa-location-dot"></i></div>
-                                <div class="meta-text"><strong>Fundort:</strong> ${g.source}</div>
-                            </div>
-                            ${lootHtml}
-                        </div>
-                    </div>
-                `;
-                container.appendChild(card);
-            });
-        }
-
-        // TABS
-        function filterGems(cat, btn) {
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        function showTab(tabId, btn) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+            
+            // Deactivate buttons
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            
+            // Activate selected
+            document.getElementById(tabId).classList.add('active');
             btn.classList.add('active');
-            render(cat, document.getElementById('searchInput').value.toLowerCase());
         }
-
-        // SEARCH
-        document.getElementById('searchInput').addEventListener('input', (e) => {
-            const activeBtn = document.querySelector('.tab-btn.active');
-            // Extract category from onclick attribute
-            const cat = activeBtn.getAttribute('onclick').match(/'([^']+)'/)[1];
-            render(cat, e.target.value.toLowerCase());
-        });
-
-        // MODAL
-        const modal = document.getElementById('imgModal');
-        const modalImg = document.getElementById('modalImage');
-
-        function openModal(src) {
-            modalImg.src = src;
-            modal.classList.add('open');
-        }
-
-        function closeModal() {
-            modal.classList.remove('open');
-        }
-        
-        modal.addEventListener('click', (e) => {
-            if(e.target === modal) closeModal();
-        });
-
-        // INIT
-        render('all');
-
     </script>
+
 </body>
 </html>
