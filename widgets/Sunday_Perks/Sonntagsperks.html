@@ -161,7 +161,7 @@
         /* --- PERKS GRID --- */
         .perks-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 25px;
             max-width: 1400px;
             margin: 0 auto;
@@ -227,7 +227,6 @@
             width: 100%;
             height: 100%;
             object-fit: contain;
-            /* Filter für besseren Kontrast auf dunklem Grund */
             filter: drop-shadow(0 2px 5px rgba(0,0,0,0.5));
             transition: transform 0.2s;
         }
@@ -243,6 +242,13 @@
             color: #fff;
             margin: 0 0 5px 0;
             line-height: 1.2;
+        }
+
+        .perk-desc {
+            font-size: 0.85rem;
+            color: #aaa;
+            margin-bottom: 5px;
+            line-height: 1.3;
         }
 
         .perk-value {
@@ -301,6 +307,7 @@
                     </div>
                     <div class="perk-content">
                         <h4 class="perk-title">Gewichts Boost</h4>
+                        <div class="perk-desc">Erhöht deine maximale Traglast.</div>
                         <div class="perk-value">+ 25%</div>
                     </div>
                 </div>
@@ -311,6 +318,7 @@
                     </div>
                     <div class="perk-content">
                         <h4 class="perk-title">Taming Boost</h4>
+                        <div class="perk-desc">Beschleunigt das Zähmen.</div>
                         <div class="perk-value">+ 25%</div>
                     </div>
                 </div>
@@ -321,6 +329,7 @@
                     </div>
                     <div class="perk-content">
                         <h4 class="perk-title">XP Boost</h4>
+                        <div class="perk-desc">Steigert den Erfahrungsgewinn.</div>
                         <div class="perk-value">+ 25%</div>
                     </div>
                 </div>
@@ -331,6 +340,7 @@
                     </div>
                     <div class="perk-content">
                         <h4 class="perk-title">Resistenz Boost</h4>
+                        <div class="perk-desc">Reduziert erlittenen Schaden.</div>
                         <div class="perk-value">+ 25%</div>
                     </div>
                 </div>
@@ -341,6 +351,7 @@
                     </div>
                     <div class="perk-content">
                         <h4 class="perk-title">HP Boost</h4>
+                        <div class="perk-desc">Erhöht maximale Gesundheit.</div>
                         <div class="perk-value">+ 25%</div>
                     </div>
                 </div>
@@ -351,6 +362,7 @@
                     </div>
                     <div class="perk-content">
                         <h4 class="perk-title">Stamina Boost</h4>
+                        <div class="perk-desc">Steigert deine Ausdauer.</div>
                         <div class="perk-value">+ 25%</div>
                     </div>
                 </div>
@@ -361,6 +373,7 @@
                     </div>
                     <div class="perk-content">
                         <h4 class="perk-title">Melee DMG Boost</h4>
+                        <div class="perk-desc">Erhöht Nahkampfschaden.</div>
                         <div class="perk-value">+ 25%</div>
                     </div>
                 </div>
@@ -371,6 +384,7 @@
                     </div>
                     <div class="perk-content">
                         <h4 class="perk-title">Food & Water</h4>
+                        <div class="perk-desc">Mehr Nahrung & Wasser.</div>
                         <div class="perk-value">+ 25%</div>
                     </div>
                 </div>
@@ -381,6 +395,7 @@
                     </div>
                     <div class="perk-content">
                         <h4 class="perk-title">Oxygen Boost</h4>
+                        <div class="perk-desc">Verlängert Atemzeit.</div>
                         <div class="perk-value">+ 25%</div>
                     </div>
                 </div>
@@ -391,6 +406,7 @@
                     </div>
                     <div class="perk-content">
                         <h4 class="perk-title">Harvest Boost</h4>
+                        <div class="perk-desc">Mehr Ressourcen sammeln.</div>
                         <div class="perk-value">+ 25%</div>
                     </div>
                 </div>
