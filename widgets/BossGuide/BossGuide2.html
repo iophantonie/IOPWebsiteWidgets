@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IOP Boss Guide</title>
+    <title>IOP Boss Guide: Matrix</title>
     <link href="https://fonts.googleapis.com/css2?family=Acme&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -13,7 +13,7 @@
             --c-primary: #ff3300;
             --c-bg: #050505;
             --c-panel: #101010;
-            --c-card: #1a1a1a;
+            --c-card: #181818;
             --c-text: #e0e0e0;
             --c-dim: #888;
             --c-border: #333;
@@ -57,7 +57,7 @@
 
         /* --- SIDEBAR --- */
         .sidebar {
-            width: 260px;
+            width: 280px;
             background-color: #080808;
             border-right: 1px solid var(--c-border);
             display: flex;
@@ -126,7 +126,7 @@
 
         .boss-btn {
             width: 100%;
-            padding: 12px 20px;
+            padding: 15px 20px;
             background: transparent;
             border: none;
             color: #aaa;
@@ -137,8 +137,9 @@
             transition: all 0.2s;
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 15px;
             border-left: 3px solid transparent;
+            border-bottom: 1px solid #111;
         }
 
         .boss-btn:hover { color: #fff; background: rgba(255,255,255,0.03); }
@@ -149,7 +150,7 @@
         }
         
         .boss-btn img { 
-            width: 32px; height: 32px; 
+            width: 40px; height: 40px; 
             object-fit: contain; 
             filter: grayscale(100%); 
             transition: 0.2s; 
@@ -161,12 +162,13 @@
         .match-badge {
             margin-left: auto;
             font-size: 0.7rem;
-            background: #333;
-            color: #fff;
+            background: #222;
+            color: var(--c-primary);
             padding: 2px 6px;
             border-radius: 4px;
             font-family: var(--f-body);
-            border: 1px solid #444;
+            border: 1px solid #333;
+            text-transform: uppercase;
         }
 
         /* --- CONTENT WRAPPER --- */
@@ -187,14 +189,15 @@
             justify-content: space-between;
             align-items: center;
             flex-shrink: 0;
-            height: 80px;
+            height: 90px;
         }
         
-        .boss-header h1 { margin: 0; font-family: var(--f-head); font-size: 2rem; color: #fff; text-transform: uppercase; line-height: 1; letter-spacing: 1px; }
-        .boss-header p { margin: 4px 0 0 0; color: var(--c-dim); font-size: 0.9rem; }
+        .boss-header h1 { margin: 0; font-family: var(--f-head); font-size: 2.2rem; color: #fff; text-transform: uppercase; line-height: 1; letter-spacing: 1px; }
+        .boss-header p { margin: 4px 0 0 0; color: var(--c-dim); font-size: 1rem; }
 
         .controls { display: flex; gap: 20px; align-items: center; }
 
+        .map-select label { color: #888; font-size: 0.8rem; margin-right: 5px; text-transform: uppercase; }
         .map-select select {
             background: #202020;
             color: #fff;
@@ -205,6 +208,7 @@
             font-size: 0.9rem;
             cursor: pointer;
             outline: none;
+            min-width: 150px;
         }
         .map-select select:focus { border-color: var(--c-primary); }
 
@@ -222,11 +226,12 @@
             color: #666;
             cursor: pointer;
             font-weight: bold;
-            font-size: 0.8rem;
+            font-size: 1.2rem; /* Larger for flags */
             transition: 0.2s;
+            display: flex; align-items: center; justify-content: center;
         }
-        .lang-btn.active { background: #333; color: #fff; }
-        .lang-btn:hover { color: #fff; }
+        .lang-btn.active { background: #333; color: #fff; filter: brightness(1.2); }
+        .lang-btn:hover { background: #222; }
 
         /* --- SCROLL AREA --- */
         .scroll-content {
@@ -239,12 +244,12 @@
         .scroll-content::-webkit-scrollbar-thumb { background-color: #333; border-radius: 5px; border: 2px solid #080808; }
 
         /* --- SECTIONS --- */
-        .section-block { margin-bottom: 40px; animation: fadeIn 0.4s ease-out; }
+        .section-block { margin-bottom: 50px; animation: fadeIn 0.4s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         .section-title { 
-            font-family: var(--f-head); font-size: 1.4rem; color: var(--c-primary); 
-            border-bottom: 1px solid var(--c-border); padding-bottom: 10px; margin-bottom: 20px;
+            font-family: var(--f-head); font-size: 1.5rem; color: var(--c-primary); 
+            border-bottom: 2px solid #222; padding-bottom: 10px; margin-bottom: 20px;
             display: flex; align-items: center; gap: 12px;
         }
 
@@ -252,19 +257,19 @@
         .matrix-header {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
-            gap: 15px;
+            gap: 20px;
             margin-bottom: 15px;
             text-align: center;
             font-family: var(--f-head);
             text-transform: uppercase;
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             letter-spacing: 1px;
         }
         .mh-col { 
-            padding: 10px; border-radius: 6px; color: #000; font-weight: bold; 
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3); position: relative; overflow: hidden;
+            padding: 12px; border-radius: 6px; color: #000; font-weight: bold; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4); position: relative; overflow: hidden;
         }
-        .mh-col::after { content:''; position:absolute; top:0; left:0; width:100%; height:100%; background: linear-gradient(to bottom, rgba(255,255,255,0.2), transparent); }
+        .mh-col::after { content:''; position:absolute; top:0; left:0; width:100%; height:100%; background: linear-gradient(to bottom, rgba(255,255,255,0.15), transparent); }
         
         .mh-gamma { background: var(--diff-gamma); }
         .mh-beta { background: var(--diff-beta); }
@@ -273,7 +278,7 @@
         .matrix-row {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
-            gap: 15px;
+            gap: 20px;
         }
 
         .matrix-col {
@@ -283,8 +288,10 @@
             padding: 20px;
             height: 100%;
             transition: transform 0.2s;
+            display: flex;
+            flex-direction: column;
         }
-        .matrix-col:hover { transform: translateY(-2px); border-color: #555; }
+        .matrix-col:hover { transform: translateY(-3px); border-color: #555; background: #1f1f1f; }
         
         .matrix-col.gamma { border-top: 4px solid var(--diff-gamma); }
         .matrix-col.beta { border-top: 4px solid var(--diff-beta); }
@@ -294,47 +301,49 @@
         
         /* Stats Table */
         .stats-table { width: 100%; border-collapse: collapse; }
-        .stats-table td { padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.05); color: #aaa; font-size: 1rem; }
+        .stats-table td { padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); color: #aaa; font-size: 1rem; }
         .stats-table tr:last-child td { border-bottom: none; }
         .stats-table .val { font-weight: bold; color: #fff; text-align: right; font-family: monospace; font-size: 1.1rem; }
 
         /* Item Lists (Tribute/Loot) */
         .item-list { display: flex; flex-direction: column; gap: 8px; }
         .item-entry { 
-            display: flex; align-items: center; 
-            background: rgba(0,0,0,0.2); 
-            padding: 8px; border-radius: 6px; border: 1px solid transparent;
+            display: flex; align-items: center; justify-content: space-between;
+            background: rgba(0,0,0,0.3); 
+            padding: 8px 10px; border-radius: 6px; border: 1px solid transparent;
             transition: 0.2s;
         }
         .item-entry:hover { border-color: #444; background: rgba(255,255,255,0.05); }
-        .item-entry img { width: 32px; height: 32px; margin-right: 12px; object-fit: contain; }
-        .item-entry span { font-size: 0.9rem; color: #ddd; flex-grow: 1; line-height: 1.2; }
-        .item-entry .qty { color: var(--c-primary); font-weight: bold; font-family: monospace; font-size: 1rem; background: rgba(0,0,0,0.5); padding: 2px 6px; border-radius: 4px; }
+        
+        .item-left { display: flex; align-items: center; gap: 12px; }
+        .item-entry img { width: 32px; height: 32px; object-fit: contain; }
+        .item-entry span { font-size: 0.95rem; color: #ddd; line-height: 1.2; }
+        .item-entry .qty { color: var(--c-primary); font-weight: bold; font-family: monospace; font-size: 1.1rem; }
 
         /* Tek Unlocks */
-        .tek-unlocks { display: flex; flex-wrap: wrap; gap: 8px; }
+        .tek-unlocks { display: flex; flex-wrap: wrap; gap: 8px; align-content: flex-start; }
         .tek-tag { 
-            font-size: 0.85rem; background: #111; border: 1px solid #333;
-            color: #ccc; padding: 6px 10px; border-radius: 4px; display: flex; align-items: center; gap: 8px;
+            font-size: 0.9rem; background: #111; border: 1px solid #333;
+            color: #ccc; padding: 6px 10px; border-radius: 4px; display: flex; align-items: center; gap: 10px;
             width: 100%; transition: 0.2s;
         }
-        .tek-tag:hover { border-color: var(--c-primary); color: #fff; }
-        .tek-tag img { width: 24px; height: 24px; object-fit: contain; }
+        .tek-tag:hover { border-color: var(--c-primary); color: #fff; background: #222; }
+        .tek-tag img { width: 28px; height: 28px; object-fit: contain; opacity: 0.9; }
 
         /* Strategy Text */
         .strategy-box { 
             background: var(--c-card); border: 1px solid var(--c-border); 
-            border-left: 4px solid var(--c-primary); padding: 25px; border-radius: 6px; 
-            line-height: 1.7; color: #ccc; font-size: 1rem;
+            border-left: 4px solid var(--c-primary); padding: 30px; border-radius: 6px; 
+            line-height: 1.7; color: #ccc; font-size: 1.05rem;
         }
-        .strategy-box h4 { color: #fff; margin: 20px 0 10px 0; font-family: var(--f-head); font-size: 1.2rem; border-bottom: 1px solid #333; padding-bottom: 5px; }
+        .strategy-box h4 { color: #fff; margin: 25px 0 10px 0; font-family: var(--f-head); font-size: 1.3rem; border-bottom: 1px solid #333; padding-bottom: 5px; }
         .strategy-box h4:first-child { margin-top: 0; }
-        .strategy-box p { margin: 0 0 10px 0; }
+        .strategy-box p { margin: 0 0 15px 0; }
 
         /* Prev Note */
         .note { 
-            color: #666; font-style: italic; font-size: 0.8rem; margin-bottom: 10px; 
-            text-align: center; border-bottom: 1px dashed #333; padding-bottom: 5px; 
+            color: #666; font-style: italic; font-size: 0.85rem; margin-bottom: 15px; 
+            text-align: center; border-bottom: 1px dashed #333; padding-bottom: 8px; 
         }
 
         /* Search Highlight */
@@ -342,14 +351,14 @@
 
         @media (max-width: 900px) {
             .widget-container { flex-direction: column; height: 100vh; width: 100%; border: none; border-radius: 0; }
-            .sidebar { width: 100%; height: auto; max-height: 160px; border-right: none; border-bottom: 1px solid var(--c-border); }
+            .sidebar { width: 100%; height: auto; max-height: 200px; border-right: none; border-bottom: 1px solid var(--c-border); }
             .sidebar-header { display: none; }
-            .boss-list { display: flex; overflow-x: auto; padding: 5px; }
+            .boss-list { display: flex; overflow-x: auto; padding: 10px; }
             .boss-btn { width: auto; padding: 10px 15px; white-space: nowrap; border-left: none; border-bottom: 3px solid transparent; background: #111; margin-right: 5px; border-radius: 4px; }
             .boss-btn.active { background: var(--c-primary); color: #000; border-left: none; border-bottom: none; }
-            .boss-btn img { display: none; } /* Hide icons on mobile list to save space */
+            .boss-btn img { display: none; } 
             
-            .matrix-header, .matrix-row { grid-template-columns: 1fr; gap: 10px; } 
+            .matrix-header, .matrix-row { grid-template-columns: 1fr; gap: 15px; } 
             .matrix-col { margin-bottom: 10px; }
             
             .top-bar { flex-direction: column; height: auto; padding: 20px; align-items: flex-start; gap: 15px; }
@@ -390,11 +399,12 @@
                 </div>
                 <div class="controls">
                     <div class="map-select">
+                        <label>Arena:</label>
                         <select id="mapSelector" onchange="changeMap(this.value)"></select>
                     </div>
                     <div class="lang-toggle">
-                        <button class="lang-btn active" onclick="setLang('de')" id="btn-de">DE</button>
-                        <button class="lang-btn" onclick="setLang('en')" id="btn-en">EN</button>
+                        <button class="lang-btn active" onclick="setLang('de')" id="btn-de" title="Deutsch">🇩🇪</button>
+                        <button class="lang-btn" onclick="setLang('en')" id="btn-en" title="English">🇺🇸</button>
                     </div>
                 </div>
             </div>
@@ -559,7 +569,10 @@
                 name: { de: "Megapithecus", en: "Megapithecus" },
                 icon: "https://ark.wiki.gg/images/thumb/Megapithecus.png/50px-Megapithecus.png",
                 desc: { de: "Ein riesiger Gorilla in einer verschneiten Arena.", en: "A giant gorilla in a snowy arena." },
-                strategy: { de: "Vermeide die Klippen! Locke ihn in die Mitte und nutze Rexe.", en: "Avoid the cliffs! Lure him to the center." },
+                strategy: { 
+                    de: "<h4>Positionierung</h4>Vermeide die Klippen! Ein falscher Schritt und deine Dinos sterben sofort. Locke ihn in die Mitte oder zum Startpunkt.<br><br><h4>Dinos</h4>Rexe sind effektiv. Yutyrannus für Buffs ist Pflicht.", 
+                    en: "<h4>Positioning</h4>Avoid the cliffs! One wrong step and your dinos die instantly. Lure him to the center or starting area.<br><br><h4>Dinos</h4>Rexes are effective. Yutyrannus for buffs is mandatory." 
+                },
                 maps: { 
                     "The Island": {
                         "Gamma": { stats: {hp:"180,000", dmg:"400", lvl:"30"}, tributes:[{id:"art_pack", q:1},{id:"art_devourer", q:1},{id:"art_massive", q:1}], loot:[{id:"element", q:20}, {id:"trophy_mega", q:1}, {id:"flag_gorilla", q:1}], unlocks:["tek_gauntlets", "tek_hatchframe", "tek_door", "tek_window", "tek_trapdoor"] },
@@ -577,7 +590,10 @@
                 name: { de: "Dragon", en: "Dragon" },
                 icon: "https://ark.wiki.gg/images/thumb/Dragon.png/50px-Dragon.png",
                 desc: { de: "Feuerspeiender Drache. Prozentualer Schaden.", en: "Fire breathing dragon. Deals percentage damage." },
-                strategy: { de: "Nutze Therizinosaurus mit Veggie Cakes.", en: "Use Therizinosaurus with Veggie Cakes." },
+                strategy: { 
+                    de: "<h4>Feuer-Schaden</h4>Der Feueratem macht prozentualen Schaden (20% der Max HP). Fleischfresser (Rexe) sterben hier extrem schnell.<br><br><h4>Therizinosaurus</h4>Nutze Therizinosaurus mit Sweet Vegetable Cakes. Die Kuchen heilen sie effizient gegen den Feuerschaden.<br><br><h4>Deinonychus (Valguero)</h4>Auf Valguero kann man sich an seine Fersen heften und ihn ausbluten lassen.", 
+                    en: "<h4>Fire Damage</h4>The fire breath deals percentage damage (20% of Max HP). Carnivores (Rexes) die very quickly here.<br><br><h4>Therizinosaurus</h4>Use Therizinosaurus with Sweet Vegetable Cakes. The cakes heal them efficiently against the fire damage." 
+                },
                 maps: { 
                     "The Island": {
                         "Gamma": { stats: {hp:"432,000", dmg:"?", lvl:"50"}, tributes:[{id:"art_cunning", q:1}, {id:"art_immine", q:1}, {id:"art_skylord", q:1}, {id:"art_strong", q:1}], loot:[{id:"element", q:40}, {id:"trophy_dragon", q:1}, {id:"flag_dragon", q:1}], unlocks:["tek_leggings", "tek_trough", "tek_gen"] },
@@ -590,7 +606,10 @@
                 name: { de: "Manticore", en: "Manticore" },
                 icon: "https://ark.wiki.gg/images/thumb/Manticore.png/50px-Manticore.png",
                 desc: { de: "Wächter von Scorched Earth.", en: "Guardian of Scorched Earth." },
-                strategy: { de: "Bringe ihn zum Landen. Wyvern sind erlaubt.", en: "Force him to land. Wyverns allowed." },
+                strategy: { 
+                    de: "<h4>Flugphase</h4>Der Manticore fliegt viel. Man muss warten, bis er landet, um mit Rexen Schaden zu machen.<br><br><h4>Wyvern</h4>In dieser Arena sind Wyvern erlaubt und sehr nützlich, um ihn in der Luft zu attackieren.<br><br><h4>Torpor</h4>Achtung vor den Stacheln, sie verursachen hohen Torpor an Spielern und Dinos.", 
+                    en: "<h4>Flight Phase</h4>The Manticore flies a lot. You have to wait for it to land to deal damage with Rexes.<br><br><h4>Wyverns</h4>Wyverns are allowed in this arena and very useful for attacking him in the air.<br><br><h4>Torpor</h4>Watch out for the spikes, they cause high torpor to players and dinos." 
+                },
                 maps: { 
                     "Scorched Earth": { 
                         "Gamma": { stats: {hp:"110,000", dmg:"?", lvl:"55"}, tributes:[{id:"art_clever", q:1}, {id:"art_devourer", q:1}, {id:"art_skylord", q:1}], loot:[{id:"element", q:35}, {id:"trophy_manti", q:1}, {id:"flag_manti", q:1}], unlocks:["tek_gauntlets", "tek_leggings", "tek_boots", "tek_trough", "tek_gen", "tek_light"] },
@@ -758,8 +777,10 @@
                     const dbItem = getItem(entry.id);
                     return `
                     <div class="item-entry" title="${dbItem.name}">
-                        <img src="${dbItem.icon}">
-                        <span>${dbItem.name}</span>
+                        <div class="item-left">
+                            <img src="${dbItem.icon}">
+                            <span>${dbItem.name}</span>
+                        </div>
                         <span class="qty">x${entry.q}</span>
                     </div>`;
                 }).join('');
