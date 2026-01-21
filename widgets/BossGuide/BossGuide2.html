@@ -218,20 +218,31 @@
             border: 1px solid var(--c-border);
             border-radius: 4px;
             overflow: hidden;
+            gap: 1px;
         }
         .lang-btn {
-            background: transparent;
+            background: #1a1a1a;
             border: none;
-            padding: 8px 12px;
-            color: #666;
+            padding: 6px 12px;
             cursor: pointer;
-            font-weight: bold;
-            font-size: 1.2rem; /* Larger for flags */
             transition: 0.2s;
-            display: flex; align-items: center; justify-content: center;
+            display: flex; 
+            align-items: center; 
+            gap: 6px;
+            opacity: 0.6;
         }
-        .lang-btn.active { background: #333; color: #fff; filter: brightness(1.2); }
-        .lang-btn:hover { background: #222; }
+        .lang-btn img {
+            width: 24px;
+            height: auto;
+            border-radius: 2px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.5);
+        }
+        .lang-btn.active { 
+            background: #333; 
+            opacity: 1;
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.5);
+        }
+        .lang-btn:hover { opacity: 1; background: #252525; }
 
         /* --- SCROLL AREA --- */
         .scroll-content {
@@ -272,7 +283,7 @@
         .mh-col::after { content:''; position:absolute; top:0; left:0; width:100%; height:100%; background: linear-gradient(to bottom, rgba(255,255,255,0.15), transparent); }
         
         .mh-gamma { background: var(--diff-gamma); }
-        .mh-beta { background: var(--diff-beta); }
+        .mh-beta { background: var(--diff-beta); color: #fff; }
         .mh-alpha { background: var(--diff-alpha); color: #fff; }
 
         .matrix-row {
@@ -307,18 +318,58 @@
 
         /* Item Lists (Tribute/Loot) */
         .item-list { display: flex; flex-direction: column; gap: 8px; }
+        
+        /* New Item Entry Styling for Right Alignment */
         .item-entry { 
-            display: flex; align-items: center; justify-content: space-between;
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; /* Pushes content to edges */
             background: rgba(0,0,0,0.3); 
-            padding: 8px 10px; border-radius: 6px; border: 1px solid transparent;
+            padding: 8px 12px; 
+            border-radius: 6px; 
+            border: 1px solid transparent;
             transition: 0.2s;
+            width: 100%;
         }
         .item-entry:hover { border-color: #444; background: rgba(255,255,255,0.05); }
         
-        .item-left { display: flex; align-items: center; gap: 12px; }
-        .item-entry img { width: 32px; height: 32px; object-fit: contain; }
-        .item-entry span { font-size: 0.95rem; color: #ddd; line-height: 1.2; }
-        .item-entry .qty { color: var(--c-primary); font-weight: bold; font-family: monospace; font-size: 1.1rem; }
+        .item-left { 
+            display: flex; 
+            align-items: center; 
+            gap: 12px; 
+            flex-grow: 1; /* Takes up remaining space */
+            overflow: hidden; /* Prevent overflow if text is huge */
+        }
+        
+        .item-entry img { 
+            width: 32px; 
+            height: 32px; 
+            object-fit: contain; 
+            flex-shrink: 0; 
+        }
+        
+        .item-entry span { 
+            font-size: 0.95rem; 
+            color: #ddd; 
+            line-height: 1.2;
+            white-space: nowrap; 
+            overflow: hidden; 
+            text-overflow: ellipsis; /* ... if text is too long */
+        }
+        
+        .qty { 
+            color: var(--c-primary); 
+            font-weight: bold; 
+            font-family: monospace; 
+            font-size: 1.1rem; 
+            background: rgba(0,0,0,0.5); 
+            padding: 2px 8px; 
+            border-radius: 4px;
+            min-width: 40px; /* Fixed min-width for alignment */
+            text-align: right; /* Text aligns right within the box */
+            flex-shrink: 0; /* Prevents shrinking */
+            margin-left: 10px;
+        }
 
         /* Tek Unlocks */
         .tek-unlocks { display: flex; flex-wrap: wrap; gap: 8px; align-content: flex-start; }
@@ -403,8 +454,12 @@
                         <select id="mapSelector" onchange="changeMap(this.value)"></select>
                     </div>
                     <div class="lang-toggle">
-                        <button class="lang-btn active" onclick="setLang('de')" id="btn-de" title="Deutsch">🇩🇪</button>
-                        <button class="lang-btn" onclick="setLang('en')" id="btn-en" title="English">🇺🇸</button>
+                        <button class="lang-btn active" onclick="setLang('de')" id="btn-de">
+                            <img src="https://flagcdn.com/w40/de.png" alt="DE">
+                        </button>
+                        <button class="lang-btn" onclick="setLang('en')" id="btn-en">
+                            <img src="https://flagcdn.com/w40/us.png" alt="US">
+                        </button>
                     </div>
                 </div>
             </div>
@@ -596,9 +651,9 @@
                 },
                 maps: { 
                     "The Island": {
-                        "Gamma": { stats: {hp:"432,000", dmg:"?", lvl:"50"}, tributes:[{id:"art_cunning", q:1}, {id:"art_immine", q:1}, {id:"art_skylord", q:1}, {id:"art_strong", q:1}], loot:[{id:"element", q:40}, {id:"trophy_dragon", q:1}, {id:"flag_dragon", q:1}], unlocks:["tek_leggings", "tek_trough", "tek_gen"] },
-                        "Beta": { stats: {hp:"864,000", dmg:"?", lvl:"70"}, tributes:[{id:"art_cunning", q:1}, {id:"art_immine", q:1}, {id:"art_skylord", q:1}, {id:"art_strong", q:1}, {id:"allo_brain", q:5}, {id:"basilo_blubber", q:5}, {id:"giga_heart", q:1}, {id:"tuso_tentacle", q:5}, {id:"rex_arm", q:5}, {id:"yuty_lungs", q:5}], loot:[{id:"element", q:110}, {id:"trophy_dragon", q:1}, {id:"flag_dragon", q:1}], unlocks:["tek_transmitter", "tek_shield"] },
-                        "Alpha": { stats: {hp:"972,000", dmg:"?", lvl:"100"}, tributes:[{id:"art_cunning", q:1}, {id:"art_immine", q:1}, {id:"art_skylord", q:1}, {id:"art_strong", q:1}, {id:"allo_brain", q:10}, {id:"basilo_blubber", q:10}, {id:"giga_heart", q:2}, {id:"tuso_tentacle", q:10}, {id:"rex_arm", q:10}, {id:"yuty_lungs", q:10}], loot:[{id:"element", q:220}, {id:"trophy_dragon", q:1}, {id:"flag_dragon", q:1}], unlocks:["tek_teleporter", "tek_dedi", "tek_chest", "tek_cloning_chamber"] }
+                        "Gamma": { stats: {hp:"432,000", dmg:"~500", lvl:"55"}, tributes:[{id:"art_cunning", q:1}, {id:"art_immine", q:1}, {id:"art_skylord", q:1}, {id:"art_strong", q:1}], loot:[{id:"element", q:40}, {id:"trophy_dragon", q:1}, {id:"flag_dragon", q:1}], unlocks:["tek_leggings", "tek_trough", "tek_gen"] },
+                        "Beta": { stats: {hp:"864,000", dmg:"~1000", lvl:"75"}, tributes:[{id:"art_cunning", q:1}, {id:"art_immine", q:1}, {id:"art_skylord", q:1}, {id:"art_strong", q:1}, {id:"allo_brain", q:5}, {id:"basilo_blubber", q:5}, {id:"giga_heart", q:1}, {id:"tuso_tentacle", q:5}, {id:"rex_arm", q:5}, {id:"yuty_lungs", q:5}], loot:[{id:"element", q:110}, {id:"trophy_dragon", q:1}, {id:"flag_dragon", q:1}], unlocks:["tek_transmitter", "tek_shield"] },
+                        "Alpha": { stats: {hp:"972,000", dmg:"~2000", lvl:"100"}, tributes:[{id:"art_cunning", q:1}, {id:"art_immine", q:1}, {id:"art_skylord", q:1}, {id:"art_strong", q:1}, {id:"allo_brain", q:10}, {id:"basilo_blubber", q:10}, {id:"giga_heart", q:2}, {id:"tuso_tentacle", q:10}, {id:"rex_arm", q:15}, {id:"yuty_lungs", q:10}], loot:[{id:"element", q:220}, {id:"trophy_dragon", q:1}, {id:"flag_dragon", q:1}], unlocks:["tek_teleporter", "tek_dedi", "tek_chest", "tek_cloning_chamber"] }
                     }
                 }
             },
