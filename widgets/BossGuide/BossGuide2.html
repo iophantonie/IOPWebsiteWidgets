@@ -3,24 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IOP Boss Guide: Matrix Edition</title>
+    <title>IOP Boss Guide</title>
     <link href="https://fonts.googleapis.com/css2?family=Acme&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         /* --- VARIABLES --- */
         :root {
-            --c-primary: #ff3300;
+            --c-primary: #ff3300;       /* IOP Orange/Red */
+            --c-primary-dim: #992200;
             --c-bg: #050505;
             --c-panel: #101010;
-            --c-card: #1a1a1a;
+            --c-card: #161616;
             --c-text: #e0e0e0;
             --c-dim: #888;
             --c-border: #333;
             
-            --diff-gamma: #4CAF50;
-            --diff-beta: #FFEB3B;
-            --diff-alpha: #F44336;
+            /* Difficulty Colors per User Request */
+            --diff-gamma: #4CAF50; /* Green */
+            --diff-beta: #2196F3;  /* Blue */
+            --diff-alpha: #F44336; /* Red */
 
             --f-head: 'Acme', sans-serif;
             --f-body: 'Roboto', sans-serif;
@@ -41,7 +43,7 @@
             overflow: hidden;
         }
 
-        /* --- CONTAINER --- */
+        /* --- CONTAINER (IOP UI Style) --- */
         .widget-container {
             display: flex;
             width: 99%; 
@@ -51,40 +53,84 @@
             border-radius: 12px;
             overflow: hidden;
             box-shadow: 0 0 50px rgba(0,0,0,0.9);
+            position: relative;
         }
 
         /* --- SIDEBAR --- */
         .sidebar {
-            width: 220px;
+            width: 260px;
             background-color: #080808;
             border-right: 1px solid var(--c-border);
             display: flex;
             flex-direction: column;
             flex-shrink: 0;
+            z-index: 10;
         }
 
         .sidebar-header {
             padding: 20px;
-            font-family: var(--f-head);
-            font-size: 1.4rem;
-            color: var(--c-primary);
             text-align: center;
             border-bottom: 1px solid var(--c-border);
+            background: radial-gradient(circle at 50% 0%, rgba(255,51,0,0.1) 0%, transparent 70%);
+        }
+        
+        .sidebar-title {
+            font-family: var(--f-head);
+            font-size: 1.8rem;
+            color: var(--c-primary);
             text-transform: uppercase;
+            margin: 0;
+            text-shadow: 0 0 10px rgba(255, 51, 0, 0.3);
         }
 
+        /* Search Box */
+        .search-box {
+            padding: 15px;
+            border-bottom: 1px solid var(--c-border);
+        }
+        .search-input-wrapper {
+            position: relative;
+        }
+        .search-input {
+            width: 100%;
+            background: #1a1a1a;
+            border: 1px solid var(--c-border);
+            padding: 10px 10px 10px 35px;
+            border-radius: 6px;
+            color: #fff;
+            font-family: var(--f-body);
+            font-size: 0.9rem;
+            transition: 0.2s;
+        }
+        .search-input:focus {
+            border-color: var(--c-primary);
+            outline: none;
+            box-shadow: 0 0 10px rgba(255,51,0,0.2);
+        }
+        .search-icon {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--c-dim);
+            font-size: 0.9rem;
+        }
+
+        /* Boss List */
         .boss-list {
             flex-grow: 1;
             overflow-y: auto;
             padding: 10px 0;
         }
+        .boss-list::-webkit-scrollbar { width: 4px; }
+        .boss-list::-webkit-scrollbar-thumb { background: #333; }
 
         .boss-btn {
             width: 100%;
-            padding: 15px 20px;
+            padding: 12px 20px;
             background: transparent;
             border: none;
-            color: #888;
+            color: #aaa;
             text-align: left;
             font-family: var(--f-head);
             font-size: 1.1rem;
@@ -92,14 +138,36 @@
             transition: all 0.2s;
             display: flex;
             align-items: center;
-            gap: 10px;
-            border-left: 4px solid transparent;
+            gap: 12px;
+            border-left: 3px solid transparent;
         }
 
-        .boss-btn:hover { color: #fff; background: rgba(255,255,255,0.02); }
-        .boss-btn.active { color: #fff; background: rgba(255,51,0,0.1); border-left-color: var(--c-primary); }
-        .boss-btn img { width: 28px; height: 28px; object-fit: contain; filter: grayscale(100%); transition: 0.2s; }
-        .boss-btn.active img { filter: grayscale(0%); }
+        .boss-btn:hover { color: #fff; background: rgba(255,255,255,0.03); }
+        .boss-btn.active { 
+            color: #fff; 
+            background: linear-gradient(90deg, rgba(255,51,0,0.15) 0%, transparent 100%);
+            border-left-color: var(--c-primary); 
+        }
+        
+        .boss-btn img { 
+            width: 32px; height: 32px; 
+            object-fit: contain; 
+            filter: grayscale(100%); 
+            transition: 0.2s; 
+        }
+        .boss-btn.active img { filter: grayscale(0%); transform: scale(1.1); }
+        .boss-btn:hover img { filter: grayscale(0%); }
+
+        /* Search Match Indicator */
+        .match-badge {
+            margin-left: auto;
+            font-size: 0.7rem;
+            background: #333;
+            color: #fff;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: var(--f-body);
+        }
 
         /* --- CONTENT WRAPPER --- */
         .content-wrapper {
@@ -107,62 +175,97 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            background: radial-gradient(circle at 90% 10%, rgba(255,51,0,0.05) 0%, transparent 40%);
         }
 
         /* --- TOP BAR --- */
         .top-bar {
             background-color: var(--c-panel);
-            padding: 15px 30px;
+            padding: 15px 40px;
             border-bottom: 1px solid var(--c-border);
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-shrink: 0;
+            height: 80px;
         }
         
-        .boss-header h1 { margin: 0; font-family: var(--f-head); font-size: 1.8rem; color: #fff; text-transform: uppercase; }
-        .boss-header p { margin: 0; color: var(--c-dim); font-size: 0.9rem; }
+        .boss-header h1 { margin: 0; font-family: var(--f-head); font-size: 2rem; color: #fff; text-transform: uppercase; line-height: 1; letter-spacing: 1px; }
+        .boss-header p { margin: 4px 0 0 0; color: var(--c-dim); font-size: 0.9rem; }
+
+        .controls { display: flex; gap: 20px; align-items: center; }
 
         .map-select select {
             background: #202020;
             color: #fff;
             border: 1px solid var(--c-border);
-            padding: 8px 15px;
+            padding: 8px 12px;
             border-radius: 4px;
             font-family: var(--f-body);
             font-size: 0.9rem;
             cursor: pointer;
+            outline: none;
         }
+        .map-select select:focus { border-color: var(--c-primary); }
+
+        .lang-toggle {
+            display: flex;
+            background: #000;
+            border: 1px solid var(--c-border);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .lang-btn {
+            background: transparent;
+            border: none;
+            padding: 8px 12px;
+            color: #666;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.8rem;
+            transition: 0.2s;
+        }
+        .lang-btn.active { background: #333; color: #fff; }
+        .lang-btn:hover { color: #fff; }
 
         /* --- SCROLL AREA --- */
         .scroll-content {
             flex-grow: 1;
             overflow-y: auto;
-            padding: 30px;
-            background-image: radial-gradient(circle at 50% 50%, rgba(255,51,0,0.02) 0%, transparent 50%);
+            padding: 40px;
         }
-        .scroll-content::-webkit-scrollbar { width: 8px; }
-        .scroll-content::-webkit-scrollbar-thumb { background-color: #333; border-radius: 4px; }
+        .scroll-content::-webkit-scrollbar { width: 10px; }
+        .scroll-content::-webkit-scrollbar-track { background: #080808; }
+        .scroll-content::-webkit-scrollbar-thumb { background-color: #333; border-radius: 5px; border: 2px solid #080808; }
 
         /* --- SECTIONS --- */
-        .section-block { margin-bottom: 40px; }
+        .section-block { margin-bottom: 40px; animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
         .section-title { 
             font-family: var(--f-head); font-size: 1.4rem; color: var(--c-primary); 
             border-bottom: 1px solid var(--c-border); padding-bottom: 10px; margin-bottom: 20px;
-            display: flex; align-items: center; gap: 10px;
+            display: flex; align-items: center; gap: 12px;
         }
 
         /* --- MATRIX GRID SYSTEM --- */
         .matrix-header {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 10px;
+            gap: 15px;
+            margin-bottom: 15px;
             text-align: center;
             font-family: var(--f-head);
             text-transform: uppercase;
+            font-size: 1.2rem;
+            letter-spacing: 1px;
         }
-        .mh-col { padding: 8px; border-radius: 4px; color: #000; font-weight: bold; }
+        .mh-col { 
+            padding: 10px; border-radius: 6px; color: #000; font-weight: bold; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3); position: relative; overflow: hidden;
+        }
+        .mh-col::after { content:''; position:absolute; top:0; left:0; width:100%; height:100%; background: linear-gradient(to bottom, rgba(255,255,255,0.2), transparent); }
+        
         .mh-gamma { background: var(--diff-gamma); }
         .mh-beta { background: var(--diff-beta); }
         .mh-alpha { background: var(--diff-alpha); color: #fff; }
@@ -170,57 +273,88 @@
         .matrix-row {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
-            gap: 10px;
-            background: var(--c-card);
-            border: 1px solid var(--c-border);
-            border-radius: 8px;
-            overflow: hidden;
+            gap: 15px;
         }
 
         .matrix-col {
-            padding: 15px;
-            border-right: 1px solid var(--c-border);
+            background: var(--c-card);
+            border: 1px solid var(--c-border);
+            border-radius: 8px;
+            padding: 20px;
+            height: 100%;
+            transition: transform 0.2s;
         }
-        .matrix-col:last-child { border-right: none; }
+        .matrix-col:hover { transform: translateY(-2px); border-color: #555; }
+        
+        .matrix-col.gamma { border-top: 4px solid var(--diff-gamma); }
+        .matrix-col.beta { border-top: 4px solid var(--diff-beta); }
+        .matrix-col.alpha { border-top: 4px solid var(--diff-alpha); }
 
         /* --- CONTENT STYLES --- */
         
         /* Stats Table */
         .stats-table { width: 100%; border-collapse: collapse; }
-        .stats-table td { padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,0.05); color: #ccc; font-size: 0.95rem; }
+        .stats-table td { padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.05); color: #aaa; font-size: 1rem; }
         .stats-table tr:last-child td { border-bottom: none; }
-        .stats-table .val { font-weight: bold; color: #fff; text-align: right; }
+        .stats-table .val { font-weight: bold; color: #fff; text-align: right; font-family: monospace; font-size: 1.1rem; }
 
         /* Item Lists (Tribute/Loot) */
         .item-list { display: flex; flex-direction: column; gap: 8px; }
-        .item-entry { display: flex; align-items: center; background: rgba(0,0,0,0.3); padding: 5px; border-radius: 4px; }
-        .item-entry img { width: 24px; height: 24px; margin-right: 10px; object-fit: contain;}
-        .item-entry span { font-size: 0.85rem; color: #ddd; flex-grow: 1; }
-        .item-entry .qty { color: var(--c-primary); font-weight: bold; font-family: monospace; }
+        .item-entry { 
+            display: flex; align-items: center; 
+            background: rgba(0,0,0,0.2); 
+            padding: 8px; border-radius: 6px; border: 1px solid transparent;
+            transition: 0.2s;
+        }
+        .item-entry:hover { border-color: #444; background: rgba(255,255,255,0.05); }
+        .item-entry img { width: 32px; height: 32px; margin-right: 12px; object-fit: contain; }
+        .item-entry span { font-size: 0.9rem; color: #ddd; flex-grow: 1; line-height: 1.2; }
+        .item-entry .qty { color: var(--c-primary); font-weight: bold; font-family: monospace; font-size: 1rem; background: rgba(0,0,0,0.5); padding: 2px 6px; border-radius: 4px; }
 
         /* Tek Unlocks */
-        .tek-unlocks { display: flex; flex-wrap: wrap; gap: 5px; }
+        .tek-unlocks { display: flex; flex-wrap: wrap; gap: 8px; }
         .tek-tag { 
-            font-size: 0.8rem; background: rgba(0, 150, 255, 0.1); border: 1px solid rgba(0, 150, 255, 0.3);
-            color: #8accff; padding: 2px 6px; border-radius: 3px; display: flex; align-items: center; gap: 5px;
+            font-size: 0.85rem; background: #111; border: 1px solid #333;
+            color: #ccc; padding: 6px 10px; border-radius: 4px; display: flex; align-items: center; gap: 8px;
+            width: 100%; transition: 0.2s;
         }
-        .tek-tag img { width: 14px; height: 14px; opacity: 0.8; }
+        .tek-tag:hover { border-color: var(--c-primary); color: #fff; }
+        .tek-tag img { width: 24px; height: 24px; object-fit: contain; }
 
         /* Strategy Text */
         .strategy-box { 
             background: var(--c-card); border: 1px solid var(--c-border); 
-            border-left: 4px solid var(--c-primary); padding: 20px; border-radius: 4px; 
-            line-height: 1.6; color: #ccc; 
+            border-left: 4px solid var(--c-primary); padding: 25px; border-radius: 6px; 
+            line-height: 1.7; color: #ccc; font-size: 1rem;
         }
-        .strategy-box strong { color: #fff; }
+        .strategy-box h4 { color: #fff; margin: 20px 0 10px 0; font-family: var(--f-head); font-size: 1.2rem; border-bottom: 1px solid #333; padding-bottom: 5px; }
+        .strategy-box h4:first-child { margin-top: 0; }
+        .strategy-box p { margin: 0 0 10px 0; }
+
+        /* Prev Note */
+        .note { 
+            color: #666; font-style: italic; font-size: 0.8rem; margin-bottom: 10px; 
+            text-align: center; border-bottom: 1px dashed #333; padding-bottom: 5px; 
+        }
+
+        /* Search Highlight */
+        .highlight { color: var(--c-primary); font-weight: bold; }
 
         @media (max-width: 900px) {
             .widget-container { flex-direction: column; height: 100vh; width: 100%; border: none; border-radius: 0; }
-            .sidebar { width: 100%; height: auto; max-height: 150px; }
-            .matrix-header, .matrix-row { grid-template-columns: 1fr; } /* Stack on mobile */
-            .matrix-col { border-right: none; border-bottom: 1px solid var(--c-border); }
-            .mh-col { margin-bottom: 5px; }
-            .boss-btn { padding: 10px; }
+            .sidebar { width: 100%; height: auto; max-height: 160px; border-right: none; border-bottom: 1px solid var(--c-border); }
+            .sidebar-header { display: none; }
+            .boss-list { display: flex; overflow-x: auto; padding: 5px; }
+            .boss-btn { width: auto; padding: 10px 15px; white-space: nowrap; border-left: none; border-bottom: 3px solid transparent; background: #111; margin-right: 5px; border-radius: 4px; }
+            .boss-btn.active { background: var(--c-primary); color: #000; border-left: none; border-bottom: none; }
+            .boss-btn img { display: none; } /* Hide icons on mobile list to save space */
+            
+            .matrix-header, .matrix-row { grid-template-columns: 1fr; gap: 10px; } 
+            .matrix-col { margin-bottom: 10px; }
+            
+            .top-bar { flex-direction: column; height: auto; padding: 20px; align-items: flex-start; gap: 15px; }
+            .controls { width: 100%; justify-content: space-between; flex-wrap: wrap; }
+            .search-box { padding: 10px; }
         }
     </style>
 </head>
@@ -230,7 +364,18 @@
         
         <!-- SIDEBAR -->
         <div class="sidebar">
-            <div class="sidebar-header">Boss Guide</div>
+            <div class="sidebar-header">
+                <h2 class="sidebar-title">Boss Guide</h2>
+                <span style="font-size:0.7rem; color:#666;">ULTIMATE MATRIX</span>
+            </div>
+            
+            <div class="search-box">
+                <div class="search-input-wrapper">
+                    <i class="fa-solid fa-search search-icon"></i>
+                    <input type="text" class="search-input" id="searchInput" placeholder="Suche Boss, Engramm..." oninput="filterBosses(this.value)">
+                </div>
+            </div>
+
             <div class="boss-list" id="bossList">
                 <!-- Javascript fills this -->
             </div>
@@ -241,68 +386,144 @@
             
             <div class="top-bar">
                 <div class="boss-header" id="bossHeader">
-                    <h1>Boss Name</h1>
-                    <p>Beschreibung...</p>
+                    <!-- Title injected here -->
                 </div>
-                <div class="map-select">
-                    <select id="mapSelector" onchange="changeMap(this.value)"></select>
+                <div class="controls">
+                    <div class="map-select">
+                        <select id="mapSelector" onchange="changeMap(this.value)"></select>
+                    </div>
+                    <div class="lang-toggle">
+                        <button class="lang-btn active" onclick="setLang('de')" id="btn-de">DE</button>
+                        <button class="lang-btn" onclick="setLang('en')" id="btn-en">EN</button>
+                    </div>
                 </div>
             </div>
 
             <div class="scroll-content" id="mainContent">
-                <!-- Javascript fills this -->
+                <!-- Content injected here -->
             </div>
 
         </div>
     </div>
 
     <script>
-        // --- DATA ---
+        // --- ITEM DATABASE (Icons & Translations) ---
+        // Contains Tributes, Artifacts, Loots, Tek Unlocks
+        const ITEMS_DB = {
+            // ARTEFAKTE
+            "art_clever": { de: "Artefakt der Klugheit", en: "Artifact of the Clever", icon: "https://ark.wiki.gg/images/thumb/Artifact_of_the_Clever.png/30px-Artifact_of_the_Clever.png" },
+            "art_hunter": { de: "Artefakt des Jägers", en: "Artifact of the Hunter", icon: "https://ark.wiki.gg/images/thumb/Artifact_of_the_Hunter.png/30px-Artifact_of_the_Hunter.png" },
+            "art_massive": { de: "Artefakt des Felsen", en: "Artifact of the Massive", icon: "https://ark.wiki.gg/images/thumb/Artifact_of_the_Massive.png/30px-Artifact_of_the_Massive.png" },
+            "art_pack": { de: "Artefakt des Rudels", en: "Artifact of the Pack", icon: "https://ark.wiki.gg/images/thumb/Artifact_of_the_Pack.png/30px-Artifact_of_the_Pack.png" },
+            "art_immine": { de: "Artefakt der Immunität", en: "Artifact of the Immune", icon: "https://ark.wiki.gg/images/thumb/Artifact_of_the_Immune.png/30px-Artifact_of_the_Immune.png" },
+            "art_strong": { de: "Artefakt der Stärke", en: "Artifact of the Strong", icon: "https://ark.wiki.gg/images/thumb/Artifact_of_the_Strong.png/30px-Artifact_of_the_Strong.png" },
+            "art_skylord": { de: "Artefakt des Himmelsherren", en: "Artifact of the Skylord", icon: "https://ark.wiki.gg/images/thumb/Artifact_of_the_Skylord.png/30px-Artifact_of_the_Skylord.png" },
+            "art_devourer": { de: "Artefakt des Verschlingers", en: "Artifact of the Devourer", icon: "https://ark.wiki.gg/images/thumb/Artifact_of_the_Devourer.png/30px-Artifact_of_the_Devourer.png" },
+            "art_brute": { de: "Artefakt der Bestie", en: "Artifact of the Brute", icon: "https://ark.wiki.gg/images/thumb/Artifact_of_the_Brute.png/30px-Artifact_of_the_Brute.png" },
+            "art_cunning": { de: "Artefakt der List", en: "Artifact of the Cunning", icon: "https://ark.wiki.gg/images/thumb/Artifact_of_the_Cunning.png/30px-Artifact_of_the_Cunning.png" },
+
+            // TRIBUTE (Körperteile)
+            "argi_talon": { de: "Argentavis Klaue", en: "Argentavis Talon", icon: "https://ark.wiki.gg/images/thumb/Argentavis_Talon.png/30px-Argentavis_Talon.png" },
+            "sarco_skin": { de: "Sarcosuchus Haut", en: "Sarcosuchus Skin", icon: "https://ark.wiki.gg/images/thumb/Sarcosuchus_Skin.png/30px-Sarcosuchus_Skin.png" },
+            "sauro_vert": { de: "Sauropoden Wirbel", en: "Sauropod Vertebra", icon: "https://ark.wiki.gg/images/thumb/Sauropod_Vertebra.png/30px-Sauropod_Vertebra.png" },
+            "titan_venom": { de: "Titanoboa Gift", en: "Titanoboa Venom", icon: "https://ark.wiki.gg/images/thumb/Titanoboa_Venom.png/30px-Titanoboa_Venom.png" },
+            "allo_brain": { de: "Allosaurus Hirn", en: "Allosaurus Brain", icon: "https://ark.wiki.gg/images/thumb/Allosaurus_Brain.png/30px-Allosaurus_Brain.png" },
+            "basilo_blubber": { de: "Basilosaurus Tran", en: "Basilosaurus Blubber", icon: "https://ark.wiki.gg/images/thumb/Basilosaurus_Blubber.png/30px-Basilosaurus_Blubber.png" },
+            "giga_heart": { de: "Giganotosaurus Herz", en: "Giganotosaurus Heart", icon: "https://ark.wiki.gg/images/thumb/Giganotosaurus_Heart.png/30px-Giganotosaurus_Heart.png" },
+            "tuso_tentacle": { de: "Tusoteuthis Tentakel", en: "Tusoteuthis Tentacle", icon: "https://ark.wiki.gg/images/thumb/Tusoteuthis_Tentacle.png/30px-Tusoteuthis_Tentacle.png" },
+            "rex_arm": { de: "Tyrannosaurus Arm", en: "Tyrannosaurus Arm", icon: "https://ark.wiki.gg/images/thumb/Tyrannosaurus_Arm.png/30px-Tyrannosaurus_Arm.png" },
+            "yuty_lungs": { de: "Yutyrannus Lunge", en: "Yutyrannus Lungs", icon: "https://ark.wiki.gg/images/thumb/Yutyrannus_Lungs.png/30px-Yutyrannus_Lungs.png" },
+            "spino_sail": { de: "Spinosaurus Segel", en: "Spinosaurus Sail", icon: "https://ark.wiki.gg/images/thumb/Spinosaurus_Sail.png/30px-Spinosaurus_Sail.png" },
+            "thyla_claw": { de: "Thylacoleo Hakenklaue", en: "Thylacoleo Hook-Claw", icon: "https://ark.wiki.gg/images/thumb/Thylacoleo_Hook-Claw.png/30px-Thylacoleo_Hook-Claw.png" },
+            "megalania_toxin": { de: "Megalania Gift", en: "Megalania Toxin", icon: "https://ark.wiki.gg/images/thumb/Megalania_Toxin.png/30px-Megalania_Toxin.png" },
+            "megalodon_tooth": { de: "Megalodon Zahn", en: "Megalodon Tooth", icon: "https://ark.wiki.gg/images/thumb/Megalodon_Tooth.png/30px-Megalodon_Tooth.png" },
+            
+            // LOOT
+            "element": { de: "Element", en: "Element", icon: "https://ark.wiki.gg/images/thumb/Element.png/30px-Element.png" },
+            "trophy_brood": { de: "Broodmother Trophäe", en: "Broodmother Trophy", icon: "https://ark.wiki.gg/images/thumb/Broodmother_Trophy.png/30px-Broodmother_Trophy.png" },
+            "flag_spider": { de: "Spinnen Flagge", en: "Spider Flag", icon: "https://ark.wiki.gg/images/thumb/Spider_Flag.png/30px-Spider_Flag.png" },
+            "trophy_mega": { de: "Megapithecus Trophäe", en: "Megapithecus Trophy", icon: "https://ark.wiki.gg/images/thumb/Megapithecus_Trophy.png/30px-Megapithecus_Trophy.png" },
+            "flag_gorilla": { de: "Gorilla Flagge", en: "Gorilla Flag", icon: "https://ark.wiki.gg/images/thumb/Gorilla_Flag.png/30px-Gorilla_Flag.png" },
+             "trophy_dragon": { de: "Drachen Trophäe", en: "Dragon Trophy", icon: "https://ark.wiki.gg/images/thumb/Dragon_Trophy.png/30px-Dragon_Trophy.png" },
+            "flag_dragon": { de: "Drachen Flagge", en: "Dragon Flag", icon: "https://ark.wiki.gg/images/thumb/Dragon_Flag.png/30px-Dragon_Flag.png" },
+            
+            // TEK ENGRAMME (BROODMOTHER)
+            "tek_replicator": { de: "Tek Replikator", en: "Tek Replicator", icon: "https://ark.wiki.gg/images/thumb/Tek_Replicator.png/30px-Tek_Replicator.png" },
+            "tek_foundation": { de: "Tek Fundament", en: "Tek Foundation", icon: "https://ark.wiki.gg/images/thumb/Tek_Foundation.png/30px-Tek_Foundation.png" },
+            "tek_tri_ceiling": { de: "Tek Dreiecks-Decke", en: "Tek Triangle Ceiling", icon: "https://ark.wiki.gg/images/thumb/Tek_Triangle_Ceiling.png/30px-Tek_Triangle_Ceiling.png" },
+            "tek_tri_foundation": { de: "Tek Dreiecks-Fundament", en: "Tek Triangle Foundation", icon: "https://ark.wiki.gg/images/thumb/Tek_Triangle_Foundation.png/30px-Tek_Triangle_Foundation.png" },
+            "tek_tri_roof": { de: "Tek Dreiecks-Dach", en: "Tek Triangle Roof", icon: "https://ark.wiki.gg/images/thumb/Tek_Triangle_Roof.png/30px-Tek_Triangle_Roof.png" },
+            
+            "tek_boots": { de: "Tek Stiefel", en: "Tek Boots", icon: "https://ark.wiki.gg/images/thumb/Tek_Boots.png/30px-Tek_Boots.png" },
+            "tek_wall": { de: "Tek Wand", en: "Tek Wall", icon: "https://ark.wiki.gg/images/thumb/Tek_Wall.png/30px-Tek_Wall.png" },
+            "tek_ceiling": { de: "Tek Decke", en: "Tek Ceiling", icon: "https://ark.wiki.gg/images/thumb/Tek_Ceiling.png/30px-Tek_Ceiling.png" },
+            "tek_pillar": { de: "Tek Pfeiler", en: "Tek Pillar", icon: "https://ark.wiki.gg/images/thumb/Tek_Pillar.png/30px-Tek_Pillar.png" },
+            "tek_ladder": { de: "Tek Leiter", en: "Tek Ladder", icon: "https://ark.wiki.gg/images/thumb/Tek_Ladder.png/30px-Tek_Ladder.png" },
+            "tek_ramp": { de: "Tek Rampe", en: "Tek Ramp", icon: "https://ark.wiki.gg/images/thumb/Tek_Ramp.png/30px-Tek_Ramp.png" },
+            "tek_staircase": { de: "Tek Treppe", en: "Tek Staircase", icon: "https://ark.wiki.gg/images/thumb/Tek_Staircase.png/30px-Tek_Staircase.png" },
+            "tek_catwalk": { de: "Tek Laufsteg", en: "Tek Catwalk", icon: "https://ark.wiki.gg/images/thumb/Tek_Catwalk.png/30px-Tek_Catwalk.png" },
+            "tek_railing": { de: "Tek Geländer", en: "Tek Railing", icon: "https://ark.wiki.gg/images/thumb/Tek_Railing.png/30px-Tek_Railing.png" },
+            "tek_fence": { de: "Tek Zaunfundament", en: "Tek Fence Foundation", icon: "https://ark.wiki.gg/images/thumb/Tek_Fence_Foundation.png/30px-Tek_Fence_Foundation.png" },
+            "tek_sloped_roof": { de: "Schräges Tek Dach", en: "Sloped Tek Roof", icon: "https://ark.wiki.gg/images/thumb/Sloped_Tek_Roof.png/30px-Sloped_Tek_Roof.png" },
+            "tek_sloped_wall_l": { de: "Schräge Tek Wand (L)", en: "Sloped Tek Wall Left", icon: "https://ark.wiki.gg/images/thumb/Sloped_Tek_Wall_Left.png/30px-Sloped_Tek_Wall_Left.png" },
+            "tek_sloped_wall_r": { de: "Schräge Tek Wand (R)", en: "Sloped Tek Wall Right", icon: "https://ark.wiki.gg/images/thumb/Sloped_Tek_Wall_Right.png/30px-Sloped_Tek_Wall_Right.png" },
+            
+            "tek_turret": { de: "Tek Geschützturm", en: "Tek Turret", icon: "https://ark.wiki.gg/images/thumb/Tek_Turret.png/30px-Tek_Turret.png" },
+            "tek_helmet": { de: "Tek Helm", en: "Tek Helmet", icon: "https://ark.wiki.gg/images/thumb/Tek_Helmet.png/30px-Tek_Helmet.png" },
+            "tek_mosa_saddle": { de: "Tek Mosa Sattel", en: "Mosasaur Tek Saddle", icon: "https://ark.wiki.gg/images/thumb/Mosasaur_Tek_Saddle.png/30px-Mosasaur_Tek_Saddle.png" },
+
+            // TEK ENGRAMME (ANDERE BOSSE)
+            "tek_gauntlets": { de: "Tek Handschuhe", en: "Tek Gauntlets", icon: "https://ark.wiki.gg/images/thumb/Tek_Gauntlets.png/30px-Tek_Gauntlets.png" },
+            "tek_leggings": { de: "Tek Hose", en: "Tek Leggings", icon: "https://ark.wiki.gg/images/thumb/Tek_Leggings.png/30px-Tek_Leggings.png" },
+            "tek_chest": { de: "Tek Brustplatte", en: "Tek Chestpiece", icon: "https://ark.wiki.gg/images/thumb/Tek_Chestpiece.png/30px-Tek_Chestpiece.png" },
+            "tek_rifle": { de: "Tek Gewehr", en: "Tek Rifle", icon: "https://ark.wiki.gg/images/thumb/Tek_Rifle.png/30px-Tek_Rifle.png" },
+            "tek_rex_saddle": { de: "Tek Rex Sattel", en: "Rex Tek Saddle", icon: "https://ark.wiki.gg/images/thumb/Rex_Tek_Saddle.png/30px-Rex_Tek_Saddle.png" },
+            "tek_gen": { de: "Tek Generator", en: "Tek Generator", icon: "https://ark.wiki.gg/images/thumb/Tek_Generator.png/30px-Tek_Generator.png" },
+            "tek_trough": { de: "Tek Trog", en: "Tek Trough", icon: "https://ark.wiki.gg/images/thumb/Tek_Trough.png/30px-Tek_Trough.png" },
+            "tek_teleporter": { de: "Tek Teleporter", en: "Tek Teleporter", icon: "https://ark.wiki.gg/images/thumb/Tek_Teleporter.png/30px-Tek_Teleporter.png" },
+            "tek_transmitter": { de: "Tek Transmitter", en: "Tek Transmitter", icon: "https://ark.wiki.gg/images/thumb/Tek_Transmitter.png/30px-Tek_Transmitter.png" },
+            "tek_shield": { de: "Tek Kraftfeld", en: "Tek Forcefield", icon: "https://ark.wiki.gg/images/thumb/Tek_Forcefield.png/30px-Tek_Forcefield.png" },
+            "tek_dedi": { de: "Tek Lagerkiste", en: "Tek Dedicated Storage", icon: "https://ark.wiki.gg/images/thumb/Tek_Dedicated_Storage.png/30px-Tek_Dedicated_Storage.png" },
+            "tek_hatchframe": { de: "Tek Lukenrahmen", en: "Tek Hatchframe", icon: "https://ark.wiki.gg/images/thumb/Tek_Hatchframe.png/30px-Tek_Hatchframe.png" },
+            "tek_door": { de: "Tek Tür", en: "Tek Door", icon: "https://ark.wiki.gg/images/thumb/Tek_Door.png/30px-Tek_Door.png" },
+            "tek_dino_gate": { de: "Tek Dino Tor", en: "Tek Dinosaur Gate", icon: "https://ark.wiki.gg/images/thumb/Tek_Dinosaur_Gateway.png/30px-Tek_Dinosaur_Gateway.png" }
+        };
+
+        // --- TRANSLATION UI STRINGS ---
+        const UI_TEXT = {
+            de: { stats: "Werte & Anforderungen", tribute: "Tribute (Beschwörung)", loot: "Loot & Belohnung", unlocks: "Tek Engramme", strategy: "Strategie", hp: "Leben", dmg: "Schaden", lvl: "Min. Level", gamma: "Gamma", beta: "Beta", alpha: "Alpha", prev: "+ Vorherige Stufen" },
+            en: { stats: "Stats & Requirements", tribute: "Tributes (Summon)", loot: "Loot & Rewards", unlocks: "Tek Engrams", strategy: "Strategy", hp: "Health", dmg: "Damage", lvl: "Min. Level", gamma: "Gamma", beta: "Beta", alpha: "Alpha", prev: "+ Previous Tiers" }
+        };
+
+        // --- BOSS DATA CONFIG ---
         const BOSS_DATA = {
             "broodmother": {
-                name: "Broodmother Lysrix",
+                name: { de: "Broodmother Lysrix", en: "Broodmother Lysrix" },
                 icon: "https://ark.wiki.gg/images/thumb/Broodmother.png/50px-Broodmother.png",
-                desc: "Die Mutter aller Spinnen. Nutzt Gift, Netze und Diener.",
-                strategy: "<p><strong>Rex Rush:</strong> 19 High-Level Rexe (viel HP/Melee) + 1 Yutyrannus für Buffs. Umzingelt sie, damit sie sich nicht bewegen kann.</p><p><strong>Megatherium:</strong> Erhalten 'Insektenkiller'-Buff durch Töten der kleinen Spinnen. Extrem effektiv gegen die Brutmutter.</p><p><strong>Waffen:</strong> Munitionsverschwendung. Verlasst euch auf Dinos. Vorsicht vor Säure (Rüstungsschaden)!</p>",
+                desc: { de: "Die Mutter aller Spinnen. Nutzt Gift, Netze und Diener.", en: "The mother of all spiders. Uses poison, webs and minions." },
+                strategy: {
+                    de: "<h4>Rex Rush</h4>19 High-Level Rexe (viel HP/Melee) + 1 Yutyrannus für Buffs. Umzingelt sie, damit sie sich nicht bewegen kann.<br><br><h4>Megatherium</h4>Erhalten 'Insektenkiller'-Buff durch Töten der kleinen Spinnen. Extrem effektiv.<br><br><h4>Gefahren</h4>Säure-Attacken zerstören Rüstung schnell. Nimm Ersatz mit.",
+                    en: "<h4>Rex Rush</h4>19 High-level Rexes (High HP/Melee) + 1 Yutyrannus for buffs. Surround her so she can't move.<br><br><h4>Megatherium</h4>They get the 'Insect Killer' buff from killing minions. Extremely effective.<br><br><h4>Dangers</h4>Acid attacks destroy armor quickly. Bring spares."
+                },
                 maps: {
                     "The Island": {
                         "Gamma": {
                             stats: { hp: "324,000", dmg: "180", lvl: "30" },
-                            tributes: [
-                                {n: "Artifact of the Clever", q: 1, i: "https://ark.wiki.gg/images/thumb/Artifact_of_the_Clever.png/30px-Artifact_of_the_Clever.png"},
-                                {n: "Artifact of the Hunter", q: 1, i: "https://ark.wiki.gg/images/thumb/Artifact_of_the_Hunter.png/30px-Artifact_of_the_Hunter.png"},
-                                {n: "Artifact of the Massive", q: 1, i: "https://ark.wiki.gg/images/thumb/Artifact_of_the_Massive.png/30px-Artifact_of_the_Massive.png"}
-                            ],
-                            loot: [{n: "Element", q: 10, i:"https://ark.wiki.gg/images/thumb/Element.png/30px-Element.png"}, {n: "Trophäe (Gamma)", q: 1, i:"https://ark.wiki.gg/images/thumb/Broodmother_Trophy.png/30px-Broodmother_Trophy.png"}, {n: "Spider Flag", q:1, i:"https://ark.wiki.gg/images/thumb/Spider_Flag.png/30px-Spider_Flag.png"}],
-                            unlocks: ["Tek Replicator", "Tek Foundation", "Tek Triangle Ceiling", "Tek Triangle Foundation", "Tek Triangle Roof"]
+                            tributes: [ {id:"art_clever", q:1}, {id:"art_hunter", q:1}, {id:"art_massive", q:1} ],
+                            loot: [ {id:"element", q:10}, {id:"trophy_brood", q:1}, {id:"flag_spider", q:1} ],
+                            unlocks: ["tek_replicator", "tek_foundation", "tek_tri_ceiling", "tek_tri_foundation", "tek_tri_roof"]
                         },
                         "Beta": {
                             stats: { hp: "648,000", dmg: "320", lvl: "50" },
-                            tributes: [
-                                {n: "Artifact of the Clever", q: 1, i: "https://ark.wiki.gg/images/thumb/Artifact_of_the_Clever.png/30px-Artifact_of_the_Clever.png"},
-                                {n: "Artifact of the Hunter", q: 1, i: "https://ark.wiki.gg/images/thumb/Artifact_of_the_Hunter.png/30px-Artifact_of_the_Hunter.png"},
-                                {n: "Artifact of the Massive", q: 1, i: "https://ark.wiki.gg/images/thumb/Artifact_of_the_Massive.png/30px-Artifact_of_the_Massive.png"},
-                                {n: "Argentavis Talon", q: 5, i: "https://ark.wiki.gg/images/thumb/Argentavis_Talon.png/30px-Argentavis_Talon.png"},
-                                {n: "Sarco Skin", q: 5, i: "https://ark.wiki.gg/images/thumb/Sarcosuchus_Skin.png/30px-Sarcosuchus_Skin.png"},
-                                {n: "Sauropod Vertebra", q: 5, i: "https://ark.wiki.gg/images/thumb/Sauropod_Vertebra.png/30px-Sauropod_Vertebra.png"},
-                                {n: "Titanoboa Venom", q: 5, i: "https://ark.wiki.gg/images/thumb/Titanoboa_Venom.png/30px-Titanoboa_Venom.png"}
-                            ],
-                            loot: [{n: "Element", q: 28, i:"https://ark.wiki.gg/images/thumb/Element.png/30px-Element.png"}, {n: "Trophäe (Beta)", q: 1, i:"https://ark.wiki.gg/images/thumb/Broodmother_Trophy.png/30px-Broodmother_Trophy.png"}, {n: "Spider Flag", q:1, i:"https://ark.wiki.gg/images/thumb/Spider_Flag.png/30px-Spider_Flag.png"}],
-                            unlocks: ["+ Gamma Unlocks", "Tek Boots", "Tek Wall", "Tek Ceiling", "Tek Pillar", "Tek Ladder", "Tek Ramp", "Tek Staircase", "Tek Catwalk", "Tek Railing", "Tek Fence Foundation", "Sloped Tek Roof", "Sloped Tek Walls"]
+                            tributes: [ {id:"art_clever", q:1}, {id:"art_hunter", q:1}, {id:"art_massive", q:1}, {id:"argi_talon", q:5}, {id:"sarco_skin", q:5}, {id:"sauro_vert", q:5}, {id:"titan_venom", q:5} ],
+                            loot: [ {id:"element", q:28}, {id:"trophy_brood", q:1}, {id:"flag_spider", q:1} ],
+                            unlocks: ["tek_boots", "tek_wall", "tek_ceiling", "tek_pillar", "tek_ladder", "tek_ramp", "tek_staircase", "tek_catwalk", "tek_railing", "tek_fence", "tek_sloped_roof", "tek_sloped_wall_l", "tek_sloped_wall_r"]
                         },
                         "Alpha": {
                             stats: { hp: "972,000", dmg: "540", lvl: "70" },
-                            tributes: [
-                                {n: "Artifact of the Clever", q: 1, i: "https://ark.wiki.gg/images/thumb/Artifact_of_the_Clever.png/30px-Artifact_of_the_Clever.png"},
-                                {n: "Artifact of the Hunter", q: 1, i: "https://ark.wiki.gg/images/thumb/Artifact_of_the_Hunter.png/30px-Artifact_of_the_Hunter.png"},
-                                {n: "Artifact of the Massive", q: 1, i: "https://ark.wiki.gg/images/thumb/Artifact_of_the_Massive.png/30px-Artifact_of_the_Massive.png"},
-                                {n: "Argentavis Talon", q: 10, i: "https://ark.wiki.gg/images/thumb/Argentavis_Talon.png/30px-Argentavis_Talon.png"},
-                                {n: "Sarco Skin", q: 10, i: "https://ark.wiki.gg/images/thumb/Sarcosuchus_Skin.png/30px-Sarcosuchus_Skin.png"},
-                                {n: "Sauropod Vertebra", q: 10, i: "https://ark.wiki.gg/images/thumb/Sauropod_Vertebra.png/30px-Sauropod_Vertebra.png"},
-                                {n: "Titanoboa Venom", q: 10, i: "https://ark.wiki.gg/images/thumb/Titanoboa_Venom.png/30px-Titanoboa_Venom.png"}
-                            ],
-                            loot: [{n: "Element", q: 74, i:"https://ark.wiki.gg/images/thumb/Element.png/30px-Element.png"}, {n: "Trophäe (Alpha)", q: 1, i:"https://ark.wiki.gg/images/thumb/Broodmother_Trophy.png/30px-Broodmother_Trophy.png"}, {n: "Spider Flag", q:1, i:"https://ark.wiki.gg/images/thumb/Spider_Flag.png/30px-Spider_Flag.png"}],
-                            unlocks: ["+ Gamma & Beta Unlocks", "Tek Turret", "Tek Helmet", "Mosasaur Tek Saddle"]
+                            tributes: [ {id:"art_clever", q:1}, {id:"art_hunter", q:1}, {id:"art_massive", q:1}, {id:"argi_talon", q:10}, {id:"sarco_skin", q:10}, {id:"sauro_vert", q:10}, {id:"titan_venom", q:10} ],
+                            loot: [ {id:"element", q:74}, {id:"trophy_brood", q:1}, {id:"flag_spider", q:1} ],
+                            unlocks: ["tek_turret", "tek_helmet", "tek_mosa_saddle"]
                         }
                     },
                     "The Center": {
@@ -318,31 +539,44 @@
                 }
             },
             "megapithecus": {
-                name: "Megapithecus",
+                name: { de: "Megapithecus", en: "Megapithecus" },
                 icon: "https://ark.wiki.gg/images/thumb/Megapithecus.png/50px-Megapithecus.png",
-                desc: "Der Riesen-Gorilla in der verschneiten Arena.",
-                strategy: "Achtung vor dem Abgrund! Locke ihn weg von den Klippen. Rexe sind effektiv.",
-                maps: { "The Island": { "Gamma": {}, "Beta": {}, "Alpha": {} }, "The Center": { "Gamma": {}, "Beta": {}, "Alpha": {} } }
+                desc: { de: "Ein riesiger Gorilla in einer verschneiten Arena.", en: "A giant gorilla in a snowy arena." },
+                strategy: { de: "Vermeide die Klippen! Locke ihn in die Mitte.", en: "Avoid the cliffs! Lure him to the center." },
+                maps: { 
+                    "The Island": {
+                        "Gamma": { stats: {hp:"180,000", dmg:"?", lvl:"30"}, tributes:[{id:"art_pack", q:1},{id:"art_devourer", q:1},{id:"art_massiv", q:1}], loot:[{id:"element", q:20}, {id:"trophy_mega", q:1}, {id:"flag_gorilla", q:1}], unlocks:["tek_gauntlets", "tek_hatchframe", "tek_door"] },
+                        "Beta": { stats: {hp:"360,000", dmg:"?", lvl:"50"}, tributes:[{id:"art_pack", q:1},{id:"art_devourer", q:1},{id:"art_massiv", q:1},{id:"megalania_toxin", q:5},{id:"megalodon_tooth", q:5},{id:"spino_sail", q:5}], loot:[{id:"element", q:55}, {id:"trophy_mega", q:1}, {id:"flag_gorilla", q:1}], unlocks:["tek_rifle", "tek_dino_gate"] },
+                        "Alpha": { stats: {hp:"540,000", dmg:"?", lvl:"70"}, tributes:[{id:"art_pack", q:1},{id:"art_devourer", q:1},{id:"art_massiv", q:1},{id:"megalania_toxin", q:10},{id:"megalodon_tooth", q:10},{id:"spino_sail", q:10},{id:"thyla_claw", q:10}], loot:[{id:"element", q:110}, {id:"trophy_mega", q:1}, {id:"flag_gorilla", q:1}], unlocks:["tek_rex_saddle", "tek_gen"] }
+                    }
+                }
             },
             "dragon": {
-                name: "Dragon",
+                name: { de: "Dragon", en: "Dragon" },
                 icon: "https://ark.wiki.gg/images/thumb/Dragon.png/50px-Dragon.png",
-                desc: "Der feuerspeiende Drache. Prozentualer Schaden!",
-                strategy: "Therizinos mit Veggie Cakes zur Heilung. Fleischfresser sterben schnell durch das Feuer.",
-                maps: { "The Island": { "Gamma": {}, "Beta": {}, "Alpha": {} }, "Ragnarok": { "Gamma": {}, "Beta": {}, "Alpha": {} } }
+                desc: { de: "Feuerspeiender Drache. Prozentualer Schaden.", en: "Fire breathing dragon. Deals percentage damage." },
+                strategy: { de: "Nutze Therizinosaurus mit Veggie Cakes.", en: "Use Therizinosaurus with Veggie Cakes." },
+                maps: { 
+                    "The Island": {
+                        "Gamma": { stats: {hp:"432,000", dmg:"?", lvl:"50"}, tributes:[], loot:[{id:"element", q:40}, {id:"trophy_dragon", q:1}, {id:"flag_dragon", q:1}], unlocks:["tek_leggings", "tek_trough", "tek_gen"] },
+                        "Beta": { stats: {hp:"864,000", dmg:"?", lvl:"70"}, tributes:[], loot:[{id:"element", q:110}, {id:"trophy_dragon", q:1}, {id:"flag_dragon", q:1}], unlocks:["tek_transmitter", "tek_shield"] },
+                        "Alpha": { stats: {hp:"972,000", dmg:"?", lvl:"100"}, tributes:[], loot:[{id:"element", q:220}, {id:"trophy_dragon", q:1}, {id:"flag_dragon", q:1}], unlocks:["tek_teleporter", "tek_dedi", "tek_chest"] }
+                    }
+                }
             },
             "manticore": {
-                name: "Manticore",
+                name: { de: "Manticore", en: "Manticore" },
                 icon: "https://ark.wiki.gg/images/thumb/Manticore.png/50px-Manticore.png",
-                desc: "Der Wächter von Scorched Earth.",
-                strategy: "Bringe ihn zum Landen. Wyvern sind erlaubt. Achtung vor hohem Torpor.",
-                maps: { "Scorched Earth": { "Gamma": {}, "Beta": {}, "Alpha": {} }, "Ragnarok": { "Gamma": {}, "Beta": {}, "Alpha": {} } }
+                desc: { de: "Wächter von Scorched Earth.", en: "Guardian of Scorched Earth." },
+                strategy: { de: "Bringe ihn zum Landen. Wyvern sind erlaubt.", en: "Force him to land. Wyverns allowed." },
+                maps: { "Scorched Earth": { "Gamma": {}, "Beta": {}, "Alpha": {} } }
             }
         };
 
         // --- APP STATE ---
         let currentBossId = "broodmother";
         let currentMap = "The Island";
+        let currentLang = "de";
 
         // --- INIT ---
         window.onload = function() {
@@ -350,18 +584,102 @@
             loadBoss(currentBossId);
         };
 
-        // --- FUNCTIONS ---
+        // --- HELPER FUNCTIONS ---
+        function getTrans(key) {
+            return UI_TEXT[currentLang][key] || key;
+        }
+
+        function getItem(key) {
+            const item = ITEMS_DB[key];
+            if (!item) return { name: key, icon: "" };
+            return {
+                name: item[currentLang] || item.en,
+                icon: item.icon
+            };
+        }
+
+        function setLang(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('btn-'+lang).classList.add('active');
+            
+            // Re-render everything
+            renderBossList();
+            loadBoss(currentBossId);
+        }
+
+        function filterBosses(query) {
+            const list = document.getElementById('bossList');
+            query = query.toLowerCase();
+            
+            // Filter Logic
+            // 1. Search in Boss Names
+            // 2. Search in Loot/Unlocks/Tributes of that boss (Advanced)
+            
+            list.innerHTML = '';
+            
+            for (const [id, data] of Object.entries(BOSS_DATA)) {
+                let match = false;
+                let matchReason = "";
+
+                // Check Name
+                const bName = (data.name[currentLang] || data.name.en).toLowerCase();
+                if (bName.includes(query)) {
+                    match = true;
+                } else {
+                    // Check Items in Map Data
+                    for (const map in data.maps) {
+                        for (const diff in data.maps[map]) {
+                            const diffData = data.maps[map][diff];
+                            
+                            // Check Unlocks
+                            if(diffData.unlocks) {
+                                for(const u of diffData.unlocks) {
+                                    const item = getItem(u);
+                                    if(item.name.toLowerCase().includes(query)) {
+                                        match = true;
+                                        matchReason = "Tek";
+                                        break;
+                                    }
+                                }
+                            }
+                            if(match) break;
+
+                            // Check Tributes
+                            if(diffData.tributes) {
+                                for(const t of diffData.tributes) {
+                                    const item = getItem(t.id);
+                                    if(item.name.toLowerCase().includes(query)) {
+                                        match = true;
+                                        matchReason = "Tribut";
+                                        break;
+                                    }
+                                }
+                            }
+                            if(match) break;
+                        }
+                        if(match) break;
+                    }
+                }
+
+                if (match || query === "") {
+                    const btn = document.createElement('button');
+                    btn.className = `boss-btn ${id === currentBossId ? 'active' : ''}`;
+                    btn.onclick = () => loadBoss(id);
+                    
+                    let html = `<img src="${data.icon}"> ${data.name[currentLang] || data.name.en}`;
+                    if(query !== "" && matchReason) {
+                        html += `<span class="match-badge">${matchReason}</span>`;
+                    }
+                    
+                    btn.innerHTML = html;
+                    list.appendChild(btn);
+                }
+            }
+        }
 
         function renderBossList() {
-            const list = document.getElementById('bossList');
-            list.innerHTML = '';
-            for (const [id, data] of Object.entries(BOSS_DATA)) {
-                const btn = document.createElement('button');
-                btn.className = `boss-btn ${id === currentBossId ? 'active' : ''}`;
-                btn.onclick = () => loadBoss(id);
-                btn.innerHTML = `<img src="${data.icon}"> ${data.name}`;
-                list.appendChild(btn);
-            }
+            filterBosses(""); // Render all initially
         }
 
         function loadBoss(bossId) {
@@ -369,7 +687,7 @@
             const boss = BOSS_DATA[bossId];
             
             // Header Info
-            document.getElementById('bossHeader').innerHTML = `<h1>${boss.name}</h1><p>${boss.desc}</p>`;
+            document.getElementById('bossHeader').innerHTML = `<h1>${boss.name[currentLang] || boss.name.en}</h1><p>${boss.desc[currentLang] || boss.desc.en}</p>`;
             
             // Map Selector
             const mapSelect = document.getElementById('mapSelector');
@@ -383,9 +701,11 @@
             });
             currentMap = maps[0]; 
 
-            // Active State Sidebar
+            // Update Sidebar Active
             document.querySelectorAll('.boss-btn').forEach(b => b.classList.remove('active'));
-            renderBossList(); // Re-render to update active class simply
+            // Re-run filter to keep active search state but highlight selected
+            const searchVal = document.getElementById('searchInput').value;
+            filterBosses(searchVal);
 
             renderContent();
         }
@@ -402,96 +722,102 @@
             const content = document.getElementById('mainContent');
             if(!mapData) { content.innerHTML = "Keine Daten."; return; }
 
-            // Helper to render an item list
-            const renderItems = (items) => {
-                if(!items || items.length === 0) return '<div style="color:#666; font-size:0.8rem;">Keine Info</div>';
-                return items.map(i => `
-                    <div class="item-entry">
-                        <img src="${i.i || ''}">
-                        <span>${i.n}</span>
-                        <span class="qty">x${i.q}</span>
-                    </div>
-                `).join('');
-            };
-
-            // Helper for Tek Unlocks
-            const renderUnlocks = (list) => {
-                if(!list || list.length === 0) return '<div style="color:#666; font-size:0.8rem;">Keine Info</div>';
-                return list.map(l => {
-                    // Check for image based on name (mock) or use default
-                    let icon = "https://ark.wiki.gg/images/thumb/Tek_Replicator.png/30px-Tek_Replicator.png"; 
-                    if(l.includes("Turret")) icon = "https://ark.wiki.gg/images/thumb/Tek_Turret.png/30px-Tek_Turret.png";
-                    if(l.includes("Boots")) icon = "https://ark.wiki.gg/images/thumb/Tek_Boots.png/30px-Tek_Boots.png";
-                    // ... simplify for generic usage
-                    return `<div class="tek-tag"><i class="fa-solid fa-microchip"></i> ${l}</div>`
+            // Render Item Helper
+            const renderItemList = (list) => {
+                if(!list || list.length === 0) return '<div style="color:#666; font-size:0.8rem;">-</div>';
+                return list.map(entry => {
+                    const dbItem = getItem(entry.id);
+                    return `
+                    <div class="item-entry" title="${dbItem.name}">
+                        <img src="${dbItem.icon}">
+                        <span>${dbItem.name}</span>
+                        <span class="qty">x${entry.q}</span>
+                    </div>`;
                 }).join('');
-            };
+            }
 
-            // Helper for Stats
-            const renderStats = (stats) => {
-                if(!stats) return "N/A";
+            // Render Unlocks Helper
+            const renderUnlocks = (list, hasPrev) => {
+                if(!list || list.length === 0) return '<div style="color:#666; font-size:0.8rem;">-</div>';
+                
+                let html = "";
+                if(hasPrev) html += `<div class="note" style="width:100%;">${getTrans('prev')}</div>`;
+                
+                html += list.map(key => {
+                    // Filter out text placeholders if any
+                    if(key.includes(" ")) return ""; 
+                    const dbItem = getItem(key);
+                    return `<div class="tek-tag"><img src="${dbItem.icon}"> ${dbItem.name}</div>`;
+                }).join('');
+                return html;
+            }
+
+            // Render Stats Helper
+            const renderStats = (s) => {
+                if(!s) return "-";
                 return `
                     <table class="stats-table">
-                        <tr><td>Leben</td><td class="val" style="color:#ff5555">${stats.hp}</td></tr>
-                        <tr><td>Schaden</td><td class="val" style="color:#ffaa00">${stats.dmg}</td></tr>
-                        <tr><td>Min Lvl</td><td class="val" style="color:#55ff55">${stats.lvl}</td></tr>
+                        <tr><td>${getTrans('hp')}</td><td class="val" style="color:#ff5555">${s.hp}</td></tr>
+                        <tr><td>${getTrans('dmg')}</td><td class="val" style="color:#ffaa00">${s.dmg}</td></tr>
+                        <tr><td>${getTrans('lvl')}</td><td class="val" style="color:#55ff55">${s.lvl}</td></tr>
                     </table>
                 `;
             }
 
+            // --- BUILD HTML ---
             let html = `
                 <!-- MATRIX HEADER -->
                 <div class="matrix-header">
-                    <div class="mh-col mh-gamma">Gamma</div>
-                    <div class="mh-col mh-beta">Beta</div>
-                    <div class="mh-col mh-alpha">Alpha</div>
+                    <div class="mh-col mh-gamma">${getTrans('gamma')}</div>
+                    <div class="mh-col mh-beta">${getTrans('beta')}</div>
+                    <div class="mh-col mh-alpha">${getTrans('alpha')}</div>
                 </div>
 
-                <!-- SECTION: STATS -->
+                <!-- STATS -->
                 <div class="section-block">
-                    <div class="section-title"><i class="fa-solid fa-chart-line"></i> Werte & Anforderungen</div>
+                    <div class="section-title"><i class="fa-solid fa-chart-line"></i> ${getTrans('stats')}</div>
                     <div class="matrix-row">
-                        <div class="matrix-col">${renderStats(mapData.Gamma.stats)}</div>
-                        <div class="matrix-col">${renderStats(mapData.Beta.stats)}</div>
-                        <div class="matrix-col">${renderStats(mapData.Alpha.stats)}</div>
+                        <div class="matrix-col gamma">${renderStats(mapData.Gamma.stats)}</div>
+                        <div class="matrix-col beta">${renderStats(mapData.Beta.stats)}</div>
+                        <div class="matrix-col alpha">${renderStats(mapData.Alpha.stats)}</div>
                     </div>
                 </div>
 
-                <!-- SECTION: TRIBUTES -->
+                <!-- TRIBUTES -->
                 <div class="section-block">
-                    <div class="section-title"><i class="fa-solid fa-gem"></i> Tribute (Beschwörung)</div>
+                    <div class="section-title"><i class="fa-solid fa-gem"></i> ${getTrans('tribute')}</div>
                     <div class="matrix-row">
-                        <div class="matrix-col"><div class="item-list">${renderItems(mapData.Gamma.tributes)}</div></div>
-                        <div class="matrix-col"><div class="item-list">${renderItems(mapData.Beta.tributes)}</div></div>
-                        <div class="matrix-col"><div class="item-list">${renderItems(mapData.Alpha.tributes)}</div></div>
+                        <div class="matrix-col gamma"><div class="item-list">${renderItemList(mapData.Gamma.tributes)}</div></div>
+                        <div class="matrix-col beta"><div class="item-list">${renderItemList(mapData.Beta.tributes)}</div></div>
+                        <div class="matrix-col alpha"><div class="item-list">${renderItemList(mapData.Alpha.tributes)}</div></div>
                     </div>
                 </div>
 
-                <!-- SECTION: LOOT -->
+                <!-- LOOT -->
                 <div class="section-block">
-                    <div class="section-title"><i class="fa-solid fa-gift"></i> Loot & Belohnung</div>
+                    <div class="section-title"><i class="fa-solid fa-gift"></i> ${getTrans('loot')}</div>
                     <div class="matrix-row">
-                        <div class="matrix-col"><div class="item-list">${renderItems(mapData.Gamma.loot)}</div></div>
-                        <div class="matrix-col"><div class="item-list">${renderItems(mapData.Beta.loot)}</div></div>
-                        <div class="matrix-col"><div class="item-list">${renderItems(mapData.Alpha.loot)}</div></div>
+                        <div class="matrix-col gamma"><div class="item-list">${renderItemList(mapData.Gamma.loot)}</div></div>
+                        <div class="matrix-col beta"><div class="item-list">${renderItemList(mapData.Beta.loot)}</div></div>
+                        <div class="matrix-col alpha"><div class="item-list">${renderItemList(mapData.Alpha.loot)}</div></div>
                     </div>
                 </div>
 
-                <!-- SECTION: UNLOCKS -->
+                <!-- UNLOCKS -->
                 <div class="section-block">
-                    <div class="section-title"><i class="fa-solid fa-dna"></i> Tek Engramme</div>
+                    <div class="section-title"><i class="fa-solid fa-dna"></i> ${getTrans('unlocks')}</div>
                     <div class="matrix-row">
-                        <div class="matrix-col"><div class="tek-unlocks">${renderUnlocks(mapData.Gamma.unlocks)}</div></div>
-                        <div class="matrix-col"><div class="tek-unlocks">${renderUnlocks(mapData.Beta.unlocks)}</div></div>
-                        <div class="matrix-col"><div class="tek-unlocks">${renderUnlocks(mapData.Alpha.unlocks)}</div></div>
+                        <div class="matrix-col gamma"><div class="tek-unlocks">${renderUnlocks(mapData.Gamma.unlocks, false)}</div></div>
+                        <div class="matrix-col beta"><div class="tek-unlocks">${renderUnlocks(mapData.Beta.unlocks, true)}</div></div>
+                        <div class="matrix-col alpha"><div class="tek-unlocks">${renderUnlocks(mapData.Alpha.unlocks, true)}</div></div>
                     </div>
                 </div>
 
                 <!-- STRATEGY -->
                 <div class="section-block">
-                    <div class="section-title"><i class="fa-solid fa-chess-knight"></i> Strategie</div>
+                    <div class="section-title"><i class="fa-solid fa-chess-knight"></i> ${getTrans('strategy')}</div>
                     <div class="strategy-box">
-                        ${boss.strategy}
+                        ${boss.strategy[currentLang] || boss.strategy.en}
                     </div>
                 </div>
             `;
