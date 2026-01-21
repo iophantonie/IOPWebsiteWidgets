@@ -10,16 +10,15 @@
     <style>
         /* --- VARIABLES --- */
         :root {
-            --c-primary: #ff3300;       /* IOP Orange/Red */
-            --c-primary-dim: #992200;
+            --c-primary: #ff3300;
             --c-bg: #050505;
             --c-panel: #101010;
-            --c-card: #161616;
+            --c-card: #1a1a1a;
             --c-text: #e0e0e0;
             --c-dim: #888;
             --c-border: #333;
             
-            /* Difficulty Colors per User Request */
+            /* ARK Difficulty Colors */
             --diff-gamma: #4CAF50; /* Green */
             --diff-beta: #2196F3;  /* Blue */
             --diff-alpha: #F44336; /* Red */
@@ -43,7 +42,7 @@
             overflow: hidden;
         }
 
-        /* --- CONTAINER (IOP UI Style) --- */
+        /* --- CONTAINER --- */
         .widget-container {
             display: flex;
             width: 99%; 
@@ -167,6 +166,7 @@
             padding: 2px 6px;
             border-radius: 4px;
             font-family: var(--f-body);
+            border: 1px solid #444;
         }
 
         /* --- CONTENT WRAPPER --- */
@@ -421,6 +421,9 @@
             "art_devourer": { de: "Artefakt des Verschlingers", en: "Artifact of the Devourer", icon: "https://ark.wiki.gg/images/thumb/Artifact_of_the_Devourer.png/30px-Artifact_of_the_Devourer.png" },
             "art_brute": { de: "Artefakt der Bestie", en: "Artifact of the Brute", icon: "https://ark.wiki.gg/images/thumb/Artifact_of_the_Brute.png/30px-Artifact_of_the_Brute.png" },
             "art_cunning": { de: "Artefakt der List", en: "Artifact of the Cunning", icon: "https://ark.wiki.gg/images/thumb/Artifact_of_the_Cunning.png/30px-Artifact_of_the_Cunning.png" },
+            "art_crag": { de: "Artefakt der Felswand", en: "Artifact of the Crag", icon: "https://ark.wiki.gg/images/thumb/Artifact_of_the_Crag.png/30px-Artifact_of_the_Crag.png" },
+            "art_destroyer": { de: "Artefakt des Zerstörers", en: "Artifact of the Destroyer", icon: "https://ark.wiki.gg/images/thumb/Artifact_of_the_Destroyer.png/30px-Artifact_of_the_Destroyer.png" },
+            "art_gatekeeper": { de: "Artefakt des Torwächters", en: "Artifact of the Gatekeeper", icon: "https://ark.wiki.gg/images/thumb/Artifact_of_the_Gatekeeper.png/30px-Artifact_of_the_Gatekeeper.png" },
 
             // TRIBUTE (Körperteile)
             "argi_talon": { de: "Argentavis Klaue", en: "Argentavis Talon", icon: "https://ark.wiki.gg/images/thumb/Argentavis_Talon.png/30px-Argentavis_Talon.png" },
@@ -437,7 +440,10 @@
             "thyla_claw": { de: "Thylacoleo Hakenklaue", en: "Thylacoleo Hook-Claw", icon: "https://ark.wiki.gg/images/thumb/Thylacoleo_Hook-Claw.png/30px-Thylacoleo_Hook-Claw.png" },
             "megalania_toxin": { de: "Megalania Gift", en: "Megalania Toxin", icon: "https://ark.wiki.gg/images/thumb/Megalania_Toxin.png/30px-Megalania_Toxin.png" },
             "megalodon_tooth": { de: "Megalodon Zahn", en: "Megalodon Tooth", icon: "https://ark.wiki.gg/images/thumb/Megalodon_Tooth.png/30px-Megalodon_Tooth.png" },
-            
+            "wyvern_talon_fire": { de: "Feuer Wyvern Klaue", en: "Fire Wyvern Talon", icon: "https://ark.wiki.gg/images/thumb/Fire_Wyvern_Talon.png/30px-Fire_Wyvern_Talon.png" },
+            "wyvern_talon_lightning": { de: "Blitz Wyvern Klaue", en: "Lightning Wyvern Talon", icon: "https://ark.wiki.gg/images/thumb/Lightning_Wyvern_Talon.png/30px-Lightning_Wyvern_Talon.png" },
+            "wyvern_talon_poison": { de: "Gift Wyvern Klaue", en: "Poison Wyvern Talon", icon: "https://ark.wiki.gg/images/thumb/Poison_Wyvern_Talon.png/30px-Poison_Wyvern_Talon.png" },
+
             // LOOT
             "element": { de: "Element", en: "Element", icon: "https://ark.wiki.gg/images/thumb/Element.png/30px-Element.png" },
             "trophy_brood": { de: "Broodmother Trophäe", en: "Broodmother Trophy", icon: "https://ark.wiki.gg/images/thumb/Broodmother_Trophy.png/30px-Broodmother_Trophy.png" },
@@ -446,14 +452,15 @@
             "flag_gorilla": { de: "Gorilla Flagge", en: "Gorilla Flag", icon: "https://ark.wiki.gg/images/thumb/Gorilla_Flag.png/30px-Gorilla_Flag.png" },
              "trophy_dragon": { de: "Drachen Trophäe", en: "Dragon Trophy", icon: "https://ark.wiki.gg/images/thumb/Dragon_Trophy.png/30px-Dragon_Trophy.png" },
             "flag_dragon": { de: "Drachen Flagge", en: "Dragon Flag", icon: "https://ark.wiki.gg/images/thumb/Dragon_Flag.png/30px-Dragon_Flag.png" },
+            "trophy_manti": { de: "Manticore Trophäe", en: "Manticore Trophy", icon: "https://ark.wiki.gg/images/thumb/Manticore_Trophy.png/30px-Manticore_Trophy.png" },
+            "flag_manti": { de: "Manticore Flagge", en: "Manticore Flag", icon: "https://ark.wiki.gg/images/thumb/Manticore_Flag.png/30px-Manticore_Flag.png" },
             
-            // TEK ENGRAMME (BROODMOTHER)
+            // TEK ENGRAMME
             "tek_replicator": { de: "Tek Replikator", en: "Tek Replicator", icon: "https://ark.wiki.gg/images/thumb/Tek_Replicator.png/30px-Tek_Replicator.png" },
             "tek_foundation": { de: "Tek Fundament", en: "Tek Foundation", icon: "https://ark.wiki.gg/images/thumb/Tek_Foundation.png/30px-Tek_Foundation.png" },
             "tek_tri_ceiling": { de: "Tek Dreiecks-Decke", en: "Tek Triangle Ceiling", icon: "https://ark.wiki.gg/images/thumb/Tek_Triangle_Ceiling.png/30px-Tek_Triangle_Ceiling.png" },
             "tek_tri_foundation": { de: "Tek Dreiecks-Fundament", en: "Tek Triangle Foundation", icon: "https://ark.wiki.gg/images/thumb/Tek_Triangle_Foundation.png/30px-Tek_Triangle_Foundation.png" },
             "tek_tri_roof": { de: "Tek Dreiecks-Dach", en: "Tek Triangle Roof", icon: "https://ark.wiki.gg/images/thumb/Tek_Triangle_Roof.png/30px-Tek_Triangle_Roof.png" },
-            
             "tek_boots": { de: "Tek Stiefel", en: "Tek Boots", icon: "https://ark.wiki.gg/images/thumb/Tek_Boots.png/30px-Tek_Boots.png" },
             "tek_wall": { de: "Tek Wand", en: "Tek Wall", icon: "https://ark.wiki.gg/images/thumb/Tek_Wall.png/30px-Tek_Wall.png" },
             "tek_ceiling": { de: "Tek Decke", en: "Tek Ceiling", icon: "https://ark.wiki.gg/images/thumb/Tek_Ceiling.png/30px-Tek_Ceiling.png" },
@@ -467,12 +474,9 @@
             "tek_sloped_roof": { de: "Schräges Tek Dach", en: "Sloped Tek Roof", icon: "https://ark.wiki.gg/images/thumb/Sloped_Tek_Roof.png/30px-Sloped_Tek_Roof.png" },
             "tek_sloped_wall_l": { de: "Schräge Tek Wand (L)", en: "Sloped Tek Wall Left", icon: "https://ark.wiki.gg/images/thumb/Sloped_Tek_Wall_Left.png/30px-Sloped_Tek_Wall_Left.png" },
             "tek_sloped_wall_r": { de: "Schräge Tek Wand (R)", en: "Sloped Tek Wall Right", icon: "https://ark.wiki.gg/images/thumb/Sloped_Tek_Wall_Right.png/30px-Sloped_Tek_Wall_Right.png" },
-            
             "tek_turret": { de: "Tek Geschützturm", en: "Tek Turret", icon: "https://ark.wiki.gg/images/thumb/Tek_Turret.png/30px-Tek_Turret.png" },
             "tek_helmet": { de: "Tek Helm", en: "Tek Helmet", icon: "https://ark.wiki.gg/images/thumb/Tek_Helmet.png/30px-Tek_Helmet.png" },
             "tek_mosa_saddle": { de: "Tek Mosa Sattel", en: "Mosasaur Tek Saddle", icon: "https://ark.wiki.gg/images/thumb/Mosasaur_Tek_Saddle.png/30px-Mosasaur_Tek_Saddle.png" },
-
-            // TEK ENGRAMME (ANDERE BOSSE)
             "tek_gauntlets": { de: "Tek Handschuhe", en: "Tek Gauntlets", icon: "https://ark.wiki.gg/images/thumb/Tek_Gauntlets.png/30px-Tek_Gauntlets.png" },
             "tek_leggings": { de: "Tek Hose", en: "Tek Leggings", icon: "https://ark.wiki.gg/images/thumb/Tek_Leggings.png/30px-Tek_Leggings.png" },
             "tek_chest": { de: "Tek Brustplatte", en: "Tek Chestpiece", icon: "https://ark.wiki.gg/images/thumb/Tek_Chestpiece.png/30px-Tek_Chestpiece.png" },
@@ -486,7 +490,20 @@
             "tek_dedi": { de: "Tek Lagerkiste", en: "Tek Dedicated Storage", icon: "https://ark.wiki.gg/images/thumb/Tek_Dedicated_Storage.png/30px-Tek_Dedicated_Storage.png" },
             "tek_hatchframe": { de: "Tek Lukenrahmen", en: "Tek Hatchframe", icon: "https://ark.wiki.gg/images/thumb/Tek_Hatchframe.png/30px-Tek_Hatchframe.png" },
             "tek_door": { de: "Tek Tür", en: "Tek Door", icon: "https://ark.wiki.gg/images/thumb/Tek_Door.png/30px-Tek_Door.png" },
-            "tek_dino_gate": { de: "Tek Dino Tor", en: "Tek Dinosaur Gate", icon: "https://ark.wiki.gg/images/thumb/Tek_Dinosaur_Gateway.png/30px-Tek_Dinosaur_Gateway.png" }
+            "tek_window": { de: "Tek Fenster", en: "Tek Window", icon: "https://ark.wiki.gg/images/thumb/Tek_Window.png/30px-Tek_Window.png" },
+            "tek_windowframe": { de: "Tek Fensterrahmen", en: "Tek Windowframe", icon: "https://ark.wiki.gg/images/thumb/Tek_Windowframe.png/30px-Tek_Windowframe.png" },
+            "tek_doorframe": { de: "Tek Türrahmen", en: "Tek Doorframe", icon: "https://ark.wiki.gg/images/thumb/Tek_Doorframe.png/30px-Tek_Doorframe.png" },
+            "tek_trapdoor": { de: "Tek Falltür", en: "Tek Trapdoor", icon: "https://ark.wiki.gg/images/thumb/Tek_Trapdoor.png/30px-Tek_Trapdoor.png" },
+            "tek_dino_gate": { de: "Tek Dino Tor", en: "Tek Dinosaur Gate", icon: "https://ark.wiki.gg/images/thumb/Tek_Dinosaur_Gateway.png/30px-Tek_Dinosaur_Gateway.png" },
+             "tek_dino_gateway": { de: "Tek Dino Torrahmen", en: "Tek Dinosaur Gateway", icon: "https://ark.wiki.gg/images/thumb/Tek_Dinosaur_Gateway.png/30px-Tek_Dinosaur_Gateway.png" },
+             "tek_tapa_saddle": { de: "Tek Tapejara Sattel", en: "Tapejara Tek Saddle", icon: "https://ark.wiki.gg/images/thumb/Tapejara_Tek_Saddle.png/30px-Tapejara_Tek_Saddle.png" },
+             "tek_megalodon_saddle": { de: "Tek Megalodon Sattel", en: "Megalodon Tek Saddle", icon: "https://ark.wiki.gg/images/thumb/Megalodon_Tek_Saddle.png/30px-Megalodon_Tek_Saddle.png" },
+             "tek_rock_drake_saddle": { de: "Tek Rock Drake Sattel", en: "Rock Drake Tek Saddle", icon: "https://ark.wiki.gg/images/thumb/Rock_Drake_Tek_Saddle.png/30px-Rock_Drake_Tek_Saddle.png" },
+             "tek_sword": { de: "Tek Schwert", en: "Tek Sword", icon: "https://ark.wiki.gg/images/thumb/Tek_Sword.png/30px-Tek_Sword.png" },
+             "tek_shield_item": { de: "Tek Schild", en: "Tek Shield", icon: "https://ark.wiki.gg/images/thumb/Tek_Shield.png/30px-Tek_Shield.png" },
+             "tek_light": { de: "Tek Licht", en: "Tek Light", icon: "https://ark.wiki.gg/images/thumb/Tek_Light.png/30px-Tek_Light.png" },
+             "tek_cloning_chamber": { de: "Tek Klonkammer", en: "Tek Cloning Chamber", icon: "https://ark.wiki.gg/images/thumb/Cloning_Chamber.png/30px-Cloning_Chamber.png" },
+             "tek_grenade": { de: "Tek Granate", en: "Tek Grenade", icon: "https://ark.wiki.gg/images/thumb/Tek_Grenade.png/30px-Tek_Grenade.png" }
         };
 
         // --- TRANSLATION UI STRINGS ---
@@ -542,12 +559,17 @@
                 name: { de: "Megapithecus", en: "Megapithecus" },
                 icon: "https://ark.wiki.gg/images/thumb/Megapithecus.png/50px-Megapithecus.png",
                 desc: { de: "Ein riesiger Gorilla in einer verschneiten Arena.", en: "A giant gorilla in a snowy arena." },
-                strategy: { de: "Vermeide die Klippen! Locke ihn in die Mitte.", en: "Avoid the cliffs! Lure him to the center." },
+                strategy: { de: "Vermeide die Klippen! Locke ihn in die Mitte und nutze Rexe.", en: "Avoid the cliffs! Lure him to the center." },
                 maps: { 
                     "The Island": {
-                        "Gamma": { stats: {hp:"180,000", dmg:"?", lvl:"30"}, tributes:[{id:"art_pack", q:1},{id:"art_devourer", q:1},{id:"art_massiv", q:1}], loot:[{id:"element", q:20}, {id:"trophy_mega", q:1}, {id:"flag_gorilla", q:1}], unlocks:["tek_gauntlets", "tek_hatchframe", "tek_door"] },
-                        "Beta": { stats: {hp:"360,000", dmg:"?", lvl:"50"}, tributes:[{id:"art_pack", q:1},{id:"art_devourer", q:1},{id:"art_massiv", q:1},{id:"megalania_toxin", q:5},{id:"megalodon_tooth", q:5},{id:"spino_sail", q:5}], loot:[{id:"element", q:55}, {id:"trophy_mega", q:1}, {id:"flag_gorilla", q:1}], unlocks:["tek_rifle", "tek_dino_gate"] },
-                        "Alpha": { stats: {hp:"540,000", dmg:"?", lvl:"70"}, tributes:[{id:"art_pack", q:1},{id:"art_devourer", q:1},{id:"art_massiv", q:1},{id:"megalania_toxin", q:10},{id:"megalodon_tooth", q:10},{id:"spino_sail", q:10},{id:"thyla_claw", q:10}], loot:[{id:"element", q:110}, {id:"trophy_mega", q:1}, {id:"flag_gorilla", q:1}], unlocks:["tek_rex_saddle", "tek_gen"] }
+                        "Gamma": { stats: {hp:"180,000", dmg:"400", lvl:"30"}, tributes:[{id:"art_pack", q:1},{id:"art_devourer", q:1},{id:"art_massive", q:1}], loot:[{id:"element", q:20}, {id:"trophy_mega", q:1}, {id:"flag_gorilla", q:1}], unlocks:["tek_gauntlets", "tek_hatchframe", "tek_door", "tek_window", "tek_trapdoor"] },
+                        "Beta": { stats: {hp:"396,000", dmg:"800", lvl:"50"}, tributes:[{id:"art_pack", q:1},{id:"art_devourer", q:1},{id:"art_massive", q:1},{id:"megalania_toxin", q:5},{id:"megalodon_tooth", q:5},{id:"spino_sail", q:5}], loot:[{id:"element", q:55}, {id:"trophy_mega", q:1}, {id:"flag_gorilla", q:1}], unlocks:["tek_rifle", "tek_dino_gate", "tek_windowframe", "tek_doorframe", "tek_dino_gateway"] },
+                        "Alpha": { stats: {hp:"540,000", dmg:"1200", lvl:"70"}, tributes:[{id:"art_pack", q:1},{id:"art_devourer", q:1},{id:"art_massive", q:1},{id:"megalania_toxin", q:10},{id:"megalodon_tooth", q:10},{id:"spino_sail", q:10},{id:"thyla_claw", q:10}], loot:[{id:"element", q:110}, {id:"trophy_mega", q:1}, {id:"flag_gorilla", q:1}], unlocks:["tek_rex_saddle", "tek_gen", "tek_grenade"] }
+                    },
+                    "The Center": {
+                         "Gamma": { stats: { hp: "352,000", dmg: "400", lvl: "?" }, tributes: [], loot: [], unlocks: [] },
+                         "Beta": { stats: { hp: "400,000", dmg: "600", lvl: "?" }, tributes: [], loot: [], unlocks: [] },
+                         "Alpha": { stats: { hp: "464,000", dmg: "800", lvl: "?" }, tributes: [], loot: [], unlocks: [] }
                     }
                 }
             },
@@ -558,9 +580,9 @@
                 strategy: { de: "Nutze Therizinosaurus mit Veggie Cakes.", en: "Use Therizinosaurus with Veggie Cakes." },
                 maps: { 
                     "The Island": {
-                        "Gamma": { stats: {hp:"432,000", dmg:"?", lvl:"50"}, tributes:[], loot:[{id:"element", q:40}, {id:"trophy_dragon", q:1}, {id:"flag_dragon", q:1}], unlocks:["tek_leggings", "tek_trough", "tek_gen"] },
-                        "Beta": { stats: {hp:"864,000", dmg:"?", lvl:"70"}, tributes:[], loot:[{id:"element", q:110}, {id:"trophy_dragon", q:1}, {id:"flag_dragon", q:1}], unlocks:["tek_transmitter", "tek_shield"] },
-                        "Alpha": { stats: {hp:"972,000", dmg:"?", lvl:"100"}, tributes:[], loot:[{id:"element", q:220}, {id:"trophy_dragon", q:1}, {id:"flag_dragon", q:1}], unlocks:["tek_teleporter", "tek_dedi", "tek_chest"] }
+                        "Gamma": { stats: {hp:"432,000", dmg:"?", lvl:"50"}, tributes:[{id:"art_cunning", q:1}, {id:"art_immine", q:1}, {id:"art_skylord", q:1}, {id:"art_strong", q:1}], loot:[{id:"element", q:40}, {id:"trophy_dragon", q:1}, {id:"flag_dragon", q:1}], unlocks:["tek_leggings", "tek_trough", "tek_gen"] },
+                        "Beta": { stats: {hp:"864,000", dmg:"?", lvl:"70"}, tributes:[{id:"art_cunning", q:1}, {id:"art_immine", q:1}, {id:"art_skylord", q:1}, {id:"art_strong", q:1}, {id:"allo_brain", q:5}, {id:"basilo_blubber", q:5}, {id:"giga_heart", q:1}, {id:"tuso_tentacle", q:5}, {id:"rex_arm", q:5}, {id:"yuty_lungs", q:5}], loot:[{id:"element", q:110}, {id:"trophy_dragon", q:1}, {id:"flag_dragon", q:1}], unlocks:["tek_transmitter", "tek_shield"] },
+                        "Alpha": { stats: {hp:"972,000", dmg:"?", lvl:"100"}, tributes:[{id:"art_cunning", q:1}, {id:"art_immine", q:1}, {id:"art_skylord", q:1}, {id:"art_strong", q:1}, {id:"allo_brain", q:10}, {id:"basilo_blubber", q:10}, {id:"giga_heart", q:2}, {id:"tuso_tentacle", q:10}, {id:"rex_arm", q:10}, {id:"yuty_lungs", q:10}], loot:[{id:"element", q:220}, {id:"trophy_dragon", q:1}, {id:"flag_dragon", q:1}], unlocks:["tek_teleporter", "tek_dedi", "tek_chest", "tek_cloning_chamber"] }
                     }
                 }
             },
@@ -569,7 +591,13 @@
                 icon: "https://ark.wiki.gg/images/thumb/Manticore.png/50px-Manticore.png",
                 desc: { de: "Wächter von Scorched Earth.", en: "Guardian of Scorched Earth." },
                 strategy: { de: "Bringe ihn zum Landen. Wyvern sind erlaubt.", en: "Force him to land. Wyverns allowed." },
-                maps: { "Scorched Earth": { "Gamma": {}, "Beta": {}, "Alpha": {} } }
+                maps: { 
+                    "Scorched Earth": { 
+                        "Gamma": { stats: {hp:"110,000", dmg:"?", lvl:"55"}, tributes:[{id:"art_clever", q:1}, {id:"art_devourer", q:1}, {id:"art_skylord", q:1}], loot:[{id:"element", q:35}, {id:"trophy_manti", q:1}, {id:"flag_manti", q:1}], unlocks:["tek_gauntlets", "tek_leggings", "tek_boots", "tek_trough", "tek_gen", "tek_light"] },
+                        "Beta": { stats: {hp:"220,000", dmg:"?", lvl:"75"}, tributes:[{id:"art_clever", q:1}, {id:"art_devourer", q:1}, {id:"art_skylord", q:1}, {id:"wyvern_talon_fire", q:5}, {id:"wyvern_talon_lightning", q:5}, {id:"wyvern_talon_poison", q:5}], loot:[{id:"element", q:95}, {id:"trophy_manti", q:1}, {id:"flag_manti", q:1}], unlocks:["tek_rifle", "tek_helmet", "tek_transmitter", "tek_shield", "tek_tapa_saddle"] },
+                        "Alpha": { stats: {hp:"330,000", dmg:"?", lvl:"100"}, tributes:[{id:"art_clever", q:1}, {id:"art_devourer", q:1}, {id:"art_skylord", q:1}, {id:"wyvern_talon_fire", q:10}, {id:"wyvern_talon_lightning", q:10}, {id:"wyvern_talon_poison", q:10}], loot:[{id:"element", q:190}, {id:"trophy_manti", q:1}, {id:"flag_manti", q:1}], unlocks:["tek_chest", "tek_teleporter", "tek_cloning_chamber", "tek_rex_saddle", "tek_dedi"] }
+                    } 
+                }
             }
         };
 
@@ -604,17 +632,14 @@
             document.getElementById('btn-'+lang).classList.add('active');
             
             // Re-render everything
-            renderBossList();
+            const searchVal = document.getElementById('searchInput').value;
+            filterBosses(searchVal);
             loadBoss(currentBossId);
         }
 
         function filterBosses(query) {
             const list = document.getElementById('bossList');
             query = query.toLowerCase();
-            
-            // Filter Logic
-            // 1. Search in Boss Names
-            // 2. Search in Loot/Unlocks/Tributes of that boss (Advanced)
             
             list.innerHTML = '';
             
@@ -627,7 +652,7 @@
                 if (bName.includes(query)) {
                     match = true;
                 } else {
-                    // Check Items in Map Data
+                    // Deep search items
                     for (const map in data.maps) {
                         for (const diff in data.maps[map]) {
                             const diffData = data.maps[map][diff];
@@ -699,11 +724,15 @@
                 opt.innerText = map;
                 mapSelect.appendChild(opt);
             });
-            currentMap = maps[0]; 
+            // Try to keep current map if boss has it, else reset
+            if (!maps.includes(currentMap)) {
+                currentMap = maps[0];
+            }
+            mapSelect.value = currentMap;
 
             // Update Sidebar Active
             document.querySelectorAll('.boss-btn').forEach(b => b.classList.remove('active'));
-            // Re-run filter to keep active search state but highlight selected
+            // Re-run filter to highlight selected
             const searchVal = document.getElementById('searchInput').value;
             filterBosses(searchVal);
 
@@ -720,7 +749,7 @@
             const mapData = boss.maps[currentMap];
             
             const content = document.getElementById('mainContent');
-            if(!mapData) { content.innerHTML = "Keine Daten."; return; }
+            if(!mapData) { content.innerHTML = `<div class="strategy-box">Daten für diese Map nicht verfügbar.</div>`; return; }
 
             // Render Item Helper
             const renderItemList = (list) => {
@@ -744,7 +773,6 @@
                 if(hasPrev) html += `<div class="note" style="width:100%;">${getTrans('prev')}</div>`;
                 
                 html += list.map(key => {
-                    // Filter out text placeholders if any
                     if(key.includes(" ")) return ""; 
                     const dbItem = getItem(key);
                     return `<div class="tek-tag"><img src="${dbItem.icon}"> ${dbItem.name}</div>`;
@@ -764,6 +792,11 @@
                 `;
             }
 
+            // Safe Access for Map Data (some maps might miss specific difficulty data in placeholders)
+            const dGamma = mapData.Gamma || {};
+            const dBeta = mapData.Beta || {};
+            const dAlpha = mapData.Alpha || {};
+
             // --- BUILD HTML ---
             let html = `
                 <!-- MATRIX HEADER -->
@@ -777,9 +810,9 @@
                 <div class="section-block">
                     <div class="section-title"><i class="fa-solid fa-chart-line"></i> ${getTrans('stats')}</div>
                     <div class="matrix-row">
-                        <div class="matrix-col gamma">${renderStats(mapData.Gamma.stats)}</div>
-                        <div class="matrix-col beta">${renderStats(mapData.Beta.stats)}</div>
-                        <div class="matrix-col alpha">${renderStats(mapData.Alpha.stats)}</div>
+                        <div class="matrix-col gamma">${renderStats(dGamma.stats)}</div>
+                        <div class="matrix-col beta">${renderStats(dBeta.stats)}</div>
+                        <div class="matrix-col alpha">${renderStats(dAlpha.stats)}</div>
                     </div>
                 </div>
 
@@ -787,9 +820,9 @@
                 <div class="section-block">
                     <div class="section-title"><i class="fa-solid fa-gem"></i> ${getTrans('tribute')}</div>
                     <div class="matrix-row">
-                        <div class="matrix-col gamma"><div class="item-list">${renderItemList(mapData.Gamma.tributes)}</div></div>
-                        <div class="matrix-col beta"><div class="item-list">${renderItemList(mapData.Beta.tributes)}</div></div>
-                        <div class="matrix-col alpha"><div class="item-list">${renderItemList(mapData.Alpha.tributes)}</div></div>
+                        <div class="matrix-col gamma"><div class="item-list">${renderItemList(dGamma.tributes)}</div></div>
+                        <div class="matrix-col beta"><div class="item-list">${renderItemList(dBeta.tributes)}</div></div>
+                        <div class="matrix-col alpha"><div class="item-list">${renderItemList(dAlpha.tributes)}</div></div>
                     </div>
                 </div>
 
@@ -797,9 +830,9 @@
                 <div class="section-block">
                     <div class="section-title"><i class="fa-solid fa-gift"></i> ${getTrans('loot')}</div>
                     <div class="matrix-row">
-                        <div class="matrix-col gamma"><div class="item-list">${renderItemList(mapData.Gamma.loot)}</div></div>
-                        <div class="matrix-col beta"><div class="item-list">${renderItemList(mapData.Beta.loot)}</div></div>
-                        <div class="matrix-col alpha"><div class="item-list">${renderItemList(mapData.Alpha.loot)}</div></div>
+                        <div class="matrix-col gamma"><div class="item-list">${renderItemList(dGamma.loot)}</div></div>
+                        <div class="matrix-col beta"><div class="item-list">${renderItemList(dBeta.loot)}</div></div>
+                        <div class="matrix-col alpha"><div class="item-list">${renderItemList(dAlpha.loot)}</div></div>
                     </div>
                 </div>
 
@@ -807,9 +840,9 @@
                 <div class="section-block">
                     <div class="section-title"><i class="fa-solid fa-dna"></i> ${getTrans('unlocks')}</div>
                     <div class="matrix-row">
-                        <div class="matrix-col gamma"><div class="tek-unlocks">${renderUnlocks(mapData.Gamma.unlocks, false)}</div></div>
-                        <div class="matrix-col beta"><div class="tek-unlocks">${renderUnlocks(mapData.Beta.unlocks, true)}</div></div>
-                        <div class="matrix-col alpha"><div class="tek-unlocks">${renderUnlocks(mapData.Alpha.unlocks, true)}</div></div>
+                        <div class="matrix-col gamma"><div class="tek-unlocks">${renderUnlocks(dGamma.unlocks, false)}</div></div>
+                        <div class="matrix-col beta"><div class="tek-unlocks">${renderUnlocks(dBeta.unlocks, true)}</div></div>
+                        <div class="matrix-col alpha"><div class="tek-unlocks">${renderUnlocks(dAlpha.unlocks, true)}</div></div>
                     </div>
                 </div>
 
