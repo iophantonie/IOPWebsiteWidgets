@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IOP Boss Guide: Broodmother</title>
+    <link href="https://fonts.googleapis.com/css2?family=Acme&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* --- VARIABLES --- */
+        :root {
+            --c-fire: #ff3300;
+            --c-bg: #050505;
+            --c-panel: #121212;
+            --c-content: #1a1a1a;
+            --c-text: #e0e0e0;
+            --c-dim: #888;
+            --c-border: #333;
+            
+            --diff-gamma: #4CAF50;
+            --diff-beta: #FFEB3B;
+            --diff-alpha: #F44336;
+
+            --f-head: 'Acme', sans-serif;
+            --f-body: 'Roboto', sans-serif;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0; padding: 0;
+            background-color: transparent; 
+            color: var(--c-text);
+            font-family: var(--f-body);
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        /* --- CONTAINER --- */
+        .widget-container {
+            display: flex;
+            flex-direction: column;
+            width: 99%; 
+            height: 98vh; 
+            background-color: var(--c-bg);
+            border: 2px solid var(--c-fire);
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 0 50px rgba(0,0,0,0.9);
+        }
+
+        /* --- HEADER --- */
+        .header {
+            background-color: #080808;
+            padding: 15px 30px;
+            border-bottom: 1px solid var(--c-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+            background-image: radial-gradient(circle at 50% -100%, rgba(255,51,0,0.15) 0%, transparent 60%);
+        }
+
+        .title-group h1 {
+            font-family: var(--f-head);
+            font-size: 2rem;
+            text-transform: uppercase;
+            margin: 0;
+            color: var(--c-fire);
+            line-height: 1;
+        }
+        .title-group span { font-size: 0.85rem; color: var(--c-dim); text-transform: uppercase; letter-spacing: 2px; }
+
+        /* Difficulty Toggle */
+        .diff-toggle {
+            display: flex;
+            background: #111;
+            border-radius: 6px;
+            padding: 4px;
+            border: 1px solid var(--c-border);
+        }
+        .diff-btn {
+            background: transparent;
+            border: none;
+            color: #666;
+            padding: 8px 16px;
+            font-family: var(--f-head);
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.2s;
+            text-transform: uppercase;
+        }
+        .diff-btn:hover { color: #fff; }
+        
+        .diff-btn.gamma.active { background-color: var(--diff-gamma); color: #000; box-shadow: 0 0 10px rgba(76,175,80,0.4); }
+        .diff-btn.beta.active { background-color: var(--diff-beta); color: #000; box-shadow: 0 0 10px rgba(255,235,59,0.4); }
+        .diff-btn.alpha.active { background-color: var(--diff-alpha); color: #fff; box-shadow: 0 0 10px rgba(244,67,54,0.4); }
+
+        /* --- TABS --- */
+        .nav-tabs {
+            display: flex;
+            background-color: var(--c-panel);
+            padding: 0 10px;
+            border-bottom: 1px solid var(--c-border);
+        }
+        .nav-tab {
+            padding: 15px 25px;
+            cursor: pointer;
+            font-family: var(--f-head);
+            text-transform: uppercase;
+            color: var(--c-dim);
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+        }
+        .nav-tab:hover { color: #fff; background-color: rgba(255,255,255,0.02); }
+        .nav-tab.active { color: var(--c-fire); border-bottom-color: var(--c-fire); background-color: rgba(255,51,0,0.05); }
+
+        /* --- CONTENT --- */
+        .content-area {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 30px;
+            background-color: var(--c-bg);
+        }
+        .content-area::-webkit-scrollbar { width: 8px; }
+        .content-area::-webkit-scrollbar-thumb { background-color: #333; border-radius: 4px; }
+
+        .section { display: none; animation: fadeIn 0.3s ease; max-width: 1200px; margin: 0 auto; }
+        .section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- CARDS & BLOCKS --- */
+        .info-card {
+            background-color: var(--c-content);
+            border: 1px solid var(--c-border);
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+        .info-card h3 { color: var(--c-fire); font-family: var(--f-head); margin-top: 0; border-bottom: 1px solid #333; padding-bottom: 10px; }
+
+        /* Grid for Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        .stat-box {
+            background: #202020;
+            padding: 15px;
+            border-radius: 4px;
+            text-align: center;
+            border: 1px solid #333;
+        }
+        .stat-val { font-size: 1.5rem; font-weight: bold; color: #fff; display: block; }
+        .stat-label { font-size: 0.85rem; color: #888; text-transform: uppercase; }
+
+        /* Requirements Table */
+        .req-table { width: 100%; border-collapse: collapse; }
+        .req-table th, .req-table td { padding: 12px; text-align: left; border-bottom: 1px solid #333; }
+        .req-table th { color: var(--c-fire); font-family: var(--f-head); }
+        .req-img { width: 30px; height: 30px; vertical-align: middle; margin-right: 10px; border-radius: 4px; background: #000; }
+
+        /* Tekgrams Grid */
+        .tek-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+        }
+        .tek-item {
+            background: #151515;
+            padding: 10px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            border: 1px solid #333;
+            color: #ccc;
+        }
+        .tek-item img { width: 40px; height: 40px; margin-right: 15px; }
+
+        /* Strategy */
+        .strat-block { display: flex; gap: 20px; align-items: flex-start; }
+        .strat-icon { font-size: 3rem; color: var(--c-fire); opacity: 0.5; }
+
+        /* Difficulty dependent visibility */
+        .diff-content { display: none; }
+        .diff-content.active { display: block; animation: fadeIn 0.3s; }
+
+        @media(max-width: 800px) {
+            .strat-block { flex-direction: column; }
+            .header { flex-direction: column; gap: 15px; text-align: center; }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="widget-container">
+        
+        <!-- HEADER -->
+        <div class="header">
+            <div class="title-group">
+                <h1>Broodmother Lysrix</h1>
+                <span>Boss Guide & Strategie</span>
+            </div>
+            
+            <!-- Difficulty Switcher -->
+            <div class="diff-toggle">
+                <button class="diff-btn gamma active" onclick="setDiff('gamma')">Gamma</button>
+                <button class="diff-btn beta" onclick="setDiff('beta')">Beta</button>
+                <button class="diff-btn alpha" onclick="setDiff('alpha')">Alpha</button>
+            </div>
+        </div>
+
+        <!-- TABS -->
+        <div class="nav-tabs">
+            <div class="nav-tab active" onclick="showSection('overview', this)">Übersicht & Stats</div>
+            <div class="nav-tab" onclick="showSection('prep', this)">Tribute & Loot</div>
+            <div class="nav-tab" onclick="showSection('unlocks', this)">Tek Engramme</div>
+            <div class="nav-tab" onclick="showSection('strategy', this)">Strategie</div>
+        </div>
+
+        <!-- CONTENT -->
+        <div class="content-area">
+
+            <!-- TAB 1: OVERVIEW -->
+            <div id="overview" class="section active">
+                <div class="info-card">
+                    <h3>Allgemeine Informationen</h3>
+                    <div style="display:flex; gap:20px; flex-wrap:wrap;">
+                        <img src="https://ark.wiki.gg/images/thumb/Dossier_Broodmother.png/300px-Dossier_Broodmother.png" style="border-radius:6px; border:1px solid #444; max-width:100%;">
+                        <div style="flex:1;">
+                            <p>Die Brutmutter Lysrix ist eine gigantische Spinne, Königin und Mutter aller Spinnen auf der Insel. Sie speit Gift und webt Netze, um ihre Gegner zu verlangsamen. Zudem beschwört sie Araneo-Diener, die im Kampf unterstützen.</p>
+                            <p><strong>Standorte:</strong> The Island (Grüner Obelisk), The Center, Valguero (The Lair).</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-card">
+                    <h3>Basiswerte (Boss)</h3>
+                    
+                    <!-- Gamma Stats -->
+                    <div class="stats-grid diff-content gamma active">
+                        <div class="stat-box"><span class="stat-val" style="color:var(--diff-gamma)">324.000</span><span class="stat-label">Leben</span></div>
+                        <div class="stat-box"><span class="stat-val">180</span><span class="stat-label">Schaden</span></div>
+                        <div class="stat-box"><span class="stat-val">Lvl 30</span><span class="stat-label">Min. Level</span></div>
+                    </div>
+                    
+                    <!-- Beta Stats -->
+                    <div class="stats-grid diff-content beta">
+                        <div class="stat-box"><span class="stat-val" style="color:var(--diff-beta)">648.000</span><span class="stat-label">Leben</span></div>
+                        <div class="stat-box"><span class="stat-val">320</span><span class="stat-label">Schaden</span></div>
+                        <div class="stat-box"><span class="stat-val">Lvl 50</span><span class="stat-label">Min. Level</span></div>
+                    </div>
+
+                    <!-- Alpha Stats -->
+                    <div class="stats-grid diff-content alpha">
+                        <div class="stat-box"><span class="stat-val" style="color:var(--diff-alpha)">972.000</span><span class="stat-label">Leben</span></div>
+                        <div class="stat-box"><span class="stat-val">540</span><span class="stat-label">Schaden</span></div>
+                        <div class="stat-box"><span class="stat-val">Lvl 70</span><span class="stat-label">Min. Level</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: PREPARATION -->
+            <div id="prep" class="section">
+                <div class="info-card">
+                    <h3>Benötigte Tribute</h3>
+                    <p>Um das Portal zu öffnen, müssen folgende Gegenstände in den Obelisken oder Loot-Drop gelegt werden:</p>
+                    
+                    <table class="req-table">
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th>Gamma</th>
+                                <th>Beta</th>
+                                <th>Alpha</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><img src="https://ark.wiki.gg/images/thumb/Artifact_of_the_Clever.png/30px-Artifact_of_the_Clever.png" class="req-img"> Artefakt der Klugheit</td><td>1</td><td>1</td><td>1</td></tr>
+                            <tr><td><img src="https://ark.wiki.gg/images/thumb/Artifact_of_the_Hunter.png/30px-Artifact_of_the_Hunter.png" class="req-img"> Artefakt des Jägers</td><td>1</td><td>1</td><td>1</td></tr>
+                            <tr><td><img src="https://ark.wiki.gg/images/thumb/Artifact_of_the_Massive.png/30px-Artifact_of_the_Massive.png" class="req-img"> Artefakt des Felsen</td><td>1</td><td>1</td><td>1</td></tr>
+                            <tr><td><img src="https://ark.wiki.gg/images/thumb/Argentavis_Talon.png/30px-Argentavis_Talon.png" class="req-img"> Argentavis Klaue</td><td>-</td><td>5</td><td>10</td></tr>
+                            <tr><td><img src="https://ark.wiki.gg/images/thumb/Sarcosuchus_Skin.png/30px-Sarcosuchus_Skin.png" class="req-img"> Sarco Haut</td><td>-</td><td>5</td><td>10</td></tr>
+                            <tr><td><img src="https://ark.wiki.gg/images/thumb/Sauropod_Vertebra.png/30px-Sauropod_Vertebra.png" class="req-img"> Sauropoden Wirbel</td><td>-</td><td>5</td><td>10</td></tr>
+                            <tr><td><img src="https://ark.wiki.gg/images/thumb/Titanoboa_Venom.png/30px-Titanoboa_Venom.png" class="req-img"> Titanoboa Gift</td><td>-</td><td>5</td><td>10</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="info-card">
+                    <h3>Loot & Belohnung</h3>
+                    <div class="diff-content gamma active">
+                        <p><strong>Element:</strong> 10x <img src="https://ark.wiki.gg/images/thumb/Element.png/20px-Element.png" style="vertical-align:middle"></p>
+                        <p><strong>Trophäe:</strong> Broodmother Trophäe (Gamma)</p>
+                        <p><strong>Flag:</strong> Spider Flag</p>
+                    </div>
+                    <div class="diff-content beta">
+                        <p><strong>Element:</strong> 28x <img src="https://ark.wiki.gg/images/thumb/Element.png/20px-Element.png" style="vertical-align:middle"></p>
+                        <p><strong>Trophäe:</strong> Broodmother Trophäe (Beta)</p>
+                        <p><strong>Flag:</strong> Spider Flag</p>
+                    </div>
+                    <div class="diff-content alpha">
+                        <p><strong>Element:</strong> 74x <img src="https://ark.wiki.gg/images/thumb/Element.png/20px-Element.png" style="vertical-align:middle"></p>
+                        <p><strong>Trophäe:</strong> Broodmother Trophäe (Alpha)</p>
+                        <p><strong>Flag:</strong> Spider Flag</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 3: UNLOCKS -->
+            <div id="unlocks" class="section">
+                <div class="info-card">
+                    <h3>Freischaltbare Tek-Engramme</h3>
+                    <p style="color:#aaa; font-size:0.9rem; margin-bottom:20px;">
+                        Hinweis: Höhere Schwierigkeitsgrade schalten automatisch auch alle Engramme der niedrigeren Stufen frei.
+                    </p>
+
+                    <!-- Gamma Unlocks -->
+                    <div class="diff-content gamma active">
+                        <h4 style="color:var(--diff-gamma)">Gamma Freischaltungen:</h4>
+                        <div class="tek-grid">
+                            <div class="tek-item"><img src="https://ark.wiki.gg/images/thumb/Tek_Replicator.png/40px-Tek_Replicator.png"> Tek Replikator</div>
+                            <div class="tek-item"><img src="https://ark.wiki.gg/images/thumb/Tek_Foundation.png/40px-Tek_Foundation.png"> Tek Fundamente</div>
+                            <div class="tek-item"><img src="https://ark.wiki.gg/images/thumb/Tek_Triangle_Ceiling.png/40px-Tek_Triangle_Ceiling.png"> Tek Dreiecks-Decken</div>
+                        </div>
+                    </div>
+
+                    <!-- Beta Unlocks -->
+                    <div class="diff-content beta">
+                        <h4 style="color:var(--diff-beta)">Beta Freischaltungen (+ Gamma):</h4>
+                        <div class="tek-grid">
+                            <div class="tek-item"><img src="https://ark.wiki.gg/images/thumb/Tek_Boots.png/40px-Tek_Boots.png"> Tek Stiefel</div>
+                            <div class="tek-item"><img src="https://ark.wiki.gg/images/thumb/Tek_Wall.png/40px-Tek_Wall.png"> Tek Wände & Dächer</div>
+                            <div class="tek-item"><img src="https://ark.wiki.gg/images/thumb/Tek_Ceiling.png/40px-Tek_Ceiling.png"> Tek Decken & Rampen</div>
+                            <div class="tek-item"><img src="https://ark.wiki.gg/images/thumb/Tek_Pillar.png/40px-Tek_Pillar.png"> Tek Pfeiler & Leitern</div>
+                        </div>
+                    </div>
+
+                    <!-- Alpha Unlocks -->
+                    <div class="diff-content alpha">
+                        <h4 style="color:var(--diff-alpha)">Alpha Freischaltungen (+ Beta & Gamma):</h4>
+                        <div class="tek-grid">
+                            <div class="tek-item"><img src="https://ark.wiki.gg/images/thumb/Tek_Turret.png/40px-Tek_Turret.png"> Tek Turret</div>
+                            <div class="tek-item"><img src="https://ark.wiki.gg/images/thumb/Tek_Helmet.png/40px-Tek_Helmet.png"> Tek Helm</div>
+                            <div class="tek-item"><img src="https://ark.wiki.gg/images/thumb/Mosasaur_Tek_Saddle.png/40px-Mosasaur_Tek_Saddle.png"> Mosa Tek Sattel</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 4: STRATEGY -->
+            <div id="strategy" class="section">
+                <div class="info-card">
+                    <h3>Kampfstrategie</h3>
+                    <div class="strat-block">
+                        <i class="fa-solid fa-chess-knight strat-icon"></i>
+                        <div>
+                            <p>Die Brutmutter teilt massiven Schaden aus und ihre Spinnen-Adds können lästig werden. Gute Sättel sind Pflicht!</p>
+                            <ul>
+                                <li><strong>Die "Rex Rush" Methode:</strong> 19 High-Level Rexe mit viel HP und Melee Damage, unterstützt von einem Yutyrannus für den Buff. Umzingelt die Spinne, damit sie sich nicht bewegen kann.</li>
+                                <li><strong>Die Megatherium Methode:</strong> Megatherien erhalten einen massiven Buff ("Insektenkiller"), wenn sie eine der kleinen Spinnen töten. Das macht sie extrem effektiv gegen die Brutmutter.</li>
+                                <li><strong>Waffen:</strong> Schusswaffen sind meist Munitionsverschwendung. Verlasst euch auf eure Dinos.</li>
+                                <li><strong>Gefahren:</strong> Pass auf die Säure-Attacken auf, sie zerstören Rüstung schnell. Hab immer Ersatzrüstung dabei oder bleib auf deinem Mount.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // Tab Switching
+        function showSection(id, btn) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            btn.classList.add('active');
+        }
+
+        // Difficulty Toggle
+        function setDiff(diff) {
+            // Update Buttons
+            document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('active'));
+            document.querySelector(`.diff-btn.${diff}`).classList.add('active');
+
+            // Update Content Visibility
+            document.querySelectorAll('.diff-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll(`.diff-content.${diff}`).forEach(el => el.classList.add('active'));
+        }
+    </script>
+
+</body>
+</html>
