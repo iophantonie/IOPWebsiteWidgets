@@ -107,10 +107,13 @@
             line-height: 1.2;
         }
 
-        /* Search Box */
+        /* Search Box & Settings */
         .search-box {
             padding: 15px;
             border-bottom: 1px solid var(--c-border);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
         .search-input-wrapper {
             position: relative;
@@ -139,6 +142,40 @@
             color: var(--c-dim);
             font-size: 0.9rem;
         }
+
+        /* Settings Input */
+        .settings-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #151515;
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid #333;
+        }
+        .settings-label {
+            font-size: 0.8rem;
+            color: #aaa;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .settings-input {
+            width: 60px;
+            background: #000;
+            border: 1px solid #444;
+            color: var(--c-primary);
+            padding: 4px;
+            border-radius: 4px;
+            text-align: right;
+            font-family: monospace;
+            font-weight: bold;
+        }
+        .settings-input:focus {
+            outline: none;
+            border-color: var(--c-primary);
+        }
+
 
         /* Boss List */
         .boss-list {
@@ -503,6 +540,11 @@
                 <div class="search-input-wrapper">
                     <i class="fa-solid fa-search search-icon"></i>
                     <input type="text" class="search-input" id="searchInput" placeholder="Suche Boss, Engramm..." oninput="filterBosses(this.value)">
+                </div>
+                <!-- NEU: Tribe Tower Bonus Input (Prozent) -->
+                <div class="settings-row" title="Erhöht die Menge an Element und speziellen Drops">
+                    <div class="settings-label"><i class="fa-solid fa-tower-broadcast"></i> Loot Bonus % (Tribe Tower)</div>
+                    <input type="number" class="settings-input" id="lootBonusInput" value="0" min="0" max="30" step="1" onchange="updateLootBonus(this.value)">
                 </div>
             </div>
 
@@ -1252,7 +1294,7 @@
 
         // --- SECTION 3: MINIBOSSES ---
         const DATA_MINIBOSSES = {
-             "valguero_broodmother": {
+            "valguero_broodmother": {
                 hasDiff: false, 
                 category: "Minibosse",
                 name: { de: "Broodmother (Valguero)", en: "Broodmother (Valguero)" },
@@ -1337,6 +1379,7 @@
         let currentBossId = "broodmother";
         let currentMap = "The Island";
         let currentLang = "de";
+        let currentLootBonus = 0; // Changed to 0 as base (0% bonus)
 
         // --- INIT ---
         window.onload = function() {
@@ -1367,6 +1410,15 @@
             const searchVal = document.getElementById('searchInput').value;
             filterBosses(searchVal);
             loadBoss(currentBossId);
+        }
+
+        function updateLootBonus(val) {
+            // If input is empty or invalid, default to 0
+            let parsed = parseInt(val);
+            if (isNaN(parsed)) parsed = 0;
+            if (parsed < 0) parsed = 0;
+            currentLootBonus = parsed;
+            renderContent();
         }
 
         function filterBosses(query) {
@@ -1535,13 +1587,23 @@
                 if(!list || list.length === 0) return '<div style="color:#666; font-size:0.8rem;">-</div>';
                 return list.map(entry => {
                     const dbItem = getItem(entry.id);
+                    
+                    // Logic for Loot Bonus Scaling
+                    // If currentLootBonus is 10 (10%), multiplier is 1.1
+                    // If currentLootBonus is 100 (100%), multiplier is 2.0
+                    let displayQty = entry.q;
+                    // Scale Element, Black Pearl, Chitin, Polymer, etc. if quantity is a number
+                    if (typeof entry.q === 'number' && ["element", "black_pearl", "chitin", "organic_polymer", "oil", "electronics", "scrap_metal"].includes(entry.id)) {
+                        displayQty = Math.floor(entry.q * (1 + currentLootBonus / 100));
+                    }
+
                     return `
                     <div class="item-entry" title="${dbItem.name}">
                         <div class="item-left">
                             <img src="${dbItem.icon}">
                             <span>${dbItem.name}</span>
                         </div>
-                        <span class="qty">x${entry.q}</span>
+                        <span class="qty">${typeof displayQty === 'number' ? 'x' : ''}${displayQty}</span>
                     </div>`;
                 }).join('');
             }
