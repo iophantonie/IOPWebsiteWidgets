@@ -1,67 +1,55 @@
-// Globale Variablen (werden durch fetch gefüllt)
+// Globale Variablen
 let ITEMS_DB = {};
 let BOSS_DATA = {};
 
-// UI Texte (klein genug, um sie im Code zu lassen)
 const UI_TEXT = {
     de: { stats: "Werte & Anforderungen", tribute: "Tribute (Beschwörung)", loot: "Loot & Belohnung", unlocks: "Tek Engramme", strategy: "Strategie", hp: "Leben", dmg: "Schaden", lvl: "Min. Level", gamma: "Gamma", beta: "Beta", alpha: "Alpha", prev: "+ Vorherige Stufen", arena: "Arena Informationen", attacks: "Boss Verhalten & Angriffe" },
     en: { stats: "Stats & Requirements", tribute: "Tributes (Summon)", loot: "Loot & Rewards", unlocks: "Tek Engrams", strategy: "Strategy", hp: "Health", dmg: "Damage", lvl: "Min. Level", gamma: "Gamma", beta: "Beta", alpha: "Alpha", prev: "+ Previous Tiers", arena: "Arena Information", attacks: "Boss Behavior & Attacks" }
 };
 
-let currentBossId = "broodmother"; // Standard, falls vorhanden
+let currentBossId = "broodmother";
 let currentMap = "The Island";
 let currentLang = "de";
 
-// --- INITIALISIERUNG ---
 document.addEventListener('DOMContentLoaded', () => {
     initApp();
 });
 
 async function initApp() {
     try {
-        // Wir laden beide JSON Dateien parallel
         const [itemsResponse, bossesResponse] = await Promise.all([
             fetch('data/items.json'),
             fetch('data/bosses.json')
         ]);
 
-        if (!itemsResponse.ok || !bossesResponse.ok) throw new Error("Netzwerkfehler beim Laden der JSONs");
+        if (!itemsResponse.ok || !bossesResponse.ok) throw new Error("Netzwerkfehler beim Laden der Daten");
 
         ITEMS_DB = await itemsResponse.json();
         BOSS_DATA = await bossesResponse.json();
 
-        // Event Listeners setzen
         setupEventListeners();
 
-        // App starten
-        // Prüfen ob broodmother existiert, sonst den ersten Key nehmen
-        const keys = Object.keys(BOSS_DATA);
-        if (keys.length > 0 && !BOSS_DATA[currentBossId]) {
-            currentBossId = keys[0];
+        // Prüfen ob Standard-Boss existiert
+        if (!BOSS_DATA[currentBossId]) {
+            const keys = Object.keys(BOSS_DATA);
+            if (keys.length > 0) currentBossId = keys[0];
         }
 
         renderBossList();
         loadBoss(currentBossId);
 
     } catch (error) {
-        console.error("Fehler beim Laden der Daten:", error);
-        document.getElementById('mainContent').innerHTML = `<div class="strategy-box" style="border-color:red;">Fehler beim Laden der Daten. Bitte Seite neu laden.<br>${error.message}</div>`;
+        console.error(error);
+        document.getElementById('mainContent').innerHTML = `<div class="strategy-box" style="border-color:red;">Fehler beim Laden. Bitte prüfen Sie, ob die Dateien im 'data' Ordner liegen.<br>${error.message}</div>`;
     }
 }
 
 function setupEventListeners() {
-    // Suche
     document.getElementById('searchInput').addEventListener('input', (e) => filterBosses(e.target.value));
-    
-    // Map Selector
     document.getElementById('mapSelector').addEventListener('change', (e) => changeMap(e.target.value));
-
-    // Sprachen
     document.getElementById('btn-de').addEventListener('click', () => setLang('de'));
     document.getElementById('btn-en').addEventListener('click', () => setLang('en'));
 }
-
-// --- LOGIK FUNKTIONEN (unverändert, nur globale Vars werden genutzt) ---
 
 function getTrans(key) {
     return UI_TEXT[currentLang][key] || key;
@@ -70,10 +58,7 @@ function getTrans(key) {
 function getItem(key) {
     const item = ITEMS_DB[key];
     if (!item) return { name: key, icon: "" };
-    return {
-        name: item[currentLang] || item.en,
-        icon: item.icon
-    };
+    return { name: item[currentLang] || item.en, icon: item.icon };
 }
 
 function setLang(lang) {
@@ -99,10 +84,8 @@ function filterBosses(query) {
         const bName = (data.name[currentLang] || data.name.en).toLowerCase();
         if (bName.includes(query)) match = true;
         else {
-            // Deep search logic
             for (const map in data.maps) {
                 const mapData = data.maps[map];
-                // Helper function for deep search
                 const checkUnlocks = (arr) => {
                     if(!arr) return false;
                     for(const u of arr) {
@@ -133,7 +116,7 @@ function filterBosses(query) {
             btn.innerHTML = html;
             
             const cat = data.category || "Bosse";
-            if(!categories[cat]) categories[cat] = []; // Fallback für neue Kategorien
+            if(!categories[cat]) categories[cat] = [];
             categories[cat].push(btn);
         }
     }
@@ -154,25 +137,19 @@ function filterBosses(query) {
     });
 }
 
-function renderBossList() {
-    filterBosses(""); 
-}
+function renderBossList() { filterBosses(""); }
 
 function loadBoss(bossId) {
     currentBossId = bossId;
     const boss = BOSS_DATA[bossId];
-    if(!boss) return; // Sicherheitscheck
+    if(!boss) return;
 
-    // Header Info
     let headerHTML = "";
-    if (boss.image) {
-        headerHTML += `<div class="boss-main-image-container"><img src="${boss.image}" class="boss-main-image"></div>`;
-    }
+    if (boss.image) headerHTML += `<div class="boss-main-image-container"><img src="${boss.image}" class="boss-main-image"></div>`;
     headerHTML += `<div class="boss-info"><h1>${boss.name[currentLang] || boss.name.en}</h1><p>${boss.desc[currentLang] || boss.desc.en}</p></div>`;
     
     document.getElementById('bossHeader').innerHTML = headerHTML;
     
-    // Map Selector
     const mapSelect = document.getElementById('mapSelector');
     mapSelect.innerHTML = '';
     const maps = Object.keys(boss.maps);
@@ -192,8 +169,7 @@ function loadBoss(bossId) {
     mapSelect.value = currentMap;
 
     document.querySelectorAll('.boss-btn').forEach(b => b.classList.remove('active'));
-    filterBosses(document.getElementById('searchInput').value); // Re-Render List to update active state
-
+    filterBosses(document.getElementById('searchInput').value);
     renderContent();
 }
 
@@ -210,19 +186,13 @@ function renderContent() {
     
     if(!mapData) { content.innerHTML = `<div class="strategy-box">Daten fehlen.</div>`; return; }
 
-    // Helper functions inside render to access closure or pass easy
     const renderItemList = (list) => {
         if(!list || list.length === 0) return '<div style="color:#666; font-size:0.8rem;">-</div>';
         return list.map(entry => {
             const dbItem = getItem(entry.id);
-            // Handle Items that might be missing in DB
             const name = dbItem.name || entry.id;
             const icon = dbItem.icon || "";
-            return `
-            <div class="item-entry" title="${name}">
-                <div class="item-left"><img src="${icon}"><span>${name}</span></div>
-                <span class="qty">x${entry.q}</span>
-            </div>`;
+            return `<div class="item-entry" title="${name}"><div class="item-left"><img src="${icon}"><span>${name}</span></div><span class="qty">x${entry.q}</span></div>`;
         }).join('');
     };
 
@@ -250,7 +220,6 @@ function renderContent() {
 
     let html = "";
 
-    // SINGLE VIEW
     if (boss.hasDiff === false) {
          html = `
             <div class="single-view">
@@ -267,9 +236,7 @@ function renderContent() {
                     <div class="tek-unlocks">${renderUnlocks(mapData.unlocks, false)}</div>
                 </div>
             </div>`;
-    } 
-    // MATRIX VIEW
-    else {
+    } else {
         const dGamma = mapData.Gamma || {};
         const dBeta = mapData.Beta || {};
         const dAlpha = mapData.Alpha || {};
@@ -313,23 +280,13 @@ function renderContent() {
             </div>`;
     }
 
-    // ARENA & STRATEGY
     if (boss.arena) {
-        html += `<div class="section-block" style="margin-top: 40px;">
-                <div class="section-title"><i class="fa-solid fa-location-dot"></i> ${getTrans('arena')}</div>
-                <div class="strategy-box">${boss.arena[currentLang] || boss.arena.en}</div>
-            </div>`;
+        html += `<div class="section-block" style="margin-top: 40px;"><div class="section-title"><i class="fa-solid fa-location-dot"></i> ${getTrans('arena')}</div><div class="strategy-box">${boss.arena[currentLang] || boss.arena.en}</div></div>`;
     }
     if (boss.behavior) {
-        html += `<div class="section-block">
-                <div class="section-title"><i class="fa-solid fa-paw"></i> ${getTrans('attacks')}</div>
-                <div class="strategy-box">${boss.behavior[currentLang] || boss.behavior.en}</div>
-            </div>`;
+        html += `<div class="section-block"><div class="section-title"><i class="fa-solid fa-paw"></i> ${getTrans('attacks')}</div><div class="strategy-box">${boss.behavior[currentLang] || boss.behavior.en}</div></div>`;
     }
-    html += `<div class="section-block">
-            <div class="section-title"><i class="fa-solid fa-chess-knight"></i> ${getTrans('strategy')}</div>
-            <div class="strategy-box">${boss.strategy[currentLang] || boss.strategy.en}</div>
-        </div>`;
+    html += `<div class="section-block"><div class="section-title"><i class="fa-solid fa-chess-knight"></i> ${getTrans('strategy')}</div><div class="strategy-box">${boss.strategy[currentLang] || boss.strategy.en}</div></div>`;
 
     content.innerHTML = html;
 }
