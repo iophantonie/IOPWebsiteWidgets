@@ -1,0 +1,19 @@
+{
+  "art_clever": { 
+    "de": "Artefakt der Klugheit", 
+    "en": "Artifact of the Clever", 
+    "icon": "https://ark.wiki.gg/images/thumb/Artifact_of_the_Clever.png/30px-Artifact_of_the_Clever.png" 
+  },
+  "art_hunter": { 
+    "de": "Artefakt des Jägers", 
+    "en": "Artifact of the Hunter", 
+    "icon": "https://ark.wiki.gg/images/thumb/Artifact_of_the_Hunter.png/30px-Artifact_of_the_Hunter.png" 
+  },
+  "element": { 
+    "de": "Element", 
+    "en": "Element", 
+    "icon": "https://ark.wiki.gg/images/thumb/Element.png/30px-Element.png" 
+  }
+  
+  // ... FÜGE HIER ALLE ANDEREN ITEMS EIN (Achte auf Kommas und Klammern!)
+}
