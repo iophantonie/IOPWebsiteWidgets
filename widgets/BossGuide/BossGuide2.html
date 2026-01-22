@@ -497,6 +497,7 @@
             "art_stalker": { de: "Artefakt des Jägers (Stalker)", en: "Artifact of the Stalker", icon: "https://ark.wiki.gg/images/thumb/Artifact_of_the_Stalker.png/30px-Artifact_of_the_Stalker.png" },
             "art_growth": { de: "Artefakt des Wachstums", en: "Artifact of Growth", icon: "https://ark.wiki.gg/images/thumb/Artifact_of_Growth.png/30px-Artifact_of_Growth.png" },
             "art_void": { de: "Artefakt der Leere", en: "Artifact of the Void", icon: "https://ark.wiki.gg/images/thumb/Artifact_of_the_Void.png/30px-Artifact_of_the_Void.png" },
+            "art_chaos": { de: "Artefakt des Chaos", en: "Artifact of Chaos", icon: "https://ark.wiki.gg/images/thumb/Artifact_of_Chaos.png/30px-Artifact_of_Chaos.png" },
 
             // TRIBUTE (Körperteile)
             "argi_talon": { de: "Argentavis Klaue", en: "Argentavis Talon", icon: "https://ark.wiki.gg/images/thumb/Argentavis_Talon.png/30px-Argentavis_Talon.png" },
@@ -787,7 +788,25 @@
                     }
                 } 
             },
-            "desert_titan": { hasDiff: false, category: "Titanen", name: {de:"Desert Titan", en:"Desert Titan"}, icon:"https://ark.wiki.gg/images/thumb/4/49/Desert_Titan.png/48px-Desert_Titan.png", desc:{de:"Platzhalter",en:"Placeholder"}, maps:{} },
+            "desert_titan": { 
+                hasDiff: false, 
+                category: "Titanen", 
+                name: {de:"Desert Titan", en:"Desert Titan"}, 
+                icon:"https://ark.wiki.gg/images/thumb/4/49/Desert_Titan.png/48px-Desert_Titan.png", 
+                desc:{de:"Der Herrscher von Sand und Himmel.",en:"The Lord of Sand and Sky."}, 
+                strategy: {
+                    de: "<h4>Flug-Titan</h4>Da er fliegt, sind Land-Dinos nutzlos. Nutze Quetzals mit Plattform-Sattel oder Wyvern.<br><br><h4>Blitz-Gefahr</h4>Achte auf die Blitz-Markierungen! Bleib in Bewegung.<br><br><h4>Zähmen</h4>Zerstöre die Korruptions-Knoten auf dem Rücken mit präzisen Schüssen oder Blitzen.",
+                    en: "<h4>Flying Titan</h4>Land dinos are useless. Use Quetzals with platform saddles or Wyverns.<br><br><h4>Lightning Danger</h4>Watch out for lightning marks! Keep moving.<br><br><h4>Taming</h4>Destroy the corruption nodes on its back with precise shots or lightning."
+                },
+                maps:{
+                    "Extinction": {
+                        stats: { hp: "250,000", dmg: "0", lvl: "5000" },
+                        tributes: [ {id:"art_chaos", q:1}, {id:"corrupt_heart", q:100}, {id:"fire_talon", q:10}, {id:"sarco_skin", q:10} ],
+                        loot: [ {id:"mdsm", q:1}, {id:"mrlm", q:1}, {id:"mscm", q:1}, {id:"element", q:3}, {id:"tek_gear", q:1} ],
+                        unlocks: ["tek_boots", "tek_dedi", "tek_gen", "tek_railgun", "tek_replicator", "tek_trough"]
+                    }
+                } 
+            },
             "king_titan": { hasDiff: true, category: "Titanen", name: {de:"King Titan", en:"King Titan"}, icon:"https://ark.wiki.gg/images/thumb/8/82/King_Titan.png/48px-King_Titan.png", desc:{de:"Platzhalter",en:"Placeholder"}, maps:{} },
             "ice_worm_queen": { hasDiff: false, category: "Minibosse", name: {de:"Ice Worm Queen", en:"Ice Worm Queen"}, icon:"https://ark.wiki.gg/images/thumb/3/3b/Iceworm_Queen.png/48px-Iceworm_Queen.png", desc:{de:"Ragnarok Ice Cave Boss",en:"Ragnarok Ice Cave Boss"}, maps:{} },
             "lava_golem": { hasDiff: false, category: "Minibosse", name: {de:"Lava Elemental", en:"Lava Elemental"}, icon:"https://ark.wiki.gg/images/thumb/4/40/Lava_Elemental.png/48px-Lava_Elemental.png", desc:{de:"Ragnarok Jungle Cave Boss",en:"Ragnarok Jungle Cave Boss"}, maps:{} }
