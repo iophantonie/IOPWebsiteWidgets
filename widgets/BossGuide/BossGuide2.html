@@ -332,10 +332,12 @@
         .item-left { display: flex; align-items: center; gap: 12px; flex: 1; overflow: hidden; }
         .item-entry img { width: 32px; height: 32px; object-fit: contain; flex-shrink: 0; }
         .item-entry span { font-size: 0.95rem; color: #ddd; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        
+        /* Updated Quantity Styling for Alignment */
         .qty { 
             color: var(--c-primary); font-weight: bold; font-family: monospace; font-size: 1.1rem; 
             background: rgba(0,0,0,0.5); padding: 2px 8px; border-radius: 4px; 
-            min-width: 45px; text-align: right; margin-left: 10px;
+            min-width: 45px; text-align: right; margin-left: 10px; flex-shrink: 0;
         }
 
         /* Tek Unlocks */
@@ -549,7 +551,7 @@
         const BOSS_DATA = {
             "broodmother": {
                 name: { de: "Broodmother Lysrix", en: "Broodmother Lysrix" },
-                icon: "https://ark.wiki.gg/images/thumb/Broodmother.png/50px-Broodmother.png",
+                icon: "https://ark.wiki.gg/images/thumb/1/19/Broodmother.png/48px-Broodmother.png",
                 desc: { de: "Die Mutter aller Spinnen. Nutzt Gift, Netze und Diener.", en: "The mother of all spiders. Uses poison, webs and minions." },
                 strategy: {
                     de: "<h4>Rex Rush</h4>19 High-Level Rexe (viel HP/Melee) + 1 Yutyrannus für Buffs. Umzingelt sie, damit sie sich nicht bewegen kann.<br><br><h4>Megatherium</h4>Erhalten 'Insektenkiller'-Buff durch Töten der kleinen Spinnen. Extrem effektiv.<br><br><h4>Gefahren</h4>Säure-Attacken zerstören Rüstung schnell. Nimm Ersatz mit.",
@@ -600,7 +602,7 @@
             },
             "megapithecus": {
                 name: { de: "Megapithecus", en: "Megapithecus" },
-                icon: "https://ark.wiki.gg/images/thumb/Megapithecus.png/50px-Megapithecus.png",
+                icon: "https://ark.wiki.gg/images/thumb/7/7d/Megapithecus.png/48px-Megapithecus.png",
                 desc: { de: "Ein riesiger Gorilla in einer verschneiten Arena.", en: "A giant gorilla in a snowy arena." },
                 strategy: { 
                     de: "<h4>Positionierung</h4>Vermeide die Klippen! Ein falscher Schritt und deine Dinos sterben sofort. Locke ihn in die Mitte oder zum Startpunkt.<br><br><h4>Dinos</h4>Rexe sind effektiv. Yutyrannus für Buffs ist Pflicht.", 
@@ -636,7 +638,7 @@
             },
             "dragon": {
                 name: { de: "Dragon", en: "Dragon" },
-                icon: "https://ark.wiki.gg/images/thumb/Dragon.png/50px-Dragon.png",
+                icon: "https://ark.wiki.gg/images/thumb/c/c7/Dragon.png/48px-Dragon.png",
                 desc: { de: "Feuerspeiender Drache. Prozentualer Schaden.", en: "Fire breathing dragon. Deals percentage damage." },
                 strategy: { 
                     de: "<h4>Feuer-Schaden</h4>Der Feueratem macht prozentualen Schaden (20% der Max HP). Fleischfresser (Rexe) sterben hier extrem schnell.<br><br><h4>Therizinosaurus</h4>Nutze Therizinosaurus mit Sweet Vegetable Cakes. Die Kuchen heilen sie effizient gegen den Feuerschaden.<br><br><h4>Deinonychus (Valguero)</h4>Auf Valguero kann man sich an seine Fersen heften und ihn ausbluten lassen.", 
@@ -644,15 +646,15 @@
                 },
                 maps: { 
                     "The Island": {
-                        "Gamma": { stats: {hp:"432,000", dmg:"500", lvl:"55"}, tributes:[{id:"art_cunning", q:1}, {id:"art_immine", q:1}, {id:"art_skylord", q:1}, {id:"art_strong", q:1}], loot:[{id:"element", q:40}, {id:"trophy_dragon", q:1}, {id:"flag_dragon", q:1}], unlocks:["tek_leggings", "tek_trough", "tek_gen"] },
-                        "Beta": { stats: {hp:"864,000", dmg:"1000", lvl:"75"}, tributes:[{id:"art_cunning", q:1}, {id:"art_immine", q:1}, {id:"art_skylord", q:1}, {id:"art_strong", q:1}, {id:"allo_brain", q:5}, {id:"basilo_blubber", q:5}, {id:"giga_heart", q:1}, {id:"tuso_tentacle", q:5}, {id:"rex_arm", q:5}, {id:"yuty_lungs", q:5}], loot:[{id:"element", q:110}, {id:"trophy_dragon", q:1}, {id:"flag_dragon", q:1}], unlocks:["tek_transmitter", "tek_shield"] },
-                        "Alpha": { stats: {hp:"972,000", dmg:"2000", lvl:"100"}, tributes:[{id:"art_cunning", q:1}, {id:"art_immine", q:1}, {id:"art_skylord", q:1}, {id:"art_strong", q:1}, {id:"allo_brain", q:10}, {id:"basilo_blubber", q:10}, {id:"giga_heart", q:2}, {id:"tuso_tentacle", q:10}, {id:"rex_arm", q:15}, {id:"yuty_lungs", q:10}], loot:[{id:"element", q:220}, {id:"trophy_dragon", q:1}, {id:"flag_dragon", q:1}], unlocks:["tek_teleporter", "tek_dedi", "tek_chest", "tek_cloning_chamber"] }
+                        "Gamma": { stats: {hp:"432,000", dmg:"~500", lvl:"55"}, tributes:[{id:"art_cunning", q:1}, {id:"art_immine", q:1}, {id:"art_skylord", q:1}, {id:"art_strong", q:1}], loot:[{id:"element", q:40}, {id:"trophy_dragon", q:1}, {id:"flag_dragon", q:1}], unlocks:["tek_leggings", "tek_trough", "tek_gen"] },
+                        "Beta": { stats: {hp:"864,000", dmg:"~1000", lvl:"75"}, tributes:[{id:"art_cunning", q:1}, {id:"art_immine", q:1}, {id:"art_skylord", q:1}, {id:"art_strong", q:1}, {id:"allo_brain", q:5}, {id:"basilo_blubber", q:5}, {id:"giga_heart", q:1}, {id:"tuso_tentacle", q:5}, {id:"rex_arm", q:5}, {id:"yuty_lungs", q:5}], loot:[{id:"element", q:110}, {id:"trophy_dragon", q:1}, {id:"flag_dragon", q:1}], unlocks:["tek_transmitter", "tek_shield"] },
+                        "Alpha": { stats: {hp:"972,000", dmg:"~2000", lvl:"100"}, tributes:[{id:"art_cunning", q:1}, {id:"art_immine", q:1}, {id:"art_skylord", q:1}, {id:"art_strong", q:1}, {id:"allo_brain", q:10}, {id:"basilo_blubber", q:10}, {id:"giga_heart", q:2}, {id:"tuso_tentacle", q:10}, {id:"rex_arm", q:15}, {id:"yuty_lungs", q:10}], loot:[{id:"element", q:220}, {id:"trophy_dragon", q:1}, {id:"flag_dragon", q:1}], unlocks:["tek_teleporter", "tek_dedi", "tek_chest", "tek_cloning_chamber"] }
                     }
                 }
             },
             "manticore": {
                 name: { de: "Manticore", en: "Manticore" },
-                icon: "https://ark.wiki.gg/images/thumb/Manticore.png/50px-Manticore.png",
+                icon: "https://ark.wiki.gg/images/thumb/0/03/Manticore.png/48px-Manticore.png",
                 desc: { de: "Wächter von Scorched Earth.", en: "Guardian of Scorched Earth." },
                 strategy: { 
                     de: "<h4>Flugphase</h4>Der Manticore fliegt viel. Man muss warten, bis er landet, um mit Rexen Schaden zu machen.<br><br><h4>Wyvern</h4>In dieser Arena sind Wyvern erlaubt und sehr nützlich, um ihn in der Luft zu attackieren.<br><br><h4>Torpor</h4>Achtung vor den Stacheln, sie verursachen hohen Torpor an Spielern und Dinos.", 
@@ -660,9 +662,9 @@
                 },
                 maps: { 
                     "Scorched Earth": { 
-                        "Gamma": { stats: {hp:"110,000", dmg:"?", lvl:"55"}, tributes:[{id:"art_clever", q:1}, {id:"art_devourer", q:1}, {id:"art_skylord", q:1}], loot:[{id:"element", q:35}, {id:"trophy_manti", q:1}, {id:"flag_manti", q:1}], unlocks:["tek_gauntlets", "tek_leggings", "tek_boots", "tek_trough", "tek_gen", "tek_light"] },
-                        "Beta": { stats: {hp:"220,000", dmg:"?", lvl:"75"}, tributes:[{id:"art_clever", q:1}, {id:"art_devourer", q:1}, {id:"art_skylord", q:1}, {id:"wyvern_talon_fire", q:5}, {id:"wyvern_talon_lightning", q:5}, {id:"wyvern_talon_poison", q:5}], loot:[{id:"element", q:95}, {id:"trophy_manti", q:1}, {id:"flag_manti", q:1}], unlocks:["tek_rifle", "tek_helmet", "tek_transmitter", "tek_shield", "tek_tapa_saddle"] },
-                        "Alpha": { stats: {hp:"330,000", dmg:"?", lvl:"100"}, tributes:[{id:"art_clever", q:1}, {id:"art_devourer", q:1}, {id:"art_skylord", q:1}, {id:"wyvern_talon_fire", q:10}, {id:"wyvern_talon_lightning", q:10}, {id:"wyvern_talon_poison", q:10}], loot:[{id:"element", q:190}, {id:"trophy_manti", q:1}, {id:"flag_manti", q:1}], unlocks:["tek_chest", "tek_teleporter", "tek_cloning_chamber", "tek_rex_saddle", "tek_dedi"] }
+                        "Gamma": { stats: {hp:"100,000", dmg:"~150", lvl:"55"}, tributes:[{id:"art_clever", q:1}, {id:"art_devourer", q:1}, {id:"art_skylord", q:1}], loot:[{id:"element", q:35}, {id:"trophy_manti", q:1}, {id:"flag_manti", q:1}], unlocks:["tek_gauntlets", "tek_leggings", "tek_boots", "tek_trough", "tek_gen", "tek_light"] },
+                        "Beta": { stats: {hp:"130,000", dmg:"~300", lvl:"75"}, tributes:[{id:"art_clever", q:1}, {id:"art_devourer", q:1}, {id:"art_skylord", q:1}, {id:"wyvern_talon_fire", q:5}, {id:"wyvern_talon_lightning", q:5}, {id:"wyvern_talon_poison", q:5}], loot:[{id:"element", q:95}, {id:"trophy_manti", q:1}, {id:"flag_manti", q:1}], unlocks:["tek_rifle", "tek_helmet", "tek_transmitter", "tek_shield", "tek_tapa_saddle"] },
+                        "Alpha": { stats: {hp:"160,000", dmg:"~450", lvl:"100"}, tributes:[{id:"art_clever", q:1}, {id:"art_devourer", q:1}, {id:"art_skylord", q:1}, {id:"wyvern_talon_fire", q:10}, {id:"wyvern_talon_lightning", q:10}, {id:"wyvern_talon_poison", q:10}], loot:[{id:"element", q:190}, {id:"trophy_manti", q:1}, {id:"flag_manti", q:1}], unlocks:["tek_chest", "tek_teleporter", "tek_cloning_chamber", "tek_rex_saddle", "tek_dedi"] }
                     } 
                 }
             }
