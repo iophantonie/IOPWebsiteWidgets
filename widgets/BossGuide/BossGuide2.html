@@ -630,6 +630,9 @@
             "oil": { de: "Öl", en: "Oil", icon: "https://ark.wiki.gg/images/thumb/Oil.png/30px-Oil.png" },
             "sulfur": { de: "Schwefel", en: "Sulfur", icon: "https://ark.wiki.gg/images/thumb/Sulfur.png/30px-Sulfur.png" },
             "stone": { de: "Stein", en: "Stone", icon: "https://ark.wiki.gg/images/thumb/Stone.png/30px-Stone.png" },
+            "organic_polymer": { de: "Organisches Polymer", en: "Organic Polymer", icon: "https://ark.wiki.gg/images/thumb/Organic_Polymer.png/30px-Organic_Polymer.png" },
+            "black_pearl": { de: "Schwarze Perle", en: "Black Pearl", icon: "https://ark.wiki.gg/images/thumb/Black_Pearl.png/30px-Black_Pearl.png" },
+            "chitin": { de: "Chitin", en: "Chitin", icon: "https://ark.wiki.gg/images/thumb/Chitin.png/30px-Chitin.png" },
 
 
             // -- TEK ENGRAMME --
@@ -1170,6 +1173,25 @@
 
         // --- SECTION 3: MINIBOSSES ---
         const DATA_MINIBOSSES = {
+            "valguero_broodmother": {
+                hasDiff: false, 
+                category: "Minibosse",
+                name: { de: "Broodmother (Valguero)", en: "Broodmother (Valguero)" },
+                image: "https://ark.wiki.gg/images/thumb/3/36/Dossier_Broodmother.png/300px-Dossier_Broodmother.png",
+                icon: "https://ark.wiki.gg/images/thumb/1/19/Broodmother.png/48px-Broodmother.png",
+                desc: { de: "Eine Welt-Boss Version der Brutmutter, die in der Spinnenhöhle (The Lair) spawnt.", en: "A world boss version of the Broodmother spawning in The Lair (Spider Cave)." },
+                arena: { de: "Die Spinnenhöhle (The Lair) in Valguero.", en: "The Lair (Spider Cave) in Valguero." },
+                behavior: { de: "Aggressiv, beschwört Araneos.", en: "Aggressive, summons Araneos." },
+                strategy: { de: "Megatherium ist hier extrem stark wegen dem Insekten-Buff. Vorsicht vor den vielen Araneos.", en: "Megatherium is extremely strong here due to the insect buff. Watch out for the many Araneos." },
+                maps: {
+                    "Valguero": {
+                        stats: { hp: "~875,000", dmg: "?", lvl: "1" },
+                        tributes: [],
+                        loot: [ {id:"black_pearl", q:"+"}, {id:"chitin", q:"+"}, {id:"organic_polymer", q:"+"}, {id:"tek_gear", q:"BP"} ],
+                        unlocks: []
+                    }
+                }
+            },
              "ice_worm_queen": { 
                 hasDiff: false, 
                 category: "Minibosse", 
