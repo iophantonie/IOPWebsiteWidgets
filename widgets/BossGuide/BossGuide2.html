@@ -196,22 +196,59 @@
             background: radial-gradient(circle at 90% 10%, rgba(255,51,0,0.05) 0%, transparent 40%);
         }
 
-        /* --- TOP BAR --- */
+        /* --- TOP BAR (Header) --- */
         .top-bar {
             background-color: var(--c-panel);
-            padding: 15px 40px;
+            padding: 0; /* Padding removed to allow image to fit */
             border-bottom: 1px solid var(--c-border);
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-shrink: 0;
-            height: 90px;
+            height: 120px; /* Taller header for the image */
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* New Boss Header Layout */
+        .boss-header-inner {
+            display: flex;
+            align-items: center;
+            height: 100%;
+            width: 100%;
+        }
+
+        .boss-main-image-container {
+            width: 180px;
+            height: 100%;
+            position: relative;
+            margin-right: 20px;
+            mask-image: linear-gradient(to right, black 80%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to right, black 80%, transparent 100%);
+        }
+
+        .boss-main-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center top;
+        }
+
+        .boss-info {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            z-index: 2;
         }
         
-        .boss-header h1 { margin: 0; font-family: var(--f-head); font-size: 2.2rem; color: #fff; text-transform: uppercase; line-height: 1; letter-spacing: 1px; }
-        .boss-header p { margin: 4px 0 0 0; color: var(--c-dim); font-size: 1rem; }
+        .boss-info h1 { margin: 0; font-family: var(--f-head); font-size: 2.2rem; color: #fff; text-transform: uppercase; line-height: 1; letter-spacing: 1px; text-shadow: 2px 2px 0px #000; }
+        .boss-info p { margin: 4px 0 0 0; color: var(--c-dim); font-size: 1rem; }
 
-        .controls { display: flex; gap: 20px; align-items: center; }
+        .controls { 
+            display: flex; gap: 20px; align-items: center; 
+            position: absolute; right: 40px; top: 50%; transform: translateY(-50%);
+            z-index: 5;
+        }
 
         .map-select label { color: #888; font-size: 0.8rem; margin-right: 5px; text-transform: uppercase; }
         .map-select select {
@@ -416,7 +453,9 @@
             .single-view { grid-template-columns: 1fr; gap: 15px; }
             
             .top-bar { flex-direction: column; height: auto; padding: 20px; align-items: flex-start; gap: 15px; }
-            .controls { width: 100%; justify-content: space-between; flex-wrap: wrap; }
+            .boss-main-image-container { display: none; } /* Hide big image on mobile */
+            .boss-info { z-index: 1; }
+            .controls { width: 100%; justify-content: space-between; flex-wrap: wrap; position: relative; right: auto; top: auto; transform: none; margin-top: 10px; }
             .search-box { padding: 10px; }
         }
     </style>
@@ -448,8 +487,8 @@
         <div class="content-wrapper">
             
             <div class="top-bar">
-                <div class="boss-header" id="bossHeader">
-                    <!-- Title injected here -->
+                <div class="boss-header-inner" id="bossHeader">
+                    <!-- Image and Title injected here -->
                 </div>
                 <div class="controls">
                     <div class="map-select">
@@ -475,9 +514,11 @@
     </div>
 
     <script>
+        // =========================================================================
         // --- ITEM DATABASE (Icons & Translations) ---
+        // =========================================================================
         const ITEMS_DB = {
-            // ARTEFAKTE
+            // -- ARTEFAKTE --
             "art_clever": { de: "Artefakt der Klugheit", en: "Artifact of the Clever", icon: "https://ark.wiki.gg/images/thumb/Artifact_of_the_Clever.png/30px-Artifact_of_the_Clever.png" },
             "art_hunter": { de: "Artefakt des Jägers", en: "Artifact of the Hunter", icon: "https://ark.wiki.gg/images/thumb/Artifact_of_the_Hunter.png/30px-Artifact_of_the_Hunter.png" },
             "art_massive": { de: "Artefakt des Felsen", en: "Artifact of the Massive", icon: "https://ark.wiki.gg/images/thumb/Artifact_of_the_Massive.png/30px-Artifact_of_the_Massive.png" },
@@ -499,7 +540,7 @@
             "art_void": { de: "Artefakt der Leere", en: "Artifact of the Void", icon: "https://ark.wiki.gg/images/thumb/Artifact_of_the_Void.png/30px-Artifact_of_the_Void.png" },
             "art_chaos": { de: "Artefakt des Chaos", en: "Artifact of Chaos", icon: "https://ark.wiki.gg/images/thumb/Artifact_of_Chaos.png/30px-Artifact_of_Chaos.png" },
 
-            // TRIBUTE (Körperteile)
+            // -- TRIBUTE (Körperteile) --
             "argi_talon": { de: "Argentavis Klaue", en: "Argentavis Talon", icon: "https://ark.wiki.gg/images/thumb/Argentavis_Talon.png/30px-Argentavis_Talon.png" },
             "sarco_skin": { de: "Sarcosuchus Haut", en: "Sarcosuchus Skin", icon: "https://ark.wiki.gg/images/thumb/Sarcosuchus_Skin.png/30px-Sarcosuchus_Skin.png" },
             "sauro_vert": { de: "Sauropoden Wirbel", en: "Sauropod Vertebra", icon: "https://ark.wiki.gg/images/thumb/Sauropod_Vertebra.png/30px-Sauropod_Vertebra.png" },
@@ -526,7 +567,7 @@
             "fire_talon": { de: "Feuer Wyvern Klaue", en: "Fire Talon", icon: "https://ark.wiki.gg/images/thumb/Fire_Talon.png/30px-Fire_Talon.png" },
             "alpha_rex_tooth": { de: "Alpha Rex Zahn", en: "Alpha Tyrannosaur Tooth", icon: "https://ark.wiki.gg/images/thumb/Alpha_Tyrannosaur_Tooth.png/30px-Alpha_Tyrannosaur_Tooth.png" },
 
-            // LOOT
+            // -- LOOT --
             "element": { de: "Element", en: "Element", icon: "https://ark.wiki.gg/images/thumb/Element.png/30px-Element.png" },
             "trophy_brood": { de: "Broodmother Trophäe", en: "Broodmother Trophy", icon: "https://ark.wiki.gg/images/thumb/Broodmother_Trophy.png/30px-Broodmother_Trophy.png" },
             "flag_spider": { de: "Spinnen Flagge", en: "Spider Flag", icon: "https://ark.wiki.gg/images/thumb/Spider_Flag.png/30px-Spider_Flag.png" },
@@ -552,6 +593,9 @@
             "titan_trophy_beta": { de: "King Titan Trophäe (Beta)", en: "King Titan Trophy (Beta)", icon: "https://ark.wiki.gg/images/thumb/King_Titan_Trophy_%28Beta%29.png/30px-King_Titan_Trophy_%28Beta%29.png" },
             "titan_trophy_alpha": { de: "King Titan Trophäe (Alpha)", en: "King Titan Trophy (Alpha)", icon: "https://ark.wiki.gg/images/thumb/King_Titan_Trophy_%28Alpha%29.png/30px-King_Titan_Trophy_%28Alpha%29.png" },
             "titan_flag_king": { de: "King Titan Flagge", en: "King Titan Flag", icon: "https://ark.wiki.gg/images/thumb/King_Titan_Flag.png/30px-King_Titan_Flag.png" },
+            "manticore_helmet": { de: "Manticore Helm Skin", en: "Manticore Helmet Skin", icon: "https://ark.wiki.gg/images/thumb/Manticore_Helmet_Skin.png/30px-Manticore_Helmet_Skin.png" },
+            "deathworm_horn": { de: "Todeswurm Horn", en: "Deathworm Horn", icon: "https://ark.wiki.gg/images/thumb/Deathworm_Horn.png/30px-Deathworm_Horn.png" },
+            "trophy_alpha_deathworm": { de: "Alpha Todeswurm Trophäe", en: "Alpha Deathworm Trophy", icon: "https://ark.wiki.gg/images/thumb/Alpha_Deathworm_Trophy.png/30px-Alpha_Deathworm_Trophy.png" },
             "crystal": { de: "Kristall", en: "Crystal", icon: "https://ark.wiki.gg/images/thumb/Crystal.png/30px-Crystal.png" },
             "metal": { de: "Metall", en: "Metal", icon: "https://ark.wiki.gg/images/thumb/Metal.png/30px-Metal.png" },
             "obsidian": { de: "Obsidian", en: "Obsidian", icon: "https://ark.wiki.gg/images/thumb/Obsidian.png/30px-Obsidian.png" },
@@ -559,7 +603,7 @@
             "sulfur": { de: "Schwefel", en: "Sulfur", icon: "https://ark.wiki.gg/images/thumb/Sulfur.png/30px-Sulfur.png" },
             "stone": { de: "Stein", en: "Stone", icon: "https://ark.wiki.gg/images/thumb/Stone.png/30px-Stone.png" },
 
-            // TEK ENGRAMME
+            // -- TEK ENGRAMME --
             "tek_replicator": { de: "Tek Replikator", en: "Tek Replicator", icon: "https://ark.wiki.gg/images/thumb/Tek_Replicator.png/30px-Tek_Replicator.png" },
             "tek_foundation": { de: "Tek Fundament", en: "Tek Foundation", icon: "https://ark.wiki.gg/images/thumb/Tek_Foundation.png/30px-Tek_Foundation.png" },
             "tek_tri_ceiling": { de: "Tek Dreiecks-Decke", en: "Tek Triangle Ceiling", icon: "https://ark.wiki.gg/images/thumb/Tek_Triangle_Ceiling.png/30px-Tek_Triangle_Ceiling.png" },
@@ -618,12 +662,17 @@
             en: { stats: "Stats & Requirements", tribute: "Tributes (Summon)", loot: "Loot & Rewards", unlocks: "Tek Engrams", strategy: "Strategy", hp: "Health", dmg: "Damage", lvl: "Min. Level", gamma: "Gamma", beta: "Beta", alpha: "Alpha", prev: "+ Previous Tiers" }
         };
 
-        // --- BOSS DATA CONFIG ---
-        const BOSS_DATA = {
+        // =========================================================================
+        // --- BOSS DATA CONFIGURATION ---
+        // =========================================================================
+
+        // --- SECTION 1: MAIN BOSSES ---
+        const DATA_BOSSES = {
             "broodmother": {
                 hasDiff: true,
                 category: "Bosse",
                 name: { de: "Broodmother Lysrix", en: "Broodmother Lysrix" },
+                image: "https://ark.wiki.gg/images/thumb/3/36/Dossier_Broodmother.png/300px-Dossier_Broodmother.png",
                 icon: "https://ark.wiki.gg/images/thumb/1/19/Broodmother.png/48px-Broodmother.png",
                 desc: { de: "Die Mutter aller Spinnen. Nutzt Gift, Netze und Diener.", en: "The mother of all spiders. Uses poison, webs and minions." },
                 strategy: {
@@ -677,6 +726,7 @@
                 hasDiff: true,
                 category: "Bosse",
                 name: { de: "Megapithecus", en: "Megapithecus" },
+                image: "https://ark.wiki.gg/images/thumb/7/79/Dossier_Megapithecus.png/300px-Dossier_Megapithecus.png",
                 icon: "https://ark.wiki.gg/images/thumb/7/7d/Megapithecus.png/48px-Megapithecus.png",
                 desc: { de: "Ein riesiger Gorilla in einer verschneiten Arena.", en: "A giant gorilla in a snowy arena." },
                 strategy: { 
@@ -715,6 +765,7 @@
                 hasDiff: true,
                 category: "Bosse",
                 name: { de: "Dragon", en: "Dragon" },
+                image: "https://ark.wiki.gg/images/thumb/7/75/Dossier_Dragon.png/300px-Dossier_Dragon.png",
                 icon: "https://ark.wiki.gg/images/thumb/c/c7/Dragon.png/48px-Dragon.png",
                 desc: { de: "Feuerspeiender Drache. Prozentualer Schaden.", en: "Fire breathing dragon. Deals percentage damage." },
                 strategy: { 
@@ -733,6 +784,7 @@
                 hasDiff: true,
                 category: "Bosse",
                 name: { de: "Manticore", en: "Manticore" },
+                image: "https://ark.wiki.gg/images/thumb/8/87/Dossier_Manticore.png/300px-Dossier_Manticore.png",
                 icon: "https://ark.wiki.gg/images/thumb/0/03/Manticore.png/48px-Manticore.png",
                 desc: { de: "Wächter von Scorched Earth.", en: "Guardian of Scorched Earth." },
                 strategy: { 
@@ -751,6 +803,7 @@
                 hasDiff: true,
                 category: "Bosse",
                 name: { de: "Rockwell", en: "Rockwell" },
+                image: "https://ark.wiki.gg/images/thumb/5/52/Dossier_Rockwell.png/300px-Dossier_Rockwell.png",
                 icon: "https://ark.wiki.gg/images/thumb/b/b0/Rockwell.png/48px-Rockwell.png",
                 desc: { de: "Einst ein Forscher, jetzt ein Monster, das von Element korrumpiert wurde.", en: "Once an explorer, now a monster corrupted by Element." },
                 strategy: {
@@ -764,11 +817,16 @@
                         "Alpha": { stats: {hp:"~336,000", dmg:"?", lvl:"100"}, tributes:[{id:"art_depths", q:1}, {id:"art_shadows", q:1}, {id:"art_stalker", q:1}, {id:"basilisk_scale", q:8}, {id:"nameless_venom", q:20}, {id:"reaper_pheromone", q:7}, {id:"rock_drake_feather", q:7}], loot:[{id:"element", q:260}, {id:"trophy_rockwell", q:1}, {id:"flag_rockwell", q:1}], unlocks:["tek_railgun", "tek_sleeping_pod", "tek_shield_item", "tek_sword"] }
                     }
                 }
-            },
+            }
+        };
+
+        // --- SECTION 2: TITANS (Extinction) ---
+        const DATA_TITANS = {
             "forest_titan": {
                 hasDiff: false,
                 category: "Titanen",
                 name: { de: "Forest Titan", en: "Forest Titan" },
+                image: "https://ark.wiki.gg/images/thumb/7/7b/Dossier_Forest_Titan.png/300px-Dossier_Forest_Titan.png",
                 icon: "https://ark.wiki.gg/images/thumb/2/28/Forest_Titan.png/48px-Forest_Titan.png",
                 desc: { de: "Der Herrscher des Waldes. Ein riesiges Pflanzenmonster.", en: "The ruler of the forest. A giant plant monster." },
                 strategy: {
@@ -788,6 +846,7 @@
                 hasDiff: false, 
                 category: "Titanen", 
                 name: {de:"Ice Titan", en:"Ice Titan"}, 
+                image: "https://ark.wiki.gg/images/thumb/2/26/Dossier_Ice_Titan.png/300px-Dossier_Ice_Titan.png",
                 icon:"https://ark.wiki.gg/images/thumb/d/dc/Ice_Titan.png/48px-Ice_Titan.png", 
                 desc:{de:"Der Herrscher des Winters.",en:"The Lord of Winter."}, 
                 strategy: {
@@ -807,6 +866,7 @@
                 hasDiff: false, 
                 category: "Titanen", 
                 name: {de:"Desert Titan", en:"Desert Titan"}, 
+                image: "https://ark.wiki.gg/images/thumb/a/a2/Dossier_Desert_Titan.png/300px-Dossier_Desert_Titan.png",
                 icon:"https://ark.wiki.gg/images/thumb/4/49/Desert_Titan.png/48px-Desert_Titan.png", 
                 desc:{de:"Der Herrscher von Sand und Himmel.",en:"The Lord of Sand and Sky."}, 
                 strategy: {
@@ -826,6 +886,7 @@
                 hasDiff: true, 
                 category: "Titanen", 
                 name: {de:"King Titan", en:"King Titan"}, 
+                image: "https://ark.wiki.gg/images/thumb/1/1b/Dossier_King_Titan.png/300px-Dossier_King_Titan.png",
                 icon:"https://ark.wiki.gg/images/thumb/8/82/King_Titan.png/48px-King_Titan.png", 
                 desc:{de:"Der finale Boss von Extinction. Ein kolossales Monster, das die Korruption anführt.",en:"The final Boss of Extinction. A colossal monster leading the corruption."}, 
                 strategy: {
@@ -838,7 +899,7 @@
                             stats: { hp: "1,500,000", dmg: "0", lvl: "1500" },
                             tributes: [ {id:"alpha_rex_tooth", q:5}, {id:"corrupt_heart", q:150}, {id:"titan_venom", q:10}, {id:"titan_trophy_desert", q:1}, {id:"titan_trophy_forest", q:1}, {id:"titan_trophy_ice", q:1} ],
                             loot: [ {id:"element", q:1}, {id:"titan_flag_king", q:1} ],
-                            unlocks: [] // No Tekgrams, just ascension/skins
+                            unlocks: [] 
                         },
                         "Beta": {
                             stats: { hp: "1,500,000", dmg: "0", lvl: "1500" },
@@ -855,10 +916,15 @@
                     }
                 } 
             },
-            "ice_worm_queen": { 
+        };
+
+        // --- SECTION 3: MINIBOSSES ---
+        const DATA_MINIBOSSES = {
+             "ice_worm_queen": { 
                 hasDiff: false, 
                 category: "Minibosse", 
                 name: {de:"Ice Worm Queen", en:"Ice Worm Queen"}, 
+                image: "https://ark.wiki.gg/images/thumb/7/7b/Iceworm_Image.png/300px-Iceworm_Image.png",
                 icon:"https://ark.wiki.gg/images/thumb/3/3b/Iceworm_Queen.png/48px-Iceworm_Queen.png", 
                 desc:{de:"Eine riesige Todeswurm-Königin im gefrorenen Dungeon.",en:"A massive Deathworm Queen in the Frozen Dungeon."}, 
                 strategy: {
@@ -869,7 +935,7 @@
                     "Ragnarok": {
                         stats: { hp: "1,700+", dmg: "350", lvl: "1+" },
                         tributes: [], // No tributes
-                        loot: [ {id:"manticore_helmet", q:1}, {id:"deathworm_horn", q:20}, {id:"trophy_alpha_deathworm", q:1} ], // Approximated
+                        loot: [ {id:"manticore_helmet", q:1}, {id:"deathworm_horn", q:20}, {id:"trophy_alpha_deathworm", q:1} ],
                         unlocks: []
                     }
                 }
@@ -878,6 +944,7 @@
                 hasDiff: false, 
                 category: "Minibosse", 
                 name: {de:"Lava Elemental", en:"Lava Elemental"}, 
+                image: "https://ark.wiki.gg/images/thumb/1/14/Lava_Elemental_Image.png/300px-Lava_Elemental_Image.png",
                 icon:"https://ark.wiki.gg/images/thumb/4/40/Lava_Elemental.png/48px-Lava_Elemental.png", 
                 desc: { de: "Dungeon Boss auf Ragnarok (Jungle Dungeon).", en: "Dungeon Boss on Ragnarok (Jungle Dungeon)." },
                 strategy: {
@@ -895,7 +962,11 @@
             }
         };
 
-        // --- APP STATE ---
+        // --- MERGE ALL DATA FOR LOGIC ---
+        const BOSS_DATA = { ...DATA_BOSSES, ...DATA_TITANS, ...DATA_MINIBOSSES };
+
+
+        // --- APP LOGIC (unchanged functionality) ---
         let currentBossId = "broodmother";
         let currentMap = "The Island";
         let currentLang = "de";
@@ -962,7 +1033,6 @@
                                     if(item.name.toLowerCase().includes(query)) { match = true; matchReason = "Tek"; break; }
                                 }
                             }
-                            // ... more checks if needed
                         } else {
                             // Matrix View Search
                             for (const diff in data.maps[map]) {
@@ -974,7 +1044,6 @@
                                     }
                                 }
                                 if(match) break;
-                                // ...
                             }
                         }
                         if(match) break;
@@ -1030,7 +1099,23 @@
             const boss = BOSS_DATA[bossId];
             
             // Header Info
-            document.getElementById('bossHeader').innerHTML = `<h1>${boss.name[currentLang] || boss.name.en}</h1><p>${boss.desc[currentLang] || boss.desc.en}</p>`;
+            let headerHTML = "";
+            if (boss.image) {
+                headerHTML += `
+                <div class="boss-main-image-container">
+                    <img src="${boss.image}" class="boss-main-image" alt="${boss.name.en}">
+                </div>
+                `;
+            }
+            
+            headerHTML += `
+                <div class="boss-info">
+                    <h1>${boss.name[currentLang] || boss.name.en}</h1>
+                    <p>${boss.desc[currentLang] || boss.desc.en}</p>
+                </div>
+            `;
+            
+            document.getElementById('bossHeader').innerHTML = headerHTML;
             
             // Map Selector
             const mapSelect = document.getElementById('mapSelector');
