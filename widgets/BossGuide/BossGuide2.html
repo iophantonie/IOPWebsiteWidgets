@@ -496,6 +496,7 @@
             "art_shadows": { de: "Artefakt der Schatten", en: "Artifact of the Shadows", icon: "https://ark.wiki.gg/images/thumb/Artifact_of_the_Shadows.png/30px-Artifact_of_the_Shadows.png" },
             "art_stalker": { de: "Artefakt des Jägers (Stalker)", en: "Artifact of the Stalker", icon: "https://ark.wiki.gg/images/thumb/Artifact_of_the_Stalker.png/30px-Artifact_of_the_Stalker.png" },
             "art_growth": { de: "Artefakt des Wachstums", en: "Artifact of Growth", icon: "https://ark.wiki.gg/images/thumb/Artifact_of_Growth.png/30px-Artifact_of_Growth.png" },
+            "art_void": { de: "Artefakt der Leere", en: "Artifact of the Void", icon: "https://ark.wiki.gg/images/thumb/Artifact_of_the_Void.png/30px-Artifact_of_the_Void.png" },
 
             // TRIBUTE (Körperteile)
             "argi_talon": { de: "Argentavis Klaue", en: "Argentavis Talon", icon: "https://ark.wiki.gg/images/thumb/Argentavis_Talon.png/30px-Argentavis_Talon.png" },
@@ -520,6 +521,7 @@
             "nameless_venom": { de: "Nameless Gift", en: "Nameless Venom", icon: "https://ark.wiki.gg/images/thumb/Nameless_Venom.png/30px-Nameless_Venom.png" },
             "reaper_pheromone": { de: "Reaper Pheromone", en: "Reaper Pheromone Gland", icon: "https://ark.wiki.gg/images/thumb/Reaper_Pheromone_Gland.png/30px-Reaper_Pheromone_Gland.png" },
             "corrupt_heart": { de: "Korrumpiertes Herz", en: "Corrupt Heart", icon: "https://ark.wiki.gg/images/thumb/Corrupt_Heart.png/30px-Corrupt_Heart.png" },
+            "theri_claws": { de: "Therizinosaurus Klauen", en: "Therizino Claws", icon: "https://ark.wiki.gg/images/thumb/Therizino_Claws.png/30px-Therizino_Claws.png" },
 
             // LOOT
             "element": { de: "Element", en: "Element", icon: "https://ark.wiki.gg/images/thumb/Element.png/30px-Element.png" },
@@ -539,6 +541,7 @@
             "thatch": { de: "Stroh", en: "Thatch", icon: "https://ark.wiki.gg/images/thumb/Thatch.png/30px-Thatch.png" },
             "fungal_wood": { de: "Pilzholz", en: "Fungal Wood", icon: "https://ark.wiki.gg/images/thumb/Fungal_Wood.png/30px-Fungal_Wood.png" },
             "corrupted_nodule": { de: "Beschädigtes Knötchen", en: "Corrupted Nodule", icon: "https://ark.wiki.gg/images/thumb/Corrupted_Nodule.png/30px-Corrupted_Nodule.png" },
+            "tek_gear": { de: "Tek Ausrüstung & Waffen", en: "Tek Equipment & Weapons", icon: "https://ark.wiki.gg/images/thumb/Tek_Chestpiece.png/30px-Tek_Chestpiece.png" },
 
             // TEK ENGRAMME
             "tek_replicator": { de: "Tek Replikator", en: "Tek Replicator", icon: "https://ark.wiki.gg/images/thumb/Tek_Replicator.png/30px-Tek_Replicator.png" },
@@ -765,7 +768,25 @@
                     }
                 }
             },
-            "ice_titan": { hasDiff: false, category: "Titanen", name: {de:"Ice Titan", en:"Ice Titan"}, icon:"https://ark.wiki.gg/images/thumb/d/dc/Ice_Titan.png/48px-Ice_Titan.png", desc:{de:"Platzhalter",en:"Placeholder"}, maps:{} },
+            "ice_titan": { 
+                hasDiff: false, 
+                category: "Titanen", 
+                name: {de:"Ice Titan", en:"Ice Titan"}, 
+                icon:"https://ark.wiki.gg/images/thumb/d/dc/Ice_Titan.png/48px-Ice_Titan.png", 
+                desc:{de:"Der Herrscher des Winters.",en:"The Lord of Winter."}, 
+                strategy: {
+                    de: "<h4>Agil & Gefährlich</h4>Der Ice Titan ist der agilste aller Titanen. Er springt viel und friert Ziele ein.<br><br><h4>Einfrieren vermeiden</h4>Sein Atem friert dich und deine Dinos sofort ein. Ausweichen ist oberstes Gebot!",
+                    en: "<h4>Agile & Dangerous</h4>The Ice Titan is the most agile titan. It jumps a lot and freezes targets.<br><br><h4>Avoid Freezing</h4>His breath freezes you and your tames instantly. Dodging is key!"
+                },
+                maps:{
+                    "Extinction": {
+                        stats: { hp: "350,000", dmg: "2,500", lvl: "1500" },
+                        tributes: [ {id:"art_void", q:1}, {id:"corrupt_heart", q:100}, {id:"spino_sail", q:10}, {id:"theri_claws", q:10} ],
+                        loot: [ {id:"mdsm", q:1}, {id:"mrlm", q:1}, {id:"mscm", q:1}, {id:"tek_gear", q:1} ],
+                        unlocks: ["tek_tapa_saddle", "tek_chest", "tek_shield", "tek_helmet", "tek_replicator", "tek_rifle"]
+                    }
+                } 
+            },
             "desert_titan": { hasDiff: false, category: "Titanen", name: {de:"Desert Titan", en:"Desert Titan"}, icon:"https://ark.wiki.gg/images/thumb/4/49/Desert_Titan.png/48px-Desert_Titan.png", desc:{de:"Platzhalter",en:"Placeholder"}, maps:{} },
             "king_titan": { hasDiff: true, category: "Titanen", name: {de:"King Titan", en:"King Titan"}, icon:"https://ark.wiki.gg/images/thumb/8/82/King_Titan.png/48px-King_Titan.png", desc:{de:"Platzhalter",en:"Placeholder"}, maps:{} },
             "ice_worm_queen": { hasDiff: false, category: "Minibosse", name: {de:"Ice Worm Queen", en:"Ice Worm Queen"}, icon:"https://ark.wiki.gg/images/thumb/3/3b/Iceworm_Queen.png/48px-Iceworm_Queen.png", desc:{de:"Ragnarok Ice Cave Boss",en:"Ragnarok Ice Cave Boss"}, maps:{} },
