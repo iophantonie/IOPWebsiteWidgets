@@ -1,0 +1,470 @@
+const ITEMS_DB = {
+  "art_clever": { "de": "Artefakt der Klugheit", "en": "Artifact of the Clever", "icon": "https://ark.wiki.gg/images/thumb/Artifact_of_the_Clever.png/30px-Artifact_of_the_Clever.png" },
+  "art_hunter": { "de": "Artefakt des Jägers", "en": "Artifact of the Hunter", "icon": "https://ark.wiki.gg/images/thumb/Artifact_of_the_Hunter.png/30px-Artifact_of_the_Hunter.png" },
+  "art_massive": { "de": "Artefakt des Felsen", "en": "Artifact of the Massive", "icon": "https://ark.wiki.gg/images/thumb/Artifact_of_the_Massive.png/30px-Artifact_of_the_Massive.png" },
+  "art_pack": { "de": "Artefakt des Rudels", "en": "Artifact of the Pack", "icon": "https://ark.wiki.gg/images/thumb/Artifact_of_the_Pack.png/30px-Artifact_of_the_Pack.png" },
+  "art_immine": { "de": "Artefakt der Immunität", "en": "Artifact of the Immune", "icon": "https://ark.wiki.gg/images/thumb/Artifact_of_the_Immune.png/30px-Artifact_of_the_Immune.png" },
+  "art_strong": { "de": "Artefakt der Stärke", "en": "Artifact of the Strong", "icon": "https://ark.wiki.gg/images/thumb/Artifact_of_the_Strong.png/30px-Artifact_of_the_Strong.png" },
+  "art_skylord": { "de": "Artefakt des Himmelsherren", "en": "Artifact of the Skylord", "icon": "https://ark.wiki.gg/images/thumb/Artifact_of_the_Skylord.png/30px-Artifact_of_the_Skylord.png" },
+  "art_devourer": { "de": "Artefakt des Verschlingers", "en": "Artifact of the Devourer", "icon": "https://ark.wiki.gg/images/thumb/Artifact_of_the_Devourer.png/30px-Artifact_of_the_Devourer.png" },
+  "art_brute": { "de": "Artefakt der Bestie", "en": "Artifact of the Brute", "icon": "https://ark.wiki.gg/images/thumb/Artifact_of_the_Brute.png/30px-Artifact_of_the_Brute.png" },
+  "art_cunning": { "de": "Artefakt der List", "en": "Artifact of the Cunning", "icon": "https://ark.wiki.gg/images/thumb/Artifact_of_the_Cunning.png/30px-Artifact_of_the_Cunning.png" },
+  "art_crag": { "de": "Artefakt der Felswand", "en": "Artifact of the Crag", "icon": "https://ark.wiki.gg/images/thumb/Artifact_of_the_Crag.png/30px-Artifact_of_the_Crag.png" },
+  "art_destroyer": { "de": "Artefakt des Zerstörers", "en": "Artifact of the Destroyer", "icon": "https://ark.wiki.gg/images/thumb/Artifact_of_the_Destroyer.png/30px-Artifact_of_the_Destroyer.png" },
+  "art_gatekeeper": { "de": "Artefakt des Torwächters", "en": "Artifact of the Gatekeeper", "icon": "https://ark.wiki.gg/images/thumb/Artifact_of_the_Gatekeeper.png/30px-Artifact_of_the_Gatekeeper.png" },
+  "art_devious": { "de": "Artefakt der Tücke", "en": "Artifact of the Devious", "icon": "https://ark.wiki.gg/images/thumb/Artifact_of_the_Devious.png/30px-Artifact_of_the_Devious.png" },
+  "art_depths": { "de": "Artefakt der Tiefe", "en": "Artifact of the Depths", "icon": "https://ark.wiki.gg/images/thumb/Artifact_of_the_Depths.png/30px-Artifact_of_the_Depths.png" },
+  "art_shadows": { "de": "Artefakt der Schatten", "en": "Artifact of the Shadows", "icon": "https://ark.wiki.gg/images/thumb/Artifact_of_the_Shadows.png/30px-Artifact_of_the_Shadows.png" },
+  "art_stalker": { "de": "Artefakt des Jägers (Stalker)", "en": "Artifact of the Stalker", "icon": "https://ark.wiki.gg/images/thumb/Artifact_of_the_Stalker.png/30px-Artifact_of_the_Stalker.png" },
+  "art_growth": { "de": "Artefakt des Wachstums", "en": "Artifact of Growth", "icon": "https://ark.wiki.gg/images/thumb/Artifact_of_Growth.png/30px-Artifact_of_Growth.png" },
+  "art_void": { "de": "Artefakt der Leere", "en": "Artifact of the Void", "icon": "https://ark.wiki.gg/images/thumb/Artifact_of_the_Void.png/30px-Artifact_of_the_Void.png" },
+  "art_chaos": { "de": "Artefakt des Chaos", "en": "Artifact of Chaos", "icon": "https://ark.wiki.gg/images/thumb/Artifact_of_Chaos.png/30px-Artifact_of_Chaos.png" },
+  "argi_talon": { "de": "Argentavis Klaue", "en": "Argentavis Talon", "icon": "https://ark.wiki.gg/images/thumb/Argentavis_Talon.png/30px-Argentavis_Talon.png" },
+  "sarco_skin": { "de": "Sarcosuchus Haut", "en": "Sarcosuchus Skin", "icon": "https://ark.wiki.gg/images/thumb/Sarcosuchus_Skin.png/30px-Sarcosuchus_Skin.png" },
+  "sauro_vert": { "de": "Sauropoden Wirbel", "en": "Sauropod Vertebra", "icon": "https://ark.wiki.gg/images/thumb/Sauropod_Vertebra.png/30px-Sauropod_Vertebra.png" },
+  "titan_venom": { "de": "Titanoboa Gift", "en": "Titanoboa Venom", "icon": "https://ark.wiki.gg/images/thumb/Titanoboa_Venom.png/30px-Titanoboa_Venom.png" },
+  "allo_brain": { "de": "Allosaurus Hirn", "en": "Allosaurus Brain", "icon": "https://ark.wiki.gg/images/thumb/Allosaurus_Brain.png/30px-Allosaurus_Brain.png" },
+  "basilo_blubber": { "de": "Basilosaurus Tran", "en": "Basilosaurus Blubber", "icon": "https://ark.wiki.gg/images/thumb/Basilosaurus_Blubber.png/30px-Basilosaurus_Blubber.png" },
+  "giga_heart": { "de": "Giganotosaurus Herz", "en": "Giganotosaurus Heart", "icon": "https://ark.wiki.gg/images/thumb/Giganotosaurus_Heart.png/30px-Giganotosaurus_Heart.png" },
+  "tuso_tentacle": { "de": "Tusoteuthis Tentakel", "en": "Tusoteuthis Tentacle", "icon": "https://ark.wiki.gg/images/thumb/Tusoteuthis_Tentacle.png/30px-Tusoteuthis_Tentacle.png" },
+  "rex_arm": { "de": "Tyrannosaurus Arm", "en": "Tyrannosaurus Arm", "icon": "https://ark.wiki.gg/images/thumb/Tyrannosaurus_Arm.png/30px-Tyrannosaurus_Arm.png" },
+  "yuty_lungs": { "de": "Yutyrannus Lunge", "en": "Yutyrannus Lungs", "icon": "https://ark.wiki.gg/images/thumb/Yutyrannus_Lungs.png/30px-Yutyrannus_Lungs.png" },
+  "spino_sail": { "de": "Spinosaurus Segel", "en": "Spinosaurus Sail", "icon": "https://ark.wiki.gg/images/thumb/Spinosaurus_Sail.png/30px-Spinosaurus_Sail.png" },
+  "thyla_claw": { "de": "Thylacoleo Hakenklaue", "en": "Thylacoleo Hook-Claw", "icon": "https://ark.wiki.gg/images/thumb/Thylacoleo_Hook-Claw.png/30px-Thylacoleo_Hook-Claw.png" },
+  "megalania_toxin": { "de": "Megalania Gift", "en": "Megalania Toxin", "icon": "https://ark.wiki.gg/images/thumb/Megalania_Toxin.png/30px-Megalania_Toxin.png" },
+  "megalodon_tooth": { "de": "Megalodon Zahn", "en": "Megalodon Tooth", "icon": "https://ark.wiki.gg/images/thumb/Megalodon_Tooth.png/30px-Megalodon_Tooth.png" },
+  "wyvern_talon_fire": { "de": "Feuer Wyvern Klaue", "en": "Fire Wyvern Talon", "icon": "https://ark.wiki.gg/images/thumb/Fire_Wyvern_Talon.png/30px-Fire_Wyvern_Talon.png" },
+  "wyvern_talon_lightning": { "de": "Blitz Wyvern Klaue", "en": "Lightning Wyvern Talon", "icon": "https://ark.wiki.gg/images/thumb/Lightning_Wyvern_Talon.png/30px-Lightning_Wyvern_Talon.png" },
+  "wyvern_talon_poison": { "de": "Gift Wyvern Klaue", "en": "Poison Wyvern Talon", "icon": "https://ark.wiki.gg/images/thumb/Poison_Wyvern_Talon.png/30px-Poison_Wyvern_Talon.png" },
+  "basilisk_scale": { "de": "Basilisken Schuppe", "en": "Basilisk Scale", "icon": "https://ark.wiki.gg/images/thumb/Basilisk_Scale.png/30px-Basilisk_Scale.png" },
+  "rock_drake_feather": { "de": "Rock Drake Feder", "en": "Rock Drake Feather", "icon": "https://ark.wiki.gg/images/thumb/Rock_Drake_Feather.png/30px-Rock_Drake_Feather.png" },
+  "nameless_venom": { "de": "Nameless Gift", "en": "Nameless Venom", "icon": "https://ark.wiki.gg/images/thumb/Nameless_Venom.png/30px-Nameless_Venom.png" },
+  "reaper_pheromone": { "de": "Reaper Pheromone", "en": "Reaper Pheromone Gland", "icon": "https://ark.wiki.gg/images/thumb/Reaper_Pheromone_Gland.png/30px-Reaper_Pheromone_Gland.png" },
+  "corrupt_heart": { "de": "Korrumpiertes Herz", "en": "Corrupt Heart", "icon": "https://ark.wiki.gg/images/thumb/Corrupt_Heart.png/30px-Corrupt_Heart.png" },
+  "theri_claws": { "de": "Therizinosaurus Klauen", "en": "Therizino Claws", "icon": "https://ark.wiki.gg/images/thumb/Therizino_Claws.png/30px-Therizino_Claws.png" },
+  "fire_talon": { "de": "Feuer Wyvern Klaue", "en": "Fire Talon", "icon": "https://ark.wiki.gg/images/thumb/Fire_Talon.png/30px-Fire_Talon.png" },
+  "alpha_rex_tooth": { "de": "Alpha Rex Zahn", "en": "Alpha Tyrannosaur Tooth", "icon": "https://ark.wiki.gg/images/thumb/Alpha_Tyrannosaur_Tooth.png/30px-Alpha_Tyrannosaur_Tooth.png" },
+  "element": { "de": "Element", "en": "Element", "icon": "https://ark.wiki.gg/images/thumb/Element.png/30px-Element.png" },
+  "trophy_brood": { "de": "Broodmother Trophäe", "en": "Broodmother Trophy", "icon": "https://ark.wiki.gg/images/thumb/Broodmother_Trophy.png/30px-Broodmother_Trophy.png" },
+  "flag_spider": { "de": "Spinnen Flagge", "en": "Spider Flag", "icon": "https://ark.wiki.gg/images/thumb/Spider_Flag.png/30px-Spider_Flag.png" },
+  "trophy_mega": { "de": "Megapithecus Trophäe", "en": "Megapithecus Trophy", "icon": "https://ark.wiki.gg/images/thumb/Megapithecus_Trophy.png/30px-Megapithecus_Trophy.png" },
+  "flag_gorilla": { "de": "Gorilla Flagge", "en": "Gorilla Flag", "icon": "https://ark.wiki.gg/images/thumb/Gorilla_Flag.png/30px-Gorilla_Flag.png" },
+  "trophy_dragon": { "de": "Drachen Trophäe", "en": "Dragon Trophy", "icon": "https://ark.wiki.gg/images/thumb/Dragon_Trophy.png/30px-Dragon_Trophy.png" },
+  "flag_dragon": { "de": "Drachen Flagge", "en": "Dragon Flag", "icon": "https://ark.wiki.gg/images/thumb/Dragon_Flag.png/30px-Dragon_Flag.png" },
+  "trophy_manti": { "de": "Manticore Trophäe", "en": "Manticore Trophy", "icon": "https://ark.wiki.gg/images/thumb/Manticore_Trophy.png/30px-Manticore_Trophy.png" },
+  "flag_manti": { "de": "Manticore Flagge", "en": "Manticore Flag", "icon": "https://ark.wiki.gg/images/thumb/Manticore_Flag.png/30px-Manticore_Flag.png" },
+  "trophy_rockwell": { "de": "Rockwell Trophäe", "en": "Rockwell Trophy", "icon": "https://ark.wiki.gg/images/thumb/Rockwell_Trophy.png/30px-Rockwell_Trophy.png" },
+  "flag_rockwell": { "de": "Rockwell Flagge", "en": "Rockwell Flag", "icon": "https://ark.wiki.gg/images/thumb/Rockwell_Flag.png/30px-Rockwell_Flag.png" },
+  "mdsm": { "de": "M.D.S.M.", "en": "M.D.S.M.", "icon": "https://ark.wiki.gg/images/thumb/M.D.S.M..png/30px-M.D.S.M..png" },
+  "mrlm": { "de": "M.R.L.M.", "en": "M.R.L.M.", "icon": "https://ark.wiki.gg/images/thumb/M.R.L.M..png/30px-M.R.L.M..png" },
+  "mscm": { "de": "M.S.C.M.", "en": "M.S.C.M.", "icon": "https://ark.wiki.gg/images/thumb/M.S.C.M..png/30px-M.S.C.M..png" },
+  "thatch": { "de": "Stroh", "en": "Thatch", "icon": "https://ark.wiki.gg/images/thumb/Thatch.png/30px-Thatch.png" },
+  "fungal_wood": { "de": "Pilzholz", "en": "Fungal Wood", "icon": "https://ark.wiki.gg/images/thumb/Fungal_Wood.png/30px-Fungal_Wood.png" },
+  "corrupted_nodule": { "de": "Beschädigtes Knötchen", "en": "Corrupted Nodule", "icon": "https://ark.wiki.gg/images/thumb/Corrupted_Nodule.png/30px-Corrupted_Nodule.png" },
+  "tek_gear": { "de": "Tek Ausrüstung & Waffen", "en": "Tek Equipment & Weapons", "icon": "https://ark.wiki.gg/images/thumb/Tek_Chestpiece.png/30px-Tek_Chestpiece.png" },
+  "titan_trophy_desert": { "de": "Desert Titan Trophäe", "en": "Desert Titan Trophy", "icon": "https://ark.wiki.gg/images/thumb/Desert_Titan_Trophy.png/30px-Desert_Titan_Trophy.png" },
+  "titan_trophy_forest": { "de": "Forest Titan Trophäe", "en": "Forest Titan Trophy", "icon": "https://ark.wiki.gg/images/thumb/Forest_Titan_Trophy.png/30px-Forest_Titan_Trophy.png" },
+  "titan_trophy_ice": { "de": "Ice Titan Trophäe", "en": "Ice Titan Trophy", "icon": "https://ark.wiki.gg/images/thumb/Ice_Titan_Trophy.png/30px-Ice_Titan_Trophy.png" },
+  "titan_trophy_gamma": { "de": "King Titan Trophäe (Gamma)", "en": "King Titan Trophy (Gamma)", "icon": "https://ark.wiki.gg/images/thumb/King_Titan_Trophy_%28Beta%29.png/30px-King_Titan_Trophy_%28Beta%29.png" },
+  "titan_trophy_beta": { "de": "King Titan Trophäe (Beta)", "en": "King Titan Trophy (Beta)", "icon": "https://ark.wiki.gg/images/thumb/King_Titan_Trophy_%28Beta%29.png/30px-King_Titan_Trophy_%28Beta%29.png" },
+  "titan_trophy_alpha": { "de": "King Titan Trophäe (Alpha)", "en": "King Titan Trophy (Alpha)", "icon": "https://ark.wiki.gg/images/thumb/King_Titan_Trophy_%28Alpha%29.png/30px-King_Titan_Trophy_%28Alpha%29.png" },
+  "titan_flag_king": { "de": "King Titan Flagge", "en": "King Titan Flag", "icon": "https://ark.wiki.gg/images/thumb/King_Titan_Flag.png/30px-King_Titan_Flag.png" },
+  "manticore_helmet": { "de": "Manticore Helm Skin", "en": "Manticore Helmet Skin", "icon": "https://ark.wiki.gg/images/thumb/Manticore_Helmet_Skin.png/30px-Manticore_Helmet_Skin.png" },
+  "deathworm_horn": { "de": "Todeswurm Horn", "en": "Deathworm Horn", "icon": "https://ark.wiki.gg/images/thumb/Deathworm_Horn.png/30px-Deathworm_Horn.png" },
+  "trophy_alpha_deathworm": { "de": "Alpha Todeswurm Trophäe", "en": "Alpha Deathworm Trophy", "icon": "https://ark.wiki.gg/images/thumb/Alpha_Deathworm_Trophy.png/30px-Alpha_Deathworm_Trophy.png" },
+  "crystal": { "de": "Kristall", "en": "Crystal", "icon": "https://ark.wiki.gg/images/thumb/Crystal.png/30px-Crystal.png" },
+  "metal": { "de": "Metall", "en": "Metal", "icon": "https://ark.wiki.gg/images/thumb/Metal.png/30px-Metal.png" },
+  "obsidian": { "de": "Obsidian", "en": "Obsidian", "icon": "https://ark.wiki.gg/images/thumb/Obsidian.png/30px-Obsidian.png" },
+  "oil": { "de": "Öl", "en": "Oil", "icon": "https://ark.wiki.gg/images/thumb/Oil.png/30px-Oil.png" },
+  "sulfur": { "de": "Schwefel", "en": "Sulfur", "icon": "https://ark.wiki.gg/images/thumb/Sulfur.png/30px-Sulfur.png" },
+  "stone": { "de": "Stein", "en": "Stone", "icon": "https://ark.wiki.gg/images/thumb/Stone.png/30px-Stone.png" },
+  "tek_replicator": { "de": "Tek Replikator", "en": "Tek Replicator", "icon": "https://ark.wiki.gg/images/thumb/Tek_Replicator.png/30px-Tek_Replicator.png" },
+  "tek_foundation": { "de": "Tek Fundament", "en": "Tek Foundation", "icon": "https://ark.wiki.gg/images/thumb/Tek_Foundation.png/30px-Tek_Foundation.png" },
+  "tek_tri_ceiling": { "de": "Tek Dreiecks-Decke", "en": "Tek Triangle Ceiling", "icon": "https://ark.wiki.gg/images/thumb/Tek_Triangle_Ceiling.png/30px-Tek_Triangle_Ceiling.png" },
+  "tek_tri_foundation": { "de": "Tek Dreiecks-Fundament", "en": "Tek Triangle Foundation", "icon": "https://ark.wiki.gg/images/thumb/Tek_Triangle_Foundation.png/30px-Tek_Triangle_Foundation.png" },
+  "tek_tri_roof": { "de": "Tek Dreiecks-Dach", "en": "Tek Triangle Roof", "icon": "https://ark.wiki.gg/images/thumb/Tek_Triangle_Roof.png/30px-Tek_Triangle_Roof.png" },
+  "tek_boots": { "de": "Tek Stiefel", "en": "Tek Boots", "icon": "https://ark.wiki.gg/images/thumb/Tek_Boots.png/30px-Tek_Boots.png" },
+  "tek_wall": { "de": "Tek Wand", "en": "Tek Wall", "icon": "https://ark.wiki.gg/images/thumb/Tek_Wall.png/30px-Tek_Wall.png" },
+  "tek_ceiling": { "de": "Tek Decke", "en": "Tek Ceiling", "icon": "https://ark.wiki.gg/images/thumb/Tek_Ceiling.png/30px-Tek_Ceiling.png" },
+  "tek_pillar": { "de": "Tek Pfeiler", "en": "Tek Pillar", "icon": "https://ark.wiki.gg/images/thumb/Tek_Pillar.png/30px-Tek_Pillar.png" },
+  "tek_ladder": { "de": "Tek Leiter", "en": "Tek Ladder", "icon": "https://ark.wiki.gg/images/thumb/Tek_Ladder.png/30px-Tek_Ladder.png" },
+  "tek_ramp": { "de": "Tek Rampe", "en": "Tek Rampe", "icon": "https://ark.wiki.gg/images/thumb/Tek_Ramp.png/30px-Tek_Ramp.png" },
+  "tek_staircase": { "de": "Tek Treppe", "en": "Tek Staircase", "icon": "https://ark.wiki.gg/images/thumb/Tek_Staircase.png/30px-Tek_Staircase.png" },
+  "tek_catwalk": { "de": "Tek Laufsteg", "en": "Tek Catwalk", "icon": "https://ark.wiki.gg/images/thumb/Tek_Catwalk.png/30px-Tek_Catwalk.png" },
+  "tek_railing": { "de": "Tek Geländer", "en": "Tek Railing", "icon": "https://ark.wiki.gg/images/thumb/Tek_Railing.png/30px-Tek_Railing.png" },
+  "tek_fence": { "de": "Tek Zaunfundament", "en": "Tek Fence Foundation", "icon": "https://ark.wiki.gg/images/thumb/Tek_Fence_Foundation.png/30px-Tek_Fence_Foundation.png" },
+  "tek_sloped_roof": { "de": "Schräges Tek Dach", "en": "Sloped Tek Roof", "icon": "https://ark.wiki.gg/images/thumb/Sloped_Tek_Roof.png/30px-Sloped_Tek_Roof.png" },
+  "tek_sloped_wall_l": { "de": "Schräge Tek Wand (L)", "en": "Sloped Tek Wall Left", "icon": "https://ark.wiki.gg/images/thumb/Sloped_Tek_Wall_Left.png/30px-Sloped_Tek_Wall_Left.png" },
+  "tek_sloped_wall_r": { "de": "Schräge Tek Wand (R)", "en": "Sloped Tek Wall Right", "icon": "https://ark.wiki.gg/images/thumb/Sloped_Tek_Wall_Right.png/30px-Sloped_Tek_Wall_Right.png" },
+  "tek_turret": { "de": "Tek Geschützturm", "en": "Tek Turret", "icon": "https://ark.wiki.gg/images/thumb/Tek_Turret.png/30px-Tek_Turret.png" },
+  "tek_helmet": { "de": "Tek Helm", "en": "Tek Helmet", "icon": "https://ark.wiki.gg/images/thumb/Tek_Helmet.png/30px-Tek_Helmet.png" },
+  "tek_mosa_saddle": { "de": "Tek Mosa Sattel", "en": "Mosasaur Tek Saddle", "icon": "https://ark.wiki.gg/images/thumb/Mosasaur_Tek_Saddle.png/30px-Mosasaur_Tek_Saddle.png" },
+  "tek_gauntlets": { "de": "Tek Handschuhe", "en": "Tek Gauntlets", "icon": "https://ark.wiki.gg/images/thumb/Tek_Gauntlets.png/30px-Tek_Gauntlets.png" },
+  "tek_leggings": { "de": "Tek Hose", "en": "Tek Leggings", "icon": "https://ark.wiki.gg/images/thumb/Tek_Leggings.png/30px-Tek_Leggings.png" },
+  "tek_chest": { "de": "Tek Brustplatte", "en": "Tek Chestpiece", "icon": "https://ark.wiki.gg/images/thumb/Tek_Chestpiece.png/30px-Tek_Chestpiece.png" },
+  "tek_rifle": { "de": "Tek Gewehr", "en": "Tek Rifle", "icon": "https://ark.wiki.gg/images/thumb/Tek_Rifle.png/30px-Tek_Rifle.png" },
+  "tek_rex_saddle": { "de": "Tek Rex Sattel", "en": "Rex Tek Saddle", "icon": "https://ark.wiki.gg/images/thumb/Rex_Tek_Saddle.png/30px-Rex_Tek_Saddle.png" },
+  "tek_gen": { "de": "Tek Generator", "en": "Tek Generator", "icon": "https://ark.wiki.gg/images/thumb/Tek_Generator.png/30px-Tek_Generator.png" },
+  "tek_trough": { "de": "Tek Trog", "en": "Tek Trough", "icon": "https://ark.wiki.gg/images/thumb/Tek_Trough.png/30px-Tek_Trough.png" },
+  "tek_teleporter": { "de": "Tek Teleporter", "en": "Tek Teleporter", "icon": "https://ark.wiki.gg/images/thumb/Tek_Teleporter.png/30px-Tek_Teleporter.png" },
+  "tek_transmitter": { "de": "Tek Transmitter", "en": "Tek Transmitter", "icon": "https://ark.wiki.gg/images/thumb/Tek_Transmitter.png/30px-Tek_Transmitter.png" },
+  "tek_shield": { "de": "Tek Kraftfeld", "en": "Tek Forcefield", "icon": "https://ark.wiki.gg/images/thumb/Tek_Forcefield.png/30px-Tek_Forcefield.png" },
+  "tek_dedi": { "de": "Tek Lagerkiste", "en": "Tek Dedicated Storage", "icon": "https://ark.wiki.gg/images/thumb/Tek_Dedicated_Storage.png/30px-Tek_Dedicated_Storage.png" },
+  "tek_hatchframe": { "de": "Tek Lukenrahmen", "en": "Tek Hatchframe", "icon": "https://ark.wiki.gg/images/thumb/Tek_Hatchframe.png/30px-Tek_Hatchframe.png" },
+  "tek_door": { "de": "Tek Tür", "en": "Tek Door", "icon": "https://ark.wiki.gg/images/thumb/Tek_Door.png/30px-Tek_Door.png" },
+  "tek_window": { "de": "Tek Fenster", "en": "Tek Window", "icon": "https://ark.wiki.gg/images/thumb/Tek_Window.png/30px-Tek_Window.png" },
+  "tek_windowframe": { "de": "Tek Fensterrahmen", "en": "Tek Windowframe", "icon": "https://ark.wiki.gg/images/thumb/Tek_Windowframe.png/30px-Tek_Windowframe.png" },
+  "tek_doorframe": { "de": "Tek Türrahmen", "en": "Tek Doorframe", "icon": "https://ark.wiki.gg/images/thumb/Tek_Doorframe.png/30px-Tek_Doorframe.png" },
+  "tek_trapdoor": { "de": "Tek Falltür", "en": "Tek Trapdoor", "icon": "https://ark.wiki.gg/images/thumb/Tek_Trapdoor.png/30px-Tek_Trapdoor.png" },
+  "tek_dino_gate": { "de": "Tek Dino Tor", "en": "Tek Dinosaur Gate", "icon": "https://ark.wiki.gg/images/thumb/Tek_Dinosaur_Gateway.png/30px-Tek_Dinosaur_Gateway.png" },
+  "tek_dino_gateway": { "de": "Tek Dino Torrahmen", "en": "Tek Dinosaur Gateway", "icon": "https://ark.wiki.gg/images/thumb/Tek_Dinosaur_Gateway.png/30px-Tek_Dinosaur_Gateway.png" },
+  "tek_tapa_saddle": { "de": "Tek Tapejara Sattel", "en": "Tapejara Tek Saddle", "icon": "https://ark.wiki.gg/images/thumb/Tapejara_Tek_Saddle.png/30px-Tapejara_Tek_Saddle.png" },
+  "tek_megalodon_saddle": { "de": "Tek Megalodon Sattel", "en": "Megalodon Tek Saddle", "icon": "https://ark.wiki.gg/images/thumb/Megalodon_Tek_Saddle.png/30px-Megalodon_Tek_Saddle.png" },
+  "tek_rock_drake_saddle": { "de": "Tek Rock Drake Sattel", "en": "Rock Drake Tek Saddle", "icon": "https://ark.wiki.gg/images/thumb/Rock_Drake_Tek_Saddle.png/30px-Rock_Drake_Tek_Saddle.png" },
+  "tek_sword": { "de": "Tek Schwert", "en": "Tek Sword", "icon": "https://ark.wiki.gg/images/thumb/Tek_Sword.png/30px-Tek_Sword.png" },
+  "tek_shield_item": { "de": "Tek Schild", "en": "Tek Shield", "icon": "https://ark.wiki.gg/images/thumb/Tek_Shield.png/30px-Tek_Shield.png" },
+  "tek_light": { "de": "Tek Licht", "en": "Tek Light", "icon": "https://ark.wiki.gg/images/thumb/Tek_Light.png/30px-Tek_Light.png" },
+  "tek_cloning_chamber": { "de": "Tek Klonkammer", "en": "Tek Cloning Chamber", "icon": "https://ark.wiki.gg/images/thumb/Cloning_Chamber.png/30px-Cloning_Chamber.png" },
+  "tek_grenade": { "de": "Tek Granate", "en": "Tek Grenade", "icon": "https://ark.wiki.gg/images/thumb/Tek_Grenade.png/30px-Tek_Grenade.png" },
+  "tek_sleeping_pod": { "de": "Tek Schlafkapsel", "en": "Tek Sleeping Pod", "icon": "https://ark.wiki.gg/images/thumb/Tek_Sleeping_Pod.png/30px-Tek_Sleeping_Pod.png" },
+  "tek_railgun": { "de": "Tek Railgun", "en": "Tek Railgun", "icon": "https://ark.wiki.gg/images/thumb/Tek_Railgun.png/30px-Tek_Railgun.png" }
+};
+
+        // --- 2. DATENBANK (BOSSE) ---
+        const BOSS_DATA = {
+  "broodmother": {
+    "hasDiff": true, "category": "Bosse",
+    "name": { "de": "Broodmother Lysrix", "en": "Broodmother Lysrix" },
+    "image": "https://ark.wiki.gg/images/thumb/3/36/Dossier_Broodmother.png/300px-Dossier_Broodmother.png",
+    "icon": "https://ark.wiki.gg/images/thumb/1/19/Broodmother.png/48px-Broodmother.png",
+    "desc": { "de": "Die Mutter aller Spinnen. Nutzt Gift, Netze und Diener.", "en": "The mother of all spiders. Uses poison, webs and minions." },
+    "arena": { "de": "Folgt...", "en": "Coming soon..." },
+    "behavior": { "de": "Folgt...", "en": "Coming soon..." },
+    "strategy": { "de": "<h4>Rex Rush</h4>19 High-Level Rexe (viel HP/Melee) + 1 Yutyrannus für Buffs. Umzingelt sie, damit sie sich nicht bewegen kann.<br><br><h4>Megatherium</h4>Erhalten 'Insektenkiller'-Buff durch Töten der kleinen Spinnen. Extrem effektiv.<br><br><h4>Gefahren</h4>Säure-Attacken zerstören Rüstung schnell. Nimm Ersatz mit.", "en": "<h4>Rex Rush</h4>19 High-level Rexes (High HP/Melee) + 1 Yutyrannus for buffs. Surround her so she can't move.<br><br><h4>Megatherium</h4>They get the 'Insect Killer' buff from killing minions. Extremely effective.<br><br><h4>Dangers</h4>Acid attacks destroy armor quickly. Bring spares." },
+    "maps": {
+      "The Island": {
+        "Gamma": { "stats": { "hp": "324,000", "dmg": "180", "lvl": "30" }, "tributes": [ {"id":"art_clever", "q":1}, {"id":"art_hunter", "q":1}, {"id":"art_massive", "q":1} ], "loot": [ {"id":"element", "q":10}, {"id":"trophy_brood", "q":1}, {"id":"flag_spider", "q":1} ], "unlocks": ["tek_replicator", "tek_foundation", "tek_tri_ceiling", "tek_tri_foundation", "tek_tri_roof"] },
+        "Beta": { "stats": { "hp": "648,000", "dmg": "320", "lvl": "50" }, "tributes": [ {"id":"art_clever", "q":1}, {"id":"art_hunter", "q":1}, {"id":"art_massive", "q":1}, {"id":"argi_talon", "q":5}, {"id":"sarco_skin", "q":5}, {"id":"sauro_vert", "q":5}, {"id":"titan_venom", "q":5} ], "loot": [ {"id":"element", "q":28}, {"id":"trophy_brood", "q":1}, {"id":"flag_spider", "q":1} ], "unlocks": ["tek_boots", "tek_wall", "tek_ceiling", "tek_pillar", "tek_ladder", "tek_ramp", "tek_staircase", "tek_catwalk", "tek_railing", "tek_fence", "tek_sloped_roof", "tek_sloped_wall_l", "tek_sloped_wall_r"] },
+        "Alpha": { "stats": { "hp": "972,000", "dmg": "540", "lvl": "70" }, "tributes": [ {"id":"art_clever", "q":1}, {"id":"art_hunter", "q":1}, {"id":"art_massive", "q":1}, {"id":"argi_talon", "q":10}, {"id":"sarco_skin", "q":10}, {"id":"sauro_vert", "q":10}, {"id":"titan_venom", "q":10} ], "loot": [ {"id":"element", "q":74}, {"id":"trophy_brood", "q":1}, {"id":"flag_spider", "q":1} ], "unlocks": ["tek_turret", "tek_helmet", "tek_mosa_saddle"] }
+      },
+      "The Center": {
+        "Gamma": { "stats": { "hp": "356,400", "dmg": "210", "lvl": "?" }, "tributes": [ {"id":"art_clever", "q":1}, {"id":"art_hunter", "q":1}, {"id":"art_massive", "q":1}, {"id":"art_devious", "q":1}, {"id":"art_devourer", "q":1}, {"id":"art_immine", "q":1}, {"id":"art_pack", "q":1}, {"id":"art_skylord", "q":1}, {"id":"art_strong", "q":1} ], "loot": [ {"id":"element", "q":10}, {"id":"trophy_brood", "q":1}, {"id":"flag_spider", "q":1} ], "unlocks": ["tek_replicator", "tek_foundation", "tek_tri_ceiling", "tek_tri_foundation", "tek_tri_roof"] },
+        "Beta": { "stats": { "hp": "421,200", "dmg": "280", "lvl": "?" }, "tributes": [ {"id":"art_clever", "q":1}, {"id":"art_hunter", "q":1}, {"id":"art_massive", "q":1}, {"id":"art_devious", "q":1}, {"id":"art_devourer", "q":1}, {"id":"art_immine", "q":1}, {"id":"art_pack", "q":1}, {"id":"art_skylord", "q":1}, {"id":"art_strong", "q":1}, {"id":"argi_talon", "q":5}, {"id":"sarco_skin", "q":5}, {"id":"sauro_vert", "q":5}, {"id":"titan_venom", "q":5} ], "loot": [ {"id":"element", "q":20}, {"id":"trophy_brood", "q":1}, {"id":"flag_spider", "q":1} ], "unlocks": ["tek_boots", "tek_wall", "tek_ceiling", "tek_pillar", "tek_ladder", "tek_ramp", "tek_staircase", "tek_catwalk", "tek_railing", "tek_fence", "tek_sloped_roof", "tek_sloped_wall_l", "tek_sloped_wall_r"] },
+        "Alpha": { "stats": { "hp": "486,000", "dmg": "700", "lvl": "?" }, "tributes": [ {"id":"art_clever", "q":1}, {"id":"art_hunter", "q":1}, {"id":"art_massive", "q":1}, {"id":"art_devious", "q":1}, {"id":"art_devourer", "q":1}, {"id":"art_immine", "q":1}, {"id":"art_pack", "q":1}, {"id":"art_skylord", "q":1}, {"id":"art_strong", "q":1}, {"id":"argi_talon", "q":10}, {"id":"sarco_skin", "q":10}, {"id":"sauro_vert", "q":10}, {"id":"titan_venom", "q":10} ], "loot": [ {"id":"element", "q":60}, {"id":"trophy_brood", "q":1}, {"id":"flag_spider", "q":1} ], "unlocks": ["tek_turret", "tek_helmet", "tek_mosa_saddle"] }
+      }
+    }
+  },
+  "megapithecus": {
+    "hasDiff": true, "category": "Bosse",
+    "name": { "de": "Megapithecus", "en": "Megapithecus" },
+    "image": "https://ark.wiki.gg/images/thumb/7/79/Dossier_Megapithecus.png/300px-Dossier_Megapithecus.png",
+    "icon": "https://ark.wiki.gg/images/thumb/7/7d/Megapithecus.png/48px-Megapithecus.png",
+    "desc": { "de": "Ein riesiger Gorilla in einer verschneiten Arena.", "en": "A giant gorilla in a snowy arena." },
+    "arena": { "de": "Folgt...", "en": "Coming soon..." },
+    "behavior": { "de": "Folgt...", "en": "Coming soon..." },
+    "strategy": { "de": "<h4>Positionierung</h4>Vermeide die Klippen! Ein falscher Schritt und deine Dinos sterben sofort. Locke ihn in die Mitte oder zum Startpunkt.<br><br><h4>Dinos</h4>Rexe sind effektiv. Yutyrannus für Buffs ist Pflicht.", "en": "<h4>Positioning</h4>Avoid the cliffs! One wrong step and your dinos die instantly. Lure him to the center or starting area.<br><br><h4>Dinos</h4>Rexes are effective. Yutyrannus for buffs is mandatory." },
+    "maps": {
+      "The Island": {
+        "Gamma": { "stats": { "hp": "180,000", "dmg": "400", "lvl": "30" }, "tributes": [ {"id":"art_pack", "q":1}, {"id":"art_devourer", "q":1}, {"id":"art_massive", "q":1} ], "loot": [ {"id":"element", "q":20}, {"id":"trophy_mega", "q":1}, {"id":"flag_gorilla", "q":1} ], "unlocks": ["tek_gauntlets", "tek_hatchframe", "tek_door", "tek_window", "tek_trapdoor"] },
+        "Beta": { "stats": { "hp": "396,000", "dmg": "800", "lvl": "50" }, "tributes": [ {"id":"art_pack", "q":1}, {"id":"art_devourer", "q":1}, {"id":"art_massive", "q":1}, {"id":"megalania_toxin", "q":5}, {"id":"megalodon_tooth", "q":5}, {"id":"spino_sail", "q":5} ], "loot": [ {"id":"element", "q":55}, {"id":"trophy_mega", "q":1}, {"id":"flag_gorilla", "q":1} ], "unlocks": ["tek_rifle", "tek_dino_gate", "tek_windowframe", "tek_doorframe", "tek_dino_gateway"] },
+        "Alpha": { "stats": { "hp": "540,000", "dmg": "1200", "lvl": "70" }, "tributes": [ {"id":"art_pack", "q":1}, {"id":"art_devourer", "q":1}, {"id":"art_massive", "q":1}, {"id":"megalania_toxin", "q":10}, {"id":"megalodon_tooth", "q":10}, {"id":"spino_sail", "q":10}, {"id":"thyla_claw", "q":10} ], "loot": [ {"id":"element", "q":110}, {"id":"trophy_mega", "q":1}, {"id":"flag_gorilla", "q":1} ], "unlocks": ["tek_rex_saddle", "tek_gen", "tek_grenade"] }
+      },
+      "The Center": {
+        "Gamma": { "stats": { "hp": "352,000", "dmg": "400", "lvl": "?" }, "tributes": [ {"id":"art_clever", "q":1}, {"id":"art_hunter", "q":1}, {"id":"art_massive", "q":1}, {"id":"art_devious", "q":1}, {"id":"art_devourer", "q":1}, {"id":"art_immine", "q":1}, {"id":"art_pack", "q":1}, {"id":"art_skylord", "q":1}, {"id":"art_strong", "q":1} ], "loot": [ {"id":"element", "q":10}, {"id":"trophy_mega", "q":1}, {"id":"flag_gorilla", "q":1} ], "unlocks": ["tek_gauntlets", "tek_hatchframe", "tek_door", "tek_window", "tek_trapdoor"] },
+        "Beta": { "stats": { "hp": "400,000", "dmg": "600", "lvl": "?" }, "tributes": [ {"id":"art_clever", "q":1}, {"id":"art_hunter", "q":1}, {"id":"art_massive", "q":1}, {"id":"art_devious", "q":1}, {"id":"art_devourer", "q":1}, {"id":"art_immine", "q":1}, {"id":"art_pack", "q":1}, {"id":"art_skylord", "q":1}, {"id":"art_strong", "q":1}, {"id":"megalania_toxin", "q":5}, {"id":"megalodon_tooth", "q":5}, {"id":"spino_sail", "q":5} ], "loot": [ {"id":"element", "q":20}, {"id":"trophy_mega", "q":1}, {"id":"flag_gorilla", "q":1} ], "unlocks": ["tek_rifle", "tek_dino_gate", "tek_windowframe", "tek_doorframe", "tek_dino_gateway"] },
+        "Alpha": { "stats": { "hp": "464,000", "dmg": "800", "lvl": "?" }, "tributes": [ {"id":"art_clever", "q":1}, {"id":"art_hunter", "q":1}, {"id":"art_massive", "q":1}, {"id":"art_devious", "q":1}, {"id":"art_devourer", "q":1}, {"id":"art_immine", "q":1}, {"id":"art_pack", "q":1}, {"id":"art_skylord", "q":1}, {"id":"art_strong", "q":1}, {"id":"megalania_toxin", "q":10}, {"id":"megalodon_tooth", "q":10}, {"id":"spino_sail", "q":10} ], "loot": [ {"id":"element", "q":60}, {"id":"trophy_mega", "q":1}, {"id":"flag_gorilla", "q":1} ], "unlocks": ["tek_rex_saddle", "tek_gen", "tek_grenade"] }
+      }
+    }
+  },
+  "dragon": {
+    "hasDiff": true, "category": "Bosse",
+    "name": { "de": "Dragon", "en": "Dragon" },
+    "image": "https://ark.wiki.gg/images/thumb/7/75/Dossier_Dragon.png/300px-Dossier_Dragon.png",
+    "icon": "https://ark.wiki.gg/images/thumb/c/c7/Dragon.png/48px-Dragon.png",
+    "desc": { "de": "Feuerspeiender Drache. Prozentualer Schaden.", "en": "Fire breathing dragon. Deals percentage damage." },
+    "arena": { "de": "Folgt...", "en": "Coming soon..." },
+    "behavior": { "de": "Folgt...", "en": "Coming soon..." },
+    "strategy": { "de": "<h4>Feuer-Schaden</h4>Der Feueratem macht prozentualen Schaden (20% der Max HP). Fleischfresser (Rexe) sterben hier extrem schnell.<br><br><h4>Therizinosaurus</h4>Nutze Therizinosaurus mit Sweet Vegetable Cakes. Die Kuchen heilen sie effizient gegen den Feuerschaden.<br><br><h4>Deinonychus (Valguero)</h4>Auf Valguero kann man sich an seine Fersen heften und ihn ausbluten lassen.", "en": "<h4>Fire Damage</h4>The fire breath deals percentage damage (20% of Max HP). Carnivores (Rexes) die very quickly here.<br><br><h4>Therizinosaurus</h4>Use Therizinosaurus with Sweet Vegetable Cakes. The cakes heal them efficiently against the fire damage." },
+    "maps": {
+      "The Island": {
+        "Gamma": { "stats": { "hp": "432,000", "dmg": "~500", "lvl": "55" }, "tributes": [ {"id":"art_cunning", "q":1}, {"id":"art_immine", "q":1}, {"id":"art_skylord", "q":1}, {"id":"art_strong", "q":1} ], "loot": [ {"id":"element", "q":40}, {"id":"trophy_dragon", "q":1}, {"id":"flag_dragon", "q":1} ], "unlocks": ["tek_leggings", "tek_trough", "tek_gen"] },
+        "Beta": { "stats": { "hp": "864,000", "dmg": "~1000", "lvl": "75" }, "tributes": [ {"id":"art_cunning", "q":1}, {"id":"art_immine", "q":1}, {"id":"art_skylord", "q":1}, {"id":"art_strong", "q":1}, {"id":"allo_brain", "q":5}, {"id":"basilo_blubber", "q":5}, {"id":"giga_heart", "q":1}, {"id":"tuso_tentacle", "q":5}, {"id":"rex_arm", "q":5}, {"id":"yuty_lungs", "q":5} ], "loot": [ {"id":"element", "q":110}, {"id":"trophy_dragon", "q":1}, {"id":"flag_dragon", "q":1} ], "unlocks": ["tek_transmitter", "tek_shield"] },
+        "Alpha": { "stats": { "hp": "972,000", "dmg": "~2000", "lvl": "100" }, "tributes": [ {"id":"art_cunning", "q":1}, {"id":"art_immine", "q":1}, {"id":"art_skylord", "q":1}, {"id":"art_strong", "q":1}, {"id":"allo_brain", "q":10}, {"id":"basilo_blubber", "q":10}, {"id":"giga_heart", "q":2}, {"id":"tuso_tentacle", "q":10}, {"id":"rex_arm", "q":15}, {"id":"yuty_lungs", "q":10} ], "loot": [ {"id":"element", "q":220}, {"id":"trophy_dragon", "q":1}, {"id":"flag_dragon", "q":1} ], "unlocks": ["tek_teleporter", "tek_dedi", "tek_chest", "tek_cloning_chamber"] }
+      }
+    }
+  },
+  "manticore": {
+    "hasDiff": true, "category": "Bosse",
+    "name": { "de": "Manticore", "en": "Manticore" },
+    "image": "https://ark.wiki.gg/images/thumb/8/87/Dossier_Manticore.png/300px-Dossier_Manticore.png",
+    "icon": "https://ark.wiki.gg/images/thumb/0/03/Manticore.png/48px-Manticore.png",
+    "desc": { "de": "Wächter von Scorched Earth.", "en": "Guardian of Scorched Earth." },
+    "arena": { "de": "Folgt...", "en": "Coming soon..." },
+    "behavior": { "de": "Folgt...", "en": "Coming soon..." },
+    "strategy": { "de": "<h4>Flugphase</h4>Der Manticore fliegt viel. Man muss warten, bis er landet, um mit Rexen Schaden zu machen.<br><br><h4>Wyvern</h4>In dieser Arena sind Wyvern erlaubt und sehr nützlich, um ihn in der Luft zu attackieren.<br><br><h4>Torpor</h4>Achtung vor den Stacheln, sie verursachen hohen Torpor an Spielern und Dinos.", "en": "<h4>Flight Phase</h4>The Manticore flies a lot. You have to wait for it to land to deal damage with Rexes.<br><br><h4>Wyverns</h4>Wyverns are allowed in this arena and very useful for attacking him in the air.<br><br><h4>Torpor</h4>Watch out for the spikes, they cause high torpor to players and dinos." },
+    "maps": {
+      "Scorched Earth": {
+        "Gamma": { "stats": { "hp": "100,000", "dmg": "~150", "lvl": "55" }, "tributes": [ {"id":"art_clever", "q":1}, {"id":"art_devourer", "q":1}, {"id":"art_skylord", "q":1} ], "loot": [ {"id":"element", "q":35}, {"id":"trophy_manti", "q":1}, {"id":"flag_manti", "q":1} ], "unlocks": ["tek_gauntlets", "tek_leggings", "tek_boots", "tek_trough", "tek_gen", "tek_light"] },
+        "Beta": { "stats": { "hp": "130,000", "dmg": "~300", "lvl": "75" }, "tributes": [ {"id":"art_clever", "q":1}, {"id":"art_devourer", "q":1}, {"id":"art_skylord", "q":1}, {"id":"wyvern_talon_fire", "q":5}, {"id":"wyvern_talon_lightning", "q":5}, {"id":"wyvern_talon_poison", "q":5} ], "loot": [ {"id":"element", "q":95}, {"id":"trophy_manti", "q":1}, {"id":"flag_manti", "q":1} ], "unlocks": ["tek_rifle", "tek_helmet", "tek_transmitter", "tek_shield", "tek_tapa_saddle"] },
+        "Alpha": { "stats": { "hp": "160,000", "dmg": "~450", "lvl": "100" }, "tributes": [ {"id":"art_clever", "q":1}, {"id":"art_devourer", "q":1}, {"id":"art_skylord", "q":1}, {"id":"wyvern_talon_fire", "q":10}, {"id":"wyvern_talon_lightning", "q":10}, {"id":"wyvern_talon_poison", "q":10} ], "loot": [ {"id":"element", "q":190}, {"id":"trophy_manti", "q":1}, {"id":"flag_manti", "q":1} ], "unlocks": ["tek_chest", "tek_teleporter", "tek_cloning_chamber", "tek_rex_saddle", "tek_dedi"] }
+      }
+    }
+  },
+  "rockwell": {
+    "hasDiff": true, "category": "Bosse",
+    "name": { "de": "Rockwell", "en": "Rockwell" },
+    "image": "https://ark.wiki.gg/images/thumb/5/52/Dossier_Rockwell.png/300px-Dossier_Rockwell.png",
+    "icon": "https://ark.wiki.gg/images/thumb/b/b0/Rockwell.png/48px-Rockwell.png",
+    "desc": { "de": "Einst ein Forscher, jetzt ein Monster, das von Element korrumpiert wurde.", "en": "Once an explorer, now a monster corrupted by Element." },
+    "arena": { "de": "Folgt...", "en": "Coming soon..." },
+    "behavior": { "de": "Folgt...", "en": "Coming soon..." },
+    "strategy": { "de": "<h4>Tentakel</h4>Zerstöre zuerst alle Tentakel um ihn herum, um seinen Schild zu senken.<br><br><h4>Herz</h4>Sobald der Schild unten ist, greife das Herz an.<br><br><h4>Kein Tek</h4>Tek-Ausrüstung funktioniert hier nicht! Nutze Pumpguns und Cactus Broth.", "en": "<h4>Tentacles</h4>Destroy all tentacles first to lower his shield.<br><br><h4>Heart</h4>Attack the heart once the shield is down.<br><br><h4>No Tek</h4>Tek gear does not work here! Use Pump Shotguns and Cactus Broth." },
+    "maps": {
+      "Aberration": {
+        "Gamma": { "stats": { "hp": "~112,000", "dmg": "?", "lvl": "60" }, "tributes": [ {"id":"art_depths", "q":1}, {"id":"art_shadows", "q":1}, {"id":"art_stalker", "q":1} ], "loot": [ {"id":"element", "q":40}, {"id":"trophy_rockwell", "q":1}, {"id":"flag_rockwell", "q":1} ], "unlocks": ["tek_boots", "tek_gauntlets", "tek_gen", "tek_leggings", "tek_replicator", "tek_trough"] },
+        "Beta": { "stats": { "hp": "~224,000", "dmg": "?", "lvl": "80" }, "tributes": [ {"id":"art_depths", "q":1}, {"id":"art_shadows", "q":1}, {"id":"art_stalker", "q":1}, {"id":"basilisk_scale", "q":4}, {"id":"nameless_venom", "q":12}, {"id":"reaper_pheromone", "q":2}, {"id":"rock_drake_feather", "q":2} ], "loot": [ {"id":"element", "q":115}, {"id":"trophy_rockwell", "q":1}, {"id":"flag_rockwell", "q":1} ], "unlocks": ["tek_chest", "tek_helmet", "tek_rifle", "tek_rock_drake_saddle"] },
+        "Alpha": { "stats": { "hp": "~336,000", "dmg": "?", "lvl": "100" }, "tributes": [ {"id":"art_depths", "q":1}, {"id":"art_shadows", "q":1}, {"id":"art_stalker", "q":1}, {"id":"basilisk_scale", "q":8}, {"id":"nameless_venom", "q":20}, {"id":"reaper_pheromone", "q":7}, {"id":"rock_drake_feather", "q":7} ], "loot": [ {"id":"element", "q":260}, {"id":"trophy_rockwell", "q":1}, {"id":"flag_rockwell", "q":1} ], "unlocks": ["tek_railgun", "tek_sleeping_pod", "tek_shield_item", "tek_sword"] }
+      }
+    }
+  },
+  "forest_titan": {
+    "hasDiff": false, "category": "Titanen",
+    "name": { "de": "Forest Titan", "en": "Forest Titan" },
+    "image": "https://ark.wiki.gg/images/thumb/7/7b/Dossier_Forest_Titan.png/300px-Dossier_Forest_Titan.png",
+    "icon": "https://ark.wiki.gg/images/thumb/2/28/Forest_Titan.png/48px-Forest_Titan.png",
+    "desc": { "de": "Der Herrscher des Waldes. Ein riesiges Pflanzenmonster.", "en": "The ruler of the forest. A giant plant monster." },
+    "arena": { "de": "Folgt...", "en": "Coming soon..." },
+    "behavior": { "de": "Folgt...", "en": "Coming soon..." },
+    "strategy": { "de": "<h4>Feuer!</h4>Nutze Forest Wyvern oder Managarmr, um die Knoten zu verbrennen.<br><br><h4>Zähmen</h4>Zerstöre die Knoten auf Schultern und Kinn, um ihn zu zähmen. Je weniger Schaden er nimmt, desto besser.", "en": "<h4>Fire!</h4>Use Forest Wyverns or Managarmrs to burn the nodes.<br><br><h4>Taming</h4>Destroy the nodes on shoulders and chin to tame him. The less damage he takes, the better." },
+    "maps": {
+      "Extinction": {
+        "stats": { "hp": "400,000", "dmg": "~15,000", "lvl": "1" },
+        "tributes": [ {"id":"art_growth", "q":1}, {"id":"corrupt_heart", "q":100}, {"id":"sauro_vert", "q":10}, {"id":"rex_arm", "q":10} ],
+        "loot": [ {"id":"mdsm", "q":1}, {"id":"mrlm", "q":1}, {"id":"mscm", "q":1}, {"id":"thatch", "q":1}, {"id":"fungal_wood", "q":1}, {"id":"corrupted_nodule", "q":1} ],
+        "unlocks": ["tek_replicator", "tek_gauntlets", "tek_leggings", "tek_sword"]
+      }
+    }
+  },
+  "ice_titan": {
+    "hasDiff": false, "category": "Titanen",
+    "name": { "de": "Ice Titan", "en": "Ice Titan" },
+    "image": "https://ark.wiki.gg/images/thumb/2/26/Dossier_Ice_Titan.png/300px-Dossier_Ice_Titan.png",
+    "icon": "https://ark.wiki.gg/images/thumb/d/dc/Ice_Titan.png/48px-Ice_Titan.png",
+    "desc": { "de": "Der Herrscher des Winters.", "en": "The Lord of Winter." },
+    "arena": { "de": "Folgt...", "en": "Coming soon..." },
+    "behavior": { "de": "Folgt...", "en": "Coming soon..." },
+    "strategy": { "de": "<h4>Agil & Gefährlich</h4>Der Ice Titan ist der agilste aller Titanen. Er springt viel und friert Ziele ein.<br><br><h4>Einfrieren vermeiden</h4>Sein Atem friert dich und deine Dinos sofort ein. Ausweichen ist oberstes Gebot!", "en": "<h4>Agile & Dangerous</h4>The Ice Titan is the most agile titan. It jumps a lot and freezes targets.<br><br><h4>Avoid Freezing</h4>His breath freezes you and your tames instantly. Dodging is key!" },
+    "maps": {
+      "Extinction": {
+        "stats": { "hp": "350,000", "dmg": "2,500", "lvl": "1500" },
+        "tributes": [ {"id":"art_void", "q":1}, {"id":"corrupt_heart", "q":100}, {"id":"spino_sail", "q":10}, {"id":"theri_claws", "q":10} ],
+        "loot": [ {"id":"mdsm", "q":1}, {"id":"mrlm", "q":1}, {"id":"mscm", "q":1}, {"id":"tek_gear", "q":1} ],
+        "unlocks": ["tek_tapa_saddle", "tek_chest", "tek_shield", "tek_helmet", "tek_replicator", "tek_rifle"]
+      }
+    }
+  },
+  "desert_titan": {
+    "hasDiff": false, "category": "Titanen",
+    "name": { "de": "Desert Titan", "en": "Desert Titan" },
+    "image": "https://ark.wiki.gg/images/thumb/a/a2/Dossier_Desert_Titan.png/300px-Dossier_Desert_Titan.png",
+    "icon": "https://ark.wiki.gg/images/thumb/4/49/Desert_Titan.png/48px-Desert_Titan.png",
+    "desc": { "de": "Der Herrscher von Sand und Himmel.", "en": "The Lord of Sand and Sky." },
+    "arena": { "de": "Der Desert Dome im Südosten von Extinction. Ein riesiges, schwebendes Wüstengebiet.", "en": "The Desert Dome in the southeast of Extinction. A massive floating desert area." },
+    "behavior": { "de": "Der Desert Titan ist hochaggressiv und fliegt. Er nutzt Blitze, die als Markierung am Boden erscheinen, und beschwört Schwärme (Flocks) von kleinen Kreaturen.", "en": "The Desert Titan is highly aggressive and flies. It uses lightning strikes marked on the ground and summons flocks of small creatures." },
+    "strategy": { "de": "<h4>Flug-Titan</h4>Da er fliegt, sind Land-Dinos nutzlos. Nutze Quetzals mit Plattform-Sattel oder Wyvern.<br><br><h4>Blitz-Gefahr</h4>Achte auf die Blitz-Markierungen! Bleib in Bewegung.<br><br><h4>Zähmen</h4>Zerstöre die Korruptions-Knoten auf dem Rücken mit präzisen Schüssen oder Blitzen.", "en": "<h4>Flying Titan</h4>Land dinos are useless. Use Quetzals with platform saddles or Wyverns.<br><br><h4>Lightning Danger</h4>Watch out for lightning marks! Keep moving.<br><br><h4>Taming</h4>Destroy the corruption nodes on its back with precise shots or lightning." },
+    "maps": {
+      "Extinction": {
+        "stats": { "hp": "250,000", "dmg": "0", "lvl": "5000" },
+        "tributes": [ {"id":"art_chaos", "q":1}, {"id":"corrupt_heart", "q":100}, {"id":"fire_talon", "q":10}, {"id":"sarco_skin", "q":10} ],
+        "loot": [ {"id":"mdsm", "q":1}, {"id":"mrlm", "q":1}, {"id":"mscm", "q":1}, {"id":"element", "q":3}, {"id":"tek_gear", "q":1} ],
+        "unlocks": ["tek_boots", "tek_dedi", "tek_gen", "tek_railgun", "tek_replicator", "tek_trough"]
+      }
+    }
+  },
+  "king_titan": {
+    "hasDiff": true, "category": "Titanen",
+    "name": { "de": "King Titan", "en": "King Titan" },
+    "image": "https://ark.wiki.gg/images/thumb/1/1b/Dossier_King_Titan.png/300px-Dossier_King_Titan.png",
+    "icon": "https://ark.wiki.gg/images/thumb/8/82/King_Titan.png/48px-King_Titan.png",
+    "desc": { "de": "Der finale Boss von Extinction. Ein kolossales Monster, das die Korruption anführt.", "en": "The final Boss of Extinction. A colossal monster leading the corruption." },
+    "arena": { "de": "Die King Titan Arena im Norden von Extinction (Forbidden Zone).", "en": "The King Titan Arena in the north of Extinction (Forbidden Zone)." },
+    "behavior": { "de": "Killt alles in Sichtweite. Beschwört Meteore, nutzt Faustschläge und korrumpierte Tumore. Omega-Level Bedrohung.", "en": "Kills everything in sight. Summons meteors, uses fist strikes and corrupted tumors. Omega-level threat." },
+    "strategy": { "de": "<h4>Zentrum halten</h4>Seine Aufmerksamkeit muss in der Mitte der Arena bleiben, sonst heilt er sich.<br><br><h4>Element-Knoten</h4>Er geht in eine Phase, wo er kniet und weniger Schaden nimmt. Element-Knoten müssen verteidigt werden.<br><br><h4>Gigas & Titanen</h4>Zähmbare Titanen (Ice, Forest, Desert) sind sehr effektiv, ebenso Gigas für Burst-Schaden.<br><br><h4>Mega Mek (Alpha)</h4>Für den Alpha-Kampf ist der Mega Mek entscheidend.", "en": "<h4>Keep Center</h4>Keep his attention in the center or he resets/heals.<br><br><h4>Element Nodes</h4>Phases where he kneels (dmg reduction) and nodes spawn. Defend nodes.<br><br><h4>Gigas & Titans</h4>Tamed Titans (Ice, Forest, Desert) are very effective, Gigas for burst.<br><br><h4>Mega Mek (Alpha)</h4>The Mega Mek is essential for the Alpha fight." },
+    "maps": {
+      "Extinction": {
+        "Gamma": { "stats": { "hp": "1,500,000", "dmg": "0", "lvl": "1500" }, "tributes": [ {"id":"alpha_rex_tooth", "q":5}, {"id":"corrupt_heart", "q":150}, {"id":"titan_venom", "q":10}, {"id":"titan_trophy_desert", "q":1}, {"id":"titan_trophy_forest", "q":1}, {"id":"titan_trophy_ice", "q":1} ], "loot": [ {"id":"element", "q":1}, {"id":"titan_flag_king", "q":1} ], "unlocks": [] },
+        "Beta": { "stats": { "hp": "1,500,000", "dmg": "0", "lvl": "1500" }, "tributes": [ {"id":"alpha_rex_tooth", "q":10}, {"id":"corrupt_heart", "q":300}, {"id":"titan_venom", "q":20}, {"id":"titan_trophy_desert", "q":1}, {"id":"titan_trophy_forest", "q":1}, {"id":"titan_trophy_ice", "q":1}, {"id":"titan_trophy_gamma", "q":1} ], "loot": [ {"id":"element", "q":1}, {"id":"titan_flag_king", "q":1} ], "unlocks": [] },
+        "Alpha": { "stats": { "hp": "1,500,000", "dmg": "0", "lvl": "1500" }, "tributes": [ {"id":"alpha_rex_tooth", "q":10}, {"id":"corrupt_heart", "q":300}, {"id":"giga_heart", "q":20}, {"id":"spino_sail", "q":20}, {"id":"titan_venom", "q":20}, {"id":"titan_trophy_desert", "q":1}, {"id":"titan_trophy_forest", "q":1}, {"id":"titan_trophy_ice", "q":1}, {"id":"titan_trophy_beta", "q":1} ], "loot": [ {"id":"element", "q":1}, {"id":"titan_flag_king", "q":1} ], "unlocks": [] }
+      }
+    }
+  },
+  "ice_worm_queen": {
+    "hasDiff": false, "category": "Minibosse",
+    "name": { "de": "Ice Worm Queen", "en": "Ice Worm Queen" },
+    "image": "https://ark.wiki.gg/images/thumb/7/7b/Iceworm_Image.png/300px-Iceworm_Image.png",
+    "icon": "https://ark.wiki.gg/images/thumb/3/3b/Iceworm_Queen.png/48px-Iceworm_Queen.png",
+    "desc": { "de": "Eine riesige Todeswurm-Königin im gefrorenen Dungeon.", "en": "A massive Deathworm Queen in the Frozen Dungeon." },
+    "arena": { "de": "Frozen Dungeon unter dem Blizzard Peak auf Ragnarok.", "en": "Frozen Dungeon beneath Blizzard Peak on Ragnarok." },
+    "behavior": { "de": "Stationär. Greift mit Bissen an und spawnt männliche Iceworms.", "en": "Stationary. Attacks with bites and spawns male Iceworms." },
+    "strategy": { "de": "<h4>Keine Dinos</h4>Da man nicht reiten kann, ist gute Rüstung und starke Waffen (Pumpgun, Raketen) Pflicht. Ein Schild hilft gegen den Säureangriff.<br><br><h4>Adds</h4>Töte zuerst die normalen Iceworms auf dem Weg.<br><br><h4>Loot</h4>Sie droppt Alpha Deathworm Loot, aber der wahre Schatz sind die roten Loot-Crates in der Arena.", "en": "<h4>No Dinos</h4>Since you can't ride, good armor and weapons (Pumpgun, Rockets) are mandatory. A shield helps against acid.<br><br><h4>Adds</h4>Kill the normal Iceworms on the way first.<br><br><h4>Loot</h4>She drops Alpha Deathworm loot, but the real treasure are the red loot crates in the arena." },
+    "maps": {
+      "Ragnarok": {
+        "stats": { "hp": "1,700+", "dmg": "350", "lvl": "1+" },
+        "tributes": [],
+        "loot": [ {"id":"manticore_helmet", "q":1}, {"id":"deathworm_horn", "q":20}, {"id":"trophy_alpha_deathworm", "q":1} ],
+        "unlocks": []
+      }
+    }
+  },
+  "lava_golem": {
+    "hasDiff": false, "category": "Minibosse",
+    "name": { "de": "Lava Elemental", "en": "Lava Elemental" },
+    "image": "https://ark.wiki.gg/images/thumb/1/14/Lava_Elemental_Image.png/300px-Lava_Elemental_Image.png",
+    "icon": "https://ark.wiki.gg/images/thumb/4/40/Lava_Elemental.png/48px-Lava_Elemental.png",
+    "desc": { "de": "Dungeon Boss auf Ragnarok (Jungle Dungeon).", "en": "Dungeon Boss on Ragnarok (Jungle Dungeon)." },
+    "arena": { "de": "Vulkan-Höhle (Jungle Dungeon) auf Ragnarok. Lava-See mit Ruinen.", "en": "Volcano Cave (Jungle Dungeon) on Ragnarok. Lava lake with ruins." },
+    "behavior": { "de": "Wirft geschmolzene Felsen auf den Spieler. Sehr territorial.", "en": "Throws molten rocks at the player. Very territorial." },
+    "strategy": { "de": "<h4>Explosivwaffen</h4>Nutze Raketenwerfer! Kugeln und Nahkampf sind wirkungslos.<br><br><h4>Schwachstelle</h4>Ziele auf den rechten Arm/Hand für maximalen Schaden.<br><br><h4>Umgebung</h4>Nutze Grappling Hooks für sichere Positionen. Falle nicht in die Lava!", "en": "<h4>Explosives</h4>Use Rocket Launchers! Bullets and melee are ineffective.<br><br><h4>Weakness</h4>Aim for the right arm/hand for maximum damage.<br><br><h4>Environment</h4>Use Grappling Hooks for safe spots. Don't fall into the lava!" },
+    "maps": {
+      "Ragnarok": {
+        "stats": { "hp": "60,000+", "dmg": "120", "lvl": "10+" },
+        "tributes": [],
+        "loot": [ {"id":"crystal", "q":"+"}, {"id":"metal", "q":"+"}, {"id":"obsidian", "q":"+"}, {"id":"oil", "q":"+"}, {"id":"sulfur", "q":"+"}, {"id":"stone", "q":"+"}, {"id":"tek_gear", "q":1} ],
+        "unlocks": []
+      }
+    }
+  }
+};
+
+        // --- APP LOGIC ---
+        const UI_TEXT = {
+            de: { stats: "Werte & Anforderungen", tribute: "Tribute (Beschwörung)", loot: "Loot & Belohnung", unlocks: "Tek Engramme", strategy: "Strategie", hp: "Leben", dmg: "Schaden", lvl: "Min. Level", gamma: "Gamma", beta: "Beta", alpha: "Alpha", prev: "+ Vorherige Stufen", arena: "Arena Informationen", attacks: "Boss Verhalten & Angriffe" },
+            en: { stats: "Stats & Requirements", tribute: "Tributes (Summon)", loot: "Loot & Rewards", unlocks: "Tek Engrams", strategy: "Strategy", hp: "Health", dmg: "Damage", lvl: "Min. Level", gamma: "Gamma", beta: "Beta", alpha: "Alpha", prev: "+ Previous Tiers", arena: "Arena Information", attacks: "Boss Behavior & Attacks" }
+        };
+        let currentBossId = "broodmother", currentMap = "The Island", currentLang = "de";
+
+        window.onload = function() {
+            renderBossList();
+            loadBoss(currentBossId);
+        };
+
+        function getTrans(key) { return UI_TEXT[currentLang][key] || key; }
+        function getItem(key) {
+            const item = ITEMS_DB[key];
+            if (!item) return { name: key, icon: "" };
+            return { name: item[currentLang] || item.en, icon: item.icon };
+        }
+        function setLang(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('btn-'+lang).classList.add('active');
+            filterBosses(document.getElementById('searchInput').value);
+            loadBoss(currentBossId);
+        }
+        function filterBosses(query) {
+            const list = document.getElementById('bossList');
+            query = query.toLowerCase();
+            const categories = { "Bosse": [], "Titanen": [], "Minibosse": [] };
+            for (const [id, data] of Object.entries(BOSS_DATA)) {
+                let match = false, matchReason = "";
+                const bName = (data.name[currentLang] || data.name.en).toLowerCase();
+                if (bName.includes(query)) match = true;
+                else {
+                    for (const map in data.maps) {
+                        const mapData = data.maps[map];
+                        const checkUnlocks = (arr) => {
+                            if(!arr) return false;
+                            for(const u of arr) { if(getItem(u).name.toLowerCase().includes(query)) return true; }
+                            return false;
+                        };
+                        if (data.hasDiff === false) { if(checkUnlocks(mapData.unlocks)) { match = true; matchReason = "Tek"; break; } }
+                        else { for (const diff in mapData) { if(checkUnlocks(mapData[diff].unlocks)) { match = true; matchReason = "Tek"; break; } } }
+                        if(match) break;
+                    }
+                }
+                if (match || query === "") {
+                    const btn = document.createElement('button');
+                    btn.className = `boss-btn ${id === currentBossId ? 'active' : ''}`;
+                    btn.onclick = () => loadBoss(id);
+                    let html = `<img src="${data.icon}"> ${data.name[currentLang] || data.name.en}`;
+                    if(query !== "" && matchReason) html += `<span class="match-badge">${matchReason}</span>`;
+                    btn.innerHTML = html;
+                    const cat = data.category || "Bosse";
+                    if(!categories[cat]) categories[cat] = [];
+                    categories[cat].push(btn);
+                }
+            }
+            list.innerHTML = '';
+            const catOrder = ["Bosse", "Titanen", "Minibosse"];
+            catOrder.forEach(cat => {
+                if(categories[cat] && categories[cat].length > 0) {
+                    const header = document.createElement('div');
+                    header.className = 'cat-header';
+                    let icon = "fa-skull"; if(cat === "Titanen") icon = "fa-mountain"; if(cat === "Minibosse") icon = "fa-spider";
+                    header.innerHTML = `<i class="fa-solid ${icon}"></i> ${cat}`;
+                    list.appendChild(header);
+                    categories[cat].forEach(btn => list.appendChild(btn));
+                }
+            });
+        }
+        function renderBossList() { filterBosses(""); }
+        function loadBoss(bossId) {
+            currentBossId = bossId;
+            const boss = BOSS_DATA[bossId];
+            let headerHTML = "";
+            if (boss.image) headerHTML += `<div class="boss-main-image-container"><img src="${boss.image}" class="boss-main-image"></div>`;
+            headerHTML += `<div class="boss-info"><h1>${boss.name[currentLang] || boss.name.en}</h1><p>${boss.desc[currentLang] || boss.desc.en}</p></div>`;
+            document.getElementById('bossHeader').innerHTML = headerHTML;
+            const mapSelect = document.getElementById('mapSelector');
+            mapSelect.innerHTML = '';
+            const maps = Object.keys(boss.maps);
+            if(maps.length === 0) { const opt = document.createElement('option'); opt.innerText = "Keine Daten"; mapSelect.appendChild(opt); renderContent(); return; }
+            maps.forEach(map => { const opt = document.createElement('option'); opt.value = map; opt.innerText = map; mapSelect.appendChild(opt); });
+            if (!maps.includes(currentMap)) currentMap = maps[0];
+            mapSelect.value = currentMap;
+            document.querySelectorAll('.boss-btn').forEach(b => b.classList.remove('active'));
+            filterBosses(document.getElementById('searchInput').value);
+            renderContent();
+        }
+        function changeMap(map) { currentMap = map; renderContent(); }
+        function renderContent() {
+            const boss = BOSS_DATA[currentBossId];
+            const mapData = boss.maps[currentMap];
+            const content = document.getElementById('mainContent');
+            if(!mapData) { content.innerHTML = `<div class="strategy-box">Daten für diese Map/Boss noch nicht eingepflegt.</div>`; return; }
+            const renderItemList = (list) => {
+                if(!list || list.length === 0) return '<div style="color:#666; font-size:0.8rem;">-</div>';
+                return list.map(entry => {
+                    const dbItem = getItem(entry.id);
+                    return `<div class="item-entry" title="${dbItem.name}"><div class="item-left"><img src="${dbItem.icon}"><span>${dbItem.name}</span></div><span class="qty">x${entry.q}</span></div>`;
+                }).join('');
+            }
+            const renderUnlocks = (list, hasPrev) => {
+                if(!list || list.length === 0) return '<div style="color:#666; font-size:0.8rem;">-</div>';
+                let html = "";
+                if(hasPrev) html += `<div class="note" style="width:100%;">${getTrans('prev')}</div>`;
+                html += list.map(key => {
+                    const dbItem = getItem(key);
+                    return `<div class="tek-tag"><img src="${dbItem.icon}"> ${dbItem.name}</div>`;
+                }).join('');
+                return html;
+            }
+            const renderStats = (s) => {
+                if(!s) return "-";
+                return `<table class="stats-table"><tr><td>${getTrans('hp')}</td><td class="val" style="color:#ff5555">${s.hp}</td></tr><tr><td>${getTrans('dmg')}</td><td class="val" style="color:#ffaa00">${s.dmg}</td></tr><tr><td>${getTrans('lvl')}</td><td class="val" style="color:#55ff55">${s.lvl}</td></tr></table>`;
+            }
+            let html = "";
+            if (boss.hasDiff === false) {
+                 html = `<div class="single-view"><div class="single-col"><h3 class="section-title"><i class="fa-solid fa-chart-line"></i> ${getTrans('stats')}</h3>${renderStats(mapData.stats)}<h3 class="section-title" style="margin-top:20px;"><i class="fa-solid fa-gem"></i> ${getTrans('tribute')}</h3><div class="item-list">${renderItemList(mapData.tributes)}</div></div><div class="single-col"><h3 class="section-title"><i class="fa-solid fa-gift"></i> ${getTrans('loot')}</h3><div class="item-list">${renderItemList(mapData.loot)}</div><h3 class="section-title" style="margin-top:20px;"><i class="fa-solid fa-dna"></i> ${getTrans('unlocks')}</h3><div class="tek-unlocks">${renderUnlocks(mapData.unlocks, false)}</div></div></div>`;
+            } else {
+                const dGamma = mapData.Gamma || {}, dBeta = mapData.Beta || {}, dAlpha = mapData.Alpha || {};
+                html = `<div class="matrix-header"><div class="mh-col mh-gamma">${getTrans('gamma')}</div><div class="mh-col mh-beta">${getTrans('beta')}</div><div class="mh-col mh-alpha">${getTrans('alpha')}</div></div><div class="section-block"><div class="section-title"><i class="fa-solid fa-chart-line"></i> ${getTrans('stats')}</div><div class="matrix-row"><div class="matrix-col gamma">${renderStats(dGamma.stats)}</div><div class="matrix-col beta">${renderStats(dBeta.stats)}</div><div class="matrix-col alpha">${renderStats(dAlpha.stats)}</div></div></div><div class="section-block"><div class="section-title"><i class="fa-solid fa-gem"></i> ${getTrans('tribute')}</div><div class="matrix-row"><div class="matrix-col gamma"><div class="item-list">${renderItemList(dGamma.tributes)}</div></div><div class="matrix-col beta"><div class="item-list">${renderItemList(dBeta.tributes)}</div></div><div class="matrix-col alpha"><div class="item-list">${renderItemList(dAlpha.tributes)}</div></div></div></div><div class="section-block"><div class="section-title"><i class="fa-solid fa-gift"></i> ${getTrans('loot')}</div><div class="matrix-row"><div class="matrix-col gamma"><div class="item-list">${renderItemList(dGamma.loot)}</div></div><div class="matrix-col beta"><div class="item-list">${renderItemList(dBeta.loot)}</div></div><div class="matrix-col alpha"><div class="item-list">${renderItemList(dAlpha.loot)}</div></div></div></div><div class="section-block"><div class="section-title"><i class="fa-solid fa-dna"></i> ${getTrans('unlocks')}</div><div class="matrix-row"><div class="matrix-col gamma"><div class="tek-unlocks">${renderUnlocks(dGamma.unlocks, false)}</div></div><div class="matrix-col beta"><div class="tek-unlocks">${renderUnlocks(dBeta.unlocks, true)}</div></div><div class="matrix-col alpha"><div class="tek-unlocks">${renderUnlocks(dAlpha.unlocks, true)}</div></div></div></div>`;
+            }
+            if (boss.arena) { html += `<div class="section-block" style="margin-top: 40px;"><div class="section-title"><i class="fa-solid fa-location-dot"></i> ${getTrans('arena')}</div><div class="strategy-box">${boss.arena[currentLang] || boss.arena.en}</div></div>`; }
+            if (boss.behavior) { html += `<div class="section-block"><div class="section-title"><i class="fa-solid fa-paw"></i> ${getTrans('attacks')}</div><div class="strategy-box">${boss.behavior[currentLang] || boss.behavior.en}</div></div>`; }
+            html += `<div class="section-block"><div class="section-title"><i class="fa-solid fa-chess-knight"></i> ${getTrans('strategy')}</div><div class="strategy-box">${boss.strategy[currentLang] || boss.strategy.en}</div></div>`;
+            content.innerHTML = html;
+        }
+    </script>
+</body>
+</html>
