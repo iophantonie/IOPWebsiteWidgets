@@ -55,6 +55,29 @@
             position: relative;
         }
 
+        /* Lang Switcher */
+        .lang-switch {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            display: flex;
+            gap: 10px;
+            z-index: 100;
+        }
+        .lang-btn {
+            background: rgba(0,0,0,0.5);
+            border: 1px solid #555;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1.5rem;
+            padding: 2px 5px;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+        .lang-btn:hover {
+            transform: scale(1.1);
+            border-color: var(--color-gold);
+        }
+
         /* Header */
         .header {
             background-color: rgba(0, 0, 0, 0.6);
@@ -76,6 +99,8 @@
             margin: 0;
             text-shadow: 0 0 10px rgba(229, 57, 53, 0.6);
             letter-spacing: 1px;
+            padding-right: 40px; /* Space for Lang Switch */
+            padding-left: 40px;
         }
 
         .subtitle {
@@ -473,9 +498,10 @@
         }
 
         @media (max-width: 600px) {
-            .title { font-size: 1.4rem; }
+            .title { font-size: 1.4rem; padding-right: 0; padding-left: 0; }
             .nav-tab { padding: 10px; font-size: 0.85rem; }
             .search-container { max-width: 90%; }
+            .lang-switch { position: relative; top: 0; right: 0; justify-content: center; margin-bottom: 10px; }
         }
     </style>
 </head>
@@ -483,22 +509,28 @@
 
     <div class="s-container">
         
+        <!-- LANGUAGE SWITCHER -->
+        <div class="lang-switch">
+            <button class="lang-btn" onclick="setLang('de')" title="Deutsch">🇩🇪</button>
+            <button class="lang-btn" onclick="setLang('en')" title="English">🇺🇸</button>
+        </div>
+
         <div class="header">
             <h1 class="title">S-Kreaturen & Fantastic Tames</h1>
-            <div class="subtitle">Fähigkeiten, Spawns & Infos</div>
+            <div class="subtitle" data-lang-de="Fähigkeiten, Spawns & Infos" data-lang-en="Abilities, Spawns & Info">Fähigkeiten, Spawns & Infos</div>
             
             <div class="search-container">
                 <i class="fa-solid fa-search search-icon"></i>
-                <input type="text" id="searchInput" class="search-input" placeholder="S-Kreatur suchen (z.B. Anky, Rex)...">
+                <input type="text" id="searchInput" class="search-input" data-lang-de="S-Kreatur suchen..." data-lang-en="Search S-Creature..." placeholder="S-Kreatur suchen...">
             </div>
         </div>
 
         <!-- Navigation -->
         <div class="nav-tabs">
-            <div class="nav-tab active" onclick="showSection('faq')"><i class="fa-solid fa-circle-info"></i> Übersicht & FAQ</div>
-            <div class="nav-tab" onclick="showSection('maps')"><i class="fa-solid fa-map"></i> Fundorte</div>
-            <div class="nav-tab" onclick="showSection('abilities')"><i class="fa-solid fa-bolt"></i> Fähigkeiten & Details</div>
-            <div class="nav-tab" onclick="showSection('taming')"><i class="fa-solid fa-drumstick-bite"></i> Zähm-Guides</div>
+            <div class="nav-tab active" onclick="showSection('faq')" data-lang-de='<i class="fa-solid fa-circle-info"></i> Übersicht & FAQ' data-lang-en='<i class="fa-solid fa-circle-info"></i> Overview & FAQ'><i class="fa-solid fa-circle-info"></i> Übersicht & FAQ</div>
+            <div class="nav-tab" onclick="showSection('maps')" data-lang-de='<i class="fa-solid fa-map"></i> Fundorte' data-lang-en='<i class="fa-solid fa-map"></i> Locations'><i class="fa-solid fa-map"></i> Fundorte</div>
+            <div class="nav-tab" onclick="showSection('abilities')" data-lang-de='<i class="fa-solid fa-bolt"></i> Fähigkeiten & Details' data-lang-en='<i class="fa-solid fa-bolt"></i> Abilities & Details'><i class="fa-solid fa-bolt"></i> Fähigkeiten & Details</div>
+            <div class="nav-tab" onclick="showSection('taming')" data-lang-de='<i class="fa-solid fa-drumstick-bite"></i> Zähm-Guides' data-lang-en='<i class="fa-solid fa-drumstick-bite"></i> Taming Guides'><i class="fa-solid fa-drumstick-bite"></i> Zähm-Guides</div>
         </div>
 
         <div class="content-area">
@@ -507,12 +539,22 @@
             <div id="faq" class="section active">
                 
                 <div class="info-box">
-                    <h3><i class="fa-solid fa-dna"></i> Was sind S-Kreaturen?</h3>
-                    <p style="color: #ddd;">
+                    <h3 data-lang-de='<i class="fa-solid fa-dna"></i> Was sind S-Kreaturen?' data-lang-en='<i class="fa-solid fa-dna"></i> What are S-Creatures?'><i class="fa-solid fa-dna"></i> Was sind S-Kreaturen?</h3>
+                    <p style="color: #ddd;" data-lang-de="S-Varianten (Shiny/S-Dino Variants) sind spezielle Versionen der bekannten Kreaturen. Sie haben oft verbesserte Werte, nützliche Fähigkeiten (wie Auto-Farm) oder besondere optische Effekte." data-lang-en="S-Variants (Shiny/S-Dino Variants) are special versions of known creatures. They often have improved stats, useful abilities (like auto-farm), or special visual effects.">
                         S-Varianten (Shiny/S-Dino Variants) sind spezielle Versionen der bekannten Kreaturen. 
                         Sie haben oft verbesserte Werte, nützliche Fähigkeiten (wie Auto-Farm) oder besondere optische Effekte.
                     </p>
-                    <ul style="margin-top: 10px;">
+                    <ul style="margin-top: 10px;" data-lang-de="
+                        <li><strong>Generelle S-Buffs:</strong> Gezähmte S-Dinos haben in der Regel <span style='color: var(--color-s-blue);'>+10% Schaden & Speed, -10% HP</span> und sind <span style='color: var(--color-success);'>immun gegen Strahlung</span>.</li>
+                        <li><strong>Crossbreeding:</strong> <span style='color: var(--color-red);'>Deaktiviert</span> (um Seltenheit zu wahren).</li>
+                        <li><strong>S-Rhynio:</strong> <span style='color: var(--color-s-blue);'>Breedbar</span>, aber extrem selten.</li>
+                        <li><strong>Shinehorn Helper:</strong> Deaktiviert.</li>" 
+                        data-lang-en="
+                        <li><strong>General S-Buffs:</strong> Tamed S-Dinos usually have <span style='color: var(--color-s-blue);'>+10% Dmg & Speed, -10% HP</span> and are <span style='color: var(--color-success);'>immune to radiation</span>.</li>
+                        <li><strong>Crossbreeding:</strong> <span style='color: var(--color-red);'>Disabled</span> (to maintain rarity).</li>
+                        <li><strong>S-Rhynio:</strong> <span style='color: var(--color-s-blue);'>Breedable</span>, but extremely rare.</li>
+                        <li><strong>Shinehorn Helper:</strong> Disabled.</li>">
+                        
                         <li><strong>Generelle S-Buffs:</strong> Gezähmte S-Dinos haben in der Regel <span style="color: var(--color-s-blue);">+10% Schaden & Speed, -10% HP</span> und sind <span style="color: var(--color-success);">immun gegen Strahlung</span>.</li>
                         <li><strong>Crossbreeding:</strong> <span style="color: var(--color-red);">Deaktiviert</span> (um Seltenheit zu wahren).</li>
                         <li><strong>S-Rhynio:</strong> <span style="color: var(--color-s-blue);">Breedbar</span>, aber extrem selten.</li>
@@ -521,17 +563,17 @@
                 </div>
 
                 <div class="info-box">
-                    <h3><i class="fa-solid fa-chart-line"></i> Spawns & Raten</h3>
+                    <h3 data-lang-de='<i class="fa-solid fa-chart-line"></i> Spawns & Raten' data-lang-en='<i class="fa-solid fa-chart-line"></i> Spawns & Rates'><i class="fa-solid fa-chart-line"></i> Spawns & Raten</h3>
                     <div class="faq-item">
-                        <span class="faq-question">Wo spawnen S-Varianten?</span>
-                        <div class="faq-answer">
+                        <span class="faq-question" data-lang-de="Wo spawnen S-Varianten?" data-lang-en="Where do S-Variants spawn?">Wo spawnen S-Varianten?</span>
+                        <div class="faq-answer" data-lang-de="Generell überall, wo die Vanilla-Variante spawnt. Wir haben sie auf das ganze Cluster verteilt (siehe Reiter 'Fundorte'). Fantastic Tames spawnen überall dort, wo es Fantastic Tames gibt." data-lang-en="Generally everywhere the vanilla variant spawns. We have distributed them across the entire cluster (see 'Locations' tab). Fantastic Tames spawn wherever Fantastic Tames spawn.">
                             Generell überall, wo die Vanilla-Variante spawnt. Wir haben sie auf das ganze Cluster verteilt (siehe Reiter "Fundorte").
                             Fantastic Tames spawnen überall dort, wo es Fantastic Tames gibt.
                         </div>
                     </div>
                     <div class="faq-item">
-                        <span class="faq-question">Wie hoch ist die Chance?</span>
-                        <div class="faq-answer">
+                        <span class="faq-question" data-lang-de="Wie hoch ist die Chance?" data-lang-en="What are the chances?">Wie hoch ist die Chance?</span>
+                        <div class="faq-answer" data-lang-de="<ul><li>Normal: <strong>10%</strong> Chance (statt Vanilla).</li><li>S-Unicorn & S-Carcha: <strong>50%</strong> Chance.</li><li>S-Rhynio: <strong>10%</strong> Chance.</li></ul>" data-lang-en="<ul><li>Normal: <strong>10%</strong> Chance (instead of Vanilla).</li><li>S-Unicorn & S-Carcha: <strong>50%</strong> Chance.</li><li>S-Rhynio: <strong>10%</strong> Chance.</li></ul>">
                             <ul>
                                 <li>Normal: <strong>10%</strong> Chance (statt Vanilla).</li>
                                 <li>S-Unicorn & S-Carcha: <strong>50%</strong> Chance.</li>
@@ -540,8 +582,8 @@
                         </div>
                     </div>
                     <div class="faq-item">
-                        <span class="faq-question">Partikel-Effekte?</span>
-                        <div class="faq-answer">
+                        <span class="faq-question" data-lang-de="Partikel-Effekte?" data-lang-en="Particle Effects?">Partikel-Effekte?</span>
+                        <div class="faq-answer" data-lang-de="Halte <strong style='color: var(--color-gold);'>E</strong> auf einem S-Dino gedrückt, um spezielle Partikeleffekte zu aktivieren oder deaktivieren." data-lang-en="Hold <strong style='color: var(--color-gold);'>E</strong> on an S-Dino to enable or disable special particle effects.">
                            Halte <strong style="color: var(--color-gold);">E</strong> auf einem S-Dino gedrückt, um spezielle Partikeleffekte zu aktivieren oder deaktivieren.
                         </div>
                     </div>
@@ -715,7 +757,7 @@
             <!-- 3. FÄHIGKEITEN & DETAILS -->
             <div id="abilities" class="section">
                 <div class="info-box" style="margin-bottom: 10px; border-left: 4px solid var(--color-s-blue);">
-                    <i class="fa-solid fa-bolt"></i> <strong>Spezial:</strong> Viele S-Kreaturen sind immun gegen radioaktiven Schaden!
+                    <i class="fa-solid fa-bolt"></i> <strong data-lang-de="Spezial:" data-lang-en="Special:">Spezial:</strong> <span data-lang-de="Viele S-Kreaturen sind immun gegen radioaktiven Schaden!" data-lang-en="Many S-Creatures are immune to radiation damage!">Viele S-Kreaturen sind immun gegen radioaktiven Schaden!</span>
                 </div>
                 
                 <div class="ability-grid" id="abilityGrid">
@@ -723,10 +765,9 @@
                     <!-- ANDREWSARCHUS -->
                     <div class="ability-card" data-name="S-Andrewsarchus" onclick="openModal(this)">
                         <div class="card-img-placeholder"><i class="fa-solid fa-paw"></i></div>
-                        <!-- FÜR ECHTES BILD: <img src="DEIN_LINK" class="card-img-top"> und div oben löschen -->
                         <div class="ability-card-content">
                             <h3>S-Andrewsarchus <span class="s-badge badge-combat"><i class="fa-solid fa-gun"></i> Combat</span></h3>
-                            <div class="ability-details">
+                            <div class="ability-details" data-lang-de="<ul><li>Sattel in Gelben/Roten Drops.</li><li>Spawnt im Grasland.</li><li>Zähmung: Knockout oder Passiv (wie ASE).</li></ul>" data-lang-en="<ul><li>Saddle in Yellow/Red Drops.</li><li>Spawns in Grassland.</li><li>Taming: Knockout or Passive (like ASE).</li></ul>">
                                 <ul>
                                     <li>Sattel in Gelben/Roten Drops.</li>
                                     <li>Spawnt im Grasland.</li>
@@ -741,7 +782,7 @@
                         <div class="card-img-placeholder"><i class="fa-solid fa-hammer"></i></div>
                         <div class="ability-card-content">
                             <h3>S-Ankylosaurus <span class="s-badge badge-farm"><i class="fa-solid fa-hammer"></i> Farm</span></h3>
-                            <div class="ability-details">
+                            <div class="ability-details" data-lang-de="Hört nicht auf zu farmen, wenn er 50% seines Gewichts erreicht hat (wie ein Solo-Farm-Mod)." data-lang-en="Does not stop farming when reaching 50% weight (like a Solo-Farm-Mod).">
                                 Hört nicht auf zu farmen, wenn er 50% seines Gewichts erreicht hat (wie ein Solo-Farm-Mod).
                             </div>
                         </div>
@@ -752,7 +793,7 @@
                         <div class="card-img-placeholder"><i class="fa-solid fa-gem"></i></div>
                         <div class="ability-card-content">
                             <h3>S-Doedicurus <span class="s-badge badge-farm"><i class="fa-solid fa-gem"></i> Farm</span></h3>
-                            <div class="ability-details">
+                            <div class="ability-details" data-lang-de="<ul><li>Hört nicht auf zu farmen bei 50% Gewicht.</li><li>Reduziert Sand-Gewicht um 75%.</li></ul>" data-lang-en="<ul><li>Does not stop farming at 50% weight.</li><li>Reduces sand weight by 75%.</li></ul>">
                                 <ul>
                                     <li>Hört nicht auf zu farmen bei 50% Gewicht.</li>
                                     <li>Reduziert Sand-Gewicht um 75%.</li>
@@ -766,7 +807,7 @@
                         <div class="card-img-placeholder"><i class="fa-solid fa-paw"></i></div>
                         <div class="ability-card-content">
                             <h3>S-Direbear <span class="s-badge badge-hybrid"><i class="fa-solid fa-paw"></i> Hybrid</span></h3>
-                            <div class="ability-details">
+                            <div class="ability-details" data-lang-de="<ul><li>50% Gewichtsreduktion: Metall, Barren, Obsidian, Kristall, Stein, Polymer, Sand, Schwefel, Schwarze Perlen.</li><li>20% größer als normal.</li></ul>" data-lang-en="<ul><li>50% weight reduction: Metal, Ingots, Obsidian, Crystal, Stone, Polymer, Sand, Sulfur, Black Pearls.</li><li>20% larger than normal.</li></ul>">
                                 <ul>
                                     <li>50% Gewichtsreduktion: Metall, Barren, Obsidian, Kristall, Stein, Polymer, Sand, Schwefel, Schwarze Perlen.</li>
                                     <li>20% größer als normal.</li>
@@ -780,7 +821,7 @@
                         <div class="card-img-placeholder"><i class="fa-solid fa-sickle"></i></div>
                         <div class="ability-card-content">
                             <h3>S-Mantis <span class="s-badge badge-farm"><i class="fa-solid fa-sickle"></i> Farm</span></h3>
-                            <div class="ability-details">
+                            <div class="ability-details" data-lang-de="50% Gewichtsreduktion für Metall, Barren, Obsidian, Kristall, Stein, Polymer und Schwarze Perlen." data-lang-en="50% weight reduction for Metal, Ingots, Obsidian, Crystal, Stone, Polymer and Black Pearls.">
                                 50% Gewichtsreduktion für Metall, Barren, Obsidian, Kristall, Stein, Polymer und Schwarze Perlen.
                             </div>
                         </div>
@@ -791,7 +832,7 @@
                         <div class="card-img-placeholder"><i class="fa-solid fa-mountain"></i></div>
                         <div class="ability-card-content">
                             <h3>S-Fasolasuchus <span class="s-badge badge-farm"><i class="fa-solid fa-mountain"></i> Farm</span></h3>
-                            <div class="ability-details">
+                            <div class="ability-details" data-lang-de="Farmt Metall statt Feuerstein." data-lang-en="Farms Metal instead of Flint.">
                                 Farmt Metall statt Feuerstein.
                             </div>
                         </div>
@@ -802,7 +843,7 @@
                         <div class="card-img-placeholder"><i class="fa-solid fa-skull"></i></div>
                         <div class="ability-card-content">
                             <h3>S-Ceratosaurus <span class="s-badge badge-combat"><i class="fa-solid fa-skull"></i> Combat</span></h3>
-                            <div class="ability-details">
+                            <div class="ability-details" data-lang-de="<ul><li>Erlaubt Waffenbenutzung beim Reiten.</li><li>Zähmung: Knockout.</li></ul>" data-lang-en="<ul><li>Allows weapon use while riding.</li><li>Taming: Knockout.</li></ul>">
                                 <ul>
                                     <li>Erlaubt Waffenbenutzung beim Reiten.</li>
                                     <li>Zähmung: Knockout.</li>
@@ -816,7 +857,7 @@
                         <div class="card-img-placeholder"><i class="fa-solid fa-dragon"></i></div>
                         <div class="ability-card-content">
                             <h3>S-Deinonychus <span class="s-badge badge-combat"><i class="fa-solid fa-dragon"></i> Combat</span></h3>
-                            <div class="ability-details">
+                            <div class="ability-details" data-lang-de="<ul><li>Zähmung: Knockout (Außergewöhnliches Kibble).</li><li>Züchtbar.</li><li>Erhält keine Bonuslevel bei Zähmung (Balance).</li></ul>" data-lang-en="<ul><li>Taming: Knockout (Extraordinary Kibble).</li><li>Breedable.</li><li>Gains no bonus levels on tame (Balance).</li></ul>">
                                 <ul>
                                     <li>Zähmung: Knockout (Außergewöhnliches Kibble).</li>
                                     <li>Züchtbar.</li>
@@ -831,7 +872,7 @@
                         <div class="card-img-placeholder"><i class="fa-solid fa-fire"></i></div>
                         <div class="ability-card-content">
                             <h3>S-Daeodon <span class="s-badge badge-combat"><i class="fa-solid fa-fire"></i> Combat</span></h3>
-                            <div class="ability-details">
+                            <div class="ability-details" data-lang-de="<ul><li>Hat Rex-Basiswerte!</li><li>Verfügt über einen Flächenangriff.</li><li><strong>Achtung:</strong> Heilt nicht!</li></ul>" data-lang-en="<ul><li>Has Rex base stats!</li><li>Has an AoE attack.</li><li><strong>Warning:</strong> Does not heal!</li></ul>">
                                 <ul>
                                     <li>Hat Rex-Basiswerte!</li>
                                     <li>Verfügt über einen Flächenangriff.</li>
@@ -846,7 +887,7 @@
                         <div class="card-img-placeholder"><i class="fa-solid fa-moon"></i></div>
                         <div class="ability-card-content">
                             <h3>S-Fenrir <span class="s-badge badge-mythic"><i class="fa-solid fa-moon"></i> Mythic</span></h3>
-                            <div class="ability-details">
+                            <div class="ability-details" data-lang-de="<ul><li>Zähmung: Knockout.</li><li>Züchtbar.</li><li>Stacheln immer sichtbar & Schnee-Effekte.</li></ul>" data-lang-en="<ul><li>Taming: Knockout.</li><li>Breedable.</li><li>Spikes always visible & snow effects.</li></ul>">
                                 <ul>
                                     <li>Zähmung: Knockout.</li>
                                     <li>Züchtbar.</li>
@@ -861,7 +902,7 @@
                         <div class="card-img-placeholder"><i class="fa-solid fa-feather"></i></div>
                         <div class="ability-card-content">
                             <h3>S-Griffin <span class="s-badge badge-flyer"><i class="fa-solid fa-feather"></i> Flyer</span></h3>
-                            <div class="ability-details">
+                            <div class="ability-details" data-lang-de="<ul><li>Schnelleres Rückwärtsfliegen.</li><li>Eigener Sattel.</li><li>Zähmung: Knockout (10% Spawnchance).</li></ul>" data-lang-en="<ul><li>Faster backward flying.</li><li>Own Saddle.</li><li>Taming: Knockout (10% spawn chance).</li></ul>">
                                 <ul>
                                     <li>Schnelleres Rückwärtsfliegen.</li>
                                     <li>Eigener Sattel.</li>
@@ -876,7 +917,7 @@
                         <div class="card-img-placeholder"><i class="fa-solid fa-toolbox"></i></div>
                         <div class="ability-card-content">
                             <h3>S-Maewing / Maeguana <span class="s-badge badge-utility"><i class="fa-solid fa-toolbox"></i> Utility</span></h3>
-                            <div class="ability-details">
+                            <div class="ability-details" data-lang-de="Ermöglicht das Benutzen von Waffen beim Reiten." data-lang-en="Allows weapon usage while riding.">
                                 Ermöglicht das Benutzen von Waffen beim Reiten.
                             </div>
                         </div>
@@ -887,7 +928,7 @@
                         <div class="card-img-placeholder"><i class="fa-solid fa-eye"></i></div>
                         <div class="ability-card-content">
                             <h3>S-Megalosaurus <span class="s-badge badge-combat"><i class="fa-solid fa-eye"></i> Combat</span></h3>
-                            <div class="ability-details">
+                            <div class="ability-details" data-lang-de="Schläft tagsüber nicht (kein Sleep-Mode), ist aber nachts stärker." data-lang-en="Does not sleep during day (no sleep mode), but stronger at night.">
                                 Schläft tagsüber nicht (kein Sleep-Mode), ist aber nachts stärker.
                             </div>
                         </div>
@@ -898,7 +939,7 @@
                         <div class="card-img-placeholder"><i class="fa-solid fa-horse"></i></div>
                         <div class="ability-card-content">
                             <h3>S-Pegasus <span class="s-badge badge-mythic"><i class="fa-solid fa-horse"></i> Mythic</span></h3>
-                            <div class="ability-details">
+                            <div class="ability-details" data-lang-de="<ul><li>Fantastic Tame.</li><li>Zähmung: Knockout mit speziellem Kibble (Lvl 30).</li></ul>" data-lang-en="<ul><li>Fantastic Tame.</li><li>Taming: Knockout with special Kibble (Lvl 30).</li></ul>">
                                 <ul>
                                     <li>Fantastic Tame.</li>
                                     <li>Zähmung: Knockout mit speziellem Kibble (Lvl 30).</li>
@@ -912,7 +953,7 @@
                         <div class="card-img-placeholder"><i class="fa-solid fa-jar"></i></div>
                         <div class="ability-card-content">
                             <h3>S-Queen Bee <span class="s-badge badge-resource"><i class="fa-solid fa-jar"></i> Resource</span></h3>
-                            <div class="ability-details">
+                            <div class="ability-details" data-lang-de="<ul><li>Hat keinen Bienenstock.</li><li>Produziert Honig beim Wandern.</li><li>Frisst nur Seltene Blumen.</li><li>Spawnt wie normale Bienen.</li></ul>" data-lang-en="<ul><li>No Beehive.</li><li>Produces Honey on Wander.</li><li>Eats only Rare Flowers.</li><li>Spawns like normal Bees.</li></ul>">
                                 <ul>
                                     <li>Hat keinen Bienenstock.</li>
                                     <li>Produziert Honig beim Wandern.</li>
@@ -928,7 +969,7 @@
                         <div class="card-img-placeholder"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
                         <div class="ability-card-content">
                             <h3>S-Shinehorn <span class="s-badge badge-utility"><i class="fa-solid fa-wand-magic-sparkles"></i> Tame-Help</span></h3>
-                            <div class="ability-details">
+                            <div class="ability-details" data-lang-de="<ul><li>Passives Zähmen.</li><li>+10% Dmg/Speed, -10% HP.</li><li><strong>Fähigkeit 'Zähmhilfe':</strong> Erhöht Hunger wilder KO-Kreaturen (beschleunigt Zähmen).</li></ul>" data-lang-en="<ul><li>Passive Tame.</li><li>+10% Dmg/Speed, -10% HP.</li><li><strong>Ability 'Taming Helper':</strong> Increases hunger of wild KO creatures (speeds up taming).</li></ul>">
                                 <ul>
                                     <li>Passives Zähmen.</li>
                                     <li>+10% Dmg/Speed, -10% HP.</li>
@@ -943,7 +984,7 @@
                         <div class="card-img-placeholder"><i class="fa-solid fa-heart-pulse"></i></div>
                         <div class="ability-card-content">
                             <h3>S-Snow Owl <span class="s-badge badge-healer"><i class="fa-solid fa-heart-pulse"></i> Healer</span></h3>
-                            <div class="ability-details">
+                            <div class="ability-details" data-lang-de="<ul><li>Heilt doppelt so schnell wie normal.</li><li>Kann rückwärts fliegen & Waffenbenutzung erlaubt.</li><li>Benötigt 30% mehr Food/Zeit zum Zähmen.</li></ul>" data-lang-en="<ul><li>Heals twice as fast.</li><li>Can fly backwards & allows weapons.</li><li>Requires 30% more food/time to tame.</li></ul>">
                                 <ul>
                                     <li>Heilt doppelt so schnell wie normal.</li>
                                     <li>Kann rückwärts fliegen & Waffenbenutzung erlaubt.</li>
@@ -958,7 +999,7 @@
                         <div class="card-img-placeholder"><i class="fa-solid fa-crosshairs"></i></div>
                         <div class="ability-card-content">
                             <h3>S-Velonasaur <span class="s-badge badge-combat"><i class="fa-solid fa-crosshairs"></i> Turret</span></h3>
-                            <div class="ability-details">
+                            <div class="ability-details" data-lang-de="Ermöglicht das Tragen von Waffen beim Reiten." data-lang-en="Allows carrying weapons while riding.">
                                 Ermöglicht das Tragen von Waffen beim Reiten.
                             </div>
                         </div>
@@ -969,7 +1010,7 @@
                         <div class="card-img-placeholder"><i class="fa-solid fa-helicopter"></i></div>
                         <div class="ability-card-content">
                             <h3>S-Rhyniognatha <span class="s-badge badge-utility"><i class="fa-solid fa-helicopter"></i> Utility</span></h3>
-                            <div class="ability-details">
+                            <div class="ability-details" data-lang-de="<ul><li>+10% Dmg/Speed, -10% HP.</li><li>Kein Speed-Nerf beim Tragen von Dinos.</li><li><strong>Züchtbar!</strong></li><li>Zähmung wie normal (10% Spawnchance).</li></ul>" data-lang-en="<ul><li>+10% Dmg/Speed, -10% HP.</li><li>No speed nerf when carrying dinos.</li><li><strong>Breedable!</strong></li><li>Taming like normal (10% spawn chance).</li></ul>">
                                 <ul>
                                     <li>+10% Dmg/Speed, -10% HP.</li>
                                     <li>Kein Speed-Nerf beim Tragen von Dinos.</li>
@@ -985,7 +1026,7 @@
                         <div class="card-img-placeholder"><i class="fa-solid fa-dog"></i></div>
                         <div class="ability-card-content">
                             <h3>S-Direwolf <span class="s-badge badge-combat"><i class="fa-solid fa-dog"></i> Combat</span></h3>
-                            <div class="ability-details">
+                            <div class="ability-details" data-lang-de="<ul><li>+10% Dmg/Speed, -10% HP.</li><li>Ca. 30% größer.</li><li>Hat einen eigenen Sattel (in Drops findbar).</li></ul>" data-lang-en="<ul><li>+10% Dmg/Speed, -10% HP.</li><li>Approx. 30% larger.</li><li>Has its own saddle (found in drops).</li></ul>">
                                 <ul>
                                     <li>+10% Dmg/Speed, -10% HP.</li>
                                     <li>Ca. 30% größer.</li>
@@ -995,15 +1036,17 @@
                         </div>
                     </div>
 
-                    <!-- DESMODUS -->
+                    <!-- DESMODUS (UPDATED) -->
                     <div class="ability-card" data-name="S-Desmodus" onclick="openModal(this)">
                         <div class="card-img-placeholder"><i class="fa-solid fa-bat"></i></div>
                         <div class="ability-card-content">
                             <h3>S-Desmodus <span class="s-badge badge-flyer"><i class="fa-solid fa-bat"></i> Flyer</span></h3>
-                            <div class="ability-details">
+                            <div class="ability-details" data-lang-de="<ul><li>Spawnt statt Onyx (10%).</li><li>Sattel in Gelben/Roten Drops.</li><li>Inklusive Sanguine Elixir.</li><li>Nimmt keine Bloodpacks -> HP saugen lassen zum Zähmen.</li></ul>" data-lang-en="<ul><li>Spawns instead of Onyx (10%).</li><li>Saddle in Yellow/Red Drops.</li><li>Includes Sanguine Elixir.</li><li>Does not take Bloodpacks -> Let it suck HP to tame.</li></ul>">
                                 <ul>
-                                    <li>Kann in Höhlen fliegen (Cave Flyer).</li>
-                                    <li>+10% Dmg/Speed, -10% HP.</li>
+                                    <li>Spawnt statt Onyx (10%).</li>
+                                    <li>Sattel in Gelben/Roten Drops.</li>
+                                    <li>Inklusive Sanguine Elixir.</li>
+                                    <li>Nimmt keine Bloodpacks -> HP saugen lassen zum Zähmen.</li>
                                 </ul>
                             </div>
                         </div>
@@ -1014,7 +1057,7 @@
                         <div class="card-img-placeholder"><i class="fa-solid fa-feather-pointed"></i></div>
                         <div class="ability-card-content">
                             <h3>S-Megaraptor <span class="s-badge badge-combat"><i class="fa-solid fa-feather-pointed"></i> Combat</span></h3>
-                            <div class="ability-details">
+                            <div class="ability-details" data-lang-de="<ul><li>Erlaubt Waffenbenutzung.</li><li>Argentavis-Regenerations-Buff beim Fressen von Leichen.</li><li>Isolationsschaden x3 (statt x2).</li></ul>" data-lang-en="<ul><li>Allows weapon usage.</li><li>Argentavis regen buff when eating corpses.</li><li>Insulation damage x3 (instead of x2).</li></ul>">
                                 <ul>
                                     <li>Erlaubt Waffenbenutzung.</li>
                                     <li>Argentavis-Regenerations-Buff beim Fressen von Leichen.</li>
@@ -1029,7 +1072,7 @@
                         <div class="card-img-placeholder"><i class="fa-solid fa-fish"></i></div>
                         <div class="ability-card-content">
                             <h3>S-Dunkleosteus <span class="s-badge badge-utility"><i class="fa-solid fa-fish"></i> Water Farm</span></h3>
-                            <div class="ability-details">
+                            <div class="ability-details" data-lang-de="<ul><li>Kann rückwärts schwimmen.</li><li>Immun gegen Quallen/Dismount.</li><li>75% Gewichtsreduktion: Metall, Kristall, Obsidian, Stein, Öl.</li><li>Spawnt bei Anglerfischen (Tiefsee).</li></ul>" data-lang-en="<ul><li>Can swim backwards.</li><li>Immune to Jellyfish/Dismount.</li><li>75% weight reduction: Metal, Crystal, Obsidian, Stone, Oil.</li><li>Spawns near Anglerfish (Deep Sea).</li></ul>">
                                 <ul>
                                     <li>Kann rückwärts schwimmen.</li>
                                     <li>Immun gegen Quallen/Dismount.</li>
@@ -1045,11 +1088,28 @@
                         <div class="card-img-placeholder"><i class="fa-solid fa-shark"></i></div>
                         <div class="ability-card-content">
                             <h3>S-Megalodon <span class="s-badge badge-combat"><i class="fa-solid fa-shark"></i> Water Combat</span></h3>
-                            <div class="ability-details">
+                            <div class="ability-details" data-lang-de="<ul><li>+50% Schaden!</li><li>Immun gegen Quallen/Blitz/Dismount.</li><li>Blutungs-Effekt (wie Carcha).</li></ul>" data-lang-en="<ul><li>+50% Damage!</li><li>Immune to Jellyfish/Lightning/Dismount.</li><li>Bleed effect (like Carcha).</li></ul>">
                                 <ul>
                                     <li>+50% Schaden!</li>
                                     <li>Immun gegen Quallen/Blitz/Dismount.</li>
                                     <li>Blutungs-Effekt (wie Carcha).</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- S-OSSIDON (NEU) -->
+                    <div class="ability-card" data-name="S-Ossidon" onclick="openModal(this)">
+                        <div class="card-img-placeholder"><i class="fa-solid fa-hippo"></i></div>
+                        <div class="ability-card-content">
+                            <h3>S-Ossidon <span class="s-badge badge-combat"><i class="fa-solid fa-dragon"></i> Combat</span></h3>
+                            <div class="ability-details" data-lang-de="<ul><li>10% Spawnchance (statt normal).</li><li>Basis Melee: 135 (statt 95).</li><li>Klauen-Hit: 3x Schaden (statt 2x).</li><li>Riderbonus Stack: 50 (statt 20).</li><li>Lauterer Brüller & Größer (2,5x Skalierung).</li></ul>" data-lang-en="<ul><li>10% Spawn Chance (replaces normal).</li><li>Base Melee: 135 (was 95).</li><li>Claw Hit: 3x Dmg (was 2x).</li><li>Rider Bonus Stack: 50 (was 20).</li><li>Louder Roar & Bigger (2.5x Scaling).</li></ul>">
+                                <ul>
+                                    <li>10% Spawnchance (statt normal).</li>
+                                    <li>Basis Melee: 135 (statt 95).</li>
+                                    <li>Klauen-Hit: 3x Schaden (statt 2x).</li>
+                                    <li>Riderbonus Stack: 50 (statt 20).</li>
+                                    <li>Lauterer Brüller & Größer (2,5x Skalierung).</li>
                                 </ul>
                             </div>
                         </div>
@@ -1062,8 +1122,8 @@
             <div id="taming" class="section">
                 
                 <div class="info-box">
-                    <h3><i class="fa-solid fa-drumstick-bite"></i> Allgemeine Zähm-Regel</h3>
-                    <p style="color: #ddd;">
+                    <h3 data-lang-de='<i class="fa-solid fa-drumstick-bite"></i> Allgemeine Zähm-Regel' data-lang-en='<i class="fa-solid fa-drumstick-bite"></i> General Taming Rule'><i class="fa-solid fa-drumstick-bite"></i> Allgemeine Zähm-Regel</h3>
+                    <p style="color: #ddd;" data-lang-de="Die meisten S-Varianten werden <strong>genauso gezähmt wie ihre Vanilla-Gegenstücke</strong> (oft Standard Knockout oder Passiv). Hier sind die Ausnahmen und Besonderheiten aufgelistet:" data-lang-en="Most S-Variants are <strong>tamed exactly like their vanilla counterparts</strong> (often standard Knockout or Passive). Exceptions and details are listed here:">
                         Die meisten S-Varianten werden <strong>genauso gezähmt wie ihre Vanilla-Gegenstücke</strong> (oft Standard Knockout oder Passiv). 
                         Hier sind die Ausnahmen und Besonderheiten aufgelistet:
                     </p>
@@ -1074,10 +1134,10 @@
                     <!-- S-Andrewsarchus -->
                     <div class="tame-card">
                         <h3><i class="fa-solid fa-paw"></i> S-Andrewsarchus</h3>
-                        <div class="tame-details">
+                        <div class="tame-details" data-lang-de="Flexibler als das Original." data-lang-en="More flexible than original.">
                             Flexibler als das Original.
                         </div>
-                        <div class="tame-req-list">
+                        <div class="tame-req-list" data-lang-de='<div><i class="fa-solid fa-skull"></i> Methode: Knockout oder Passiv (Honig werfen)</div>' data-lang-en='<div><i class="fa-solid fa-skull"></i> Method: Knockout or Passive (throw Honey)</div>'>
                             <div><i class="fa-solid fa-skull"></i> Methode: Knockout oder Passiv (Honig werfen)</div>
                         </div>
                     </div>
@@ -1085,10 +1145,10 @@
                     <!-- S-Desmodus -->
                     <div class="tame-card">
                         <h3><i class="fa-solid fa-bat"></i> S-Desmodus</h3>
-                        <div class="tame-details">
+                        <div class="tame-details" data-lang-de="Greift keine Bloodpacks! Lass ihn dein Blut (HP) saugen." data-lang-en="Does not grab Bloodpacks! Let it suck your blood (HP).">
                             Greift keine Bloodpacks! Lass ihn dein Blut (HP) saugen.
                         </div>
-                        <div class="tame-req-list">
+                        <div class="tame-req-list" data-lang-de='<div><i class="fa-solid fa-heart-pulse"></i> Methode: HP-Saugen (Keine Bloodpacks)</div>' data-lang-en='<div><i class="fa-solid fa-heart-pulse"></i> Method: HP-Sucking (No Bloodpacks)</div>'>
                             <div><i class="fa-solid fa-heart-pulse"></i> Methode: HP-Saugen (Keine Bloodpacks)</div>
                         </div>
                     </div>
@@ -1096,10 +1156,10 @@
                     <!-- S-Deinonychus -->
                     <div class="tame-card">
                         <h3><i class="fa-solid fa-dragon"></i> S-Deinonychus</h3>
-                        <div class="tame-details">
+                        <div class="tame-details" data-lang-de="Anders als der normale Deinonychus (Eier klauen), wird die S-Variante klassisch betäubt." data-lang-en="Unlike normal Deinonychus (steal eggs), the S-Variant is knocked out.">
                             Anders als der normale Deinonychus (Eier klauen), wird die S-Variante klassisch betäubt.
                         </div>
-                        <div class="tame-req-list">
+                        <div class="tame-req-list" data-lang-de='<div><i class="fa-solid fa-skull"></i> Methode: Knockout</div><div><i class="fa-solid fa-egg"></i> Futter: Außergewöhnliches Kibble (Extraordinary)</div>' data-lang-en='<div><i class="fa-solid fa-skull"></i> Method: Knockout</div><div><i class="fa-solid fa-egg"></i> Food: Extraordinary Kibble</div>'>
                             <div><i class="fa-solid fa-skull"></i> Methode: Knockout</div>
                             <div><i class="fa-solid fa-egg"></i> Futter: Außergewöhnliches Kibble (Extraordinary)</div>
                         </div>
@@ -1108,10 +1168,10 @@
                     <!-- S-Fenrir -->
                     <div class="tame-card">
                         <h3><i class="fa-solid fa-moon"></i> S-Fenrir</h3>
-                        <div class="tame-details">
+                        <div class="tame-details" data-lang-de="Kann in der Wildnis gefunden und direkt gezähmt werden (nicht nur Boss-Belohnung)." data-lang-en="Can be found in the wild and tamed directly (not just boss reward).">
                             Kann in der Wildnis gefunden und direkt gezähmt werden (nicht nur Boss-Belohnung).
                         </div>
-                        <div class="tame-req-list">
+                        <div class="tame-req-list" data-lang-de='<div><i class="fa-solid fa-skull"></i> Methode: Knockout</div><div><i class="fa-solid fa-dna"></i> Züchtbar: Ja</div>' data-lang-en='<div><i class="fa-solid fa-skull"></i> Method: Knockout</div><div><i class="fa-solid fa-dna"></i> Breedable: Yes</div>'>
                             <div><i class="fa-solid fa-skull"></i> Methode: Knockout</div>
                             <div><i class="fa-solid fa-dna"></i> Züchtbar: Ja</div>
                         </div>
@@ -1120,10 +1180,10 @@
                     <!-- S-Griffin -->
                     <div class="tame-card">
                         <h3><i class="fa-solid fa-feather"></i> S-Griffin</h3>
-                        <div class="tame-details">
+                        <div class="tame-details" data-lang-de="Standard Betäubung." data-lang-en="Standard Knockout.">
                             Standard Betäubung.
                         </div>
-                        <div class="tame-req-list">
+                        <div class="tame-req-list" data-lang-de='<div><i class="fa-solid fa-skull"></i> Methode: Knockout</div>' data-lang-en='<div><i class="fa-solid fa-skull"></i> Method: Knockout</div>'>
                             <div><i class="fa-solid fa-skull"></i> Methode: Knockout</div>
                         </div>
                     </div>
@@ -1131,10 +1191,10 @@
                     <!-- S-Pegasus -->
                     <div class="tame-card">
                         <h3><i class="fa-solid fa-horse"></i> S-Pegasus</h3>
-                        <div class="tame-details">
+                        <div class="tame-details" data-lang-de="Benötigt spezielles Futter." data-lang-en="Requires special food.">
                             Benötigt spezielles Futter.
                         </div>
-                        <div class="tame-req-list">
+                        <div class="tame-req-list" data-lang-de='<div><i class="fa-solid fa-skull"></i> Methode: Knockout</div><div><i class="fa-solid fa-utensils"></i> Futter: Custom Kibble (Lvl 30)</div>' data-lang-en='<div><i class="fa-solid fa-skull"></i> Method: Knockout</div><div><i class="fa-solid fa-utensils"></i> Food: Custom Kibble (Lvl 30)</div>'>
                             <div><i class="fa-solid fa-skull"></i> Methode: Knockout</div>
                             <div><i class="fa-solid fa-utensils"></i> Futter: Custom Kibble (Lvl 30)</div>
                         </div>
@@ -1143,10 +1203,10 @@
                     <!-- S-Ceratosaurus -->
                     <div class="tame-card">
                         <h3><i class="fa-solid fa-skull"></i> S-Ceratosaurus</h3>
-                        <div class="tame-details">
+                        <div class="tame-details" data-lang-de="Standard Betäubungs-Methode." data-lang-en="Standard Knockout method.">
                             Standard Betäubungs-Methode.
                         </div>
-                        <div class="tame-req-list">
+                        <div class="tame-req-list" data-lang-de='<div><i class="fa-solid fa-crosshairs"></i> Methode: Knockout</div>' data-lang-en='<div><i class="fa-solid fa-crosshairs"></i> Method: Knockout</div>'>
                             <div><i class="fa-solid fa-crosshairs"></i> Methode: Knockout</div>
                         </div>
                     </div>
@@ -1154,10 +1214,10 @@
                     <!-- S-Shinehorn -->
                     <div class="tame-card">
                         <h3><i class="fa-solid fa-wand-magic-sparkles"></i> S-Shinehorn</h3>
-                        <div class="tame-details">
+                        <div class="tame-details" data-lang-de="Wird passiv gezähmt (Futter auf Taste 0 legen und füttern)." data-lang-en="Passive taming (put food in slot 0 and feed).">
                             Wird passiv gezähmt (Futter auf Taste 0 legen und füttern).
                         </div>
-                        <div class="tame-req-list">
+                        <div class="tame-req-list" data-lang-de='<div><i class="fa-solid fa-hand-holding-heart"></i> Methode: Passiv</div><div><i class="fa-solid fa-seedling"></i> Futter: Pflanzen-Spezies Z Samen / Pilze</div>' data-lang-en='<div><i class="fa-solid fa-hand-holding-heart"></i> Method: Passive</div><div><i class="fa-solid fa-seedling"></i> Food: Plant Species Z Seed / Mushrooms</div>'>
                             <div><i class="fa-solid fa-hand-holding-heart"></i> Methode: Passiv</div>
                             <div><i class="fa-solid fa-seedling"></i> Futter: Pflanzen-Spezies Z Samen / Pilze</div>
                         </div>
@@ -1166,10 +1226,10 @@
                     <!-- S-Snow Owl -->
                     <div class="tame-card">
                         <h3><i class="fa-solid fa-snowflake"></i> S-Schnee Eule</h3>
-                        <div class="tame-details">
+                        <div class="tame-details" data-lang-de="Benötigt deutlich mehr Nahrung und Zeit als die normale Eule." data-lang-en="Requires significantly more food and time than normal Owl.">
                             Benötigt deutlich mehr Nahrung und Zeit als die normale Eule.
                         </div>
-                        <div class="tame-req-list">
+                        <div class="tame-req-list" data-lang-de='<div><i class="fa-solid fa-clock"></i> Dauer: Länger als Vanilla</div><div><i class="fa-solid fa-drumstick-bite"></i> Menge: +30% Nahrung</div>' data-lang-en='<div><i class="fa-solid fa-clock"></i> Duration: Longer than Vanilla</div><div><i class="fa-solid fa-drumstick-bite"></i> Amount: +30% Food</div>'>
                             <div><i class="fa-solid fa-clock"></i> Dauer: Länger als Vanilla</div>
                             <div><i class="fa-solid fa-drumstick-bite"></i> Menge: +30% Nahrung</div>
                         </div>
@@ -1178,12 +1238,24 @@
                     <!-- S-Rhyniognatha -->
                     <div class="tame-card">
                         <h3><i class="fa-solid fa-helicopter"></i> S-Rhyniognatha</h3>
-                        <div class="tame-details">
+                        <div class="tame-details" data-lang-de="Gleiche Methode wie Vanilla (Pheromon + Opfer-Dino schwängern lassen)." data-lang-en="Same method as Vanilla (Pheromone + Impregnate sacrifice dino).">
                             Gleiche Methode wie Vanilla (Pheromon + Opfer-Dino schwängern lassen).
                         </div>
-                        <div class="tame-req-list">
+                        <div class="tame-req-list" data-lang-de='<div><i class="fa-solid fa-circle-xmark"></i> Methode: Opferung (Vanilla)</div><div><i class="fa-solid fa-baby"></i> Besonderheit: Züchtbar!</div>' data-lang-en='<div><i class="fa-solid fa-circle-xmark"></i> Method: Sacrifice (Vanilla)</div><div><i class="fa-solid fa-baby"></i> Special: Breedable!</div>'>
                             <div><i class="fa-solid fa-circle-xmark"></i> Methode: Opferung (Vanilla)</div>
                             <div><i class="fa-solid fa-baby"></i> Besonderheit: Züchtbar!</div>
+                        </div>
+                    </div>
+
+                    <!-- S-OSSIDON (NEU) -->
+                    <div class="tame-card">
+                        <h3><i class="fa-solid fa-hippo"></i> S-Ossidon</h3>
+                        <div class="tame-details" data-lang-de="Wird klassisch betäubt, benötigt aber spezielles Futter." data-lang-en="Standard knockout, but requires special food.">
+                            Wird klassisch betäubt, benötigt aber spezielles Futter.
+                        </div>
+                        <div class="tame-req-list" data-lang-de='<div><i class="fa-solid fa-skull"></i> Methode: Knockout</div><div><i class="fa-solid fa-flask"></i> Futter: S-Ossidon Potions</div>' data-lang-en='<div><i class="fa-solid fa-skull"></i> Method: Knockout</div><div><i class="fa-solid fa-flask"></i> Food: S-Ossidon Potions</div>'>
+                            <div><i class="fa-solid fa-skull"></i> Methode: Knockout</div>
+                            <div><i class="fa-solid fa-flask"></i> Futter: S-Ossidon Potions</div>
                         </div>
                     </div>
 
@@ -1214,6 +1286,23 @@
     </div>
 
     <script>
+        // === LANGUAGE LOGIC ===
+        let currentLang = 'de';
+
+        function setLang(lang) {
+            currentLang = lang;
+            const elements = document.querySelectorAll('[data-lang-' + lang + ']');
+
+            elements.forEach(el => {
+                const text = el.getAttribute('data-lang-' + lang);
+                if (el.tagName === 'INPUT') {
+                    el.placeholder = text;
+                } else {
+                    el.innerHTML = text;
+                }
+            });
+        }
+
         // TAB LOGIC
         function showSection(sectionId) {
             document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
@@ -1298,7 +1387,15 @@
         function openModal(cardElement) {
             const title = cardElement.querySelector('h3').childNodes[0].textContent.trim();
             const badge = cardElement.querySelector('.s-badge').outerHTML;
-            const content = cardElement.querySelector('.ability-details').innerHTML;
+            // Get content based on current language
+            let content = "";
+            const detailsDiv = cardElement.querySelector('.ability-details');
+            
+            if (currentLang === 'en' && detailsDiv.hasAttribute('data-lang-en')) {
+                content = detailsDiv.getAttribute('data-lang-en');
+            } else {
+                content = detailsDiv.innerHTML;
+            }
             
             // Check for real image first
             const realImg = cardElement.querySelector('img.card-img-top');
