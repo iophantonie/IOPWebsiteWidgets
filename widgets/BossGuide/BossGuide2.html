@@ -336,22 +336,44 @@
 
         /* Item Lists (Tribute/Loot) */
         .item-list { display: flex; flex-direction: column; gap: 8px; }
+        
+        /* Item Entry with Right Alignment for Quantity */
         .item-entry { 
-            display: flex; align-items: center; justify-content: space-between;
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
             background: rgba(0,0,0,0.3); 
-            padding: 8px 12px; border-radius: 6px; border: 1px solid transparent;
+            padding: 8px 12px; 
+            border-radius: 6px; 
+            border: 1px solid transparent;
             transition: 0.2s;
             width: 100%;
         }
         .item-entry:hover { border-color: #444; background: rgba(255,255,255,0.05); }
         
-        .item-left { display: flex; align-items: center; gap: 12px; flex: 1; overflow: hidden; }
+        .item-left { 
+            display: flex; 
+            align-items: center; 
+            gap: 12px; 
+            flex-grow: 1;
+            overflow: hidden;
+        }
+        
         .item-entry img { width: 32px; height: 32px; object-fit: contain; flex-shrink: 0; }
-        .item-entry span { font-size: 0.95rem; color: #ddd; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .item-entry span { font-size: 0.95rem; color: #ddd; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.2; }
+        
         .qty { 
-            color: var(--c-primary); font-weight: bold; font-family: monospace; font-size: 1.1rem; 
-            background: rgba(0,0,0,0.5); padding: 2px 8px; border-radius: 4px; 
-            min-width: 45px; text-align: right; margin-left: 10px; flex-shrink: 0;
+            color: var(--c-primary); 
+            font-weight: bold; 
+            font-family: monospace; 
+            font-size: 1.1rem; 
+            background: rgba(0,0,0,0.5); 
+            padding: 2px 8px; 
+            border-radius: 4px;
+            min-width: 45px; 
+            text-align: right; 
+            margin-left: 10px; 
+            flex-shrink: 0;
         }
 
         /* Tek Unlocks */
@@ -471,10 +493,11 @@
             "art_crag": { de: "Artefakt der Felswand", en: "Artifact of the Crag", icon: "https://ark.wiki.gg/images/thumb/Artifact_of_the_Crag.png/30px-Artifact_of_the_Crag.png" },
             "art_destroyer": { de: "Artefakt des Zerstörers", en: "Artifact of the Destroyer", icon: "https://ark.wiki.gg/images/thumb/Artifact_of_the_Destroyer.png/30px-Artifact_of_the_Destroyer.png" },
             "art_gatekeeper": { de: "Artefakt des Torwächters", en: "Artifact of the Gatekeeper", icon: "https://ark.wiki.gg/images/thumb/Artifact_of_the_Gatekeeper.png/30px-Artifact_of_the_Gatekeeper.png" },
-             "art_devious": { de: "Artefakt der Tücke", en: "Artifact of the Devious", icon: "https://ark.wiki.gg/images/thumb/Artifact_of_the_Devious.png/30px-Artifact_of_the_Devious.png" },
-             "art_depths": { de: "Artefakt der Tiefe", en: "Artifact of the Depths", icon: "https://ark.wiki.gg/images/thumb/Artifact_of_the_Depths.png/30px-Artifact_of_the_Depths.png" },
-             "art_shadows": { de: "Artefakt der Schatten", en: "Artifact of the Shadows", icon: "https://ark.wiki.gg/images/thumb/Artifact_of_the_Shadows.png/30px-Artifact_of_the_Shadows.png" },
-             "art_stalker": { de: "Artefakt des Jägers (Stalker)", en: "Artifact of the Stalker", icon: "https://ark.wiki.gg/images/thumb/Artifact_of_the_Stalker.png/30px-Artifact_of_the_Stalker.png" },
+            "art_devious": { de: "Artefakt der Tücke", en: "Artifact of the Devious", icon: "https://ark.wiki.gg/images/thumb/Artifact_of_the_Devious.png/30px-Artifact_of_the_Devious.png" },
+            "art_depths": { de: "Artefakt der Tiefe", en: "Artifact of the Depths", icon: "https://ark.wiki.gg/images/thumb/Artifact_of_the_Depths.png/30px-Artifact_of_the_Depths.png" },
+            "art_shadows": { de: "Artefakt der Schatten", en: "Artifact of the Shadows", icon: "https://ark.wiki.gg/images/thumb/Artifact_of_the_Shadows.png/30px-Artifact_of_the_Shadows.png" },
+            "art_stalker": { de: "Artefakt des Jägers (Stalker)", en: "Artifact of the Stalker", icon: "https://ark.wiki.gg/images/thumb/Artifact_of_the_Stalker.png/30px-Artifact_of_the_Stalker.png" },
+            "art_growth": { de: "Artefakt des Wachstums", en: "Artifact of Growth", icon: "https://ark.wiki.gg/images/thumb/Artifact_of_Growth.png/30px-Artifact_of_Growth.png" },
 
             // TRIBUTE (Körperteile)
             "argi_talon": { de: "Argentavis Klaue", en: "Argentavis Talon", icon: "https://ark.wiki.gg/images/thumb/Argentavis_Talon.png/30px-Argentavis_Talon.png" },
@@ -498,6 +521,7 @@
             "rock_drake_feather": { de: "Rock Drake Feder", en: "Rock Drake Feather", icon: "https://ark.wiki.gg/images/thumb/Rock_Drake_Feather.png/30px-Rock_Drake_Feather.png" },
             "nameless_venom": { de: "Nameless Gift", en: "Nameless Venom", icon: "https://ark.wiki.gg/images/thumb/Nameless_Venom.png/30px-Nameless_Venom.png" },
             "reaper_pheromone": { de: "Reaper Pheromone", en: "Reaper Pheromone Gland", icon: "https://ark.wiki.gg/images/thumb/Reaper_Pheromone_Gland.png/30px-Reaper_Pheromone_Gland.png" },
+            "corrupt_heart": { de: "Korrumpiertes Herz", en: "Corrupt Heart", icon: "https://ark.wiki.gg/images/thumb/Corrupt_Heart.png/30px-Corrupt_Heart.png" },
 
             // LOOT
             "element": { de: "Element", en: "Element", icon: "https://ark.wiki.gg/images/thumb/Element.png/30px-Element.png" },
@@ -511,7 +535,13 @@
             "flag_manti": { de: "Manticore Flagge", en: "Manticore Flag", icon: "https://ark.wiki.gg/images/thumb/Manticore_Flag.png/30px-Manticore_Flag.png" },
             "trophy_rockwell": { de: "Rockwell Trophäe", en: "Rockwell Trophy", icon: "https://ark.wiki.gg/images/thumb/Rockwell_Trophy.png/30px-Rockwell_Trophy.png" },
             "flag_rockwell": { de: "Rockwell Flagge", en: "Rockwell Flag", icon: "https://ark.wiki.gg/images/thumb/Rockwell_Flag.png/30px-Rockwell_Flag.png" },
-            
+            "mdsm": { de: "M.D.S.M.", en: "M.D.S.M.", icon: "https://ark.wiki.gg/images/thumb/M.D.S.M..png/30px-M.D.S.M..png" },
+            "mrlm": { de: "M.R.L.M.", en: "M.R.L.M.", icon: "https://ark.wiki.gg/images/thumb/M.R.L.M..png/30px-M.R.L.M..png" },
+            "mscm": { de: "M.S.C.M.", en: "M.S.C.M.", icon: "https://ark.wiki.gg/images/thumb/M.S.C.M..png/30px-M.S.C.M..png" },
+            "thatch": { de: "Stroh", en: "Thatch", icon: "https://ark.wiki.gg/images/thumb/Thatch.png/30px-Thatch.png" },
+            "fungal_wood": { de: "Pilzholz", en: "Fungal Wood", icon: "https://ark.wiki.gg/images/thumb/Fungal_Wood.png/30px-Fungal_Wood.png" },
+            "corrupted_nodule": { de: "Beschädigtes Knötchen", en: "Corrupted Nodule", icon: "https://ark.wiki.gg/images/thumb/Corrupted_Nodule.png/30px-Corrupted_Nodule.png" },
+
             // TEK ENGRAMME
             "tek_replicator": { de: "Tek Replikator", en: "Tek Replicator", icon: "https://ark.wiki.gg/images/thumb/Tek_Replicator.png/30px-Tek_Replicator.png" },
             "tek_foundation": { de: "Tek Fundament", en: "Tek Foundation", icon: "https://ark.wiki.gg/images/thumb/Tek_Foundation.png/30px-Tek_Foundation.png" },
@@ -523,7 +553,7 @@
             "tek_ceiling": { de: "Tek Decke", en: "Tek Ceiling", icon: "https://ark.wiki.gg/images/thumb/Tek_Ceiling.png/30px-Tek_Ceiling.png" },
             "tek_pillar": { de: "Tek Pfeiler", en: "Tek Pillar", icon: "https://ark.wiki.gg/images/thumb/Tek_Pillar.png/30px-Tek_Pillar.png" },
             "tek_ladder": { de: "Tek Leiter", en: "Tek Ladder", icon: "https://ark.wiki.gg/images/thumb/Tek_Ladder.png/30px-Tek_Ladder.png" },
-            "tek_ramp": { de: "Tek Rampe", en: "Tek Ramp", icon: "https://ark.wiki.gg/images/thumb/Tek_Ramp.png/30px-Tek_Ramp.png" },
+            "tek_ramp": { de: "Tek Rampe", en: "Tek Rampe", icon: "https://ark.wiki.gg/images/thumb/Tek_Ramp.png/30px-Tek_Ramp.png" },
             "tek_staircase": { de: "Tek Treppe", en: "Tek Staircase", icon: "https://ark.wiki.gg/images/thumb/Tek_Staircase.png/30px-Tek_Staircase.png" },
             "tek_catwalk": { de: "Tek Laufsteg", en: "Tek Catwalk", icon: "https://ark.wiki.gg/images/thumb/Tek_Catwalk.png/30px-Tek_Catwalk.png" },
             "tek_railing": { de: "Tek Geländer", en: "Tek Railing", icon: "https://ark.wiki.gg/images/thumb/Tek_Railing.png/30px-Tek_Railing.png" },
@@ -713,8 +743,29 @@
                     }
                 }
             },
+            "forest_titan": {
+                category: "Titanen",
+                name: { de: "Forest Titan", en: "Forest Titan" },
+                icon: "https://ark.wiki.gg/images/thumb/2/28/Forest_Titan.png/48px-Forest_Titan.png",
+                desc: { de: "Der Herrscher des Waldes. Ein riesiges Pflanzenmonster.", en: "The ruler of the forest. A giant plant monster." },
+                strategy: {
+                    de: "<h4>Feuer!</h4>Nutze Forest Wyvern oder Managarmr, um die Knoten zu verbrennen.<br><br><h4>Zähmen</h4>Zerstöre die Knoten auf Schultern und Kinn, um ihn zu zähmen. Je weniger Schaden er nimmt, desto besser.",
+                    en: "<h4>Fire!</h4>Use Forest Wyverns or Managarmrs to burn the nodes.<br><br><h4>Taming</h4>Destroy the nodes on shoulders and chin to tame him. The less damage he takes, the better."
+                },
+                maps: {
+                    "Extinction": {
+                        "Gamma": { // Titanen haben keine Gamma/Beta/Alpha Stufen im klassischen Sinne, wir nutzen Gamma als Standard
+                            stats: { hp: "400,000", dmg: "~15,000", lvl: "1" },
+                            tributes: [ {id:"art_growth", q:1}, {id:"corrupt_heart", q:100}, {id:"sauro_vert", q:10}, {id:"rex_arm", q:10} ],
+                            loot: [ {id:"mdsm", q:1}, {id:"mrlm", q:1}, {id:"mscm", q:1}, {id:"thatch", q:1}, {id:"fungal_wood", q:1}, {id:"corrupted_nodule", q:1} ],
+                            unlocks: ["tek_replicator", "tek_gauntlets", "tek_leggings", "tek_sword"]
+                        },
+                         "Beta": { stats: null, tributes: [], loot: [], unlocks: [] }, // Placeholder
+                         "Alpha": { stats: null, tributes: [], loot: [], unlocks: [] } // Placeholder
+                    }
+                }
+            },
             "ice_titan": { category: "Titanen", name: {de:"Ice Titan", en:"Ice Titan"}, icon:"https://ark.wiki.gg/images/thumb/d/dc/Ice_Titan.png/48px-Ice_Titan.png", desc:{de:"Platzhalter",en:"Placeholder"}, maps:{} },
-            "forest_titan": { category: "Titanen", name: {de:"Forest Titan", en:"Forest Titan"}, icon:"https://ark.wiki.gg/images/thumb/2/28/Forest_Titan.png/48px-Forest_Titan.png", desc:{de:"Platzhalter",en:"Placeholder"}, maps:{} },
             "desert_titan": { category: "Titanen", name: {de:"Desert Titan", en:"Desert Titan"}, icon:"https://ark.wiki.gg/images/thumb/4/49/Desert_Titan.png/48px-Desert_Titan.png", desc:{de:"Platzhalter",en:"Placeholder"}, maps:{} },
             "king_titan": { category: "Titanen", name: {de:"King Titan", en:"King Titan"}, icon:"https://ark.wiki.gg/images/thumb/8/82/King_Titan.png/48px-King_Titan.png", desc:{de:"Platzhalter",en:"Placeholder"}, maps:{} },
             "ice_worm_queen": { category: "Minibosse", name: {de:"Ice Worm Queen", en:"Ice Worm Queen"}, icon:"https://ark.wiki.gg/images/thumb/3/3b/Iceworm_Queen.png/48px-Iceworm_Queen.png", desc:{de:"Ragnarok Ice Cave Boss",en:"Ragnarok Ice Cave Boss"}, maps:{} },
