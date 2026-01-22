@@ -552,6 +552,12 @@
             "titan_trophy_beta": { de: "King Titan Trophäe (Beta)", en: "King Titan Trophy (Beta)", icon: "https://ark.wiki.gg/images/thumb/King_Titan_Trophy_%28Beta%29.png/30px-King_Titan_Trophy_%28Beta%29.png" },
             "titan_trophy_alpha": { de: "King Titan Trophäe (Alpha)", en: "King Titan Trophy (Alpha)", icon: "https://ark.wiki.gg/images/thumb/King_Titan_Trophy_%28Alpha%29.png/30px-King_Titan_Trophy_%28Alpha%29.png" },
             "titan_flag_king": { de: "King Titan Flagge", en: "King Titan Flag", icon: "https://ark.wiki.gg/images/thumb/King_Titan_Flag.png/30px-King_Titan_Flag.png" },
+            "crystal": { de: "Kristall", en: "Crystal", icon: "https://ark.wiki.gg/images/thumb/Crystal.png/30px-Crystal.png" },
+            "metal": { de: "Metall", en: "Metal", icon: "https://ark.wiki.gg/images/thumb/Metal.png/30px-Metal.png" },
+            "obsidian": { de: "Obsidian", en: "Obsidian", icon: "https://ark.wiki.gg/images/thumb/Obsidian.png/30px-Obsidian.png" },
+            "oil": { de: "Öl", en: "Oil", icon: "https://ark.wiki.gg/images/thumb/Oil.png/30px-Oil.png" },
+            "sulfur": { de: "Schwefel", en: "Sulfur", icon: "https://ark.wiki.gg/images/thumb/Sulfur.png/30px-Sulfur.png" },
+            "stone": { de: "Stein", en: "Stone", icon: "https://ark.wiki.gg/images/thumb/Stone.png/30px-Stone.png" },
 
             // TEK ENGRAMME
             "tek_replicator": { de: "Tek Replikator", en: "Tek Replicator", icon: "https://ark.wiki.gg/images/thumb/Tek_Replicator.png/30px-Tek_Replicator.png" },
@@ -850,7 +856,25 @@
                 } 
             },
             "ice_worm_queen": { hasDiff: false, category: "Minibosse", name: {de:"Ice Worm Queen", en:"Ice Worm Queen"}, icon:"https://ark.wiki.gg/images/thumb/3/3b/Iceworm_Queen.png/48px-Iceworm_Queen.png", desc:{de:"Ragnarok Ice Cave Boss",en:"Ragnarok Ice Cave Boss"}, maps:{} },
-            "lava_golem": { hasDiff: false, category: "Minibosse", name: {de:"Lava Elemental", en:"Lava Elemental"}, icon:"https://ark.wiki.gg/images/thumb/4/40/Lava_Elemental.png/48px-Lava_Elemental.png", desc:{de:"Ragnarok Jungle Cave Boss",en:"Ragnarok Jungle Cave Boss"}, maps:{} }
+            "lava_golem": { 
+                hasDiff: false, 
+                category: "Minibosse", 
+                name: {de:"Lava Elemental", en:"Lava Elemental"}, 
+                icon:"https://ark.wiki.gg/images/thumb/4/40/Lava_Elemental.png/48px-Lava_Elemental.png", 
+                desc: { de: "Dungeon Boss auf Ragnarok (Jungle Dungeon).", en: "Dungeon Boss on Ragnarok (Jungle Dungeon)." },
+                strategy: {
+                    de: "<h4>Explosivwaffen</h4>Nutze Raketenwerfer! Kugeln und Nahkampf sind wirkungslos.<br><br><h4>Schwachstelle</h4>Ziele auf den rechten Arm/Hand für maximalen Schaden.<br><br><h4>Umgebung</h4>Nutze Grappling Hooks für sichere Positionen. Falle nicht in die Lava!",
+                    en: "<h4>Explosives</h4>Use Rocket Launchers! Bullets and melee are ineffective.<br><br><h4>Weakness</h4>Aim for the right arm/hand for maximum damage.<br><br><h4>Environment</h4>Use Grappling Hooks for safe spots. Don't fall into the lava!"
+                },
+                maps: {
+                    "Ragnarok": {
+                        stats: { hp: "60,000+", dmg: "120", lvl: "10+" },
+                        tributes: [], // No tributes needed
+                        loot: [ {id:"crystal", q:"+"}, {id:"metal", q:"+"}, {id:"obsidian", q:"+"}, {id:"oil", q:"+"}, {id:"sulfur", q:"+"}, {id:"stone", q:"+"}, {id:"tek_gear", q:1} ],
+                        unlocks: [] // No specific unlocks, just loot
+                    }
+                }
+            }
         };
 
         // --- APP STATE ---
