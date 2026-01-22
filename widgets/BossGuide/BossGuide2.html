@@ -245,7 +245,7 @@
             display: flex; 
             align-items: center; 
             gap: 6px;
-            opacity: 0.4; /* Dimmed when inactive */
+            opacity: 0.4;
             filter: grayscale(80%);
         }
         .lang-btn img {
@@ -282,7 +282,7 @@
             display: flex; align-items: center; gap: 12px;
         }
 
-        /* --- MATRIX GRID SYSTEM --- */
+        /* --- MATRIX GRID SYSTEM (3 Columns) --- */
         .matrix-header {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
@@ -326,6 +326,23 @@
         .matrix-col.beta { border-top: 4px solid var(--diff-beta); }
         .matrix-col.alpha { border-top: 4px solid var(--diff-alpha); }
 
+        /* --- SINGLE GRID SYSTEM (No Difficulty) --- */
+        .single-view {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+        .single-col {
+            background: var(--c-card);
+            border: 1px solid var(--c-border);
+            border-top: 4px solid var(--c-primary);
+            border-radius: 8px;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
         /* --- CONTENT STYLES --- */
         
         /* Stats Table */
@@ -337,43 +354,23 @@
         /* Item Lists (Tribute/Loot) */
         .item-list { display: flex; flex-direction: column; gap: 8px; }
         
-        /* Item Entry with Right Alignment for Quantity */
         .item-entry { 
-            display: flex; 
-            align-items: center; 
-            justify-content: space-between; 
+            display: flex; align-items: center; justify-content: space-between;
             background: rgba(0,0,0,0.3); 
-            padding: 8px 12px; 
-            border-radius: 6px; 
-            border: 1px solid transparent;
+            padding: 8px 12px; border-radius: 6px; border: 1px solid transparent;
             transition: 0.2s;
             width: 100%;
         }
         .item-entry:hover { border-color: #444; background: rgba(255,255,255,0.05); }
         
-        .item-left { 
-            display: flex; 
-            align-items: center; 
-            gap: 12px; 
-            flex-grow: 1;
-            overflow: hidden;
-        }
-        
+        .item-left { display: flex; align-items: center; gap: 12px; flex: 1; overflow: hidden; }
         .item-entry img { width: 32px; height: 32px; object-fit: contain; flex-shrink: 0; }
         .item-entry span { font-size: 0.95rem; color: #ddd; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.2; }
         
         .qty { 
-            color: var(--c-primary); 
-            font-weight: bold; 
-            font-family: monospace; 
-            font-size: 1.1rem; 
-            background: rgba(0,0,0,0.5); 
-            padding: 2px 8px; 
-            border-radius: 4px;
-            min-width: 45px; 
-            text-align: right; 
-            margin-left: 10px; 
-            flex-shrink: 0;
+            color: var(--c-primary); font-weight: bold; font-family: monospace; font-size: 1.1rem; 
+            background: rgba(0,0,0,0.5); padding: 2px 8px; border-radius: 4px; 
+            min-width: 45px; text-align: right; margin-left: 10px; flex-shrink: 0;
         }
 
         /* Tek Unlocks */
@@ -416,6 +413,7 @@
             
             .matrix-header, .matrix-row { grid-template-columns: 1fr; gap: 15px; } 
             .matrix-col { margin-bottom: 10px; }
+            .single-view { grid-template-columns: 1fr; gap: 15px; }
             
             .top-bar { flex-direction: column; height: auto; padding: 20px; align-items: flex-start; gap: 15px; }
             .controls { width: 100%; justify-content: space-between; flex-wrap: wrap; }
@@ -604,6 +602,7 @@
         // --- BOSS DATA CONFIG ---
         const BOSS_DATA = {
             "broodmother": {
+                hasDiff: true,
                 category: "Bosse",
                 name: { de: "Broodmother Lysrix", en: "Broodmother Lysrix" },
                 icon: "https://ark.wiki.gg/images/thumb/1/19/Broodmother.png/48px-Broodmother.png",
@@ -656,6 +655,7 @@
                 }
             },
             "megapithecus": {
+                hasDiff: true,
                 category: "Bosse",
                 name: { de: "Megapithecus", en: "Megapithecus" },
                 icon: "https://ark.wiki.gg/images/thumb/7/7d/Megapithecus.png/48px-Megapithecus.png",
@@ -693,6 +693,7 @@
                 }
             },
             "dragon": {
+                hasDiff: true,
                 category: "Bosse",
                 name: { de: "Dragon", en: "Dragon" },
                 icon: "https://ark.wiki.gg/images/thumb/c/c7/Dragon.png/48px-Dragon.png",
@@ -710,6 +711,7 @@
                 }
             },
             "manticore": {
+                hasDiff: true,
                 category: "Bosse",
                 name: { de: "Manticore", en: "Manticore" },
                 icon: "https://ark.wiki.gg/images/thumb/0/03/Manticore.png/48px-Manticore.png",
@@ -727,6 +729,7 @@
                 }
             },
             "rockwell": {
+                hasDiff: true,
                 category: "Bosse",
                 name: { de: "Rockwell", en: "Rockwell" },
                 icon: "https://ark.wiki.gg/images/thumb/b/b0/Rockwell.png/48px-Rockwell.png",
@@ -744,6 +747,7 @@
                 }
             },
             "forest_titan": {
+                hasDiff: false,
                 category: "Titanen",
                 name: { de: "Forest Titan", en: "Forest Titan" },
                 icon: "https://ark.wiki.gg/images/thumb/2/28/Forest_Titan.png/48px-Forest_Titan.png",
@@ -754,22 +758,18 @@
                 },
                 maps: {
                     "Extinction": {
-                        "Gamma": { // Titanen haben keine Gamma/Beta/Alpha Stufen im klassischen Sinne, wir nutzen Gamma als Standard
-                            stats: { hp: "400,000", dmg: "~15,000", lvl: "1" },
-                            tributes: [ {id:"art_growth", q:1}, {id:"corrupt_heart", q:100}, {id:"sauro_vert", q:10}, {id:"rex_arm", q:10} ],
-                            loot: [ {id:"mdsm", q:1}, {id:"mrlm", q:1}, {id:"mscm", q:1}, {id:"thatch", q:1}, {id:"fungal_wood", q:1}, {id:"corrupted_nodule", q:1} ],
-                            unlocks: ["tek_replicator", "tek_gauntlets", "tek_leggings", "tek_sword"]
-                        },
-                         "Beta": { stats: null, tributes: [], loot: [], unlocks: [] }, // Placeholder
-                         "Alpha": { stats: null, tributes: [], loot: [], unlocks: [] } // Placeholder
+                        stats: { hp: "400,000", dmg: "~15,000", lvl: "1" },
+                        tributes: [ {id:"art_growth", q:1}, {id:"corrupt_heart", q:100}, {id:"sauro_vert", q:10}, {id:"rex_arm", q:10} ],
+                        loot: [ {id:"mdsm", q:1}, {id:"mrlm", q:1}, {id:"mscm", q:1}, {id:"thatch", q:1}, {id:"fungal_wood", q:1}, {id:"corrupted_nodule", q:1} ],
+                        unlocks: ["tek_replicator", "tek_gauntlets", "tek_leggings", "tek_sword"]
                     }
                 }
             },
-            "ice_titan": { category: "Titanen", name: {de:"Ice Titan", en:"Ice Titan"}, icon:"https://ark.wiki.gg/images/thumb/d/dc/Ice_Titan.png/48px-Ice_Titan.png", desc:{de:"Platzhalter",en:"Placeholder"}, maps:{} },
-            "desert_titan": { category: "Titanen", name: {de:"Desert Titan", en:"Desert Titan"}, icon:"https://ark.wiki.gg/images/thumb/4/49/Desert_Titan.png/48px-Desert_Titan.png", desc:{de:"Platzhalter",en:"Placeholder"}, maps:{} },
-            "king_titan": { category: "Titanen", name: {de:"King Titan", en:"King Titan"}, icon:"https://ark.wiki.gg/images/thumb/8/82/King_Titan.png/48px-King_Titan.png", desc:{de:"Platzhalter",en:"Placeholder"}, maps:{} },
-            "ice_worm_queen": { category: "Minibosse", name: {de:"Ice Worm Queen", en:"Ice Worm Queen"}, icon:"https://ark.wiki.gg/images/thumb/3/3b/Iceworm_Queen.png/48px-Iceworm_Queen.png", desc:{de:"Ragnarok Ice Cave Boss",en:"Ragnarok Ice Cave Boss"}, maps:{} },
-            "lava_golem": { category: "Minibosse", name: {de:"Lava Elemental", en:"Lava Elemental"}, icon:"https://ark.wiki.gg/images/thumb/4/40/Lava_Elemental.png/48px-Lava_Elemental.png", desc:{de:"Ragnarok Jungle Cave Boss",en:"Ragnarok Jungle Cave Boss"}, maps:{} }
+            "ice_titan": { hasDiff: false, category: "Titanen", name: {de:"Ice Titan", en:"Ice Titan"}, icon:"https://ark.wiki.gg/images/thumb/d/dc/Ice_Titan.png/48px-Ice_Titan.png", desc:{de:"Platzhalter",en:"Placeholder"}, maps:{} },
+            "desert_titan": { hasDiff: false, category: "Titanen", name: {de:"Desert Titan", en:"Desert Titan"}, icon:"https://ark.wiki.gg/images/thumb/4/49/Desert_Titan.png/48px-Desert_Titan.png", desc:{de:"Platzhalter",en:"Placeholder"}, maps:{} },
+            "king_titan": { hasDiff: true, category: "Titanen", name: {de:"King Titan", en:"King Titan"}, icon:"https://ark.wiki.gg/images/thumb/8/82/King_Titan.png/48px-King_Titan.png", desc:{de:"Platzhalter",en:"Placeholder"}, maps:{} },
+            "ice_worm_queen": { hasDiff: false, category: "Minibosse", name: {de:"Ice Worm Queen", en:"Ice Worm Queen"}, icon:"https://ark.wiki.gg/images/thumb/3/3b/Iceworm_Queen.png/48px-Iceworm_Queen.png", desc:{de:"Ragnarok Ice Cave Boss",en:"Ragnarok Ice Cave Boss"}, maps:{} },
+            "lava_golem": { hasDiff: false, category: "Minibosse", name: {de:"Lava Elemental", en:"Lava Elemental"}, icon:"https://ark.wiki.gg/images/thumb/4/40/Lava_Elemental.png/48px-Lava_Elemental.png", desc:{de:"Ragnarok Jungle Cave Boss",en:"Ragnarok Jungle Cave Boss"}, maps:{} }
         };
 
         // --- APP STATE ---
@@ -830,34 +830,29 @@
                 } else {
                     // Deep search items
                     for (const map in data.maps) {
-                        for (const diff in data.maps[map]) {
-                            const diffData = data.maps[map][diff];
-                            
-                            // Check Unlocks
-                            if(diffData.unlocks) {
-                                for(const u of diffData.unlocks) {
+                        if (data.hasDiff === false) {
+                            // Single View Search
+                            const mapData = data.maps[map];
+                            if(mapData.unlocks) {
+                                for(const u of mapData.unlocks) {
                                     const item = getItem(u);
-                                    if(item.name.toLowerCase().includes(query)) {
-                                        match = true;
-                                        matchReason = "Tek";
-                                        break;
-                                    }
+                                    if(item.name.toLowerCase().includes(query)) { match = true; matchReason = "Tek"; break; }
                                 }
                             }
-                            if(match) break;
-
-                            // Check Tributes
-                            if(diffData.tributes) {
-                                for(const t of diffData.tributes) {
-                                    const item = getItem(t.id);
-                                    if(item.name.toLowerCase().includes(query)) {
-                                        match = true;
-                                        matchReason = "Tribut";
-                                        break;
+                            // ... more checks if needed
+                        } else {
+                            // Matrix View Search
+                            for (const diff in data.maps[map]) {
+                                const diffData = data.maps[map][diff];
+                                if(diffData.unlocks) {
+                                    for(const u of diffData.unlocks) {
+                                        const item = getItem(u);
+                                        if(item.name.toLowerCase().includes(query)) { match = true; matchReason = "Tek"; break; }
                                     }
                                 }
+                                if(match) break;
+                                // ...
                             }
-                            if(match) break;
                         }
                         if(match) break;
                     }
@@ -956,11 +951,11 @@
         function renderContent() {
             const boss = BOSS_DATA[currentBossId];
             const mapData = boss.maps[currentMap];
-            
             const content = document.getElementById('mainContent');
+            
             if(!mapData) { content.innerHTML = `<div class="strategy-box">Daten für diese Map/Boss noch nicht eingepflegt.</div>`; return; }
 
-            // Render Item Helper
+            // --- RENDER HELPERS ---
             const renderItemList = (list) => {
                 if(!list || list.length === 0) return '<div style="color:#666; font-size:0.8rem;">-</div>';
                 return list.map(entry => {
@@ -976,13 +971,10 @@
                 }).join('');
             }
 
-            // Render Unlocks Helper
             const renderUnlocks = (list, hasPrev) => {
                 if(!list || list.length === 0) return '<div style="color:#666; font-size:0.8rem;">-</div>';
-                
                 let html = "";
                 if(hasPrev) html += `<div class="note" style="width:100%;">${getTrans('prev')}</div>`;
-                
                 html += list.map(key => {
                     if(key.includes(" ")) return ""; 
                     const dbItem = getItem(key);
@@ -991,7 +983,6 @@
                 return html;
             }
 
-            // Render Stats Helper
             const renderStats = (s) => {
                 if(!s) return "-";
                 return `
@@ -1003,62 +994,91 @@
                 `;
             }
 
-            // Safe Access for Map Data (some maps might miss specific difficulty data in placeholders)
-            const dGamma = mapData.Gamma || {};
-            const dBeta = mapData.Beta || {};
-            const dAlpha = mapData.Alpha || {};
+            let html = "";
 
-            // --- BUILD HTML ---
-            let html = `
-                <!-- MATRIX HEADER -->
-                <div class="matrix-header">
-                    <div class="mh-col mh-gamma">${getTrans('gamma')}</div>
-                    <div class="mh-col mh-beta">${getTrans('beta')}</div>
-                    <div class="mh-col mh-alpha">${getTrans('alpha')}</div>
-                </div>
+            // --- SINGLE VIEW LOGIC ---
+            if (boss.hasDiff === false) {
+                 html = `
+                    <div class="single-view">
+                        <!-- Left Column: Stats & Tributes -->
+                        <div class="single-col">
+                            <h3 class="section-title"><i class="fa-solid fa-chart-line"></i> ${getTrans('stats')}</h3>
+                            ${renderStats(mapData.stats)}
+                            
+                            <h3 class="section-title" style="margin-top:20px;"><i class="fa-solid fa-gem"></i> ${getTrans('tribute')}</h3>
+                            <div class="item-list">${renderItemList(mapData.tributes)}</div>
+                        </div>
 
-                <!-- STATS -->
-                <div class="section-block">
-                    <div class="section-title"><i class="fa-solid fa-chart-line"></i> ${getTrans('stats')}</div>
-                    <div class="matrix-row">
-                        <div class="matrix-col gamma">${renderStats(dGamma.stats)}</div>
-                        <div class="matrix-col beta">${renderStats(dBeta.stats)}</div>
-                        <div class="matrix-col alpha">${renderStats(dAlpha.stats)}</div>
+                        <!-- Right Column: Loot & Unlocks -->
+                        <div class="single-col">
+                            <h3 class="section-title"><i class="fa-solid fa-gift"></i> ${getTrans('loot')}</h3>
+                            <div class="item-list">${renderItemList(mapData.loot)}</div>
+
+                            <h3 class="section-title" style="margin-top:20px;"><i class="fa-solid fa-dna"></i> ${getTrans('unlocks')}</h3>
+                            <div class="tek-unlocks">${renderUnlocks(mapData.unlocks, false)}</div>
+                        </div>
                     </div>
-                </div>
+                `;
+            } 
+            // --- MATRIX VIEW LOGIC ---
+            else {
+                const dGamma = mapData.Gamma || {};
+                const dBeta = mapData.Beta || {};
+                const dAlpha = mapData.Alpha || {};
 
-                <!-- TRIBUTES -->
-                <div class="section-block">
-                    <div class="section-title"><i class="fa-solid fa-gem"></i> ${getTrans('tribute')}</div>
-                    <div class="matrix-row">
-                        <div class="matrix-col gamma"><div class="item-list">${renderItemList(dGamma.tributes)}</div></div>
-                        <div class="matrix-col beta"><div class="item-list">${renderItemList(dBeta.tributes)}</div></div>
-                        <div class="matrix-col alpha"><div class="item-list">${renderItemList(dAlpha.tributes)}</div></div>
+                html = `
+                    <!-- MATRIX HEADER -->
+                    <div class="matrix-header">
+                        <div class="mh-col mh-gamma">${getTrans('gamma')}</div>
+                        <div class="mh-col mh-beta">${getTrans('beta')}</div>
+                        <div class="mh-col mh-alpha">${getTrans('alpha')}</div>
                     </div>
-                </div>
 
-                <!-- LOOT -->
-                <div class="section-block">
-                    <div class="section-title"><i class="fa-solid fa-gift"></i> ${getTrans('loot')}</div>
-                    <div class="matrix-row">
-                        <div class="matrix-col gamma"><div class="item-list">${renderItemList(dGamma.loot)}</div></div>
-                        <div class="matrix-col beta"><div class="item-list">${renderItemList(dBeta.loot)}</div></div>
-                        <div class="matrix-col alpha"><div class="item-list">${renderItemList(dAlpha.loot)}</div></div>
+                    <!-- STATS -->
+                    <div class="section-block">
+                        <div class="section-title"><i class="fa-solid fa-chart-line"></i> ${getTrans('stats')}</div>
+                        <div class="matrix-row">
+                            <div class="matrix-col gamma">${renderStats(dGamma.stats)}</div>
+                            <div class="matrix-col beta">${renderStats(dBeta.stats)}</div>
+                            <div class="matrix-col alpha">${renderStats(dAlpha.stats)}</div>
+                        </div>
                     </div>
-                </div>
 
-                <!-- UNLOCKS -->
-                <div class="section-block">
-                    <div class="section-title"><i class="fa-solid fa-dna"></i> ${getTrans('unlocks')}</div>
-                    <div class="matrix-row">
-                        <div class="matrix-col gamma"><div class="tek-unlocks">${renderUnlocks(dGamma.unlocks, false)}</div></div>
-                        <div class="matrix-col beta"><div class="tek-unlocks">${renderUnlocks(dBeta.unlocks, true)}</div></div>
-                        <div class="matrix-col alpha"><div class="tek-unlocks">${renderUnlocks(dAlpha.unlocks, true)}</div></div>
+                    <!-- TRIBUTES -->
+                    <div class="section-block">
+                        <div class="section-title"><i class="fa-solid fa-gem"></i> ${getTrans('tribute')}</div>
+                        <div class="matrix-row">
+                            <div class="matrix-col gamma"><div class="item-list">${renderItemList(dGamma.tributes)}</div></div>
+                            <div class="matrix-col beta"><div class="item-list">${renderItemList(dBeta.tributes)}</div></div>
+                            <div class="matrix-col alpha"><div class="item-list">${renderItemList(dAlpha.tributes)}</div></div>
+                        </div>
                     </div>
-                </div>
 
-                <!-- STRATEGY -->
-                <div class="section-block">
+                    <!-- LOOT -->
+                    <div class="section-block">
+                        <div class="section-title"><i class="fa-solid fa-gift"></i> ${getTrans('loot')}</div>
+                        <div class="matrix-row">
+                            <div class="matrix-col gamma"><div class="item-list">${renderItemList(dGamma.loot)}</div></div>
+                            <div class="matrix-col beta"><div class="item-list">${renderItemList(dBeta.loot)}</div></div>
+                            <div class="matrix-col alpha"><div class="item-list">${renderItemList(dAlpha.loot)}</div></div>
+                        </div>
+                    </div>
+
+                    <!-- UNLOCKS -->
+                    <div class="section-block">
+                        <div class="section-title"><i class="fa-solid fa-dna"></i> ${getTrans('unlocks')}</div>
+                        <div class="matrix-row">
+                            <div class="matrix-col gamma"><div class="tek-unlocks">${renderUnlocks(dGamma.unlocks, false)}</div></div>
+                            <div class="matrix-col beta"><div class="tek-unlocks">${renderUnlocks(dBeta.unlocks, true)}</div></div>
+                            <div class="matrix-col alpha"><div class="tek-unlocks">${renderUnlocks(dAlpha.unlocks, true)}</div></div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Strategy Section (Common for both)
+            html += `
+                <div class="section-block" style="margin-top: 40px;">
                     <div class="section-title"><i class="fa-solid fa-chess-knight"></i> ${getTrans('strategy')}</div>
                     <div class="strategy-box">
                         ${boss.strategy[currentLang] || boss.strategy.en}
