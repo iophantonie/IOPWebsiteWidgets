@@ -1,0 +1,32 @@
+{
+  "broodmother": {
+    "hasDiff": true,
+    "category": "Bosse",
+    "name": { "de": "Broodmother Lysrix", "en": "Broodmother Lysrix" },
+    "image": "https://ark.wiki.gg/images/thumb/3/36/Dossier_Broodmother.png/300px-Dossier_Broodmother.png",
+    "icon": "https://ark.wiki.gg/images/thumb/1/19/Broodmother.png/48px-Broodmother.png",
+    "desc": { "de": "Die Mutter aller Spinnen...", "en": "The mother of all spiders..." },
+    "arena": { "de": "Folgt...", "en": "Coming soon..." },
+    "behavior": { "de": "Folgt...", "en": "Coming soon..." },
+    "strategy": { "de": "<h4>Rex Rush</h4>...", "en": "<h4>Rex Rush</h4>..." },
+    "maps": {
+       "The Island": {
+           "Gamma": {
+               "stats": { "hp": "324,000", "dmg": "180", "lvl": "30" },
+               "tributes": [ {"id":"art_clever", "q":1}, {"id":"art_hunter", "q":1} ],
+               "loot": [ {"id":"element", "q":10} ],
+               "unlocks": ["tek_replicator", "tek_foundation"]
+           }
+           // ... Restliche Schwierigkeiten
+       }
+    }
+  },
+  "forest_titan": {
+     "hasDiff": false,
+     "category": "Titanen",
+     "name": { "de": "Forest Titan", "en": "Forest Titan" }
+     // ... Restliche Daten
+  }
+  
+  // ... FÜGE HIER ALLE ANDEREN BOSSE EIN
+}
