@@ -1,17 +1,7 @@
-/* --- VARIABLES --- */
 :root {
-    --c-primary: #ff3300;
-    --c-bg: #050505;
-    --c-panel: #101010;
-    --c-card: #181818;
-    --c-text: #e0e0e0;
-    --c-dim: #888;
-    --c-border: #333;
-    --diff-gamma: #4CAF50;
-    --diff-beta: #2196F3;
-    --diff-alpha: #F44336;
-    --f-head: 'Acme', sans-serif;
-    --f-body: 'Roboto', sans-serif;
+    --c-primary: #ff3300; --c-bg: #050505; --c-panel: #101010; --c-card: #181818; --c-text: #e0e0e0; --c-dim: #888; --c-border: #333;
+    --diff-gamma: #4CAF50; --diff-beta: #2196F3; --diff-alpha: #F44336;
+    --f-head: 'Acme', sans-serif; --f-body: 'Roboto', sans-serif;
 }
 * { box-sizing: border-box; }
 body { margin: 0; padding: 0; background-color: transparent; color: var(--c-text); font-family: var(--f-body); height: 100vh; width: 100vw; display: flex; justify-content: center; align-items: center; overflow: hidden; }
@@ -114,3 +104,8 @@ body { margin: 0; padding: 0; background-color: transparent; color: var(--c-text
     .controls { width: 100%; justify-content: space-between; flex-wrap: wrap; position: relative; right: auto; top: auto; transform: none; margin-top: 10px; }
     .search-box { padding: 10px; }
 }
+    </style>
+</head>
+<body>
+    </body>
+</html>
