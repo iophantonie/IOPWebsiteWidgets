@@ -684,13 +684,16 @@
              "tek_sleeping_pod": { de: "Tek Schlafkapsel", en: "Tek Sleeping Pod", icon: "https://ark.wiki.gg/images/thumb/Tek_Sleeping_Pod.png/30px-Tek_Sleeping_Pod.png" },
              "tek_railgun": { de: "Tek Railgun", en: "Tek Railgun", icon: "https://ark.wiki.gg/images/thumb/Tek_Railgun.png/30px-Tek_Railgun.png" },
             
-            // -- NEUE ITEMS FÜR NUNATAK --
+            // -- NEUE ITEMS FÜR NUNATAK & GRENDEL --
             "tek_teleporter_small": { de: "Kleiner Tek Teleporter", en: "Small Tek Teleporter", icon: "https://ark.wiki.gg/images/thumb/Small_Tek_Teleporter.png/30px-Small_Tek_Teleporter.png" },
             "tek_teleporter_medium": { de: "Mittlerer Tek Teleporter", en: "Medium Tek Teleporter", icon: "https://ark.wiki.gg/images/thumb/Medium_Tek_Teleporter.png/30px-Medium_Tek_Teleporter.png" },
+            "tek_teleporter_large": { de: "Großer Tek Teleporter", en: "Large Tek Teleporter", icon: "https://ark.wiki.gg/images/thumb/Tek_Teleporter.png/30px-Tek_Teleporter.png" }, // Verwende Standard-Icon falls kein spezielles "Large" Icon
             "tek_behemoth_cellar": { de: "Tek Behemoth Kellertür", en: "Tek Behemoth Cellar Door", icon: "https://ark.wiki.gg/images/thumb/Tek_Behemoth_Cellar_Door.png/30px-Tek_Behemoth_Cellar_Door.png" },
             "tek_behemoth_gate": { de: "Behemoth Tek Tor", en: "Behemoth Tek Gate", icon: "https://ark.wiki.gg/images/thumb/Behemoth_Tek_Gate.png/30px-Behemoth_Tek_Gate.png" },
             "tek_behemoth_gateway": { de: "Behemoth Tek Torrahmen", en: "Behemoth Tek Gateway", icon: "https://ark.wiki.gg/images/thumb/Behemoth_Tek_Gateway.png/30px-Behemoth_Tek_Gateway.png" },
-            "tek_vacuum": { de: "Vakuum Kammer", en: "Vacuum Compartment", icon: "https://ark.wiki.gg/images/thumb/Vacuum_Compartment.png/30px-Vacuum_Compartment.png" }
+            "tek_vacuum": { de: "Vakuum Kammer", en: "Vacuum Compartment", icon: "https://ark.wiki.gg/images/thumb/Vacuum_Compartment.png/30px-Vacuum_Compartment.png" },
+            "flag_grendel": { de: "Grendel Flagge", en: "Grendel Flag", icon: "https://ark.wiki.gg/images/thumb/Grendel_Flag.png/30px-Grendel_Flag.png" },
+            "trophy_grendel": { de: "Grendel Trophäe", en: "Grendel Trophy", icon: "https://ark.wiki.gg/images/thumb/Grendel_Trophy.png/30px-Grendel_Trophy.png" }
         };
 
         // --- TRANSLATION UI STRINGS ---
@@ -705,6 +708,81 @@
 
         // --- SECTION 1: MAIN BOSSES ---
         const DATA_BOSSES = {
+            "grendel": {
+                hasDiff: true,
+                category: "Bosse",
+                name: { de: "Grendel", en: "Grendel" },
+                image: "https://www.dododex.com/media/creature/grendel.png",
+                icon: "https://ark.wiki.gg/images/thumb/Megaraptor.png/48px-Megaraptor.png",
+                desc: {
+                    de: "Ein Wächter-Boss, der mit dem Valguero Ascended DLC eingeführt wurde. Ähnelt einem riesigen Megaraptor mit Schädelhelm.",
+                    en: "A Guardian Boss introduced with the Valguero Ascended DLC. Resembles a massive Megaraptor wearing a skull helmet."
+                },
+                arena: {
+                    de: "Die Grendel-Arena, zugänglich über Obelisken und Supply Crates.",
+                    en: "The Grendel Arena, accessible via the Obelisks and Supply Crates."
+                },
+                behavior: {
+                    de: "Aggressiv.",
+                    en: "Aggressive."
+                },
+                strategy: {
+                    de: "Therizinosaurus, Deinotherium, Stegosaurus mit Gemüsekuchen und ein Yutyrannus.",
+                    en: "Therizinosaur, Deinotherium, Stegosaurus with Veggie Cake and a lead Yutyrannus."
+                },
+                maps: {
+                    "Valguero": {
+                        "Gamma": {
+                            stats: { hp: "?", dmg: "?", lvl: "70" },
+                            tributes: [
+                                {id:"art_devourer", q:1},
+                                {id:"art_pack", q:1},
+                                {id:"art_skylord", q:1},
+                                {id:"allo_brain", q:5},
+                                {id:"argi_talon", q:5},
+                                {id:"sauro_vert", q:5},
+                                {id:"sarco_skin", q:5},
+                                {id:"titan_venom", q:5}
+                            ],
+                            loot: [ {id:"element", q:90}, {id:"flag_grendel", q:1}, {id:"trophy_grendel", q:1} ],
+                            unlocks: ["tek_megalodon_saddle", "tek_teleporter_small", "tek_tapa_saddle", "tek_behemoth_gate", "tek_behemoth_gateway", "tek_ceiling", "tek_gauntlets", "tek_gen", "tek_behemoth_cellar", "tek_leggings", "tek_replicator", "tek_trough", "tek_wall"]
+                        },
+                        "Beta": {
+                            stats: { hp: "?", dmg: "?", lvl: "80" },
+                            tributes: [
+                                {id:"art_cunning", q:1},
+                                {id:"art_immine", q:1},
+                                {id:"art_strong", q:1},
+                                {id:"allo_brain", q:10},
+                                {id:"argi_talon", q:8},
+                                {id:"sauro_vert", q:8},
+                                {id:"sarco_skin", q:8},
+                                {id:"titan_venom", q:5},
+                                {id:"rex_arm", q:10}
+                            ],
+                            loot: [ {id:"element", q:255}, {id:"flag_grendel", q:1}, {id:"trophy_grendel", q:1} ],
+                            unlocks: ["tek_teleporter_medium", "tek_forcefield", "tek_dino_gate", "tek_dino_gateway", "tek_rifle", "tek_ramp", "tek_sword", "tek_transmitter", "tek_vacuum"]
+                        },
+                        "Alpha": {
+                            stats: { hp: "?", dmg: "?", lvl: "90" },
+                            tributes: [
+                                {id:"art_brute", q:1},
+                                {id:"art_crag", q:1},
+                                {id:"art_destroyer", q:1},
+                                {id:"art_gatekeeper", q:1},
+                                {id:"allo_brain", q:15},
+                                {id:"argi_talon", q:15},
+                                {id:"giga_heart", q:2},
+                                {id:"sarco_skin", q:10},
+                                {id:"titan_venom", q:10},
+                                {id:"rex_arm", q:15}
+                            ],
+                            loot: [ {id:"element", q:520}, {id:"flag_grendel", q:1}, {id:"trophy_grendel", q:1} ],
+                            unlocks: ["tek_teleporter_large", "tek_chest", "tek_cloning_chamber", "tek_grenade", "tek_shield_item", "tek_light", "tek_sleeping_pod", "tek_railgun"]
+                        }
+                    }
+                }
+            },
             "nunatak": {
                 hasDiff: true,
                 category: "Bosse",
