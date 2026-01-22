@@ -523,6 +523,8 @@
             "reaper_pheromone": { de: "Reaper Pheromone", en: "Reaper Pheromone Gland", icon: "https://ark.wiki.gg/images/thumb/Reaper_Pheromone_Gland.png/30px-Reaper_Pheromone_Gland.png" },
             "corrupt_heart": { de: "Korrumpiertes Herz", en: "Corrupt Heart", icon: "https://ark.wiki.gg/images/thumb/Corrupt_Heart.png/30px-Corrupt_Heart.png" },
             "theri_claws": { de: "Therizinosaurus Klauen", en: "Therizino Claws", icon: "https://ark.wiki.gg/images/thumb/Therizino_Claws.png/30px-Therizino_Claws.png" },
+            "fire_talon": { de: "Feuer Wyvern Klaue", en: "Fire Talon", icon: "https://ark.wiki.gg/images/thumb/Fire_Talon.png/30px-Fire_Talon.png" },
+            "alpha_rex_tooth": { de: "Alpha Rex Zahn", en: "Alpha Tyrannosaur Tooth", icon: "https://ark.wiki.gg/images/thumb/Alpha_Tyrannosaur_Tooth.png/30px-Alpha_Tyrannosaur_Tooth.png" },
 
             // LOOT
             "element": { de: "Element", en: "Element", icon: "https://ark.wiki.gg/images/thumb/Element.png/30px-Element.png" },
@@ -543,6 +545,13 @@
             "fungal_wood": { de: "Pilzholz", en: "Fungal Wood", icon: "https://ark.wiki.gg/images/thumb/Fungal_Wood.png/30px-Fungal_Wood.png" },
             "corrupted_nodule": { de: "Beschädigtes Knötchen", en: "Corrupted Nodule", icon: "https://ark.wiki.gg/images/thumb/Corrupted_Nodule.png/30px-Corrupted_Nodule.png" },
             "tek_gear": { de: "Tek Ausrüstung & Waffen", en: "Tek Equipment & Weapons", icon: "https://ark.wiki.gg/images/thumb/Tek_Chestpiece.png/30px-Tek_Chestpiece.png" },
+            "titan_trophy_desert": { de: "Desert Titan Trophäe", en: "Desert Titan Trophy", icon: "https://ark.wiki.gg/images/thumb/Desert_Titan_Trophy.png/30px-Desert_Titan_Trophy.png" },
+            "titan_trophy_forest": { de: "Forest Titan Trophäe", en: "Forest Titan Trophy", icon: "https://ark.wiki.gg/images/thumb/Forest_Titan_Trophy.png/30px-Forest_Titan_Trophy.png" },
+            "titan_trophy_ice": { de: "Ice Titan Trophäe", en: "Ice Titan Trophy", icon: "https://ark.wiki.gg/images/thumb/Ice_Titan_Trophy.png/30px-Ice_Titan_Trophy.png" },
+            "titan_trophy_gamma": { de: "King Titan Trophäe (Gamma)", en: "King Titan Trophy (Gamma)", icon: "https://ark.wiki.gg/images/thumb/King_Titan_Trophy_%28Beta%29.png/30px-King_Titan_Trophy_%28Beta%29.png" },
+            "titan_trophy_beta": { de: "King Titan Trophäe (Beta)", en: "King Titan Trophy (Beta)", icon: "https://ark.wiki.gg/images/thumb/King_Titan_Trophy_%28Beta%29.png/30px-King_Titan_Trophy_%28Beta%29.png" },
+            "titan_trophy_alpha": { de: "King Titan Trophäe (Alpha)", en: "King Titan Trophy (Alpha)", icon: "https://ark.wiki.gg/images/thumb/King_Titan_Trophy_%28Alpha%29.png/30px-King_Titan_Trophy_%28Alpha%29.png" },
+            "titan_flag_king": { de: "King Titan Flagge", en: "King Titan Flag", icon: "https://ark.wiki.gg/images/thumb/King_Titan_Flag.png/30px-King_Titan_Flag.png" },
 
             // TEK ENGRAMME
             "tek_replicator": { de: "Tek Replikator", en: "Tek Replicator", icon: "https://ark.wiki.gg/images/thumb/Tek_Replicator.png/30px-Tek_Replicator.png" },
@@ -807,7 +816,39 @@
                     }
                 } 
             },
-            "king_titan": { hasDiff: true, category: "Titanen", name: {de:"King Titan", en:"King Titan"}, icon:"https://ark.wiki.gg/images/thumb/8/82/King_Titan.png/48px-King_Titan.png", desc:{de:"Platzhalter",en:"Placeholder"}, maps:{} },
+            "king_titan": { 
+                hasDiff: true, 
+                category: "Titanen", 
+                name: {de:"King Titan", en:"King Titan"}, 
+                icon:"https://ark.wiki.gg/images/thumb/8/82/King_Titan.png/48px-King_Titan.png", 
+                desc:{de:"Der finale Boss von Extinction. Ein kolossales Monster, das die Korruption anführt.",en:"The final Boss of Extinction. A colossal monster leading the corruption."}, 
+                strategy: {
+                    de: "<h4>Zentrum halten</h4>Seine Aufmerksamkeit muss in der Mitte der Arena bleiben, sonst heilt er sich.<br><br><h4>Element-Knoten</h4>Er geht in eine Phase, wo er kniet und weniger Schaden nimmt. Element-Knoten müssen verteidigt werden.<br><br><h4>Gigas & Titanen</h4>Zähmbare Titanen (Ice, Forest, Desert) sind sehr effektiv, ebenso Gigas für Burst-Schaden.<br><br><h4>Mega Mek (Alpha)</h4>Für den Alpha-Kampf ist der Mega Mek entscheidend.",
+                    en: "<h4>Keep Center</h4>Keep his attention in the center or he resets/heals.<br><br><h4>Element Nodes</h4>Phases where he kneels (dmg reduction) and nodes spawn. Defend nodes.<br><br><h4>Gigas & Titans</h4>Tamed Titans (Ice, Forest, Desert) are very effective, Gigas for burst.<br><br><h4>Mega Mek (Alpha)</h4>The Mega Mek is essential for the Alpha fight."
+                },
+                maps:{
+                    "Extinction": {
+                        "Gamma": {
+                            stats: { hp: "1,500,000", dmg: "0", lvl: "1500" },
+                            tributes: [ {id:"alpha_rex_tooth", q:5}, {id:"corrupt_heart", q:150}, {id:"titan_venom", q:10}, {id:"titan_trophy_desert", q:1}, {id:"titan_trophy_forest", q:1}, {id:"titan_trophy_ice", q:1} ],
+                            loot: [ {id:"element", q:1}, {id:"titan_flag_king", q:1} ],
+                            unlocks: [] // No Tekgrams, just ascension/skins
+                        },
+                        "Beta": {
+                            stats: { hp: "1,500,000", dmg: "0", lvl: "1500" },
+                            tributes: [ {id:"alpha_rex_tooth", q:10}, {id:"corrupt_heart", q:300}, {id:"titan_venom", q:20}, {id:"titan_trophy_desert", q:1}, {id:"titan_trophy_forest", q:1}, {id:"titan_trophy_ice", q:1}, {id:"titan_trophy_gamma", q:1} ],
+                            loot: [ {id:"element", q:1}, {id:"titan_flag_king", q:1} ],
+                            unlocks: []
+                        },
+                        "Alpha": {
+                            stats: { hp: "1,500,000", dmg: "0", lvl: "1500" },
+                            tributes: [ {id:"alpha_rex_tooth", q:10}, {id:"corrupt_heart", q:300}, {id:"giga_heart", q:20}, {id:"spino_sail", q:20}, {id:"titan_venom", q:20}, {id:"titan_trophy_desert", q:1}, {id:"titan_trophy_forest", q:1}, {id:"titan_trophy_ice", q:1}, {id:"titan_trophy_beta", q:1} ],
+                            loot: [ {id:"element", q:1}, {id:"titan_flag_king", q:1} ],
+                            unlocks: []
+                        }
+                    }
+                } 
+            },
             "ice_worm_queen": { hasDiff: false, category: "Minibosse", name: {de:"Ice Worm Queen", en:"Ice Worm Queen"}, icon:"https://ark.wiki.gg/images/thumb/3/3b/Iceworm_Queen.png/48px-Iceworm_Queen.png", desc:{de:"Ragnarok Ice Cave Boss",en:"Ragnarok Ice Cave Boss"}, maps:{} },
             "lava_golem": { hasDiff: false, category: "Minibosse", name: {de:"Lava Elemental", en:"Lava Elemental"}, icon:"https://ark.wiki.gg/images/thumb/4/40/Lava_Elemental.png/48px-Lava_Elemental.png", desc:{de:"Ragnarok Jungle Cave Boss",en:"Ragnarok Jungle Cave Boss"}, maps:{} }
         };
