@@ -1319,7 +1319,14 @@
                 if (!dino) return;
 
                 const limit = 560; // Boss Arena Limit
-                const isAllowed = dino.w <= limit;
+                let isAllowed = dino.w <= limit;
+                let statusText = isAllowed ? '<i class="fa-solid fa-check"></i> Erlaubt' : '<i class="fa-solid fa-xmark"></i> Zu Schwer';
+
+                // Spezielle Ausnahme: Thylacoleo ist in Boss Arenen verboten (Kletterer)
+                if (dino.name.includes("Thylacoleo")) {
+                    isAllowed = false;
+                    statusText = '<i class="fa-solid fa-xmark"></i> Verboten (Kletterer)';
+                }
                 
                 let liftText = "Nein";
                 if (dino.w <= 149) liftText = "Pteranodon, Tapejara";
@@ -1345,7 +1352,7 @@
                                 <div class="status-row">
                                     <span class="st-label">Boss Arena (Limit 560):</span>
                                     <span class="st-val ${isAllowed ? 'st-green' : 'st-red'}">
-                                        ${isAllowed ? '<i class="fa-solid fa-check"></i> Erlaubt' : '<i class="fa-solid fa-xmark"></i> Zu Schwer'}
+                                        ${statusText}
                                     </span>
                                 </div>
                                 <div class="status-row">
