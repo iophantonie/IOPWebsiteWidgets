@@ -910,22 +910,6 @@
                         "Alpha": { stats: { hp: "?", dmg: "?", lvl: "?" }, tributes: [ {id:"art_brute", q:1}, {id:"art_pack", q:1}, {id:"art_devourer", q:1}, {id:"megalodon_tooth", q:10}, {id:"theri_claws", q:10}, {id:"megalania_toxin", q:10}, {id:"spino_sail", q:10}, {id:"thyla_claw", q:10} ], loot: [ {id:"element", q:750}, {id:"trophy_thodes_alpha", q:1} ], unlocks: ["tek_replicator", "tek_gauntlets", "tek_rifle", "tek_dino_gate", "tek_dino_gateway", "tek_door", "tek_window", "tek_rex_saddle", "tek_gen", "tek_grenade", "tek_trough", "tek_wall"] }
                     }
                 }
-            },
-            "boars": {
-                hasDiff: false,
-                category: "Minibosse",
-                name: { de: "Erymanthian & Kalydonios", en: "Erymanthian & Kalydonios" },
-                image: "https://ark.wiki.gg/images/thumb/Boar_Bosses.jpg/600px-Boar_Bosses.jpg",
-                icon: "https://ark.wiki.gg/images/thumb/Daeodon.png/48px-Daeodon.png",
-                desc: { de: "Ein furchteinflößendes Paar von Weltbossen auf Astraeos.", en: "A pair of fearsome world bosses on Astraeos." },
-                arena: { de: "Weltbosse. Spawnen zufällig in der Welt von Astraeos.", en: "World Bosses. They spawn randomly across the world of Astraeos." },
-                behavior: { de: "Riesige Daeodons. Erymanthian ist feuerbeschichtet, Kalydonios ist pilzbewachsen und verbreitet Giftgase.", en: "Giant Daeodons. Erymanthian is coated in fire, Kalydonios emits poison gas." },
-                strategy: { de: "<h4>Gefahren</h4>Beide haben viel Leben. Die toxischen Dämpfe machen Gasmasken empfehlenswert.<br><br><h4>Dinos</h4>Gigas und Carchars können genutzt werden. Yutyrannus und Daeodons zur Unterstützung sind hilfreich.", en: "<h4>Dangers</h4>Both have high health. Gas masks recommended. <br><br><h4>Tames</h4>Gigas and Carchars are viable. Support with Yuty and Daeodons." },
-                maps: {
-                    "Astraeos": {
-                        "Gamma": { stats: { hp: "Sehr hoch", dmg: "Stark", lvl: "Zufällig" }, tributes: [], loot: [ {id:"element", q:"+"}, {id:"trophy_boars", q:1} ], unlocks: [] }
-                    }
-                }
             }
         };
         const DATA_TITANS = {
@@ -990,6 +974,7 @@
                 hasDiff: false, 
                 category: "Minibosse",
                 name: { de: "Broodmother (Valguero)", en: "Broodmother (Valguero)" },
+                location: { de: "Lat: ?? / Lon: ??", en: "Lat: ?? / Lon: ??" },
                 image: "https://ark.wiki.gg/images/thumb/3/36/Dossier_Broodmother.png/300px-Dossier_Broodmother.png",
                 icon: "https://ark.wiki.gg/images/thumb/1/19/Broodmother.png/48px-Broodmother.png",
                 desc: { de: "Eine Welt-Boss Version der Brutmutter, die in der Spinnenhöhle (The Lair) spawnt.", en: "A world boss version of the Broodmother spawning in The Lair (Spider Cave)." },
@@ -1001,7 +986,8 @@
              "ice_worm_queen": { 
                 hasDiff: false, 
                 category: "Minibosse", 
-                name: {de:"Ice Worm Queen", en:"Ice Worm Queen"}, 
+                name: {de:"Ice Worm Queen", en:"Ice Worm Queen"},
+                location: { de: "Lat: ?? / Lon: ??", en: "Lat: ?? / Lon: ??" },
                 image: "https://ark.wiki.gg/images/thumb/7/7b/Iceworm_Image.png/300px-Iceworm_Image.png",
                 icon:"https://ark.wiki.gg/images/thumb/3/3b/Iceworm_Queen.png/48px-Iceworm_Queen.png", 
                 desc:{de:"Eine riesige Todeswurm-Königin im gefrorenen Dungeon.",en:"A massive Deathworm Queen in the Frozen Dungeon."}, 
@@ -1014,6 +1000,7 @@
                 hasDiff: false, 
                 category: "Minibosse", 
                 name: {de:"Lava Elemental", en:"Lava Elemental"}, 
+                location: { de: "Lat: ?? / Lon: ??", en: "Lat: ?? / Lon: ??" },
                 image: "https://ark.wiki.gg/images/thumb/1/14/Lava_Elemental_Image.png/300px-Lava_Elemental_Image.png",
                 icon:"https://ark.wiki.gg/images/thumb/4/40/Lava_Elemental.png/48px-Lava_Elemental.png", 
                 desc: { de: "Dungeon Boss auf Ragnarok (Jungle Dungeon).", en: "Dungeon Boss on Ragnarok (Jungle Dungeon)." },
@@ -1021,12 +1008,25 @@
                 behavior: { de: "Wirft geschmolzene Felsen auf den Spieler. Sehr territorial.", en: "Throws molten rocks at the player. Very territorial." },
                 strategy: { de: "<h4>Explosivwaffen</h4>Nutze Raketenwerfer! Kugeln und Nahkampf sind wirkungslos.<br><br><h4>Schwachstelle</h4>Ziele auf den rechten Arm/Hand für maximalen Schaden.<br><br><h4>Umgebung</h4>Nutze Grappling Hooks für sichere Positionen. Falle nicht in die Lava!", en: "<h4>Explosives</h4>Use Rocket Launchers! Bullets and melee are ineffective.<br><br><h4>Weakness</h4>Aim for the right arm/hand for maximum damage.<br><br><h4>Environment</h4>Use Grappling Hooks for safe spots. Don't fall into the lava!" },
                 maps: { "Ragnarok": { stats: { hp: "60,000+", dmg: "120", lvl: "10+" }, tributes: [], loot: [ {id:"crystal", q:"+"}, {id:"metal", q:"+"}, {id:"obsidian", q:"+"}, {id:"oil", q:"+"}, {id:"sulfur", q:"+"}, {id:"stone", q:"+"}, {id:"tek_gear", q:1} ], unlocks: [] } }
-            }
+            },
+            "boars": {
+                hasDiff: false,
+                category: "Minibosse",
+                name: { de: "Erymanthian & Kalydonios", en: "Erymanthian & Kalydonios" },
+                location: { de: "Lat: ?? / Lon: ?? (Astraeos Wälder)", en: "Lat: ?? / Lon: ?? (Astraeos Forests)" },
+                image: "https://ark.wiki.gg/images/thumb/Boar_Bosses.jpg/600px-Boar_Bosses.jpg",
+                icon: "https://ark.wiki.gg/images/thumb/Daeodon.png/48px-Daeodon.png",
+                desc: { de: "Daeodon-Duo auf Astraeos.", en: "Daeodon duo on Astraeos." },
+                arena: { de: "Weltbosse (Open World).", en: "World Bosses (Open World)." },
+                behavior: { de: "Erymanthian (Feuer), Kalydonios (Giftgas).", en: "Fire and poison gas." },
+                strategy: { de: "Gasmaske tragen! Gigas erlaubt.", en: "Wear gas mask!" },
+                maps: { "Astraeos": { stats: { hp: "Sehr Hoch", lvl: "Zufall" }, tributes: [], loot: [{id:"element", q:"+"}, {id:"trophy_boars", q:1}], unlocks: [] } }
+            },
         };
 
         const BOSS_DATA = { ...DATA_BOSSES, ...DATA_TITANS, ...DATA_MINIBOSSES };
 
-        // --- FUNCTIONS ---
+// --- FUNCTIONS ---
         function getTrans(key) {
             return UI_TEXT[currentLang][key] || key;
         }
@@ -1341,6 +1341,18 @@
                     `;
                 }
 
+                // --- ZUSÄTZLICHES FENSTER NUR FÜR MINIBOSSE ---
+                if (boss.category === "Minibosse") {
+                    html += `
+                        <div class="section-block" style="margin-top: 40px;">
+                            <div class="section-title"><i class="fa-solid fa-map-location-dot"></i> Fundort & Koordinaten</div>
+                            <div class="strategy-box">
+                                <p>${boss.location ? (boss.location[currentLang] || boss.location.en) : "Keine Fundort-Daten verfügbar."}</p>
+                            </div>
+                        </div>
+                    `;
+                }
+
                 if (boss.arena) {
                     html += `
                         <div class="section-block" style="margin-top: 40px;">
@@ -1379,11 +1391,10 @@
                 const dino = DATA_WEIGHTS.find(d => d.name === currentWeightId);
                 if (!dino) return;
 
-                const limit = 560; // Boss Arena Limit
+                const limit = 560; 
                 let isAllowed = dino.w <= limit;
                 let statusText = isAllowed ? '<i class="fa-solid fa-check"></i> Erlaubt' : '<i class="fa-solid fa-xmark"></i> Zu Schwer';
 
-                // Spezielle Ausnahme: Thylacoleo ist in Boss Arenen verboten (Kletterer)
                 if (dino.name.includes("Thylacoleo")) {
                     isAllowed = false;
                     statusText = '<i class="fa-solid fa-xmark"></i> Verboten (Kletterer)';
@@ -1403,34 +1414,25 @@
                                 <img src="${dino.img}" alt="${dino.name}">
                                 <h2>${dino.name}</h2>
                             </div>
-                            
                             <div class="dw-value-box">
                                 <div class="dw-val-label">Drag Weight</div>
                                 <div class="dw-val-number" style="color: ${isAllowed ? '#4CAF50' : '#F44336'}">${dino.w}</div>
                             </div>
-
                             <div class="dw-status">
                                 <div class="status-row">
                                     <span class="st-label">Boss Arena (Limit 560):</span>
-                                    <span class="st-val ${isAllowed ? 'st-green' : 'st-red'}">
-                                        ${statusText}
-                                    </span>
+                                    <span class="st-val ${isAllowed ? 'st-green' : 'st-red'}">${statusText}</span>
                                 </div>
                                 <div class="status-row">
                                     <span class="st-label">Tek Cave (Limit 550+):</span>
-                                    <span class="st-val ${dino.w < 900 ? 'st-green' : 'st-red'}">
-                                        ${dino.w < 900 ? 'Passt durch Tor' : 'Zu Groß'}
-                                    </span>
+                                    <span class="st-val ${dino.w < 900 ? 'st-green' : 'st-red'}">${dino.w < 900 ? 'Passt durch Tor' : 'Zu Groß'}</span>
                                 </div>
                                 <div class="status-row">
                                     <span class="st-label">Transportierbar von:</span>
                                     <span class="st-val st-yellow">${liftText}</span>
                                 </div>
                             </div>
-                            
-                            <div class="note" style="margin-top:20px;">
-                                *Hinweis: Flugtiere sind in den meisten Boss-Arenen deaktiviert, auch wenn das Gewicht passt.
-                            </div>
+                            <div class="note" style="margin-top:20px;">*Hinweis: Flugtiere sind in Boss-Arenen deaktiviert.</div>
                         </div>
                     </div>
                 `;
