@@ -76,6 +76,7 @@
             text-align: center;
             border-bottom: 1px solid var(--c-border);
             background: linear-gradient(180deg, rgba(255,51,0,0.1) 0%, transparent 100%);
+            position: relative;
         }
 
         .title {
@@ -96,6 +97,30 @@
             letter-spacing: 2px;
             margin-top: 8px;
             display: block;
+        }
+
+        /* FLAGGEN SWITCHER */
+        .lang-switch {
+            display: flex;
+            gap: 5px;
+            justify-content: center;
+            margin-top: 15px;
+        }
+        .lang-btn {
+            width: 25px; height: 16px;
+            cursor: pointer;
+            border-radius: 2px;
+            border: 1px solid #fff;
+            opacity: 0.5;
+            transition: transform 0.2s, opacity 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+            padding: 0;
+            display: block;
+        }
+        .lang-btn:hover, .lang-btn.active {
+            opacity: 1; transform: scale(1.15);
+            border-color: var(--c-fire);
+            z-index: 10;
         }
 
         .nav-menu {
@@ -251,9 +276,11 @@
         @media (max-width: 900px) {
             .widget-container { flex-direction: column; width: 100%; height: 100vh; border: none; border-radius: 0; }
             .sidebar { width: 100%; height: auto; border-right: none; border-bottom: 2px solid var(--c-fire); }
-            .nav-menu { display: flex; margin: 0; }
-            .nav-btn { justify-content: center; padding: 15px; font-size: 1rem; }
+            .nav-menu { display: flex; margin: 15px 0; flex-wrap: wrap; justify-content: center; }
+            .nav-btn { justify-content: center; padding: 12px; font-size: 1rem; width: auto; border-left: none; border-bottom: 3px solid transparent; }
+            .nav-btn.active { background: transparent; border-bottom-color: var(--c-fire); }
             .content-area { padding: 20px; }
+            .header-area { padding: 15px; }
         }
     </style>
 </head>
@@ -265,22 +292,49 @@
         <div class="sidebar">
             <div class="header-area">
                 <h1 class="title">Solo Farm</h1>
-                <span class="subtitle">System Integration</span>
+                <span class="subtitle" id="uiSubtitle">System Integration</span>
+                
+                <!-- Flaggen -->
+                <div class="lang-switch">
+                    <svg class="lang-btn active" id="btn-de" onclick="setLang('de')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 5 3">
+                        <rect width="5" height="3" fill="#000"/><rect width="5" height="2" y="1" fill="#D00"/><rect width="5" height="1" y="2" fill="#FFCE00"/>
+                    </svg>
+                    <svg class="lang-btn" id="btn-en" onclick="setLang('en')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 30">
+                        <clipPath id="s"><path d="M0,0 v30 h60 v-30 z"/></clipPath>
+                        <clipPath id="t"><path d="M30,15 h30 v15 z v15 h-30 z h-30 v-15 z v-15 h30 z"/></clipPath>
+                        <g clip-path="url(#s)">
+                            <path d="M0,0 v30 h60 v-30 z" fill="#012169"/>
+                            <path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/>
+                            <path d="M0,0 L60,30 M60,0 L0,30" clip-path="url(#t)" stroke="#C8102E" stroke-width="4"/>
+                            <path d="M30,0 v30 M0,15 h60" stroke="#fff" stroke-width="10"/>
+                            <path d="M30,0 v30 M0,15 h60" stroke="#C8102E" stroke-width="6"/>
+                        </g>
+                    </svg>
+                    <svg class="lang-btn" id="btn-es" onclick="setLang('es')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 750 500">
+                        <rect width="750" height="500" fill="#AA151B"/>
+                        <rect width="750" height="250" y="125" fill="#F1BF00"/>
+                    </svg>
+                    <svg class="lang-btn" id="btn-fr" onclick="setLang('fr')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600">
+                        <rect width="900" height="600" fill="#ED2939"/>
+                        <rect width="600" height="600" fill="#fff"/>
+                        <rect width="300" height="600" fill="#002395"/>
+                    </svg>
+                </div>
             </div>
             
             <ul class="nav-menu">
                 <li>
-                    <button class="nav-btn active" onclick="showTab('info', this)">
+                    <button class="nav-btn active" onclick="showTab('info', this)" id="navInfo">
                         <i class="fa-solid fa-info-circle"></i> Informationen
                     </button>
                 </li>
                 <li>
-                    <button class="nav-btn" onclick="showTab('creatures', this)">
+                    <button class="nav-btn" onclick="showTab('creatures', this)" id="navCreatures">
                         <i class="fa-solid fa-dragon"></i> Kreaturen
                     </button>
                 </li>
                 <li>
-                    <button class="nav-btn" onclick="showTab('commands', this)">
+                    <button class="nav-btn" onclick="showTab('commands', this)" id="navCommands">
                         <i class="fa-solid fa-terminal"></i> Befehle
                     </button>
                 </li>
@@ -288,82 +342,10 @@
         </div>
 
         <!-- CONTENT -->
-        <div class="content-area">
-
-            <!-- TAB: INFO -->
-            <div id="info" class="section active">
-                <div class="section-header">
-                    <i class="fa-solid fa-info-circle section-icon"></i>
-                    <h2 class="section-title">Allgemeine Informationen</h2>
-                </div>
-
-                <div class="info-block">
-                    Dieses System ermöglicht es Einzelspielern oder kleinen Gruppen, effizient Ressourcen zu farmen, indem Dinos automatisch sammeln, wenn sie getragen werden.
-                </div>
-
-                <div class="info-block">
-                    <h3 style="color:#fff; margin-top:0;">Wichtige Regeln & Einschränkungen:</h3>
-                    <ul>
-                        <li><strong>Voraussetzung:</strong> Nur nutzbar von verifizierten Spielern.</li>
-                        <li><strong>Tribe Limit:</strong> Nur möglich in Tribes mit maximal <strong>6 Spielern</strong>.</li>
-                        <li><strong>Limitierung:</strong> Maximal <strong>1 Farm-Kreatur</strong> gleichzeitig nutzbar.</li>
-                        <li><strong>Stamina:</strong> Kreaturen verbrauchen weiterhin ihre Ausdauer.</li>
-                        <li><strong>Gewicht:</strong> Die Extra-Gewichtsreduzierung ist bei diesem Modus deaktiviert.</li>
-                        <li><strong>Überladung:</strong> Überladen ist möglich (Achtung beim Transport!).</li>
-                    </ul>
-                </div>
-
-                <div class="info-block">
-                    <h3 style="color:#fff; margin-top:0;">Wie funktioniert es?</h3>
-                    <p>Du kannst das Farmen durch <strong>Ansehen der Kreatur</strong> aktivieren. Die Kreatur fängt jedoch erst an zu farmen bzw. anzugreifen, wenn du sie mit einem anderen Dino (z.B. Argentavis, Karkinos, Wyvern) gegriffen hast.</p>
-                </div>
-
-                <img src="https://i.postimg.cc/x1kDTNHd/Bild-2024-05-17-204340090.png" class="content-img" onclick="openModal(this.src)" alt="Solo Farm Preview">
-            </div>
-
-            <!-- TAB: CREATURES -->
-            <div id="creatures" class="section">
-                <div class="section-header">
-                    <i class="fa-solid fa-paw section-icon"></i>
-                    <h2 class="section-title">Unterstützte Kreaturen</h2>
-                </div>
-
-                <div class="info-block">
-                    Das Solo-Farm System funktioniert nur mit folgenden ausgewählten Dinos:
-                </div>
-
-                <div class="creature-grid">
-                    <div class="creature-card">Therizinosaurus<br><span style="font-size:0.8em; color:#888;">(auch S-Variante)</span></div>
-                    <div class="creature-card">Doedicurus<br><span style="font-size:0.8em; color:#888;">(auch Aberrant & S-Variante)</span></div>
-                    <div class="creature-card">Ankylosaurus<br><span style="font-size:0.8em; color:#888;">(auch Aberrant & S-Variante)</span></div>
-                    <div class="creature-card">Castoroides<br><span style="font-size:0.8em; color:#888;">(Biber)</span></div>
-                    <div class="creature-card">Mammut</div>
-                    <div class="creature-card">Rollratte</div>
-                    <div class="creature-card">Thorny Dragon</div>
-                </div>
-            </div>
-
-            <!-- TAB: COMMANDS -->
-            <div id="commands" class="section">
-                <div class="section-header">
-                    <i class="fa-solid fa-keyboard section-icon"></i>
-                    <h2 class="section-title">Chat Befehle</h2>
-                </div>
-
-                <div class="cmd-box">
-                    <div style="font-family:var(--f-head); font-size:1.4rem; color:#fff; margin-bottom:5px;">Aktivieren</div>
-                    <div style="color:#ccc; margin-bottom:10px;">Schau die Kreatur an und tippe:</div>
-                    <span class="cmd-code">/farm</span>
-                </div>
-
-                <div class="cmd-box">
-                    <div style="font-family:var(--f-head); font-size:1.4rem; color:#fff; margin-bottom:5px;">Deaktivieren</div>
-                    <div style="color:#ccc; margin-bottom:10px;">Stoppt alle aktiven Farm-Modi:</div>
-                    <span class="cmd-code">/stopall</span>
-                </div>
-            </div>
-
+        <div class="content-area" id="contentContainer">
+             <!-- Content injected via JS -->
         </div>
+
     </div>
 
     <!-- Modal -->
@@ -373,16 +355,168 @@
     </div>
 
     <script>
+        // =========================================================================
+        // 1. DATABASE (ÜBERSETZUNGEN)
+        // =========================================================================
+        const translations = {
+            subtitle: { de: "System Integration", en: "System Integration", es: "Integración del Sistema", fr: "Intégration Système" },
+            
+            nav: {
+                info: { de: "Informationen", en: "Information", es: "Información", fr: "Informations" },
+                creatures: { de: "Kreaturen", en: "Creatures", es: "Criaturas", fr: "Créatures" },
+                commands: { de: "Befehle", en: "Commands", es: "Comandos", fr: "Commandes" }
+            },
+
+            sections: {
+                info: {
+                    header: { de: "Allgemeine Informationen", en: "General Information", es: "Información General", fr: "Informations Générales" },
+                    intro: { 
+                        de: "Dieses System ermöglicht es Einzelspielern oder kleinen Gruppen, effizient Ressourcen zu farmen, indem Dinos automatisch sammeln, wenn sie getragen werden.", 
+                        en: "This system allows solo players or small groups to farm resources efficiently by having dinos harvest automatically while being carried.",
+                        es: "Este sistema permite a jugadores solitarios cultivar eficientemente: los dinos recolectan automáticamente al ser transportados.",
+                        fr: "Ce système permet aux joueurs solo de farmer efficacement : les dinos récoltent automatiquement lorsqu'ils sont portés."
+                    },
+                    rules_title: { de: "Wichtige Regeln & Einschränkungen:", en: "Important Rules & Limitations:", es: "Reglas Importantes:", fr: "Règles Importantes :" },
+                    rules_list: {
+                        de: ["<strong>Voraussetzung:</strong> Nur nutzbar von verifizierten Spielern.", "<strong>Tribe Limit:</strong> Nur möglich in Tribes mit maximal <strong>6 Spielern</strong>.", "<strong>Limitierung:</strong> Maximal <strong>1 Farm-Kreatur</strong> gleichzeitig nutzbar.", "<strong>Stamina:</strong> Kreaturen verbrauchen weiterhin ihre Ausdauer.", "<strong>Gewicht:</strong> Die Extra-Gewichtsreduzierung ist bei diesem Modus deaktiviert.", "<strong>Überladung:</strong> Überladen ist möglich (Achtung beim Transport!)."],
+                        en: ["<strong>Requirement:</strong> Verified players only.", "<strong>Tribe Limit:</strong> Max <strong>6 players</strong> per tribe.", "<strong>Limit:</strong> Max <strong>1 farm creature</strong> active at a time.", "<strong>Stamina:</strong> Creatures consume stamina.", "<strong>Weight:</strong> Extra weight reduction is disabled in this mode.", "<strong>Overload:</strong> Overloading is possible (Be careful during transport!)."],
+                        es: ["<strong>Requisito:</strong> Solo jugadores verificados.", "<strong>Límite Tribu:</strong> Máx <strong>6 jugadores</strong>.", "<strong>Límite:</strong> Máx <strong>1 criatura</strong> a la vez.", "<strong>Estamina:</strong> Consumen estamina.", "<strong>Peso:</strong> Reducción de peso extra desactivada.", "<strong>Sobrecarga:</strong> Posible (¡Cuidado!)."],
+                        fr: ["<strong>Requis :</strong> Joueurs vérifiés uniquement.", "<strong>Limite Tribu :</strong> Max <strong>6 joueurs</strong>.", "<strong>Limite :</strong> Max <strong>1 créature</strong> à la fois.", "<strong>Endurance :</strong> Consomment de l'endurance.", "<strong>Poids :</strong> Réduction de poids supplémentaire désactivée.", "<strong>Surcharge :</strong> Possible (Attention !)."]
+                    },
+                    howto_title: { de: "Wie funktioniert es?", en: "How does it work?", es: "¿Cómo funciona?", fr: "Comment ça marche ?" },
+                    howto_text: { 
+                        de: "Du kannst das Farmen durch <strong>Ansehen der Kreatur</strong> aktivieren (Chatbefehl). Die Kreatur fängt jedoch erst an zu farmen bzw. anzugreifen, wenn du sie mit einem anderen Dino (z.B. Argentavis, Karkinos, Wyvern) gegriffen hast.", 
+                        en: "Activate farming by <strong>looking at the creature</strong> (chat command). The creature will only start harvesting/attacking when carried by another dino (e.g. Argentavis, Karkinos, Wyvern).",
+                        es: "Activa mirando a la criatura. Solo recolecta cuando es transportada por otro dino (ej. Argentavis).",
+                        fr: "Activez en regardant la créature. Elle ne récolte que lorsqu'elle est portée par un autre dino (ex. Argentavis)."
+                    },
+                    img: "https://i.postimg.cc/x1kDTNHd/Bild-2024-05-17-204340090.png"
+                },
+                creatures: {
+                    header: { de: "Unterstützte Kreaturen", en: "Supported Creatures", es: "Criaturas Soportadas", fr: "Créatures Supportées" },
+                    info: { 
+                        de: "Das Solo-Farm System funktioniert nur mit folgenden ausgewählten Dinos:", 
+                        en: "The Solo-Farm system only works with the following selected dinos:",
+                        es: "El sistema solo funciona con estos dinos:",
+                        fr: "Le système ne fonctionne qu'avec ces dinos :"
+                    },
+                    list: [
+                        { de: "Therizinosaurus<br><span style='font-size:0.8em; color:#888;'>(auch S-Variante)</span>", en: "Therizinosaurus<br><span style='font-size:0.8em; color:#888;'>(also S-Variant)</span>", es: "Therizinosaurus", fr: "Therizinosaurus" },
+                        { de: "Doedicurus<br><span style='font-size:0.8em; color:#888;'>(auch Aberrant & S-Variante)</span>", en: "Doedicurus<br><span style='font-size:0.8em; color:#888;'>(also Aberrant & S)</span>", es: "Doedicurus", fr: "Doedicurus" },
+                        { de: "Ankylosaurus<br><span style='font-size:0.8em; color:#888;'>(auch Aberrant & S-Variante)</span>", en: "Ankylosaurus<br><span style='font-size:0.8em; color:#888;'>(also Aberrant & S)</span>", es: "Ankylosaurus", fr: "Ankylosaurus" },
+                        { de: "Castoroides<br><span style='font-size:0.8em; color:#888;'>(Biber)</span>", en: "Castoroides<br><span style='font-size:0.8em; color:#888;'>(Beaver)</span>", es: "Castoroides", fr: "Castoroides" },
+                        { de: "Mammut", en: "Mammoth", es: "Mamut", fr: "Mammouth" },
+                        { de: "Rollratte", en: "Roll Rat", es: "Rata Topo", fr: "Rat Taupe" },
+                        { de: "Thorny Dragon", en: "Thorny Dragon", es: "Dragón Espinoso", fr: "Moloch" }
+                    ]
+                },
+                commands: {
+                    header: { de: "Chat Befehle", en: "Chat Commands", es: "Comandos de Chat", fr: "Commandes de Chat" },
+                    activate_title: { de: "Aktivieren", en: "Activate", es: "Activar", fr: "Activer" },
+                    activate_desc: { de: "Schau die Kreatur an und tippe:", en: "Look at the creature and type:", es: "Mira a la criatura y escribe:", fr: "Regardez la créature et tapez :" },
+                    cmd_farm: "/farm",
+                    deactivate_title: { de: "Deaktivieren", en: "Deactivate", es: "Desactivar", fr: "Désactiver" },
+                    deactivate_desc: { de: "Stoppt alle aktiven Farm-Modi:", en: "Stops all active farm modes:", es: "Detiene modos activos:", fr: "Arrête tous les modes actifs :" },
+                    cmd_stop: "/stopall"
+                }
+            }
+        };
+
+        // =========================================================================
+        // 2. LOGIC
+        // =========================================================================
+        let currentLang = 'de';
+        let currentTab = 'info';
+
+        function setLang(lang) {
+            currentLang = lang;
+            
+            // Buttons
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('btn-' + lang).classList.add('active');
+
+            // Static Text
+            document.getElementById('uiSubtitle').innerText = translations.subtitle[lang];
+            
+            // Nav Text
+            document.getElementById('navInfo').innerHTML = `<i class="fa-solid fa-info-circle"></i> ${translations.nav.info[lang]}`;
+            document.getElementById('navCreatures').innerHTML = `<i class="fa-solid fa-dragon"></i> ${translations.nav.creatures[lang]}`;
+            document.getElementById('navCommands').innerHTML = `<i class="fa-solid fa-terminal"></i> ${translations.nav.commands[lang]}`;
+
+            // Re-render Content
+            renderContent();
+        }
+
         function showTab(tabId, btn) {
-            // Hide all sections
-            document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+            currentTab = tabId;
             
-            // Deactivate buttons
+            // Buttons UI
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            
-            // Activate selected
-            document.getElementById(tabId).classList.add('active');
             btn.classList.add('active');
+
+            renderContent();
+        }
+
+        function renderContent() {
+            const container = document.getElementById('contentContainer');
+            container.innerHTML = '';
+            
+            const data = translations.sections;
+
+            if (currentTab === 'info') {
+                container.innerHTML = `
+                    <div class="section active">
+                        <div class="section-header">
+                            <i class="fa-solid fa-info-circle section-icon"></i>
+                            <h2 class="section-title">${data.info.header[currentLang]}</h2>
+                        </div>
+                        <div class="info-block">${data.info.intro[currentLang]}</div>
+                        <div class="info-block">
+                            <h3 style="color:#fff; margin-top:0;">${data.info.rules_title[currentLang]}</h3>
+                            <ul>${data.info.rules_list[currentLang].map(r => `<li>${r}</li>`).join('')}</ul>
+                        </div>
+                        <div class="info-block">
+                            <h3 style="color:#fff; margin-top:0;">${data.info.howto_title[currentLang]}</h3>
+                            <p>${data.info.howto_text[currentLang]}</p>
+                        </div>
+                        <img src="${data.info.img}" class="content-img" onclick="openModal(this.src)" alt="Preview">
+                    </div>
+                `;
+            } else if (currentTab === 'creatures') {
+                const cardsHTML = data.creatures.list.map(c => `
+                    <div class="creature-card">${c[currentLang]}</div>
+                `).join('');
+
+                container.innerHTML = `
+                    <div class="section active">
+                        <div class="section-header">
+                            <i class="fa-solid fa-paw section-icon"></i>
+                            <h2 class="section-title">${data.creatures.header[currentLang]}</h2>
+                        </div>
+                        <div class="info-block">${data.creatures.info[currentLang]}</div>
+                        <div class="creature-grid">${cardsHTML}</div>
+                    </div>
+                `;
+            } else if (currentTab === 'commands') {
+                container.innerHTML = `
+                    <div class="section active">
+                        <div class="section-header">
+                            <i class="fa-solid fa-keyboard section-icon"></i>
+                            <h2 class="section-title">${data.commands.header[currentLang]}</h2>
+                        </div>
+                        <div class="cmd-box">
+                            <div style="font-family:var(--f-head); font-size:1.4rem; color:#fff; margin-bottom:5px;">${data.commands.activate_title[currentLang]}</div>
+                            <div style="color:#ccc; margin-bottom:10px;">${data.commands.activate_desc[currentLang]}</div>
+                            <span class="cmd-code">${data.commands.cmd_farm}</span>
+                        </div>
+                        <div class="cmd-box">
+                            <div style="font-family:var(--f-head); font-size:1.4rem; color:#fff; margin-bottom:5px;">${data.commands.deactivate_title[currentLang]}</div>
+                            <div style="color:#ccc; margin-bottom:10px;">${data.commands.deactivate_desc[currentLang]}</div>
+                            <span class="cmd-code">${data.commands.cmd_stop}</span>
+                        </div>
+                    </div>
+                `;
+            }
         }
 
         // Modal Logic
@@ -401,6 +535,12 @@
         modal.addEventListener('click', (e) => {
             if(e.target === modal) closeModal();
         });
+
+        // Init
+        window.onload = function() {
+            setLang('de');
+        };
+
     </script>
 
 </body>
