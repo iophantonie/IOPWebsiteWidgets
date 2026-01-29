@@ -47,8 +47,8 @@
         .app-container {
             background-color: var(--color-dark);
             border-radius: 8px;
-            border: 2px solid var(--color-fire); /* Statisches Rot als Basis */
-            animation: fire-pulse 4s infinite ease-in-out; /* Nur der Glow pulsiert */
+            border: 2px solid var(--color-fire); 
+            animation: fire-pulse 4s infinite ease-in-out; 
             width: 100%;
             height: 100%;
             display: flex;
@@ -64,6 +64,45 @@
             text-align: center;
             flex-shrink: 0;
             border-bottom: 2px solid #222;
+            position: relative; /* Für Flaggen */
+        }
+
+        /* FLAGGEN SWITCHER */
+        .lang-switch {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            display: flex;
+            gap: 5px;
+        }
+        .lang-btn {
+            width: 30px; height: 20px;
+            cursor: pointer;
+            border-radius: 3px;
+            border: 1px solid #fff;
+            opacity: 0.5;
+            transition: transform 0.2s, opacity 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+            padding: 0;
+            display: block;
+        }
+        .lang-btn:hover, .lang-btn.active {
+            opacity: 1; transform: scale(1.15);
+            border-color: var(--color-fire);
+            z-index: 10;
+        }
+
+        @media (max-width: 600px) {
+            .lang-switch {
+                position: static;
+                justify-content: center;
+                margin-bottom: 10px;
+            }
+            .header {
+                display: flex;
+                flex-direction: column;
+            }
+            .title { margin-top: 0; }
         }
 
         .title {
@@ -72,7 +111,7 @@
             text-transform: uppercase;
             margin: 0 0 5px 0;
             letter-spacing: 2px;
-            color: var(--color-fire); /* Einfarbig Feuerrot */
+            color: var(--color-fire); 
             text-shadow: 0 0 10px rgba(255, 51, 0, 0.4);
             line-height: 1.2;
         }
@@ -152,7 +191,7 @@
         .filter-btn.active {
             background: var(--color-fire);
             border-color: var(--color-fire);
-            color: #fff; /* Weißer Text auf rotem Grund */
+            color: #fff; 
             box-shadow: 0 2px 8px rgba(255, 51, 0, 0.4);
         }
 
@@ -169,7 +208,7 @@
         .content-area::-webkit-scrollbar { width: 8px; }
         .content-area::-webkit-scrollbar-thumb { background-color: #444; border-radius: 4px; }
 
-        /* Feature Card - KOMPAKT & SCHLICHT */
+        /* Feature Card */
         .feature-card {
             background-color: var(--color-card-bg);
             border: 1px solid rgba(255,255,255,0.08);
@@ -186,7 +225,7 @@
         .feature-card:hover {
             transform: translateY(-3px);
             box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-            border-color: var(--color-fire); /* Roter Rand beim Hover */
+            border-color: var(--color-fire); 
         }
 
         .card-body {
@@ -215,7 +254,6 @@
             white-space: nowrap;
         }
 
-        /* Titel jetzt auch Weiß/Hell für bessere Lesbarkeit */
         .card-title {
             font-family: var(--font-header);
             font-size: 1.25rem;
@@ -328,11 +366,10 @@
         .modal-text ul { padding-left: 20px; margin-bottom: 15px; }
         .modal-text li { margin-bottom: 5px; }
         .modal-text code { background: #333; padding: 3px 6px; border-radius: 4px; font-family: monospace; color: #ffcc00; border: 1px solid #444; }
-        .modal-text a { color: var(--color-success); text-decoration: none; border-bottom: 1px dashed var(--color-success); }
+        .modal-text a { color: var(--color-info); text-decoration: none; border-bottom: 1px dashed var(--color-info); }
         .modal-text a:hover { color: #fff; border-bottom-style: solid; }
 
         .hidden { display: none; }
-
     </style>
 </head>
 <body>
@@ -340,23 +377,50 @@
     <div class="app-container">
         
         <div class="header">
+            <!-- 4 Flaggen -->
+            <div class="lang-switch">
+                <svg class="lang-btn active" id="btn-de" onclick="setLang('de')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 5 3">
+                    <rect width="5" height="3" fill="#000"/><rect width="5" height="2" y="1" fill="#D00"/><rect width="5" height="1" y="2" fill="#FFCE00"/>
+                </svg>
+                <svg class="lang-btn" id="btn-en" onclick="setLang('en')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 30">
+                    <clipPath id="s"><path d="M0,0 v30 h60 v-30 z"/></clipPath>
+                    <clipPath id="t"><path d="M30,15 h30 v15 z v15 h-30 z h-30 v-15 z v-15 h30 z"/></clipPath>
+                    <g clip-path="url(#s)">
+                        <path d="M0,0 v30 h60 v-30 z" fill="#012169"/>
+                        <path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/>
+                        <path d="M0,0 L60,30 M60,0 L0,30" clip-path="url(#t)" stroke="#C8102E" stroke-width="4"/>
+                        <path d="M30,0 v30 M0,15 h60" stroke="#fff" stroke-width="10"/>
+                        <path d="M30,0 v30 M0,15 h60" stroke="#C8102E" stroke-width="6"/>
+                    </g>
+                </svg>
+                <svg class="lang-btn" id="btn-es" onclick="setLang('es')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 750 500">
+                    <rect width="750" height="500" fill="#AA151B"/>
+                    <rect width="750" height="250" y="125" fill="#F1BF00"/>
+                </svg>
+                <svg class="lang-btn" id="btn-fr" onclick="setLang('fr')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600">
+                    <rect width="900" height="600" fill="#ED2939"/>
+                    <rect width="600" height="600" fill="#fff"/>
+                    <rect width="300" height="600" fill="#002395"/>
+                </svg>
+            </div>
+
             <h1 class="title">Infinity of Phoenix</h1>
-            <div class="subtitle">Features, Custom Content & Highlights</div>
+            <div class="subtitle" id="uiSubtitle">Features, Custom Content & Highlights</div>
         </div>
 
         <div class="controls-area">
             <div class="search-wrapper">
                 <i class="fa-solid fa-search search-icon"></i>
-                <input type="text" id="searchInput" class="search-input" placeholder="Suche nach Feature (z.B. Shop, Decay, Mating)...">
+                <input type="text" id="searchInput" class="search-input" placeholder="Suche...">
             </div>
             
             <div class="filter-buttons" id="filterContainer">
-                <button class="filter-btn active" data-cat="all">Alle</button>
-                <button class="filter-btn" data-cat="general">Allgemein</button>
-                <button class="filter-btn" data-cat="creature">Kreaturen</button>
-                <button class="filter-btn" data-cat="structure">Strukturen</button>
-                <button class="filter-btn" data-cat="shop">Shop & Items</button>
-                <button class="filter-btn" data-cat="gameplay">Gameplay</button>
+                <button class="filter-btn active" data-cat="all" id="filter-all">Alle</button>
+                <button class="filter-btn" data-cat="general" id="filter-general">Allgemein</button>
+                <button class="filter-btn" data-cat="creature" id="filter-creature">Kreaturen</button>
+                <button class="filter-btn" data-cat="structure" id="filter-structure">Strukturen</button>
+                <button class="filter-btn" data-cat="shop" id="filter-shop">Shop & Items</button>
+                <button class="filter-btn" data-cat="gameplay" id="filter-gameplay">Gameplay</button>
             </div>
         </div>
 
@@ -381,430 +445,408 @@
     </div>
 
     <script>
-        // --- DATA ---
-        const features = [
-            // --- ALLGEMEIN ---
-            {
-                title: "Professionelles Team",
-                cat: "general",
-                img: "https://infinityofphoenix-asa.com/images/logo.png",
-                desc: "Erfahrene Admins, Developer & Modder.",
-                content: "Unser Team ist professionell strukturiert und umfasst hauseigene Developer, Modder und Map-Creator, die für einzigartigen Content sorgen."
-            },
-            {
-                title: "High-Performance Server",
-                cat: "general",
-                img: "https://i.postimg.cc/ZqcqvQnK/5db9f40884238add80ae2f50.png", // Tech/Server look
-                desc: "Root Server & Sicherheit.",
-                content: "Wir nutzen die besten Hochleistungs-Root Server für maximale Performance (150+ Spieler).<br><strong>Sicherheit:</strong><br>- Automatische Serverrestarts bei Crash/Problemen.<br>- Charakter- & Item-Verlust-Sicherungen.<br>- Rollback-Schutz."
-            },
-            {
-                title: "Komplett neues Server-Konzept",
-                cat: "general",
-                img: "https://infinityofphoenix-asa.com/images/logo.png",
-                desc: "Vanilla-nahe mit Progression.",
-                content: "Spiele nahe am Vanilla Stil, mit progressivem Zugang zu zusätzlichen Mod-Inhalten wie einem eigenen Masterbreeding System und einzigartigen Kreaturen."
-            },
-            {
-                title: "Cluster Scoreboards",
-                cat: "general",
-                img: "https://infinityofphoenix-asa.com/images/logo.png",
-                desc: "Wer ist der Beste?",
-                content: "Vergleiche dich mit anderen Spielern auf unseren Cluster-weiten Bestenlisten."
-            },
-            {
-                title: "Tribe-Log im Discord",
-                cat: "general",
-                img: "https://i.postimg.cc/NjnKdmD1/Bild-2024-05-17-214812864.png",
-                desc: "Logs auf dein Handy.",
-                content: "Lass dir dein Ingame-Log in einen Discord-Channel senden. Egal ob auf unserem Discord oder deinem privaten!<br>Befehl: <code>/tribelog [Webhook-URL]</code>."
-            },
-            {
-                title: "2Wege-CrossChat",
-                cat: "general",
-                img: "https://i.postimg.cc/qqcmLkd3/Bild-2024-05-17-214937689.png",
-                desc: "Chatte Cluster-weit und mit Discord.",
-                content: "Ihr könnt über alle Karten miteinander schreiben und sogar über den Discord-Kanal mit Leuten Ingame kommunizieren."
-            },
-            {
-                title: "Livestatus",
-                cat: "general",
-                img: "https://i.postimg.cc/nrYgMVsz/Vn-timoradulla331-6-chibi-sticker4.png",
-                desc: "Wer ist online?",
-                content: "Checke im Discord Channel 🟢│𝐋𝐢𝐯𝐞𝐬𝐭𝐚𝐭𝐮𝐬, wer wo spielt und ob die Server online sind."
-            },
-            {
-                title: "Multi-Charakter-Block",
-                cat: "general",
-                img: "https://i.postimg.cc/LXHNPHmp/Bild-2024-05-21-225911743.png",
-                desc: "1 Char pro Cluster.",
-                content: "Es ist nur ein Charakter erlaubt (Ausnahme: ClubArk). Solltest du vergessen haben wo du warst, wirst du beim Login informiert."
-            },
-            {
-                title: "Charakter-Namensänderung",
-                cat: "general",
-                img: "https://i.postimg.cc/KzcDYm8Q/3t-NBcp-HWd-HZEn-H3-RDHuiioth-Pt8-E1f6-QE9-Fqlqc-A.webp",
-                desc: "Alle 3 Monate verfügbar.",
-                content: "Du kannst dir im Shop alle 3 Monate eine Namensänderung kaufen und diese via Token im Spiel durchführen."
-            },
-            {
-                title: "IOP Cluster Explorer",
-                cat: "general",
-                img: "https://infinityofphoenix-asa.com/images/logo.png",
-                desc: "Ingame Wiki.",
-                content: "Eine eigene Wiki, nur auf das Cluster zugeschnitten und mit extra Inhalten befüllt."
-            },
-            {
-                title: "Discord-Booster-Belohnung",
-                cat: "general",
-                img: "https://i.postimg.cc/X7cj3Wtp/56-IA1-C4-Ijwugg0-T0-HMUGGZS0c-B4i8z-W8-Ga-Hi0-Hpq.webp",
-                desc: "Stat-Bonus und Icon für Booster.",
-                content: "Jeder Booster erhält eine Rolle und eine lila Flamme im Chat.<br><strong>Bonus:</strong><br>+10% Resistenz<br>+20% Gewicht<br>+20% Wasser & Nahrung.<br>(Stackbar mit anderen Boosts)."
-            },
-            {
-                title: "Unstuck-Teleportationen",
-                cat: "general",
-                img: "https://i.postimg.cc/0NnHnW6W/s-I0vg-QRCi-Wk-Sd-LMk-Mpbk-Owg5-Io-CE4fu-RJBha7-Poz.webp",
-                desc: "1x Täglich zum Obelisken.",
-                content: "Du kannst dich 1x pro Tag im Shop zu einem Obelisken (oder Public Spot auf Aberration) teleportieren lassen (3 Min Delay)."
-            },
-            {
-                title: "Suicide",
-                cat: "general",
-                img: "https://i.postimg.cc/ZqcqvQnK/5db9f40884238add80ae2f50.png",
-                desc: "Wenn man feststeckt.",
-                content: "Befehl: <code>/suicide</code> (Wie gewohnt, um sich selbst zu töten)."
-            },
-            {
-                title: "Weitere Spieleserver",
-                cat: "general",
-                img: "https://i.postimg.cc/LXHNPHmp/Bild-2024-05-21-225911743.png",
-                desc: "Abwechslung im Cluster.",
-                content: "Wir bieten mehr als nur Ark: Primal Ark, Mod-Rotationskarte (Season), PVP/PVE, Minecraft, Palworld und mehr!"
+        // =========================================================================
+        // 1. DATENBANK (ÜBERSETZUNGEN & INHALTE)
+        // =========================================================================
+        const translations = {
+            subtitle: { de: "Features, Custom Content & Highlights", en: "Features, Custom Content & Highlights", es: "Características, Contenido y Destacados", fr: "Fonctionnalités, Contenu et Points Forts" },
+            search: { de: "Suche nach Feature (z.B. Shop, Decay, Mating)...", en: "Search features (e.g. Shop, Decay, Mating)...", es: "Buscar características...", fr: "Rechercher des fonctionnalités..." },
+            more_info: { de: "Mehr Infos", en: "More Info", es: "Más Info", fr: "Plus d'Infos" },
+            
+            nav: {
+                all: { de: "Alle", en: "All", es: "Todos", fr: "Tous" },
+                general: { de: "Allgemein", en: "General", es: "General", fr: "Général" },
+                creature: { de: "Kreaturen", en: "Creatures", es: "Criaturas", fr: "Créatures" },
+                structure: { de: "Strukturen", en: "Structures", es: "Estructuras", fr: "Structures" },
+                shop: { de: "Shop & Items", en: "Shop & Items", es: "Tienda", fr: "Boutique" },
+                gameplay: { de: "Gameplay", en: "Gameplay", es: "Juego", fr: "Jeu" }
             },
 
-            // --- GAMEPLAY ---
-            {
-                title: "Progressive Spieler Systeme",
-                cat: "gameplay",
-                img: "https://i.postimg.cc/NGHZqxZM/Bc-GYR9-Ha6-Evsf3iu-HBZUT7zs-Lu7-Zp-AFf-Kt-E4-K0-QP.webp",
-                desc: "Quests, Bosse & Decay.",
-                content: "Erlebe Quest-Systeme, World Bosse und erweiterbare Strukturenlimits durch Gameplay."
-            },
-            {
-                title: "IOP UI",
-                cat: "gameplay",
-                img: "https://i.postimg.cc/bJGRXfsV/Ui-Menu-IOP.webp",
-                desc: "Dein ultimativer Ingame-Helfer.",
-                content: "Unsere Ingame Spieler UI unterstützt dich in allem:<br>- Performance Commands (Wolken/Nebel)<br>- Wegweiser mit Auto-Marker zu Points of Interest<br>- Ingame Regelwerk<br>- Live-Server Raten Anzeige"
-            },
-            {
-                title: "Radialmenü Pack",
-                cat: "gameplay",
-                img: "https://i.postimg.cc/bJGRXfsV/Ui-Menu-IOP.webp",
-                desc: "Wichtige Tools auf Tastendruck.",
-                content: "Zugriff auf:<br>- Leichenfinder (Dead Body)<br>- Explorer Note Tracker<br>- Questbuch<br>- IOP UI<br>- <strong>Lost & Found Meldungen</strong>"
-            },
-            {
-                title: "Direkte Solo Farm Integration",
-                cat: "gameplay",
-                img: "https://i.postimg.cc/VLFZQqNt/Bild-2024-05-17-205400232.png",
-                desc: "Hilfe für Einzelspieler.",
-                content: "Spezielle Integrationen, damit auch Solo-Spieler effizient farmen können."
-            },
-            {
-                title: "Automatische Wochenendraten",
-                cat: "gameplay",
-                img: "https://i.postimg.cc/QMwMnbWD/7-RRVha-OOu8dt-Qfmbz-F4v-UWp-LOq-Od1h-UH9l-Yj7-Wq6.webp",
-                desc: "Jedes Wochenende x2.",
-                content: "Automatisch erhöhte Raten am Wochenende für mehr Fortschritt."
-            },
-            {
-                title: "Anti PVE Griefing",
-                cat: "gameplay",
-                img: "https://i.postimg.cc/T349tPP5/220-F-634532179-1-Hd-Qpxn-FYAqae9-Rh-OFpq-TICat39-JCz-Po.jpg",
-                desc: "Schutz vor Trollen.",
-                content: "Du wirst nicht bestohlen, getrollt oder genervt.<br>Fremde können:<br>- Keine Dinos zum Breeden dazu stellen.<br>- Keine Items klauen.<br>- Keine Körper ziehen.<br>Innerhalb der Allianz funktioniert alles wie gewohnt."
-            },
-            {
-                title: "WildDino-Kills",
-                cat: "gameplay",
-                img: "https://i.postimg.cc/0NXLN78S/pngimg-com-death-PNG66.png",
-                desc: "Regelmäßige Respawns.",
-                content: "- Custom Kill (behält 130+ Dinos): Täglich 01:00 Uhr.<br>- Total Kill: Alle 3 Tage 01:00 Uhr."
-            },
-            {
-                title: "Geistheiler",
-                cat: "gameplay",
-                img: "https://i.postimg.cc/0NXLN78S/pngimg-com-death-PNG66.png",
-                desc: "Hole dein Gear zurück.",
-                content: "Du bist gestorben und hast dein bestes Gear verloren? Wenn du genügend Tokens gesammelt hast, kannst du es dir wiederbringen lassen!"
-            },
-            {
-                title: "IOP Arenas",
-                cat: "gameplay",
-                img: "https://infinityofphoenix-asa.com/images/logo.png",
-                desc: "Endgame Kämpfe (Coming Soon).",
-                content: "Kämpfe dich Arena für Arena im Endgame frei."
-            },
-            {
-                title: "IOP Cluster Games",
-                cat: "gameplay",
-                img: "https://i.postimg.cc/Z5rjrY4F/Bild-2024-05-17-214332739.png",
-                desc: "Stündliche Challenges.",
-                content: "Erledige stündlich laufende Cluster-Challenges für tolle Belohnungen!"
-            },
-            {
-                title: "Sonntags Perks",
-                cat: "gameplay",
-                img: "https://i.postimg.cc/QMwMnbWD/7-RRVha-OOu8dt-Qfmbz-F4v-UWp-LOq-Od1h-UH9l-Yj7-Wq6.webp",
-                desc: "Boni am Sonntag.",
-                content: "Spezielle Perks für Spieler jeden Sonntag."
-            },
-            {
-                title: "Drop & Vain Info",
-                cat: "gameplay",
-                img: "https://i.postimg.cc/C5bHtXWv/Bild-2025-02-01-173833957.png",
-                desc: "Extinction & Astraeos Live.",
-                content: "Prüfe im Discord, welche Drops und Elementadern auf Extinction und Astraeos aktiv sind."
-            },
-            {
-                title: "Custom-Transfer-System",
-                cat: "gameplay",
-                img: "https://i.postimg.cc/jd0zvQDy/Bild-2024-05-17-213356289.png",
-                desc: "Sicheres Reisen.",
-                content: "Überarbeitetes System ohne Item-Verlust. Rüstung wird auto-unequipped. Element und Tribute sind transferierbar."
-            },
-            {
-                title: "Schwarzmarkt Eventkarte",
-                cat: "gameplay",
-                img: "https://i.postimg.cc/hjbVWvWp/image.png",
-                desc: "Hauseigene Map im Ultimate Stil.",
-                content: "Besuche unsere eigens gestaltete Event-Karte. <a href='https://infinityofphoenix-asa.com/page/110561-IoP_Schwarzmarkt_Karte' target='_blank'>Mehr Infos auf der Webseite</a>."
-            },
-            {
-                title: "Engrams Reloaded",
-                cat: "gameplay",
-                img: "https://i.postimg.cc/6pf8hQYt/Bild-2024-05-17-205621204.png",
-                desc: "Alles automatisch lernen.",
-                content: "Mit <code>/giveengrams</code> lernst du alle verfügbaren Engramme deines Levels (außer Tek). Reskill via Mindwipe."
-            },
-            {
-                title: "Biberdämme Reloaded",
-                cat: "gameplay",
-                img: "https://i.postimg.cc/VLFZQqNt/Bild-2024-05-17-205400232.png",
-                desc: "Keine vollen Holzdämme mehr.",
-                content: "Wenn nur Holz im Damm bleibt, wird er automatisch zerstört. Das Holz wird als Itembeutel fallen gelassen."
-            },
-            {
-                title: "Custom Content",
-                cat: "gameplay",
-                img: "https://infinityofphoenix-asa.com/images/logo.png",
-                desc: "Items & Bosse.",
-                content: "Eigener balanced Propagator, eigenes Spyglass, Tribe-Cave Tower, World Bosse und mehr!"
-            },
+            // FEATURES - VOLLE LISTE
+            features: [
+                {
+                    cat: "general", img: "https://infinityofphoenix-asa.com/images/logo.png",
+                    title: { de: "Professionelles Team", en: "Professional Team", es: "Equipo Profesional", fr: "Équipe Professionnelle" },
+                    desc: { de: "Erfahrene Admins, Developer & Modder.", en: "Experienced Admins, Developers & Modders.", es: "Admins, Desarrolladores y Modders expertos.", fr: "Admins, Développeurs et Moddeurs expérimentés." },
+                    content: { de: "Unser Team ist professionell strukturiert und umfasst hauseigene Developer, Modder und Map-Creator, die für einzigartigen Content sorgen.", en: "Our team is professionally structured and includes in-house developers, modders, and map creators providing unique content.", es: "Nuestro equipo incluye desarrolladores, modders y creadores de mapas internos.", fr: "Notre équipe comprend des développeurs, moddeurs et créateurs de cartes internes." }
+                },
+                {
+                    cat: "general", img: "https://i.postimg.cc/ZqcqvQnK/5db9f40884238add80ae2f50.png",
+                    title: { de: "High-Performance Server", en: "High-Performance Server", es: "Servidor de Alto Rendimiento", fr: "Serveur Haute Performance" },
+                    desc: { de: "Root Server & Sicherheit.", en: "Root Server & Security.", es: "Servidor Root y Seguridad.", fr: "Serveur Root & Sécurité." },
+                    content: { de: "Wir nutzen die besten Hochleistungs-Root Server für maximale Performance (150+ Spieler).<br><strong>Sicherheit:</strong><br>- Automatische Serverrestarts bei Crash/Problemen.<br>- Charakter- & Item-Verlust-Sicherungen.<br>- Rollback-Schutz.", en: "We use high-performance root servers for maximum performance.<br><strong>Security:</strong><br>- Auto restarts on crash.<br>- Character/Item loss protection.<br>- Rollback protection.", es: "Servidores root de alto rendimiento.<br><strong>Seguridad:</strong><br>- Reinicios automáticos.<br>- Protección contra pérdida de items.<br>- Protección rollback.", fr: "Serveurs root haute performance.<br><strong>Sécurité :</strong><br>- Redémarrages auto.<br>- Protection perte objets/perso.<br>- Protection rollback." }
+                },
+                {
+                    cat: "general", img: "https://infinityofphoenix-asa.com/images/logo.png",
+                    title: { de: "Komplett neues Server-Konzept", en: "Brand New Server Concept", es: "Nuevo Concepto de Servidor", fr: "Nouveau Concept de Serveur" },
+                    desc: { de: "Vanilla-nahe mit Progression.", en: "Close to Vanilla with progression.", es: "Cercano a Vanilla con progresión.", fr: "Proche du Vanilla avec progression." },
+                    content: { de: "Spiele nahe am Vanilla Stil, mit progressivem Zugang zu zusätzlichen Mod-Inhalten wie einem eigenen Masterbreeding System und einzigartigen Kreaturen.", en: "Play close to Vanilla style, with progressive access to additional mod content like a unique Masterbreeding System.", es: "Juega estilo Vanilla, con acceso progresivo a mods como Masterbreeding.", fr: "Jouez style Vanilla, avec accès progressif à des mods comme Masterbreeding." }
+                },
+                {
+                    cat: "general", img: "https://infinityofphoenix-asa.com/images/logo.png",
+                    title: { de: "Cluster Scoreboards", en: "Cluster Scoreboards", es: "Tablas de Puntuación", fr: "Tableaux des Scores" },
+                    desc: { de: "Wer ist der Beste?", en: "Who is the best?", es: "¿Quién es el mejor?", fr: "Qui est le meilleur ?" },
+                    content: { de: "Vergleiche dich mit anderen Spielern auf unseren Cluster-weiten Bestenlisten.", en: "Compare yourself with other players on our cluster-wide leaderboards.", es: "Compárate con otros en las tablas del clúster.", fr: "Comparez-vous aux autres sur nos classements." }
+                },
+                {
+                    cat: "general", img: "https://i.postimg.cc/NjnKdmD1/Bild-2024-05-17-214812864.png",
+                    title: { de: "Tribe-Log im Discord", en: "Tribe Log in Discord", es: "Registro de Tribu en Discord", fr: "Log de Tribu sur Discord" },
+                    desc: { de: "Logs auf dein Handy.", en: "Logs on your phone.", es: "Registros en tu móvil.", fr: "Logs sur votre téléphone." },
+                    content: { de: "Lass dir dein Ingame-Log in einen Discord-Channel senden. Egal ob auf unserem Discord oder deinem privaten!<br>Befehl: <code>/tribelog [Webhook-URL]</code>.", en: "Get your ingame log sent to a Discord channel.<br>Command: <code>/tribelog [Webhook-URL]</code>.", es: "Recibe tu registro ingame en Discord.<br>Comando: <code>/tribelog [Webhook-URL]</code>.", fr: "Recevez votre log en jeu sur Discord.<br>Commande : <code>/tribelog [Webhook-URL]</code>." }
+                },
+                {
+                    cat: "general", img: "https://i.postimg.cc/qqcmLkd3/Bild-2024-05-17-214937689.png",
+                    title: { de: "2Wege-CrossChat", en: "2-Way CrossChat", es: "CrossChat Bidireccional", fr: "CrossChat Bidirectionnel" },
+                    desc: { de: "Chatte Cluster-weit und mit Discord.", en: "Chat cluster-wide and with Discord.", es: "Chat global y Discord.", fr: "Chat global et Discord." },
+                    content: { de: "Ihr könnt über alle Karten miteinander schreiben und sogar über den Discord-Kanal mit Leuten Ingame kommunizieren.", en: "You can chat across all maps and even communicate via Discord channel with people ingame.", es: "Chatea entre mapas y Discord.", fr: "Discutez entre cartes et sur Discord." }
+                },
+                {
+                    cat: "general", img: "https://i.postimg.cc/nrYgMVsz/Vn-timoradulla331-6-chibi-sticker4.png",
+                    title: { de: "Livestatus", en: "Livestatus", es: "Estado en Vivo", fr: "Statut en Direct" },
+                    desc: { de: "Wer ist online?", en: "Who is online?", es: "¿Quién está online?", fr: "Qui est en ligne ?" },
+                    content: { de: "Checke im Discord Channel 🟢│𝐋𝐢𝐯𝐞𝐬𝐭𝐚𝐭𝐮𝐬, wer wo spielt und ob die Server online sind.", en: "Check the Discord channel to see who is playing where and if servers are online.", es: "Revisa en Discord quién juega y estado de servidores.", fr: "Vérifiez sur Discord qui joue et l'état des serveurs." }
+                },
+                {
+                    cat: "general", img: "https://i.postimg.cc/LXHNPHmp/Bild-2024-05-21-225911743.png",
+                    title: { de: "Multi-Charakter-Block", en: "Multi-Character Block", es: "Bloqueo Multi-Personaje", fr: "Blocage Multi-Personnage" },
+                    desc: { de: "1 Char pro Cluster.", en: "1 Char per Cluster.", es: "1 Personaje por Clúster.", fr: "1 Perso par Cluster." },
+                    content: { de: "Es ist nur ein Charakter erlaubt (Ausnahme: ClubArk). Solltest du vergessen haben wo du warst, wirst du beim Login informiert.", en: "Only one character allowed (Exception: ClubArk). Login informs you of your location.", es: "Solo un personaje permitido. Se te informa al entrar.", fr: "Un seul personnage autorisé. Infos à la connexion." }
+                },
+                {
+                    cat: "general", img: "https://i.postimg.cc/KzcDYm8Q/3t-NBcp-HWd-HZEn-H3-RDHuiioth-Pt8-E1f6-QE9-Fqlqc-A.webp",
+                    title: { de: "Charakter-Namensänderung", en: "Character Name Change", es: "Cambio de Nombre", fr: "Changement de Nom" },
+                    desc: { de: "Alle 3 Monate verfügbar.", en: "Available every 3 months.", es: "Disponible cada 3 meses.", fr: "Disponible tous les 3 mois." },
+                    content: { de: "Du kannst dir im Shop alle 3 Monate eine Namensänderung kaufen und diese via Token im Spiel durchführen.", en: "You can buy a name change every 3 months in the shop and use it via token in-game.", es: "Compra un cambio de nombre cada 3 meses en la tienda.", fr: "Achetez un changement de nom tous les 3 mois dans la boutique." }
+                },
+                {
+                    cat: "general", img: "https://infinityofphoenix-asa.com/images/logo.png",
+                    title: { de: "IOP Cluster Explorer", en: "IOP Cluster Explorer", es: "Explorador del Clúster", fr: "Explorateur de Cluster" },
+                    desc: { de: "Ingame Wiki.", en: "Ingame Wiki.", es: "Wiki en el juego.", fr: "Wiki en jeu." },
+                    content: { de: "Eine eigene Wiki, nur auf das Cluster zugeschnitten und mit extra Inhalten befüllt.", en: "A custom wiki, tailored to the cluster and filled with extra content.", es: "Una wiki personalizada para el clúster.", fr: "Un wiki personnalisé pour le cluster." }
+                },
+                {
+                    cat: "general", img: "https://i.postimg.cc/X7cj3Wtp/56-IA1-C4-Ijwugg0-T0-HMUGGZS0c-B4i8z-W8-Ga-Hi0-Hpq.webp",
+                    title: { de: "Discord-Booster-Belohnung", en: "Discord Booster Reward", es: "Recompensa Booster", fr: "Récompense Booster" },
+                    desc: { de: "Stat-Bonus und Icon für Booster.", en: "Stat bonus and icon for boosters.", es: "Bono de stats e icono.", fr: "Bonus de stats et icône." },
+                    content: { de: "Jeder Booster erhält eine Rolle und eine lila Flamme im Chat.<br><strong>Bonus:</strong><br>+10% Resistenz<br>+20% Gewicht<br>+20% Wasser & Nahrung.<br>(Stackbar mit anderen Boosts).", en: "Boosters get a role and purple flame.<br><strong>Bonus:</strong><br>+10% Resistance<br>+20% Weight<br>+20% Water & Food.", es: "Rol y llama morada.<br><strong>Bono:</strong> +10% Resistencia, +20% Peso, Agua y Comida.", fr: "Rôle et flamme violette.<br><strong>Bonus :</strong> +10% Résistance, +20% Poids, Eau et Nourriture." }
+                },
+                {
+                    cat: "general", img: "https://i.postimg.cc/0NnHnW6W/s-I0vg-QRCi-Wk-Sd-LMk-Mpbk-Owg5-Io-CE4fu-RJBha7-Poz.webp",
+                    title: { de: "Unstuck-Teleportationen", en: "Unstuck Teleportation", es: "Teletransporte Unstuck", fr: "Téléportation Déblocage" },
+                    desc: { de: "1x Täglich zum Obelisken.", en: "1x Daily to Obelisk.", es: "1x Diario al Obelisco.", fr: "1x par jour vers l'Obélisque." },
+                    content: { de: "Du kannst dich 1x pro Tag im Shop zu einem Obelisken (oder Public Spot auf Aberration) teleportieren lassen (3 Min Delay).", en: "Teleport to an Obelisk once per day via shop (3 min delay).", es: "Teletranspórtate a un Obelisco una vez al día.", fr: "Téléportez-vous vers un Obélisque une fois par jour." }
+                },
+                {
+                    cat: "general", img: "https://i.postimg.cc/ZqcqvQnK/5db9f40884238add80ae2f50.png",
+                    title: { de: "Suicide", en: "Suicide", es: "Suicidio", fr: "Suicide" },
+                    desc: { de: "Wenn man feststeckt.", en: "If you are stuck.", es: "Si estás atascado.", fr: "Si vous êtes coincé." },
+                    content: { de: "Befehl: <code>/suicide</code> (Wie gewohnt, um sich selbst zu töten).", en: "Command: <code>/suicide</code> to kill yourself.", es: "Comando: <code>/suicide</code> para suicidarte.", fr: "Commande : <code>/suicide</code> pour vous tuer." }
+                },
+                {
+                    cat: "general", img: "https://i.postimg.cc/LXHNPHmp/Bild-2024-05-21-225911743.png",
+                    title: { de: "Weitere Spieleserver", en: "More Game Servers", es: "Más Servidores", fr: "Autres Serveurs" },
+                    desc: { de: "Abwechslung im Cluster.", en: "Variety in the cluster.", es: "Variedad en el clúster.", fr: "Variété dans le cluster." },
+                    content: { de: "Wir bieten mehr als nur Ark: Primal Ark, Mod-Rotationskarte (Season), PVP/PVE, Minecraft, Palworld und mehr!", en: "We offer more than Ark: Primal Ark, Rotation Maps, Minecraft, Palworld and more!", es: "¡Más que Ark! Minecraft, Palworld, etc.", fr: "Plus que Ark ! Minecraft, Palworld, etc." }
+                },
+                {
+                    cat: "gameplay", img: "https://i.postimg.cc/NGHZqxZM/Bc-GYR9-Ha6-Evsf3iu-HBZUT7zs-Lu7-Zp-AFf-Kt-E4-K0-QP.webp",
+                    title: { de: "Progressive Spieler Systeme", en: "Progressive Player Systems", es: "Sistemas Progresivos", fr: "Systèmes Progressifs" },
+                    desc: { de: "Quests, Bosse & Decay.", en: "Quests, Bosses & Decay.", es: "Misiones, Jefes y Deterioro.", fr: "Quêtes, Boss et Dégradation." },
+                    content: { de: "Erlebe Quest-Systeme, World Bosse und erweiterbare Strukturenlimits durch Gameplay.", en: "Experience quest systems, world bosses, and expandable structure limits through gameplay.", es: "Sistemas de misiones, jefes de mundo y límites expandibles.", fr: "Systèmes de quêtes, boss mondiaux et limites extensibles." }
+                },
+                {
+                    cat: "gameplay", img: "https://i.postimg.cc/bJGRXfsV/Ui-Menu-IOP.webp",
+                    title: { de: "IOP UI", en: "IOP UI", es: "Interfaz IOP", fr: "IOP UI" },
+                    desc: { de: "Dein ultimativer Ingame-Helfer.", en: "Your ultimate ingame helper.", es: "Tu ayudante definitivo.", fr: "Votre aide ultime en jeu." },
+                    content: { de: "Unsere Ingame Spieler UI unterstützt dich in allem:<br>- Performance Commands (Wolken/Nebel)<br>- Wegweiser mit Auto-Marker<br>- Ingame Regelwerk<br>- Live-Server Raten Anzeige", en: "Our UI supports you:<br>- Performance Commands (Clouds/Fog)<br>- Waypoints with Auto-Marker<br>- Ingame Rules<br>- Live Rates", es: "Nuestra UI te ayuda:<br>- Comandos de rendimiento<br>- Marcadores<br>- Reglas<br>- Tasas en vivo", fr: "Notre UI vous aide :<br>- Commandes perf.<br>- Marqueurs<br>- Règles<br>- Taux en direct" }
+                },
+                {
+                    cat: "gameplay", img: "https://i.postimg.cc/bJGRXfsV/Ui-Menu-IOP.webp",
+                    title: { de: "Radialmenü Pack", en: "Radial Menu Pack", es: "Pack Menú Radial", fr: "Pack Menu Radial" },
+                    desc: { de: "Wichtige Tools auf Tastendruck.", en: "Important tools at a keystroke.", es: "Herramientas importantes.", fr: "Outils importants." },
+                    content: { de: "Zugriff auf:<br>- Leichenfinder (Dead Body)<br>- Explorer Note Tracker<br>- Questbuch<br>- IOP UI<br>- <strong>Lost & Found Meldungen</strong>", en: "Access to:<br>- Corpse Finder<br>- Note Tracker<br>- Questbook<br>- Lost & Found", es: "Acceso a:<br>- Buscador cuerpos<br>- Rastreador Notas<br>- Misiones<br>- Objetos Perdidos", fr: "Accès à :<br>- Chercheur corps<br>- Traceur Notes<br>- Quêtes<br>- Objets Trouvés" }
+                },
+                {
+                    cat: "gameplay", img: "https://i.postimg.cc/VLFZQqNt/Bild-2024-05-17-205400232.png",
+                    title: { de: "Direkte Solo Farm Integration", en: "Solo Farm Integration", es: "Integración Solo Farm", fr: "Intégration Solo Farm" },
+                    desc: { de: "Hilfe für Einzelspieler.", en: "Help for solo players.", es: "Ayuda para solitarios.", fr: "Aide pour joueurs solo." },
+                    content: { de: "Spezielle Integrationen, damit auch Solo-Spieler effizient farmen können.", en: "Special integrations for efficient solo farming.", es: "Integraciones especiales para farmeo eficiente en solitario.", fr: "Intégrations spéciales pour farm solo efficace." }
+                },
+                {
+                    cat: "gameplay", img: "https://i.postimg.cc/QMwMnbWD/7-RRVha-OOu8dt-Qfmbz-F4v-UWp-LOq-Od1h-UH9l-Yj7-Wq6.webp",
+                    title: { de: "Automatische Wochenendraten", en: "Auto Weekend Rates", es: "Tasas Fin de Semana", fr: "Taux Week-end Auto" },
+                    desc: { de: "Jedes Wochenende x2.", en: "Every weekend x2.", es: "Cada fin de semana x2.", fr: "Chaque week-end x2." },
+                    content: { de: "Automatisch erhöhte Raten am Wochenende für mehr Fortschritt.", en: "Automatically increased rates on weekends.", es: "Tasas aumentadas automáticamente los fines de semana.", fr: "Taux augmentés automatiquement le week-end." }
+                },
+                {
+                    cat: "gameplay", img: "https://i.postimg.cc/T349tPP5/220-F-634532179-1-Hd-Qpxn-FYAqae9-Rh-OFpq-TICat39-JCz-Po.jpg",
+                    title: { de: "Anti PVE Griefing", en: "Anti PVE Griefing", es: "Anti-Griefing PVE", fr: "Anti-Griefing PVE" },
+                    desc: { de: "Schutz vor Trollen.", en: "Protection against trolls.", es: "Protección contra trolls.", fr: "Protection contre les trolls." },
+                    content: { de: "Fremde können:<br>- Keine Dinos zum Breeden dazu stellen.<br>- Keine Items klauen.<br>- Keine Körper ziehen.<br>Innerhalb der Allianz funktioniert alles wie gewohnt.", en: "Strangers cannot:<br>- Add dinos to breeding.<br>- Steal items.<br>- Drag bodies.<br>Alliances work as normal.", es: "Extraños no pueden:<br>- Criar.<br>- Robar.<br>- Arrastrar cuerpos.", fr: "Les étrangers ne peuvent pas :<br>- Élever.<br>- Voler.<br>- Traîner des corps." }
+                },
+                {
+                    cat: "gameplay", img: "https://i.postimg.cc/0NXLN78S/pngimg-com-death-PNG66.png",
+                    title: { de: "WildDino-Kills", en: "Wild Dino Kills", es: "Kills Dinos Salvajes", fr: "Kills Dinos Sauvages" },
+                    desc: { de: "Regelmäßige Respawns.", en: "Regular respawns.", es: "Respawns regulares.", fr: "Respawns réguliers." },
+                    content: { de: "- Custom Kill (behält 130+ Dinos): Täglich 01:00 Uhr.<br>- Total Kill: Alle 3 Tage 01:00 Uhr.", en: "- Custom Kill (keeps 130+): Daily 01:00.<br>- Total Kill: Every 3 days 01:00.", es: "- Kill Custom (guarda 130+): Diario 01:00.<br>- Kill Total: Cada 3 días.", fr: "- Kill Custom (garde 130+) : Quotidien 01:00.<br>- Kill Total : Tous les 3 jours." }
+                },
+                {
+                    cat: "gameplay", img: "https://i.postimg.cc/0NXLN78S/pngimg-com-death-PNG66.png",
+                    title: { de: "Geistheiler", en: "Spirit Healer", es: "Curador Espiritual", fr: "Guérisseur Spirituel" },
+                    desc: { de: "Hole dein Gear zurück.", en: "Retrieve your gear.", es: "Recupera tu equipo.", fr: "Récupérez votre équipement." },
+                    content: { de: "Du bist gestorben und hast dein bestes Gear verloren? Wenn du genügend Tokens gesammelt hast, kannst du es dir wiederbringen lassen!", en: "Died and lost your best gear? Retrieve it with tokens!", es: "¿Moriste? ¡Recupera tu equipo con fichas!", fr: "Mort ? Récupérez votre équipement avec des jetons !" }
+                },
+                {
+                    cat: "gameplay", img: "https://infinityofphoenix-asa.com/images/logo.png",
+                    title: { de: "IOP Arenas", en: "IOP Arenas", es: "Arenas IOP", fr: "Arènes IOP" },
+                    desc: { de: "Endgame Kämpfe (Coming Soon).", en: "Endgame Fights (Coming Soon).", es: "Luchas Endgame (Pronto).", fr: "Combats Endgame (Bientôt)." },
+                    content: { de: "Kämpfe dich Arena für Arena im Endgame frei.", en: "Fight your way through arenas in the endgame.", es: "Lucha en arenas en el endgame.", fr: "Combattez dans des arènes en endgame." }
+                },
+                {
+                    cat: "gameplay", img: "https://i.postimg.cc/Z5rjrY4F/Bild-2024-05-17-214332739.png",
+                    title: { de: "IOP Cluster Games", en: "IOP Cluster Games", es: "Juegos del Clúster", fr: "Jeux du Cluster" },
+                    desc: { de: "Stündliche Challenges.", en: "Hourly Challenges.", es: "Desafíos por hora.", fr: "Défis horaires." },
+                    content: { de: "Erledige stündlich laufende Cluster-Challenges für tolle Belohnungen!", en: "Complete hourly cluster challenges for great rewards!", es: "¡Completa desafíos horarios para recompensas!", fr: "Complétez des défis horaires pour des récompenses !" }
+                },
+                {
+                    cat: "gameplay", img: "https://i.postimg.cc/QMwMnbWD/7-RRVha-OOu8dt-Qfmbz-F4v-UWp-LOq-Od1h-UH9l-Yj7-Wq6.webp",
+                    title: { de: "Sonntags Perks", en: "Sunday Perks", es: "Ventajas de Domingo", fr: "Avantages du Dimanche" },
+                    desc: { de: "Boni am Sonntag.", en: "Bonuses on Sunday.", es: "Bonos los domingos.", fr: "Bonus le dimanche." },
+                    content: { de: "Spezielle Perks für Spieler jeden Sonntag.", en: "Special perks for players every Sunday.", es: "Ventajas especiales cada domingo.", fr: "Avantages spéciaux chaque dimanche." }
+                },
+                {
+                    cat: "gameplay", img: "https://i.postimg.cc/C5bHtXWv/Bild-2025-02-01-173833957.png",
+                    title: { de: "Drop & Vain Info", en: "Drop & Vein Info", es: "Info Drops y Venas", fr: "Info Drops et Veines" },
+                    desc: { de: "Extinction & Astraeos Live.", en: "Extinction & Astraeos Live.", es: "Extinction y Astraeos en vivo.", fr: "Extinction et Astraeos en direct." },
+                    content: { de: "Prüfe im Discord, welche Drops und Elementadern auf Extinction und Astraeos aktiv sind.", en: "Check Discord for active drops and element veins on Extinction/Astraeos.", es: "Revisa Discord para drops y venas activos.", fr: "Vérifiez Discord pour les drops et veines actifs." }
+                },
+                {
+                    cat: "gameplay", img: "https://i.postimg.cc/jd0zvQDy/Bild-2024-05-17-213356289.png",
+                    title: { de: "Custom-Transfer-System", en: "Custom Transfer System", es: "Sistema de Transferencia", fr: "Système de Transfert" },
+                    desc: { de: "Sicheres Reisen.", en: "Safe Travel.", es: "Viaje Seguro.", fr: "Voyage Sûr." },
+                    content: { de: "Überarbeitetes System ohne Item-Verlust. Rüstung wird auto-unequipped. Element und Tribute sind transferierbar.", en: "Revamped system, no item loss. Armor auto-unequipped. Element/Tributes transferable.", es: "Sin pérdida de items. Auto-desequipar armadura. Elemento transferible.", fr: "Pas de perte d'objets. Armure auto-déséquipée. Élément transférable." }
+                },
+                {
+                    cat: "gameplay", img: "https://i.postimg.cc/hjbVWvWp/image.png",
+                    title: { de: "Schwarzmarkt Eventkarte", en: "Black Market Event Map", es: "Mapa de Evento Mercado Negro", fr: "Carte Événement Marché Noir" },
+                    desc: { de: "Hauseigene Map im Ultimate Stil.", en: "In-house map in Ultimate style.", es: "Mapa propio estilo Ultimate.", fr: "Carte maison style Ultimate." },
+                    content: { de: "Besuche unsere eigens gestaltete Event-Karte.", en: "Visit our custom designed event map.", es: "Visita nuestro mapa de eventos.", fr: "Visitez notre carte d'événements personnalisée." }
+                },
+                {
+                    cat: "gameplay", img: "https://i.postimg.cc/6pf8hQYt/Bild-2024-05-17-205621204.png",
+                    title: { de: "Engrams Reloaded", en: "Engrams Reloaded", es: "Engramas Recargados", fr: "Engrammes Rechargés" },
+                    desc: { de: "Alles automatisch lernen.", en: "Auto-learn everything.", es: "Aprende todo automático.", fr: "Tout apprendre auto." },
+                    content: { de: "Mit <code>/giveengrams</code> lernst du alle verfügbaren Engramme deines Levels (außer Tek). Reskill via Mindwipe.", en: "Use <code>/giveengrams</code> to learn all engrams (except Tek). Reskill via Mindwipe.", es: "Usa <code>/giveengrams</code> para aprender todo (menos Tek).", fr: "Utilisez <code>/giveengrams</code> pour tout apprendre (sauf Tek)." }
+                },
+                {
+                    cat: "gameplay", img: "https://i.postimg.cc/VLFZQqNt/Bild-2024-05-17-205400232.png",
+                    title: { de: "Biberdämme Reloaded", en: "Beaver Dams Reloaded", es: "Presas de Castor", fr: "Barrages de Castors" },
+                    desc: { de: "Keine vollen Holzdämme mehr.", en: "No more wood-filled dams.", es: "No más presas llenas de madera.", fr: "Plus de barrages pleins de bois." },
+                    content: { de: "Wenn nur Holz im Damm bleibt, wird er automatisch zerstört. Das Holz wird als Itembeutel fallen gelassen.", en: "Dams with only wood are auto-destroyed. Wood drops as item bag.", es: "Presas solo con madera se destruyen.", fr: "Les barrages avec seulement du bois sont détruits." }
+                },
+                {
+                    cat: "gameplay", img: "https://infinityofphoenix-asa.com/images/logo.png",
+                    title: { de: "Custom Content", en: "Custom Content", es: "Contenido Personalizado", fr: "Contenu Personnalisé" },
+                    desc: { de: "Items & Bosse.", en: "Items & Bosses.", es: "Items y Jefes.", fr: "Objets et Boss." },
+                    content: { de: "Eigener balanced Propagator, eigenes Spyglass, Tribe-Cave Tower, World Bosse und mehr!", en: "Balanced Propagator, Spyglass, Cave Tower, World Bosses and more!", es: "Propagator, Catalejo, Torre Cueva, Jefes de Mundo.", fr: "Propagator, Longue-vue, Tour Grotte, Boss Mondiaux." }
+                },
+                {
+                    cat: "creature", img: "https://i.postimg.cc/7YT0qNPh/adorable-dinosaur-couple-love-two-cute-baby-dinosaurs-one-green-blue-nuzzle-affectionately-symbolizi.png",
+                    title: { de: "Globaler Mating Timer", en: "Global Mating Timer", es: "Temporizador de Crianza Global", fr: "Minuteur d'Accouplement Global" },
+                    desc: { de: "Kein hoch/runterladen nötig!", en: "No up/download needed!", es: "¡Sin cargas necesarias!", fr: "Pas de chargement nécessaire !" },
+                    content: { de: "Serverübergreifend: Mo-Do 12h, Wochenende 6h. Mit Breeding-Boost auch unter der Woche 6h.", en: "Cluster-wide: Mon-Thu 12h, Weekend 6h.", es: "Todo el clúster: Lun-Jue 12h, Finde 6h.", fr: "Cluster entier : Lun-Jeu 12h, Week-end 6h." }
+                },
+                {
+                    cat: "creature", img: "https://i.postimg.cc/7YT0qNPh/adorable-dinosaur-couple-love-two-cute-baby-dinosaurs-one-green-blue-nuzzle-affectionately-symbolizi.png",
+                    title: { de: "Paleo TLC System", en: "Paleo TLC System", es: "Sistema Paleo TLC", fr: "Système Paleo TLC" },
+                    desc: { de: "Vielfältige Dino-Varianten.", en: "Diverse dino variants.", es: "Variantes de dinos diversas.", fr: "Diverses variantes de dinos." },
+                    content: { de: "Spiele mit Paleo-Varianten, Vanilla-Varianten sowie den beliebten S-Kreaturen & Shinys!", en: "Play with Paleo variants, Vanilla variants, S-Creatures & Shinys!", es: "¡Variantes Paleo, Vanilla, S-Creatures y Shinys!", fr: "Variantes Paleo, Vanilla, S-Creatures et Shinys !" }
+                },
+                {
+                    cat: "creature", img: "https://i.postimg.cc/V6mRQ2WZ/GIx7-Qke97um1b-Cv-Nq-ESylaz0gdsd-HDb-Bb-Wd5-Fs0i.webp",
+                    title: { de: "Legendarys & Rares", en: "Legendarys & Rares", es: "Legendarios y Raros", fr: "Légendaires et Rares" },
+                    desc: { de: "Max Level Tames & Alphas.", en: "Max Level Tames & Alphas.", es: "Tameos Nivel Máx y Alphas.", fr: "Tames Niveau Max et Alphas." },
+                    content: { de: "Suche und zähme random spawnende Level 150 Max Tames oder kämpfe gegen Level 190 Alpha XP Bomben!", en: "Tame random Lvl 150 Max Tames or fight Lvl 190 Alpha XP bombs!", es: "¡Tamea nivel 150 o lucha contra Alphas nivel 190!", fr: "Tamez niveau 150 ou combattez Alphas niveau 190 !" }
+                },
+                {
+                    cat: "creature", img: "https://i.postimg.cc/HkM4JTSP/output-onlinepngtools.png",
+                    title: { de: "Mjölnirs Segen", en: "Mjölnirs Blessing", es: "Bendición de Mjölnir", fr: "Bénédiction de Mjölnir" },
+                    desc: { de: "Heile deine Kreaturen sofort.", en: "Heal creatures instantly.", es: "Cura criaturas al instante.", fr: "Soignez les créatures instantanément." },
+                    content: { de: "Bitte Thor um Hilfe in der 'Hall of Thunder'. Heilt Dinos in 1.5 Minuten auf 100%.", en: "Ask Thor for help in the 'Hall of Thunder'. Heals dinos to 100% in 1.5 mins.", es: "Pide ayuda a Thor. Cura dinos en 1.5 min.", fr: "Demandez de l'aide à Thor. Soigne les dinos en 1.5 min." }
+                },
+                {
+                    cat: "creature", img: "https://i.postimg.cc/V6mRQ2WZ/GIx7-Qke97um1b-Cv-Nq-ESylaz0gdsd-HDb-Bb-Wd5-Fs0i.webp",
+                    title: { de: "Kreaturenbeschwörungen", en: "Creature Summons", es: "Invocación de Criaturas", fr: "Invocations de Créatures" },
+                    desc: { de: "Beschwöre Bosse selbst.", en: "Summon bosses yourself.", es: "Invoca jefes tú mismo.", fr: "Invoquez des boss vous-même." },
+                    content: { de: "Im Shop kannst du Alpha Wyvern, Oasis und mehr gegen Tokens spawnen lassen.", en: "Spawn Alpha Wyverns, Oasis and more via shop tokens.", es: "Invoca Alpha Wyverns, Oasis y más.", fr: "Invoquez Alpha Wyverns, Oasis et plus." }
+                },
+                {
+                    cat: "creature", img: "https://i.postimg.cc/Hk2XYrTK/Bild-2024-05-17-214138093.png",
+                    title: { de: "Schultertierretter", en: "Shoulder Pet Saver", es: "Salvador de Mascotas", fr: "Sauveur d'Épaule" },
+                    desc: { de: "Auto-Pack beim Reisen.", en: "Auto-pack when traveling.", es: "Auto-guardado al viajar.", fr: "Auto-pack en voyageant." },
+                    content: { de: "Dein Schultertier wird beim Transfer automatisch in eine Kryokapsel gepackt. (Kryo wird beim Auswerfen verbraucht).", en: "Shoulder pets are auto-cryoed on transfer.", es: "Mascotas de hombro se guardan solas al transferir.", fr: "Les animaux d'épaule sont auto-cryo lors du transfert." }
+                },
+                {
+                    cat: "creature", img: "https://i.postimg.cc/c1bZbNVn/Wyvern-Egg-Lightning-29.png",
+                    title: { de: "Gedroppte Wyverneier", en: "Dropped Wyvern Eggs", es: "Huevos de Wyvern Caídos", fr: "Œufs de Wyverne Tombés" },
+                    desc: { de: "Aufräum-Mechanik.", en: "Cleanup mechanic.", es: "Mecánica de limpieza.", fr: "Mécanique de nettoyage." },
+                    content: { de: "Eier am Boden ohne Klima/Feuer in der Nähe despawnen nach 5 Minuten.", en: "Eggs on ground without AC/Fire despawn after 5 mins.", es: "Huevos sin aire/fuego desaparecen en 5 min.", fr: "Œufs au sol sans clim/feu disparaissent après 5 min." }
+                },
+                {
+                    cat: "creature", img: "https://i.postimg.cc/XvXGBzfj/Bild-2024-05-17-152828974.png",
+                    title: { de: "Breeding/Taming Setter", en: "Breeding/Taming Setter", es: "Ajuste Crianza/Tameo", fr: "Réglage Élevage/Taming" },
+                    desc: { de: "Komfort-Funktionen.", en: "Comfort functions.", es: "Funciones de confort.", fr: "Fonctions de confort." },
+                    content: { de: "Auto-Unfollow, kein 'Spieler ansehen' und kein Namensfenster-Pop-up.", en: "Auto-Unfollow, no 'Look at Player', no naming popup.", es: "Auto-Unfollow, sin 'Mirar jugador', sin popup.", fr: "Auto-Unfollow, pas de 'Regarder Joueur', pas de popup." }
+                },
+                {
+                    cat: "creature", img: "https://i.postimg.cc/gjQFGSmc/karkinos.png",
+                    title: { de: "Keine Karkinos Babys", en: "No Karkinos Babies", es: "Sin Bebés Karkinos", fr: "Pas de Bébés Karkinos" },
+                    desc: { de: "Nur Wild-Tame auf Aberration.", en: "Wild tame only on Aberration.", es: "Solo tameo salvaje en Aberration.", fr: "Tame sauvage uniquement sur Aberration." },
+                    content: { de: "Karkinos und Basilisk können auf Aberration nicht gezüchtet werden.", en: "Karkinos and Basilisk cannot be bred on Aberration.", es: "Karkinos y Basilisk no se pueden criar.", fr: "Karkinos et Basilisk ne peuvent pas être élevés." }
+                },
+                {
+                    cat: "structure", img: "https://i.postimg.cc/1trv8yzZ/gy-H8-Rd-QZJw-AL5-R33-IYOkx-Xriuq1-ENIbvs-Wlze-DA2.webp",
+                    title: { de: "Marktlizenz", en: "Market License", es: "Licencia de Mercado", fr: "Licence de Marché" },
+                    desc: { de: "Dein eigenes Haus.", en: "Your own house.", es: "Tu propia casa.", fr: "Votre propre maison." },
+                    content: { de: "Miete ein Haus im Community Center. Max 1 pro Stamm. Anmeldung im Discord erforderlich.", en: "Rent a house in the Community Center. Max 1 per tribe. Discord registration required.", es: "Alquila una casa en el Centro Comunitario.", fr: "Louez une maison au Centre Communautaire." }
+                },
+                {
+                    cat: "structure", img: "https://i.postimg.cc/3Rn14y8d/Bild-2024-05-17-212541692.png",
+                    title: { de: "Decay System", en: "Decay System", es: "Sistema de Deterioro", fr: "Système de Dégradation" },
+                    desc: { de: "Clusterweiter Sync.", en: "Cluster-wide sync.", es: "Sincronización global.", fr: "Synchro globale." },
+                    content: { de: "14 Tage (Unverifiziert), 30 Tage (Verifiziert). Timer synchronisieren sich clusterweit!", en: "14 Days (Unverified), 30 Days (Verified). Timers sync cluster-wide!", es: "14 Días (No verif.), 30 Días (Verif.).", fr: "14 Jours (Non-vérif.), 30 Jours (Vérif.)." }
+                },
+                {
+                    cat: "structure", img: "https://i.postimg.cc/HLRG6pCK/Unbenannt.png",
+                    title: { de: "Strukturenlimits", en: "Structure Limits", es: "Límites de Estructuras", fr: "Limites de Structures" },
+                    desc: { de: "Überprüfe deine Limits.", en: "Check your limits.", es: "Revisa tus límites.", fr: "Vérifiez vos limites." },
+                    content: { de: "Befehle:<br><code>/strukturenlimits</code><br><code>/strukturenmenge</code>", en: "Commands:<br><code>/structurelimits</code><br><code>/structurecount</code>", es: "Comandos:<br><code>/limites</code><br><code>/cantidad</code>", fr: "Commandes :<br><code>/limites</code><br><code>/quantite</code>" }
+                },
+                {
+                    cat: "structure", img: "https://i.postimg.cc/02rMybdb/Oil-Pump.png",
+                    title: { de: "Auto-Unlocked Structures", en: "Auto-Unlocked Structures", es: "Estructuras Desbloqueadas", fr: "Structures Déverrouillées" },
+                    desc: { de: "Öffentliche Ressourcen.", en: "Public resources.", es: "Recursos públicos.", fr: "Ressources publiques." },
+                    content: { de: "1 Ölpumpe/Gassammler pro Tribe, unverschließbar für alle.", en: "1 Oil Pump/Gas Collector per tribe, unlocked for everyone.", es: "1 Bomba/Colector por tribu, abierto para todos.", fr: "1 Pompe/Collecteur par tribu, ouvert à tous." }
+                },
+                {
+                    cat: "structure", img: "https://i.postimg.cc/3Rn14y8d/Bild-2024-05-17-212541692.png",
+                    title: { de: "Offline Schutz", en: "Offline Protection", es: "Protección Offline", fr: "Protection Hors Ligne" },
+                    desc: { de: "Sicher nach 5 Minuten.", en: "Safe after 5 minutes.", es: "Seguro tras 5 minutos.", fr: "Sûr après 5 minutes." },
+                    content: { de: "Deine Basis ist 5 Minuten nach dem Ausloggen geschützt.", en: "Your base is protected 5 minutes after logging out.", es: "Base protegida 5 min después de salir.", fr: "Base protégée 5 min après déconnexion." }
+                },
+                {
+                    cat: "structure", img: "https://infinityofphoenix-asa.com/images/logo.png",
+                    title: { de: "IOP Livemaps", en: "IOP Livemaps", es: "Mapas en Vivo IOP", fr: "Cartes en Direct IOP" },
+                    desc: { de: "Finde Bauplätze.", en: "Find building spots.", es: "Encuentra sitios.", fr: "Trouvez des emplacements." },
+                    content: { de: "Web-Karte um freie Spots zu finden oder Spieler zu orten. <a href='https://discord.com/channels/811710111725912085/1330642139650195548'>Discord Link</a>", en: "Web map to find spots or locate players.", es: "Mapa web para encontrar sitios.", fr: "Carte web pour trouver des places." }
+                },
+                {
+                    cat: "shop", img: "https://i.postimg.cc/fL0P284P/Bild-2024-05-30-165653153.png",
+                    title: { de: "Websiteshop & Tokens", en: "Webshop & Tokens", es: "Tienda Web y Fichas", fr: "Boutique Web & Jetons" },
+                    desc: { de: "Verdiene Tokens durch Spielzeit.", en: "Earn tokens by playing.", es: "Gana fichas jugando.", fr: "Gagnez des jetons en jouant." },
+                    content: { de: "Tokens für Spielzeit (alle 30min), Level-Ups, Voten etc. Kaufe Items, Skins und Boosts.", en: "Tokens for playtime, level-ups, voting etc. Buy items, skins, boosts.", es: "Fichas por tiempo, niveles, votos.", fr: "Jetons pour temps de jeu, niveaux, votes." }
+                },
+                {
+                    cat: "shop", img: "https://i.postimg.cc/Z5rjrY4F/Bild-2024-05-17-214332739.png",
+                    title: { de: "Serverwährung", en: "Server Currency", es: "Moneda del Servidor", fr: "Monnaie du Serveur" },
+                    desc: { de: "Tokens, Gold & Edelsteine.", en: "Tokens, Gold & Gems.", es: "Fichas, Oro y Gemas.", fr: "Jetons, Or et Gemmes." },
+                    content: { de: "<strong>Tokens:</strong> Shop.<br><strong>Gold:</strong> Casino/Tribute.<br><strong>Edelsteine:</strong> Quests & Bosse.", en: "<strong>Tokens:</strong> Shop.<br><strong>Gold:</strong> Casino.<br><strong>Gems:</strong> Quests & Bosses.", es: "<strong>Fichas:</strong> Tienda.<br><strong>Oro:</strong> Casino.<br><strong>Gemas:</strong> Misiones.", fr: "<strong>Jetons:</strong> Boutique.<br><strong>Or:</strong> Casino.<br><strong>Gemmes:</strong> Quêtes." }
+                },
+                {
+                    cat: "shop", img: "https://i.postimg.cc/Z5rjrY4F/Bild-2024-05-17-214332739.png",
+                    title: { de: "Ingame Casino", en: "Ingame Casino", es: "Casino Ingame", fr: "Casino en Jeu" },
+                    desc: { de: "Versuche dein Glück.", en: "Try your luck.", es: "Prueba tu suerte.", fr: "Tentez votre chance." },
+                    content: { de: "Setze Gold und gewinne Preise in unserem eigenen Ingame Casino.", en: "Bet gold and win prizes in our own ingame casino.", es: "Apuesta oro y gana premios.", fr: "Misez de l'or et gagnez des prix." }
+                },
+                {
+                    cat: "shop", img: "https://i.postimg.cc/NGxwstWV/Bild-2024-05-17-214538394.png",
+                    title: { de: "Unzerstörbare Leuchtpistole", en: "Indestructible Flaregun", es: "Pistola Bengalas Indestructible", fr: "Pistolet Détresse Indestructible" },
+                    desc: { de: "Ideal um sich zu finden.", en: "Ideal for finding each other.", es: "Ideal para encontrarse.", fr: "Idéal pour se retrouver." },
+                    content: { de: "Die FlareGun geht nicht kaputt und verursacht keinen Schaden (gegen Abuse).", en: "The FlareGun never breaks and deals no damage.", es: "No se rompe y no hace daño.", fr: "Ne casse jamais et ne fait pas de dégâts." }
+                },
+                {
+                    cat: "shop", img: "https://i.postimg.cc/L5qw4rYb/Bild-2024-05-17-204603846.png",
+                    title: { de: "Tek-Fernglas", en: "Tek Binoculars", es: "Prismáticos Tek", fr: "Jumelles Tek" },
+                    desc: { de: "Ab Level 1 nutzbar.", en: "Usable from Level 1.", es: "Desde Nivel 1.", fr: "Dès le Niveau 1." },
+                    content: { de: "Freigeschaltet ab Lvl 1. Herstellbar im Replikator oder kaufbar im Shop.", en: "Unlocked at Lvl 1. Craftable in Replicator or buyable in Shop.", es: "Desbloqueado Nvl 1. Fabricable o Tienda.", fr: "Débloqué Niv 1. Craftable ou Boutique." }
+                },
+                {
+                    cat: "shop", img: "https://i.postimg.cc/FRqdJLzH/Bild-2024-05-17-205114510.png",
+                    title: { de: "Wyvernmilch & Gift", en: "Wyvern Milk & Venom", es: "Leche y Veneno de Wyvern", fr: "Lait et Venin de Wyverne" },
+                    desc: { de: "Längere Haltbarkeit.", en: "Longer spoil time.", es: "Mayor duración.", fr: "Durée de vie prolongée." },
+                    content: { de: "Milch wird benötigt, hält aber länger (bis zu 46 Tage im QoL+ Kühlschrank).", en: "Milk is needed but lasts longer (up to 46 days in QoL+ Fridge).", es: "La leche dura más (46 días en Refri QoL+).", fr: "Le lait dure plus longtemps (46 jours frigo QoL+)." }
+                },
+                {
+                    cat: "shop", img: "https://i.postimg.cc/KjjzjHTd/Ye9pm-Zryehqhg6k-VXv-Of-ACm-Y1-BRb2-Q1-Gn-HRzt0-U7.webp",
+                    title: { de: "Zaubertränke", en: "Potions", es: "Pociones", fr: "Potions" },
+                    desc: { de: "Magische Hilfsmittel.", en: "Magical aids.", es: "Ayudas mágicas.", fr: "Aides magiques." },
+                    content: { de: "Crafting-Skill Potion, Potions, Server Boosts und mehr.", en: "Crafting-Skill Potion, Potions, Server Boosts and more.", es: "Pociones de habilidad, boosts, etc.", fr: "Potions de compétence, boosts, etc." }
+                },
+                {
+                    cat: "shop", img: "https://i.postimg.cc/QMwMnbWD/7-RRVha-OOu8dt-Qfmbz-F4v-UWp-LOq-Od1h-UH9l-Yj7-Wq6.webp",
+                    title: { de: "Kartenereignisse", en: "Map Events", es: "Eventos de Mapa", fr: "Événements de Carte" },
+                    desc: { de: "Trigger Wetter selbst.", en: "Trigger weather yourself.", es: "Activa el clima.", fr: "Déclenchez la météo." },
+                    content: { de: "Löse Hitzewellen oder Regen gegen Tokens aus.", en: "Trigger heatwaves or rain for tokens.", es: "Olas de calor o lluvia por fichas.", fr: "Vagues de chaleur ou pluie contre jetons." }
+                },
+                {
+                    cat: "shop", img: "https://i.postimg.cc/jqvpxjZw/u-Ebu-YYjsk7wq8-Ax-V3cd-A0b-IFv-Aa5-BMUAv-SYf-Sm-YK.webp",
+                    title: { de: "Kreatureneinfärbungen", en: "Creature Coloring", es: "Coloreado de Criaturas", fr: "Coloration de Créatures" },
+                    desc: { de: "Färbe deine Dinos.", en: "Color your dinos.", es: "Pinta tus dinos.", fr: "Colorez vos dinos." },
+                    content: { de: "Kaufe Färbungen, die auch vererbt werden!", en: "Buy colorings that are inherited!", es: "¡Compra colores heredables!", fr: "Achetez des couleurs héritables !" }
+                },
+                {
+                    cat: "shop", img: "https://i.postimg.cc/NGHZqxZM/Bc-GYR9-Ha6-Evsf3iu-HBZUT7zs-Lu7-Zp-AFf-Kt-E4-K0-QP.webp",
+                    title: { de: "Serverboosts", en: "Server Boosts", es: "Boosts de Servidor", fr: "Boosts Serveur" },
+                    desc: { de: "Booste Raten (Mo-Do).", en: "Boost rates (Mon-Thu).", es: "Aumenta tasas (Lun-Jue).", fr: "Boostez les taux (Lun-Jeu)." },
+                    content: { de: "Kaufe Boosts (1h-12h), um Raten unter der Woche zu erhöhen.", en: "Buy boosts (1h-12h) to increase weekday rates.", es: "Compra boosts para tasas entre semana.", fr: "Achetez des boosts pour les taux en semaine." }
+                },
+                {
+                    cat: "general", img: "https://i.postimg.cc/1trv8yzZ/gy-H8-Rd-QZJw-AL5-R33-IYOkx-Xriuq1-ENIbvs-Wlze-DA2.webp",
+                    title: { de: "Community Center Extended", en: "Community Center Extended", es: "Centro Comunitario Extendido", fr: "Centre Communautaire Étendu" },
+                    desc: { de: "Events & Marktplatz.", en: "Events & Marketplace.", es: "Eventos y Mercado.", fr: "Événements et Marché." },
+                    content: { de: "Von Eastereggs über Events bis hin zum kompletten Marktsystem mit mietbaren Häusern.", en: "From Easter eggs to events and a complete market system with rentable houses.", es: "Eastereggs, eventos y mercado con casas.", fr: "Des easter eggs aux événements et un système de marché complet." }
+                }
+            ]
+        };
 
-            // --- KREATUREN ---
-            {
-                title: "Globaler Mating Timer",
-                cat: "creature",
-                img: "https://i.postimg.cc/7YT0qNPh/adorable-dinosaur-couple-love-two-cute-baby-dinosaurs-one-green-blue-nuzzle-affectionately-symbolizi.png",
-                desc: "Kein hoch/runterladen nötig!",
-                content: "Serverübergreifend: Mo-Do 12h, Wochenende 6h. Mit Breeding-Boost auch unter der Woche 6h."
-            },
-            {
-                title: "Paleo TLC System",
-                cat: "creature",
-                img: "https://i.postimg.cc/7YT0qNPh/adorable-dinosaur-couple-love-two-cute-baby-dinosaurs-one-green-blue-nuzzle-affectionately-symbolizi.png",
-                desc: "Vielfältige Dino-Varianten.",
-                content: "Spiele mit Paleo-Varianten, Vanilla-Varianten sowie den beliebten S-Kreaturen & Shinys!"
-            },
-            {
-                title: "Legendarys & Rares",
-                cat: "creature",
-                img: "https://i.postimg.cc/V6mRQ2WZ/GIx7-Qke97um1b-Cv-Nq-ESylaz0gdsd-HDb-Bb-Wd5-Fs0i.webp",
-                desc: "Max Level Tames & Alphas.",
-                content: "Suche und zähme random spawnende Level 150 Max Tames oder kämpfe gegen Level 190 Alpha XP Bomben!"
-            },
-            {
-                title: "Mjölnirs Segen",
-                cat: "creature",
-                img: "https://i.postimg.cc/HkM4JTSP/output-onlinepngtools.png",
-                desc: "Heile deine Kreaturen sofort.",
-                content: "Bitte Thor um Hilfe in der 'Hall of Thunder' (Spielermarkt/Schwarzmarkt). Heilt Dinos in 1.5 Minuten auf 100%."
-            },
-            {
-                title: "Kreaturenbeschwörungen",
-                cat: "creature",
-                img: "https://i.postimg.cc/V6mRQ2WZ/GIx7-Qke97um1b-Cv-Nq-ESylaz0gdsd-HDb-Bb-Wd5-Fs0i.webp",
-                desc: "Beschwöre Bosse selbst.",
-                content: "Im Shop kannst du Alpha Wyvern, Oasis und mehr gegen Tokens spawnen lassen."
-            },
-            {
-                title: "Schultertierretter",
-                cat: "creature",
-                img: "https://i.postimg.cc/Hk2XYrTK/Bild-2024-05-17-214138093.png",
-                desc: "Auto-Pack beim Reisen.",
-                content: "Dein Schultertier wird beim Transfer automatisch in eine Kryokapsel gepackt. (Kryo wird beim Auswerfen verbraucht)."
-            },
-            {
-                title: "Gedroppte Wyverneier",
-                cat: "creature",
-                img: "https://i.postimg.cc/c1bZbNVn/Wyvern-Egg-Lightning-29.png",
-                desc: "Aufräum-Mechanik.",
-                content: "Eier am Boden ohne Klima/Feuer in der Nähe despawnen nach 5 Minuten."
-            },
-            {
-                title: "Breeding/Taming Setter",
-                cat: "creature",
-                img: "https://i.postimg.cc/XvXGBzfj/Bild-2024-05-17-152828974.png",
-                desc: "Komfort-Funktionen.",
-                content: "Auto-Unfollow, kein 'Spieler ansehen' und kein Namensfenster-Pop-up."
-            },
-            {
-                title: "Keine Karkinos Babys",
-                cat: "creature",
-                img: "https://i.postimg.cc/gjQFGSmc/karkinos.png",
-                desc: "Nur Wild-Tame auf Aberration.",
-                content: "Karkinos und Basilisk können auf Aberration nicht gezüchtet werden."
-            },
+        // =========================================================================
+        // 2. LOGIC
+        // =========================================================================
+        let currentLang = 'de';
+        let currentCat = 'all';
 
-            // --- STRUKTUREN ---
-            {
-                title: "Marktlizenz",
-                cat: "structure",
-                img: "https://i.postimg.cc/1trv8yzZ/gy-H8-Rd-QZJw-AL5-R33-IYOkx-Xriuq1-ENIbvs-Wlze-DA2.webp",
-                desc: "Dein eigenes Haus.",
-                content: "Miete ein Haus im Community Center. Max 1 pro Stamm. Anmeldung im Discord erforderlich."
-            },
-            {
-                title: "Decay System",
-                cat: "structure",
-                img: "https://i.postimg.cc/3Rn14y8d/Bild-2024-05-17-212541692.png",
-                desc: "Clusterweiter Sync.",
-                content: "14 Tage (Unverifiziert), 30 Tage (Verifiziert). Timer synchronisieren sich clusterweit!"
-            },
-            {
-                title: "Strukturenlimits",
-                cat: "structure",
-                img: "https://i.postimg.cc/HLRG6pCK/Unbenannt.png",
-                desc: "Überprüfe deine Limits.",
-                content: "Befehle:<br><code>/strukturenlimits</code><br><code>/strukturenmenge</code>"
-            },
-            {
-                title: "Auto-Unlocked Structures",
-                cat: "structure",
-                img: "https://i.postimg.cc/02rMybdb/Oil-Pump.png",
-                desc: "Öffentliche Ressourcen.",
-                content: "1 Ölpumpe/Gassammler pro Tribe, unverschließbar für alle."
-            },
-            {
-                title: "Offline Schutz",
-                cat: "structure",
-                img: "https://i.postimg.cc/3Rn14y8d/Bild-2024-05-17-212541692.png",
-                desc: "Sicher nach 5 Minuten.",
-                content: "Deine Basis ist 5 Minuten nach dem Ausloggen geschützt."
-            },
-            {
-                title: "IOP Livemaps",
-                cat: "structure",
-                img: "https://infinityofphoenix-asa.com/images/logo.png",
-                desc: "Finde Bauplätze.",
-                content: "Web-Karte um freie Spots zu finden oder Spieler zu orten. <a href='https://discord.com/channels/811710111725912085/1330642139650195548'>Discord Link</a>"
-            },
+        function setLang(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('btn-' + lang).classList.add('active');
+            
+            // Statische Texte
+            document.getElementById('uiSubtitle').innerText = translations.subtitle[lang];
+            document.getElementById('searchInput').placeholder = translations.search[lang];
+            
+            // Nav Texte
+            document.getElementById('filter-all').innerText = translations.nav.all[lang];
+            document.getElementById('filter-general').innerText = translations.nav.general[lang];
+            document.getElementById('filter-creature').innerText = translations.nav.creature[lang];
+            document.getElementById('filter-structure').innerText = translations.nav.structure[lang];
+            document.getElementById('filter-shop').innerText = translations.nav.shop[lang];
+            document.getElementById('filter-gameplay').innerText = translations.nav.gameplay[lang];
 
-            // --- SHOP & ITEMS ---
-            {
-                title: "Websiteshop & Tokens",
-                cat: "shop",
-                img: "https://i.postimg.cc/fL0P284P/Bild-2024-05-30-165653153.png",
-                desc: "Verdiene Tokens durch Spielzeit.",
-                content: "Tokens für Spielzeit (alle 30min), Level-Ups, Voten etc. Kaufe Items, Skins und Boosts."
-            },
-            {
-                title: "Serverwährung",
-                cat: "shop",
-                img: "https://i.postimg.cc/Z5rjrY4F/Bild-2024-05-17-214332739.png",
-                desc: "Tokens, Gold & Edelsteine.",
-                content: "<strong>Tokens:</strong> Shop.<br><strong>Gold:</strong> Casino/Tribute.<br><strong>Edelsteine:</strong> Quests & Bosse."
-            },
-            {
-                title: "Ingame Casino",
-                cat: "shop",
-                img: "https://i.postimg.cc/Z5rjrY4F/Bild-2024-05-17-214332739.png",
-                desc: "Versuche dein Glück.",
-                content: "Setze Gold und gewinne Preise in unserem eigenen Ingame Casino."
-            },
-            {
-                title: "Unzerstörbare Leuchtpistole",
-                cat: "shop",
-                img: "https://i.postimg.cc/NGxwstWV/Bild-2024-05-17-214538394.png",
-                desc: "Ideal um sich zu finden.",
-                content: "Die FlareGun geht nicht kaputt und verursacht keinen Schaden (gegen Abuse)."
-            },
-            {
-                title: "Tek-Fernglas",
-                cat: "shop",
-                img: "https://i.postimg.cc/L5qw4rYb/Bild-2024-05-17-204603846.png",
-                desc: "Ab Level 1 nutzbar.",
-                content: "Freigeschaltet ab Lvl 1. Herstellbar im Replikator oder kaufbar im Shop."
-            },
-            {
-                title: "Wyvernmilch & Gift",
-                cat: "shop",
-                img: "https://i.postimg.cc/FRqdJLzH/Bild-2024-05-17-205114510.png",
-                desc: "Längere Haltbarkeit.",
-                content: "Milch wird benötigt, hält aber länger (bis zu 46 Tage im QoL+ Kühlschrank)."
-            },
-            {
-                title: "Zaubertränke",
-                cat: "shop",
-                img: "https://i.postimg.cc/KjjzjHTd/Ye9pm-Zryehqhg6k-VXv-Of-ACm-Y1-BRb2-Q1-Gn-HRzt0-U7.webp",
-                desc: "Magische Hilfsmittel.",
-                content: "Crafting-Skill Potion, Potions, Server Boosts und mehr."
-            },
-            {
-                title: "Kartenereignisse",
-                cat: "shop",
-                img: "https://i.postimg.cc/QMwMnbWD/7-RRVha-OOu8dt-Qfmbz-F4v-UWp-LOq-Od1h-UH9l-Yj7-Wq6.webp",
-                desc: "Trigger Wetter selbst.",
-                content: "Löse Hitzewellen oder Regen gegen Tokens aus."
-            },
-            {
-                title: "Kreatureneinfärbungen",
-                cat: "shop",
-                img: "https://i.postimg.cc/jqvpxjZw/u-Ebu-YYjsk7wq8-Ax-V3cd-A0b-IFv-Aa5-BMUAv-SYf-Sm-YK.webp",
-                desc: "Färbe deine Dinos.",
-                content: "Kaufe Färbungen, die auch vererbt werden!"
-            },
-            {
-                title: "Serverboosts",
-                cat: "shop",
-                img: "https://i.postimg.cc/NGHZqxZM/Bc-GYR9-Ha6-Evsf3iu-HBZUT7zs-Lu7-Zp-AFf-Kt-E4-K0-QP.webp",
-                desc: "Booste Raten (Mo-Do).",
-                content: "Kaufe Boosts (1h-12h), um Raten unter der Woche zu erhöhen."
-            },
-            {
-                title: "Community Center Extended",
-                cat: "general",
-                img: "https://i.postimg.cc/1trv8yzZ/gy-H8-Rd-QZJw-AL5-R33-IYOkx-Xriuq1-ENIbvs-Wlze-DA2.webp",
-                desc: "Events & Marktplatz.",
-                content: "Von Eastereggs über Events bis hin zum kompletten Marktsystem mit mietbaren Häusern."
-            }
-        ];
-
-        // --- RENDER LOGIC ---
-        const grid = document.getElementById('featuresGrid');
-        const filterBtns = document.querySelectorAll('.filter-btn');
-        const searchInput = document.getElementById('searchInput');
-        const modal = document.getElementById('featureModal');
+            // Re-Render Grid
+            const searchVal = document.getElementById('searchInput').value;
+            render(currentCat, searchVal);
+        }
 
         function render(filterCat = 'all', searchText = '') {
+            const grid = document.getElementById('featuresGrid');
             grid.innerHTML = '';
             
-            const filtered = features.filter(f => {
+            const lowerSearch = searchText.toLowerCase();
+            const filtered = translations.features.filter(f => {
                 const matchCat = filterCat === 'all' || f.cat === filterCat;
-                const matchSearch = f.title.toLowerCase().includes(searchText) || f.desc.toLowerCase().includes(searchText) || f.content.toLowerCase().includes(searchText);
+                const matchSearch = f.title[currentLang].toLowerCase().includes(lowerSearch) || 
+                                    f.desc[currentLang].toLowerCase().includes(lowerSearch) || 
+                                    f.content[currentLang].toLowerCase().includes(lowerSearch);
                 return matchCat && matchSearch;
             });
 
@@ -818,49 +860,52 @@
                 card.className = 'feature-card';
                 card.onclick = () => openModal(f);
 
-                // Determine tag text
-                let tagText = "";
-                if(f.cat === 'general') tagText = "Allgemein";
-                if(f.cat === 'creature') tagText = "Kreatur";
-                if(f.cat === 'structure') tagText = "Bau";
-                if(f.cat === 'shop') tagText = "Shop";
-                if(f.cat === 'gameplay') tagText = "Gameplay";
+                // Tag Text
+                let tagText = translations.nav[f.cat][currentLang];
 
-                // NO IMAGE IN CARD PREVIEW - TITLE & DESCRIPTION ONLY
                 card.innerHTML = `
                     <div class="card-body">
                         <div class="card-header-row">
                             <span class="card-tag">${tagText}</span>
                         </div>
-                        <div class="card-title">${f.title}</div>
-                        <div class="card-preview">${f.desc}</div>
-                        <div class="read-more">Mehr Infos <i class="fa-solid fa-arrow-right"></i></div>
+                        <div class="card-title">${f.title[currentLang]}</div>
+                        <div class="card-preview">${f.desc[currentLang]}</div>
+                        <div class="read-more">${translations.more_info[currentLang]} <i class="fa-solid fa-arrow-right"></i></div>
                     </div>
                 `;
                 grid.appendChild(card);
             });
         }
 
-        // --- FILTER ---
+        // FILTER EVENTS
+        const filterBtns = document.querySelectorAll('.filter-btn');
         filterBtns.forEach(btn => {
             btn.addEventListener('click', () => {
                 filterBtns.forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
-                render(btn.dataset.cat, searchInput.value.toLowerCase());
+                currentCat = btn.dataset.cat;
+                render(currentCat, document.getElementById('searchInput').value);
             });
         });
 
-        // --- SEARCH ---
-        searchInput.addEventListener('input', (e) => {
-            const activeCat = document.querySelector('.filter-btn.active').dataset.cat;
-            render(activeCat, e.target.value.toLowerCase());
+        // SEARCH EVENT
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            render(currentCat, e.target.value);
         });
 
-        // --- MODAL ---
+        // MODAL LOGIC
+        const modal = document.getElementById('featureModal');
+        
         function openModal(feature) {
-            document.getElementById('mTitle').innerText = feature.title;
+            document.getElementById('mTitle').innerText = feature.title[currentLang];
             document.getElementById('mImg').src = feature.img;
-            document.getElementById('mText').innerHTML = `<h4>${feature.desc}</h4><p>${feature.content}</p>`;
+            document.getElementById('mText').innerHTML = feature.content[currentLang];
+            
+            // Check if image fails (fallback)
+            const img = document.getElementById('mImg');
+            img.onerror = function() { this.style.display = 'none'; };
+            img.onload = function() { this.style.display = 'block'; };
+            
             modal.classList.add('active');
         }
 
@@ -873,8 +918,9 @@
         });
 
         // Init
-        render();
-
+        window.onload = function() {
+            setLang('de');
+        };
     </script>
 </body>
 </html>
