@@ -49,8 +49,8 @@
         /* --- WIDGET CONTAINER --- */
         .widget-container {
             display: flex;
-            width: 99%; 
-            height: 98vh; 
+            width: 98%; 
+            height: 95vh;
             background-color: var(--c-bg);
             border: 2px solid var(--c-fire);
             border-radius: 12px;
@@ -76,6 +76,7 @@
             text-align: center;
             border-bottom: 1px solid var(--c-border);
             background: linear-gradient(180deg, rgba(255,51,0,0.1) 0%, transparent 100%);
+            position: relative;
         }
 
         .title {
@@ -96,6 +97,30 @@
             letter-spacing: 2px;
             margin-top: 8px;
             display: block;
+        }
+
+        /* FLAGGEN SWITCHER */
+        .lang-switch {
+            display: flex;
+            gap: 5px;
+            justify-content: center;
+            margin-top: 15px;
+        }
+        .lang-btn {
+            width: 25px; height: 16px;
+            cursor: pointer;
+            border-radius: 2px;
+            border: 1px solid #fff;
+            opacity: 0.5;
+            transition: transform 0.2s, opacity 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+            padding: 0;
+            display: block;
+        }
+        .lang-btn:hover, .lang-btn.active {
+            opacity: 1; transform: scale(1.15);
+            border-color: var(--c-fire);
+            z-index: 10;
         }
 
         .nav-menu {
@@ -143,7 +168,7 @@
         .content-area::-webkit-scrollbar-thumb { background-color: #333; border-radius: 4px; }
 
         /* Sections */
-        .section { display: none; animation: fadeIn 0.4s ease; max-width: 1400px; margin: 0 auto; }
+        .section { display: none; animation: fadeIn 0.4s ease; max-width: 1200px; margin: 0 auto; }
         .section.active { display: block; }
 
         .section-header {
@@ -267,8 +292,9 @@
         @media (max-width: 900px) {
             .widget-container { flex-direction: column; width: 100%; height: 100vh; border: none; border-radius: 0; }
             .sidebar { width: 100%; height: auto; border-right: none; border-bottom: 2px solid var(--c-fire); }
-            .nav-menu { display: flex; margin: 0; overflow-x: auto; }
-            .nav-btn { justify-content: center; padding: 15px; font-size: 1rem; width: auto; white-space: nowrap; }
+            .nav-menu { display: flex; margin: 15px 0; flex-wrap: wrap; justify-content: center; }
+            .nav-btn { justify-content: center; padding: 12px; font-size: 1rem; width: auto; border-left: none; border-bottom: 3px solid transparent; }
+            .nav-btn.active { background: transparent; border-bottom-color: var(--c-fire); }
             .content-area { padding: 20px; }
             .gem-card { flex-direction: column; }
             .gem-img-container { width: 100%; height: 100px; border-right: none; border-bottom: 1px solid var(--c-border); }
@@ -283,22 +309,49 @@
         <div class="sidebar">
             <div class="header-area">
                 <h1 class="title">Edelsteine</h1>
-                <span class="subtitle">Währung & Loot</span>
+                <span class="subtitle" id="uiSubtitle">Währung & Loot</span>
+                
+                <!-- Flaggen -->
+                <div class="lang-switch">
+                    <svg class="lang-btn active" id="btn-de" onclick="setLang('de')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 5 3">
+                        <rect width="5" height="3" fill="#000"/><rect width="5" height="2" y="1" fill="#D00"/><rect width="5" height="1" y="2" fill="#FFCE00"/>
+                    </svg>
+                    <svg class="lang-btn" id="btn-en" onclick="setLang('en')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 30">
+                        <clipPath id="s"><path d="M0,0 v30 h60 v-30 z"/></clipPath>
+                        <clipPath id="t"><path d="M30,15 h30 v15 z v15 h-30 z h-30 v-15 z v-15 h30 z"/></clipPath>
+                        <g clip-path="url(#s)">
+                            <path d="M0,0 v30 h60 v-30 z" fill="#012169"/>
+                            <path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/>
+                            <path d="M0,0 L60,30 M60,0 L0,30" clip-path="url(#t)" stroke="#C8102E" stroke-width="4"/>
+                            <path d="M30,0 v30 M0,15 h60" stroke="#fff" stroke-width="10"/>
+                            <path d="M30,0 v30 M0,15 h60" stroke="#C8102E" stroke-width="6"/>
+                        </g>
+                    </svg>
+                    <svg class="lang-btn" id="btn-es" onclick="setLang('es')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 750 500">
+                        <rect width="750" height="500" fill="#AA151B"/>
+                        <rect width="750" height="250" y="125" fill="#F1BF00"/>
+                    </svg>
+                    <svg class="lang-btn" id="btn-fr" onclick="setLang('fr')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600">
+                        <rect width="900" height="600" fill="#ED2939"/>
+                        <rect width="600" height="600" fill="#fff"/>
+                        <rect width="300" height="600" fill="#002395"/>
+                    </svg>
+                </div>
             </div>
             
             <ul class="nav-menu">
                 <li>
-                    <button class="nav-btn active" onclick="showTab('info', this)">
+                    <button class="nav-btn active" onclick="showTab('info', this)" id="navInfo">
                         <i class="fa-solid fa-info-circle"></i> Übersicht
                     </button>
                 </li>
                 <li>
-                    <button class="nav-btn" onclick="showTab('standard', this)">
+                    <button class="nav-btn" onclick="showTab('standard', this)" id="navStandard">
                         <i class="fa-solid fa-coins"></i> Standard Gems
                     </button>
                 </li>
                 <li>
-                    <button class="nav-btn" onclick="showTab('boss', this)">
+                    <button class="nav-btn" onclick="showTab('boss', this)" id="navBoss">
                         <i class="fa-solid fa-skull"></i> Boss & Spezial
                     </button>
                 </li>
@@ -306,174 +359,234 @@
         </div>
 
         <!-- CONTENT -->
-        <div class="content-area">
-
-            <!-- TAB: INFO -->
-            <div id="info" class="section active">
-                <div class="section-header">
-                    <i class="fa-solid fa-info-circle section-icon"></i>
-                    <h2 class="section-title">Das Währungssystem</h2>
-                </div>
-
-                <div class="info-block">
-                    <h3>Allgemeines</h3>
-                    <p>Ihr könnt bei uns verschiedene Edelsteine, Kreaturen-Seelen und Tokens erhalten. Diese dienen als Währung auf dem <strong>Schwarzmarkt</strong>.</p>
-                    <p><strong>Verwendungszweck:</strong></p>
-                    <ul>
-                        <li>Kauf von verbesserten Waffen, Werkzeugen und Rüstungen.</li>
-                        <li>Erwerb von einzigartigen mythischen Skins, Pets und Zaubertränken.</li>
-                        <li>Kauf von legendären Kreaturen beim Reittierhändler.</li>
-                    </ul>
-                </div>
-
-                <div class="info-block">
-                    <h3>Wie erhalte ich Edelsteine?</h3>
-                    <p>Edelsteine können auf verschiedenste Weisen verdient werden:</p>
-                    <ul>
-                        <li>Bosskämpfe (Ark Bosse & Open World Minibosse)</li>
-                        <li>Quest-Belohnungen</li>
-                        <li>Events</li>
-                        <li>Abschluss von Tek Caves</li>
-                        <li>Verkauf von Tributen in der Spielerbank</li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- TAB: STANDARD GEMS -->
-            <div id="standard" class="section">
-                <div class="section-header">
-                    <i class="fa-solid fa-coins section-icon"></i>
-                    <h2 class="section-title">Standard Edelsteine</h2>
-                </div>
-
-                <div class="gem-grid">
-                    <!-- Bernsteine -->
-                    <div class="gem-card" style="--gem-color: #f7ad6b;">
-                        <div class="gem-img-container">
-                            <img src="https://i.postimg.cc/T3g6Qq3q/Bernstein.png" class="gem-img">
-                        </div>
-                        <div class="gem-content">
-                            <h3 class="gem-title">Bernsteine</h3>
-                            <div class="gem-desc">Die niedrigste Währung. Wird für kleinere Händler und erste Markt-Strukturen benötigt.</div>
-                            <div class="gem-source"><strong>Quelle:</strong> Spielerbank (Tribute-Verkauf), Alpha Drops</div>
-                        </div>
-                    </div>
-
-                    <!-- Rubine -->
-                    <div class="gem-card" style="--gem-color: #ff0000;">
-                        <div class="gem-img-container">
-                            <img src="https://i.postimg.cc/xdm3X8gd/Rubin.png" class="gem-img">
-                        </div>
-                        <div class="gem-content">
-                            <h3 class="gem-title">Rubine</h3>
-                            <div class="gem-desc">Verdient durch Aktivität und Aufgaben.</div>
-                            <div class="gem-source">
-                                <strong>Quellen:</strong><br>
-                                - Daily Quest: 5x<br>
-                                - Weekly Quest: 15x<br>
-                                - Vote (The Island): 5x
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Amethyste -->
-                    <div class="gem-card" style="--gem-color: #9966cc;">
-                        <div class="gem-img-container">
-                            <img src="https://i.postimg.cc/YCMHnLG5/Anesthyt.png" class="gem-img">
-                        </div>
-                        <div class="gem-content">
-                            <h3 class="gem-title">Amethyste</h3>
-                            <div class="gem-desc">Eine mittlere Währung für diverse Händler.</div>
-                            <div class="gem-source"><strong>Quelle:</strong> Diverse Quellen & Händler</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- TAB: BOSS & SPECIAL -->
-            <div id="boss" class="section">
-                <div class="section-header">
-                    <i class="fa-solid fa-skull section-icon"></i>
-                    <h2 class="section-title">Boss & Spezial Edelsteine</h2>
-                </div>
-
-                <div class="gem-grid">
-                    <!-- Smaragde -->
-                    <div class="gem-card" style="--gem-color: #00ff00;">
-                        <div class="gem-img-container">
-                            <img src="https://i.postimg.cc/X7ZGjhsj/Smaragd.png" class="gem-img">
-                        </div>
-                        <div class="gem-content">
-                            <h3 class="gem-title">Smaragde</h3>
-                            <div class="gem-desc">Von Open World Bossen. Wichtig für bessere Ausrüstung.</div>
-                            <div class="gem-source">
-                                <strong>Drops von:</strong><br>
-                                Mantisqueen, Scorpionking, Beelzebufo King, Rhinobeast
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Saphire -->
-                    <div class="gem-card" style="--gem-color: #0055ff;">
-                        <div class="gem-img-container">
-                            <img src="https://i.postimg.cc/sXvQMN34/Saphir.png" class="gem-img">
-                        </div>
-                        <div class="gem-content">
-                            <h3 class="gem-title">Saphire</h3>
-                            <div class="gem-desc">Tauschbar gegen Teleportsteine beim Magier.</div>
-                            <div class="gem-source">
-                                <strong>Drops:</strong><br>
-                                Rare Kill: 1x<br>
-                                Legendary Kill: 3x
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Diamanten -->
-                    <div class="gem-card" style="--gem-color: #00ffff;">
-                        <div class="gem-img-container">
-                            <img src="https://i.postimg.cc/0QqFQLYL/Diamant.png" class="gem-img">
-                        </div>
-                        <div class="gem-content">
-                            <h3 class="gem-title">Diamanten</h3>
-                            <div class="gem-desc">Der höchste Wert. Nur durch Ark Bosskämpfe zu erhalten.</div>
-                            <div class="gem-source">
-                                <strong>Boss Drops:</strong><br>
-                                Gamma: 1x | Beta: 2x | Alpha: 5x
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Arkensteine -->
-                    <div class="gem-card" style="--gem-color: #ff00ff;">
-                        <div class="gem-img-container">
-                            <img src="https://i.postimg.cc/DwTx1qJX/15.png" class="gem-img">
-                        </div>
-                        <div class="gem-content">
-                            <h3 class="gem-title">Arkensteine</h3>
-                            <div class="gem-desc">Mächtiges Artefakt. Löst bei Erhalt sofortige Server-Boosts aus.</div>
-                            <div class="gem-source"><strong>Quelle:</strong> Tek Cave Abschluss (Gamma/Beta/Alpha)</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
+        <div class="content-area" id="contentContainer">
+             <!-- Content injected via JS -->
         </div>
+
     </div>
 
     <script>
-        function showTab(tabId, btn) {
-            // Hide all sections
-            document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+        // =========================================================================
+        // 1. DATENBANK (ÜBERSETZUNGEN)
+        // =========================================================================
+        const translations = {
+            subtitle: { de: "Währung & Loot", en: "Currency & Loot", es: "Moneda y Botín", fr: "Devise et Butin" },
             
-            // Deactivate buttons
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            
-            // Activate selected
-            document.getElementById(tabId).classList.add('active');
-            btn.classList.add('active');
-        }
-    </script>
+            nav: {
+                info: { de: "Übersicht", en: "Overview", es: "Resumen", fr: "Aperçu" },
+                standard: { de: "Standard Gems", en: "Standard Gems", es: "Gemas Estándar", fr: "Gemmes Standard" },
+                boss: { de: "Boss & Spezial", en: "Boss & Special", es: "Jefe y Especial", fr: "Boss et Spécial" }
+            },
 
+            sections: {
+                info: {
+                    header: { de: "Das Währungssystem", en: "The Currency System", es: "Sistema de Moneda", fr: "Le Système de Devises" },
+                    
+                    intro_title: { de: "Allgemeines", en: "General Information", es: "Información General", fr: "Informations Générales" },
+                    intro_text: { 
+                        de: "<p>Ihr könnt bei uns verschiedene Edelsteine, Kreaturen-Seelen und Tokens erhalten. Diese dienen als Währung auf dem <strong>Schwarzmarkt</strong>.</p><p><strong>Verwendungszweck:</strong></p>",
+                        en: "<p>You can earn various gems, creature souls, and tokens. These serve as currency on the <strong>Black Market</strong>.</p><p><strong>Usage:</strong></p>",
+                        es: "<p>Puedes ganar gemas, almas y fichas. Sirven como moneda en el <strong>Mercado Negro</strong>.</p><p><strong>Uso:</strong></p>",
+                        fr: "<p>Vous pouvez gagner diverses gemmes, âmes et jetons. Ils servent de monnaie au <strong>Marché Noir</strong>.</p><p><strong>Utilisation :</strong></p>"
+                    },
+                    usage_list: {
+                        de: ["Kauf von verbesserten Waffen, Werkzeugen und Rüstungen.", "Erwerb von einzigartigen mythischen Skins, Pets und Zaubertränken.", "Kauf von legendären Kreaturen beim Reittierhändler."],
+                        en: ["Purchase improved weapons, tools, and armor.", "Acquire unique mythical skins, pets, and potions.", "Buy legendary creatures from the mount trader."],
+                        es: ["Compra armas, herramientas y armaduras mejoradas.", "Adquiere skins, mascotas y pociones míticas.", "Compra criaturas legendarias."],
+                        fr: ["Achetez des armes, outils et armures améliorés.", "Acquérez des skins, animaux et potions mythiques.", "Achetez des créatures légendaires."]
+                    },
+                    
+                    source_title: { de: "Wie erhalte ich Edelsteine?", en: "How to get Gems?", es: "¿Cómo obtener Gemas?", fr: "Comment obtenir des Gemmes ?" },
+                    source_text: { de: "<p>Edelsteine können auf verschiedenste Weisen verdient werden:</p>", en: "<p>Gems can be earned in various ways:</p>", es: "<p>Las gemas se obtienen de varias formas:</p>", fr: "<p>Les gemmes peuvent être gagnées de diverses manières :</p>" },
+                    source_list: {
+                        de: ["Bosskämpfe (Ark Bosse & Open World Minibosse)", "Quest-Belohnungen", "Events", "Abschluss von Tek Caves", "Verkauf von Tributen in der Spielerbank"],
+                        en: ["Boss Fights (Ark Bosses & Open World Minibosses)", "Quest Rewards", "Events", "Completing Tek Caves", "Selling Tributes at the Player Bank"],
+                        es: ["Jefes (Ark y Minibosses)", "Recompensas de Misiones", "Eventos", "Cuevas Tek", "Venta de Tributos"],
+                        fr: ["Combats de Boss (Ark & Miniboss)", "Récompenses de Quêtes", "Événements", "Grottes Tek", "Vente de Tributs"]
+                    }
+                },
+                standard: {
+                    header: { de: "Standard Edelsteine", en: "Standard Gems", es: "Gemas Estándar", fr: "Gemmes Standard" },
+                    gems: [
+                        {
+                            color: "#f7ad6b",
+                            img: "https://i.postimg.cc/T3g6Qq3q/Bernstein.png",
+                            title: { de: "Bernsteine", en: "Amber", es: "Ámbar", fr: "Ambre" },
+                            desc: { de: "Die niedrigste Währung. Wird für kleinere Händler und erste Markt-Strukturen benötigt.", en: "Lowest currency. Used for small traders and basic market structures.", es: "Moneda más baja. Para comerciantes pequeños.", fr: "Devise la plus basse. Pour petits commerçants." },
+                            source_label: { de: "Quelle:", en: "Source:", es: "Fuente:", fr: "Source :" },
+                            source: { de: "Spielerbank (Tribute-Verkauf), Alpha Drops", en: "Player Bank, Alpha Drops", es: "Banco, Alpha Drops", fr: "Banque, Alpha Drops" }
+                        },
+                        {
+                            color: "#ff0000",
+                            img: "https://i.postimg.cc/xdm3X8gd/Rubin.png",
+                            title: { de: "Rubine", en: "Rubies", es: "Rubíes", fr: "Rubis" },
+                            desc: { de: "Verdient durch Aktivität und Aufgaben.", en: "Earned through activity and tasks.", es: "Ganado por actividad y tareas.", fr: "Gagné par activité et tâches." },
+                            source_label: { de: "Quellen:", en: "Sources:", es: "Fuentes:", fr: "Sources :" },
+                            source: { 
+                                de: "Daily Quest: 5x | Weekly Quest: 15x | Vote: 5x", 
+                                en: "Daily Quest: 5x | Weekly Quest: 15x | Vote: 5x",
+                                es: "Misión Diaria: 5x | Semanal: 15x | Voto: 5x",
+                                fr: "Quête Jour: 5x | Hebdo: 15x | Vote: 5x"
+                            }
+                        },
+                        {
+                            color: "#9966cc",
+                            img: "https://i.postimg.cc/YCMHnLG5/Anesthyt.png",
+                            title: { de: "Amethyste", en: "Amethysts", es: "Amatistas", fr: "Améthystes" },
+                            desc: { de: "Eine mittlere Währung für diverse Händler.", en: "Medium currency for various traders.", es: "Moneda media para comerciantes.", fr: "Devise moyenne pour divers marchands." },
+                            source_label: { de: "Quelle:", en: "Source:", es: "Fuente:", fr: "Source :" },
+                            source: { de: "Diverse Quellen & Händler", en: "Various sources & traders", es: "Varias fuentes", fr: "Diverses sources" }
+                        }
+                    ]
+                },
+                boss: {
+                    header: { de: "Boss & Spezial Edelsteine", en: "Boss & Special Gems", es: "Jefe y Gemas Especiales", fr: "Boss et Gemmes Spéciales" },
+                    gems: [
+                        {
+                            color: "#00ff00",
+                            img: "https://i.postimg.cc/X7ZGjhsj/Smaragd.png",
+                            title: { de: "Smaragde", en: "Emeralds", es: "Esmeraldas", fr: "Émeraudes" },
+                            desc: { de: "Von Open World Bossen. Wichtig für bessere Ausrüstung.", en: "From Open World Bosses. Important for better gear.", es: "De Jefes de Mundo. Para mejor equipo.", fr: "Des Boss Open World. Pour meilleur équipement." },
+                            source_label: { de: "Drops von:", en: "Drops from:", es: "Botín de:", fr: "Butin de :" },
+                            source: { de: "Mantisqueen, Scorpionking, Beelzebufo King, Rhinobeast", en: "Mantisqueen, Scorpionking, Beelzebufo King, Rhinobeast", es: "Mantisqueen, Scorpionking...", fr: "Mantisqueen, Scorpionking..." }
+                        },
+                        {
+                            color: "#0055ff",
+                            img: "https://i.postimg.cc/sXvQMN34/Saphir.png",
+                            title: { de: "Saphire", en: "Sapphires", es: "Zafiros", fr: "Saphirs" },
+                            desc: { de: "Tauschbar gegen Teleportsteine beim Magier.", en: "Exchangeable for Teleport Stones at the Mage.", es: "Canjeable por Piedras de Teletransporte.", fr: "Échangeable contre Pierres de Téléportation." },
+                            source_label: { de: "Drops:", en: "Drops:", es: "Botín:", fr: "Butin :" },
+                            source: { de: "Rare Kill: 1x | Legendary Kill: 3x", en: "Rare Kill: 1x | Legendary Kill: 3x", es: "Rare Kill: 1x | Legendary Kill: 3x", fr: "Rare Kill: 1x | Legendary Kill: 3x" }
+                        },
+                        {
+                            color: "#00ffff",
+                            img: "https://i.postimg.cc/0QqFQLYL/Diamant.png",
+                            title: { de: "Diamanten", en: "Diamonds", es: "Diamantes", fr: "Diamants" },
+                            desc: { de: "Der höchste Wert. Nur durch Ark Bosskämpfe zu erhalten.", en: "Highest value. Only obtainable from Ark Boss fights.", es: "Valor más alto. Solo de Jefes Ark.", fr: "Valeur la plus élevée. Uniquement sur Boss Ark." },
+                            source_label: { de: "Boss Drops:", en: "Boss Drops:", es: "Botín de Jefe:", fr: "Butin de Boss :" },
+                            source: { de: "Gamma: 1x | Beta: 2x | Alpha: 5x", en: "Gamma: 1x | Beta: 2x | Alpha: 5x", es: "Gamma: 1x | Beta: 2x | Alpha: 5x", fr: "Gamma: 1x | Bêta: 2x | Alpha: 5x" }
+                        },
+                        {
+                            color: "#ff00ff",
+                            img: "https://i.postimg.cc/DwTx1qJX/15.png",
+                            title: { de: "Arkensteine", en: "Arkenstones", es: "Piedras del Arca", fr: "Pierres d'Arche" },
+                            desc: { de: "Mächtiges Artefakt. Löst bei Erhalt sofortige Server-Boosts aus.", en: "Powerful artifact. Triggers immediate server boosts upon receipt.", es: "Artefacto poderoso. Activa boosts al obtenerlo.", fr: "Artefact puissant. Active des boosts immédiats." },
+                            source_label: { de: "Quelle:", en: "Source:", es: "Fuente:", fr: "Source :" },
+                            source: { de: "Tek Cave Abschluss (Gamma/Beta/Alpha)", en: "Tek Cave Completion", es: "Completar Cueva Tek", fr: "Fin de Grotte Tek" }
+                        }
+                    ]
+                }
+            }
+        };
+
+        // =========================================================================
+        // 2. LOGIC
+        // =========================================================================
+        let currentLang = 'de';
+        let currentTab = 'info';
+
+        function setLang(lang) {
+            currentLang = lang;
+            
+            // Buttons
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('btn-' + lang).classList.add('active');
+
+            // Static Text
+            document.getElementById('uiSubtitle').innerText = translations.subtitle[lang];
+            
+            // Nav Text
+            document.getElementById('navInfo').innerHTML = `<i class="fa-solid fa-info-circle"></i> ${translations.nav.info[lang]}`;
+            document.getElementById('navStandard').innerHTML = `<i class="fa-solid fa-coins"></i> ${translations.nav.standard[lang]}`;
+            document.getElementById('navBoss').innerHTML = `<i class="fa-solid fa-skull"></i> ${translations.nav.boss[lang]}`;
+
+            // Re-render Content
+            renderContent();
+        }
+
+        function showTab(tabId, btn) {
+            currentTab = tabId;
+            
+            // Buttons UI
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            renderContent();
+        }
+
+        function renderContent() {
+            const container = document.getElementById('contentContainer');
+            container.innerHTML = '';
+            
+            const data = translations.sections;
+
+            if (currentTab === 'info') {
+                container.innerHTML = `
+                    <div class="section active">
+                        <div class="section-header">
+                            <i class="fa-solid fa-info-circle section-icon"></i>
+                            <h2 class="section-title">${data.info.header[currentLang]}</h2>
+                        </div>
+                        
+                        <div class="info-block">
+                            <h3>${data.info.intro_title[currentLang]}</h3>
+                            ${data.info.intro_text[currentLang]}
+                            <ul>${data.info.usage_list[currentLang].map(li => `<li>${li}</li>`).join('')}</ul>
+                        </div>
+
+                        <div class="info-block">
+                            <h3>${data.info.source_title[currentLang]}</h3>
+                            ${data.info.source_text[currentLang]}
+                            <ul>${data.info.source_list[currentLang].map(li => `<li>${li}</li>`).join('')}</ul>
+                        </div>
+                    </div>
+                `;
+            } else if (currentTab === 'standard') {
+                const header = `
+                    <div class="section-header">
+                        <i class="fa-solid fa-coins section-icon"></i>
+                        <h2 class="section-title">${data.standard.header[currentLang]}</h2>
+                    </div>`;
+                
+                const grid = `<div class="gem-grid">` + data.standard.gems.map(g => `
+                    <div class="gem-card" style="--gem-color: ${g.color};">
+                        <div class="gem-img-container"><img src="${g.img}" class="gem-img"></div>
+                        <div class="gem-content">
+                            <h3 class="gem-title">${g.title[currentLang]}</h3>
+                            <div class="gem-desc">${g.desc[currentLang]}</div>
+                            <div class="gem-source"><strong>${g.source_label[currentLang]}</strong> ${g.source[currentLang]}</div>
+                        </div>
+                    </div>
+                `).join('') + `</div>`;
+
+                container.innerHTML = `<div class="section active">${header}${grid}</div>`;
+            } else if (currentTab === 'boss') {
+                const header = `
+                    <div class="section-header">
+                        <i class="fa-solid fa-skull section-icon"></i>
+                        <h2 class="section-title">${data.boss.header[currentLang]}</h2>
+                    </div>`;
+
+                const grid = `<div class="gem-grid">` + data.boss.gems.map(g => `
+                    <div class="gem-card" style="--gem-color: ${g.color};">
+                        <div class="gem-img-container"><img src="${g.img}" class="gem-img"></div>
+                        <div class="gem-content">
+                            <h3 class="gem-title">${g.title[currentLang]}</h3>
+                            <div class="gem-desc">${g.desc[currentLang]}</div>
+                            <div class="gem-source"><strong>${g.source_label[currentLang]}</strong> ${g.source[currentLang]}</div>
+                        </div>
+                    </div>
+                `).join('') + `</div>`;
+
+                container.innerHTML = `<div class="section active">${header}${grid}</div>`;
+            }
+        }
+
+        // Init
+        window.onload = function() {
+            setLang('de');
+        };
+
+    </script>
 </body>
 </html>
