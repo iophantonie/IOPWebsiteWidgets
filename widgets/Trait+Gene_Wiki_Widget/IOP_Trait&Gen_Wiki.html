@@ -52,6 +52,7 @@
             overflow: hidden;
             height: 98%; 
             max-height: 98vh;
+            position: relative;
         }
 
         /* Header */
@@ -61,7 +62,7 @@
             text-align: center;
             border-bottom: 2px solid var(--color-red);
             flex-shrink: 0;
-            position: relative; /* Für absolute Positionierung der Sortier-Buttons */
+            position: relative;
         }
 
         .wiki-title {
@@ -73,52 +74,42 @@
             text-shadow: 0 0 10px rgba(229, 57, 53, 0.4);
         }
 
-        /* Sortier Buttons Container (Oben Rechts) */
-        .sort-container {
+        /* FLAGGEN SWITCHER (Ersetzt Sortier Buttons) */
+        .lang-switch {
             position: absolute;
             top: 15px;
             right: 15px;
             display: flex;
             gap: 5px;
         }
-
-        .sort-btn {
-            background-color: rgba(0, 0, 0, 0.4);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: #aaa;
-            padding: 4px 8px;
-            border-radius: 4px;
+        .lang-btn {
+            width: 30px; height: 20px;
             cursor: pointer;
-            font-size: 0.75rem;
-            font-family: var(--font-header);
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            transition: all 0.2s;
+            border-radius: 3px;
+            border: 1px solid #fff;
+            opacity: 0.5;
+            transition: transform 0.2s, opacity 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+            padding: 0;
+            display: block;
+        }
+        .lang-btn:hover, .lang-btn.active {
+            opacity: 1; transform: scale(1.15);
+            border-color: var(--color-red);
+            z-index: 10;
         }
 
-        .sort-btn:hover {
-            color: #fff;
-            background-color: rgba(255, 255, 255, 0.1);
-        }
-
-        .sort-btn.active {
-            color: var(--color-gold);
-            border-color: var(--color-gold);
-            background-color: rgba(255, 235, 59, 0.1);
-        }
-
-        /* Responsive: Auf Handys Sortierbuttons oben mittig statt rechts */
+        /* Responsive Header */
         @media (max-width: 600px) {
             .wiki-header {
                 display: flex;
                 flex-direction: column;
             }
-            .sort-container {
+            .lang-switch {
                 position: static;
                 justify-content: center;
                 margin-bottom: 5px;
-                order: -1; /* Nach oben schieben */
+                order: -1; 
                 align-self: center;
             }
             .wiki-title {
@@ -287,7 +278,7 @@
             width: 85%;
         }
 
-        .trait-name-de {
+        .trait-name-primary {
             font-family: var(--font-header);
             font-size: 1.25rem;
             color: #fff;
@@ -295,7 +286,7 @@
             line-height: 1.2;
         }
         
-        .trait-name-en {
+        .trait-name-secondary {
             color: #aaa;
             font-size: 0.85rem;
             font-family: var(--font-main);
@@ -373,17 +364,34 @@
     <div class="wiki-container">
         
         <div class="wiki-header">
-            <!-- Sortier Buttons -->
-            <div class="sort-container">
-                <button class="sort-btn active" id="sortDeBtn" title="Sortieren nach Deutschem Namen">
-                    <i class="fa-solid fa-arrow-down-a-z"></i> DE
-                </button>
-                <button class="sort-btn" id="sortEnBtn" title="Sortieren nach Englischem Namen">
-                    <i class="fa-solid fa-arrow-down-a-z"></i> EN
-                </button>
+            <!-- 4 Flaggen -->
+            <div class="lang-switch">
+                <svg class="lang-btn active" id="btn-de" onclick="setLang('de')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 5 3">
+                    <rect width="5" height="3" fill="#000"/><rect width="5" height="2" y="1" fill="#D00"/><rect width="5" height="1" y="2" fill="#FFCE00"/>
+                </svg>
+                <svg class="lang-btn" id="btn-en" onclick="setLang('en')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 30">
+                    <clipPath id="s"><path d="M0,0 v30 h60 v-30 z"/></clipPath>
+                    <clipPath id="t"><path d="M30,15 h30 v15 z v15 h-30 z h-30 v-15 z v-15 h30 z"/></clipPath>
+                    <g clip-path="url(#s)">
+                        <path d="M0,0 v30 h60 v-30 z" fill="#012169"/>
+                        <path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/>
+                        <path d="M0,0 L60,30 M60,0 L0,30" clip-path="url(#t)" stroke="#C8102E" stroke-width="4"/>
+                        <path d="M30,0 v30 M0,15 h60" stroke="#fff" stroke-width="10"/>
+                        <path d="M30,0 v30 M0,15 h60" stroke="#C8102E" stroke-width="6"/>
+                    </g>
+                </svg>
+                <svg class="lang-btn" id="btn-es" onclick="setLang('es')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 750 500">
+                    <rect width="750" height="500" fill="#AA151B"/>
+                    <rect width="750" height="250" y="125" fill="#F1BF00"/>
+                </svg>
+                <svg class="lang-btn" id="btn-fr" onclick="setLang('fr')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600">
+                    <rect width="900" height="600" fill="#ED2939"/>
+                    <rect width="600" height="600" fill="#fff"/>
+                    <rect width="300" height="600" fill="#002395"/>
+                </svg>
             </div>
 
-            <h1 class="wiki-title">🧬 Gen & Trait Wiki</h1>
+            <h1 class="wiki-title" id="mainTitle">🧬 Gen & Trait Wiki</h1>
             
             <div class="controls-area">
                 <div class="search-wrapper">
@@ -392,19 +400,19 @@
                 </div>
 
                 <div class="filter-group">
-                    <button class="filter-btn active" data-filter="all">
+                    <button class="filter-btn active" data-filter="all" id="filter-all">
                         <i class="fa-solid fa-layer-group"></i> <span>Alle</span>
                     </button>
-                    <button class="filter-btn" data-filter="Kampf">
+                    <button class="filter-btn" data-filter="Kampf" id="filter-combat">
                         <i class="fa-solid fa-skull"></i> <span>Kampf</span>
                     </button>
-                    <button class="filter-btn" data-filter="Utility">
+                    <button class="filter-btn" data-filter="Utility" id="filter-utility">
                         <i class="fa-solid fa-toolbox"></i> <span>Utility</span>
                     </button>
-                    <button class="filter-btn" data-filter="Attribute">
+                    <button class="filter-btn" data-filter="Attribute" id="filter-stats">
                         <i class="fa-solid fa-chart-bar"></i> <span>Stats</span>
                     </button>
-                    <button class="filter-btn" data-filter="Zucht">
+                    <button class="filter-btn" data-filter="Zucht" id="filter-breed">
                         <i class="fa-solid fa-dna"></i> <span>Zucht</span>
                     </button>
                 </div>
@@ -418,222 +426,224 @@
     </div>
 
     <script>
-        // DATENBANK DER TRAITS
+        // --- TEXT CONSTANTS ---
+        const UI_TEXT = {
+            de: { title: "🧬 Gen & Trait Wiki", search: "Suche...", all: "Alle", combat: "Kampf", utility: "Utility", stats: "Attribute", breed: "Zucht", stack: "Max. Stapel:", no_res: "Keine Gene gefunden... vielleicht neu züchten? 🧬" },
+            en: { title: "🧬 Gene & Trait Wiki", search: "Search...", all: "All", combat: "Combat", utility: "Utility", stats: "Stats", breed: "Breeding", stack: "Max Stacks:", no_res: "No traits found... maybe breed more? 🧬" },
+            es: { title: "🧬 Wiki de Genes", search: "Buscar...", all: "Todos", combat: "Combate", utility: "Utilidad", stats: "Atributos", breed: "Crianza", stack: "Pilas Máx:", no_res: "No se encontraron rasgos... ¿criar más? 🧬" },
+            fr: { title: "🧬 Wiki Gènes & Traits", search: "Rechercher...", all: "Tous", combat: "Combat", utility: "Utilitaire", stats: "Stats", breed: "Élevage", stack: "Max Piles :", no_res: "Aucun trait trouvé... peut-être élever plus ? 🧬" }
+        };
+
+        const CAT_TRANS = {
+            "Kampf": { de: "Kampf", en: "Combat", es: "Combate", fr: "Combat" },
+            "Utility": { de: "Utility", en: "Utility", es: "Utilidad", fr: "Utilitaire" },
+            "Attribute": { de: "Attribute", en: "Stats", es: "Atributos", fr: "Stats" },
+            "Zucht": { de: "Zucht", en: "Breeding", es: "Crianza", fr: "Élevage" }
+        };
+
+        // --- TRAIT DATABASE (Extended) ---
         const traitData = [
-            // --- KAMPF ---
             {
-                name_de: "Aggressiv", name_en: "Aggressive",
-                category: "Kampf",
-                desc: "Wenn diese Kreatur Schaden verursacht, erhält sie einen Bewegungsgeschwindigkeits-Buff für 5 Sekunden.",
-                t1: "2.5% Speed", t2: "3.75% Speed", t3: "5.0% Speed",
-                stack: 2, icon: "fa-bolt"
+                id: "aggro", category: "Kampf", stack: 2, icon: "fa-bolt",
+                name: { de: "Aggressiv", en: "Aggressive", es: "Agresivo", fr: "Agressif" },
+                desc: { de: "Wenn diese Kreatur Schaden verursacht, erhält sie einen Bewegungsgeschwindigkeits-Buff für 5 Sekunden.", en: "When dealing damage, gain a movement speed buff for 5 seconds.", es: "Al infligir daño, gana velocidad de movimiento por 5s.", fr: "En infligeant des dégâts, gagne un bonus de vitesse pendant 5s." },
+                t1: { de: "2.5% Speed", en: "2.5% Speed", es: "2.5% Vel", fr: "2.5% Vit" },
+                t2: { de: "3.75% Speed", en: "3.75% Speed", es: "3.75% Vel", fr: "3.75% Vit" },
+                t3: { de: "5.0% Speed", en: "5.0% Speed", es: "5.0% Vel", fr: "5.0% Vit" }
             },
             {
-                name_de: "Wütend", name_en: "Angry",
-                category: "Kampf",
-                desc: "Verursacht mehr Schaden basierend auf der aktuellen Gesundheit (Bonus beginnt bei 50% HP).",
-                t1: "1.25% Dmg", t2: "1.875% Dmg", t3: "2.5% Dmg",
-                stack: 2, icon: "fa-face-angry"
+                id: "angry", category: "Kampf", stack: 2, icon: "fa-face-angry",
+                name: { de: "Wütend", en: "Angry", es: "Enojado", fr: "En Colère" },
+                desc: { de: "Verursacht mehr Schaden basierend auf der aktuellen Gesundheit (Bonus beginnt bei 50% HP).", en: "Deals more damage based on missing health (starts at 50% HP).", es: "Más daño según salud faltante (inicia al 50% HP).", fr: "Inflige plus de dégâts selon la santé manquante (débute à 50% PV)." },
+                t1: { de: "1.25% Dmg", en: "1.25% Dmg", es: "1.25% Daño", fr: "1.25% Dég" },
+                t2: { de: "1.875% Dmg", en: "1.875% Dmg", es: "1.875% Daño", fr: "1.875% Dég" },
+                t3: { de: "2.5% Dmg", en: "2.5% Dmg", es: "2.5% Daño", fr: "2.5% Dég" }
             },
             {
-                name_de: "Blutrausch", name_en: "Frenzy",
-                category: "Kampf",
-                desc: "Erhöht Schaden und Geschwindigkeit nach einem Kill kurzzeitig.",
-                t1: "10% Dmg/Speed", t2: "15% Dmg/Speed", t3: "20% Dmg/Speed",
-                stack: 3, icon: "fa-fire"
+                id: "frenzy", category: "Kampf", stack: 3, icon: "fa-fire",
+                name: { de: "Blutrausch", en: "Frenzy", es: "Frenesí", fr: "Frénésie" },
+                desc: { de: "Erhöht Schaden und Geschwindigkeit nach einem Kill kurzzeitig.", en: "Increases damage and speed briefly after a kill.", es: "Aumenta daño y velocidad tras una muerte.", fr: "Augmente dégâts et vitesse après un kill." },
+                t1: { de: "10% Dmg/Speed", en: "10% Dmg/Speed", es: "10% Daño/Vel", fr: "10% Dég/Vit" },
+                t2: { de: "15% Dmg/Speed", en: "15% Dmg/Speed", es: "15% Daño/Vel", fr: "15% Dég/Vit" },
+                t3: { de: "20% Dmg/Speed", en: "20% Dmg/Speed", es: "20% Daño/Vel", fr: "20% Dég/Vit" }
             },
             {
-                name_de: "Riesentöter", name_en: "Giantslaying",
-                category: "Kampf",
-                desc: "Mehr Schaden gegen große Kreaturen (>500 Drag Weight), weniger Schaden gegen kleine (<200).",
-                t1: "+2.5% Large / -7.5% Small", t2: "+3.75% Large / -11.25% Small", t3: "+5.0% Large / -15.0% Small",
-                stack: 2, icon: "fa-axe"
+                id: "giant", category: "Kampf", stack: 2, icon: "fa-axe",
+                name: { de: "Riesentöter", en: "Giantslaying", es: "Matagigantes", fr: "Tueur de Géants" },
+                desc: { de: "Mehr Schaden gegen große Kreaturen (>500 Drag Weight), weniger gegen kleine (<200).", en: "More damage vs large creatures (>500 Drag Weight), less vs small (<200).", es: "Más daño vs grandes (>500 peso), menos vs pequeños.", fr: "Plus de dégâts vs grandes créatures (>500 poids), moins vs petites." },
+                t1: { de: "+2.5% Large / -7.5% Small", en: "+2.5% Large / -7.5% Small", es: "+2.5% Grande / -7.5% Peque", fr: "+2.5% Grand / -7.5% Petit" },
+                t2: { de: "+3.75% Large / -11.25% Small", en: "+3.75% Large / -11.25% Small", es: "+3.75% Grande / -11.25% Peque", fr: "+3.75% Grand / -11.25% Petit" },
+                t3: { de: "+5.0% Large / -15.0% Small", en: "+5.0% Large / -15.0% Small", es: "+5.0% Grande / -15.0% Peque", fr: "+5.0% Grand / -15.0% Petit" }
             },
             {
-                name_de: "Wuchtschlag", name_en: "Heavy-Hitting",
-                category: "Kampf",
-                desc: "Verursacht mehr Nahkampfschaden, hat aber eine verringerte Angriffsgeschwindigkeit.",
-                t1: "+2.5% Dmg / -5% Speed", t2: "+3.75% Dmg / -7.5% Speed", t3: "+5.0% Dmg / -10.0% Speed",
-                stack: 3, icon: "fa-hammer"
+                id: "heavy", category: "Kampf", stack: 3, icon: "fa-hammer",
+                name: { de: "Wuchtschlag", en: "Heavy-Hitting", es: "Golpe Pesado", fr: "Frappe Lourde" },
+                desc: { de: "Verursacht mehr Nahkampfschaden, hat aber eine verringerte Angriffsgeschwindigkeit.", en: "Deals more melee damage but has reduced attack speed.", es: "Más daño cuerpo a cuerpo pero ataque más lento.", fr: "Plus de dégâts de mêlée mais vitesse d'attaque réduite." },
+                t1: { de: "+2.5% Dmg / -5% Speed", en: "+2.5% Dmg / -5% Speed", es: "+2.5% Daño / -5% Vel", fr: "+2.5% Dég / -5% Vit" },
+                t2: { de: "+3.75% Dmg / -7.5% Speed", en: "+3.75% Dmg / -7.5% Speed", es: "+3.75% Daño / -7.5% Vel", fr: "+3.75% Dég / -7.5% Vit" },
+                t3: { de: "+5.0% Dmg / -10% Speed", en: "+5.0% Dmg / -10% Speed", es: "+5.0% Daño / -10% Vel", fr: "+5.0% Dég / -10% Vit" }
             },
             {
-                name_de: "Königsmörder", name_en: "Kingslaying",
-                category: "Kampf",
-                desc: "Erhöhter Schaden gegen Bosse und Alphas, verringerter Schaden gegen alle anderen.",
-                t1: "+5% Boss / -10% Andere", t2: "+7.5% Boss / -15% Andere", t3: "+10% Boss / -20% Andere",
-                stack: 3, icon: "fa-crown"
+                id: "king", category: "Kampf", stack: 3, icon: "fa-crown",
+                name: { de: "Königsmörder", en: "Kingslaying", es: "Matarrayes", fr: "Régicide" },
+                desc: { de: "Erhöhter Schaden gegen Bosse und Alphas, verringerter Schaden gegen alle anderen.", en: "Increased damage vs Bosses/Alphas, reduced vs others.", es: "Más daño vs Jefes/Alphas, menos vs otros.", fr: "Dégâts accrus vs Boss/Alphas, réduits vs autres." },
+                t1: { de: "+5% Boss / -10% Andere", en: "+5% Boss / -10% Others", es: "+5% Jefe / -10% Otros", fr: "+5% Boss / -10% Autres" },
+                t2: { de: "+7.5% Boss / -15% Andere", en: "+7.5% Boss / -15% Others", es: "+7.5% Jefe / -15% Otros", fr: "+7.5% Boss / -15% Autres" },
+                t3: { de: "+10% Boss / -20% Andere", en: "+10% Boss / -20% Others", es: "+10% Jefe / -20% Otros", fr: "+10% Boss / -20% Autres" }
             },
             {
-                name_de: "Taub", name_en: "Numb",
-                category: "Kampf",
-                desc: "Ein Teil des erlittenen Schadens wird in Schaden über Zeit (DoT) umgewandelt.",
-                t1: "25% DoT", t2: "37.5% DoT", t3: "50.0% DoT",
-                stack: 1, icon: "fa-capsules"
+                id: "numb", category: "Kampf", stack: 1, icon: "fa-capsules",
+                name: { de: "Taub", en: "Numb", es: "Adormecido", fr: "Engourdi" },
+                desc: { de: "Ein Teil des erlittenen Schadens wird in Schaden über Zeit (DoT) umgewandelt.", en: "Part of incoming damage is converted to Damage over Time (DoT).", es: "Parte del daño recibido se convierte en daño por tiempo (DoT).", fr: "Une partie des dégâts reçus est convertie en dégâts sur la durée (DoT)." },
+                t1: { de: "25% DoT", en: "25% DoT", es: "25% DoT", fr: "25% DoT" },
+                t2: { de: "37.5% DoT", en: "37.5% DoT", es: "37.5% DoT", fr: "37.5% DoT" },
+                t3: { de: "50.0% DoT", en: "50.0% DoT", es: "50.0% DoT", fr: "50.0% DoT" }
             },
             {
-                name_de: "Beschützend", name_en: "Protective",
-                category: "Kampf",
-                desc: "Reduziert den Schaden, den der Reiter erleidet.",
-                t1: "-15.0% Schaden", t2: "-22.5% Schaden", t3: "-30.0% Schaden",
-                stack: 2, icon: "fa-user-shield"
+                id: "prot", category: "Kampf", stack: 2, icon: "fa-user-shield",
+                name: { de: "Beschützend", en: "Protective", es: "Protector", fr: "Protecteur" },
+                desc: { de: "Reduziert den Schaden, den der Reiter erleidet.", en: "Reduces damage taken by the rider.", es: "Reduce el daño recibido por el jinete.", fr: "Réduit les dégâts subis par le cavalier." },
+                t1: { de: "-15% Rider Dmg", en: "-15% Rider Dmg", es: "-15% Daño Jinete", fr: "-15% Dégats Cavalier" },
+                t2: { de: "-22.5% Rider Dmg", en: "-22.5% Rider Dmg", es: "-22.5% Daño Jinete", fr: "-22.5% Dégats Cavalier" },
+                t3: { de: "-30% Rider Dmg", en: "-30% Rider Dmg", es: "-30% Daño Jinete", fr: "-30% Dégats Cavalier" }
             },
             {
-                name_de: "Flinkschlag", name_en: "Quick-Hitting",
-                category: "Kampf",
-                desc: "Greift schneller an, verursacht aber weniger Nahkampfschaden.",
-                t1: "+2.5% Speed / -5% Dmg", t2: "+3.75% Speed / -7.5% Dmg", t3: "+5.0% Speed / -10.0% Dmg",
-                stack: 3, icon: "fa-wind"
+                id: "quick", category: "Kampf", stack: 3, icon: "fa-wind",
+                name: { de: "Flinkschlag", en: "Quick-Hitting", es: "Golpe Rápido", fr: "Frappe Rapide" },
+                desc: { de: "Greift schneller an, verursacht aber weniger Nahkampfschaden.", en: "Attacks faster but deals less melee damage.", es: "Ataca más rápido pero menos daño.", fr: "Attaque plus vite mais moins de dégâts." },
+                t1: { de: "+2.5% Speed / -5% Dmg", en: "+2.5% Speed / -5% Dmg", es: "+2.5% Vel / -5% Daño", fr: "+2.5% Vit / -5% Dég" },
+                t2: { de: "+3.75% Speed / -7.5% Dmg", en: "+3.75% Speed / -7.5% Dmg", es: "+3.75% Vel / -7.5% Daño", fr: "+3.75% Vit / -7.5% Dég" },
+                t3: { de: "+5.0% Speed / -10% Dmg", en: "+5.0% Speed / -10% Dmg", es: "+5.0% Vel / -10% Daño", fr: "+5.0% Vit / -10% Dég" }
             },
             {
-                name_de: "Zäh", name_en: "Tenacious",
-                category: "Kampf",
-                desc: "Nimmt weniger Schaden basierend auf aktueller Gesundheit (Effekt startet bei 50% HP).",
-                t1: "-12.5% Dmg", t2: "-18.75% Dmg", t3: "-25.0% Dmg",
-                stack: 3, icon: "fa-heart-pulse"
+                id: "tenacious", category: "Kampf", stack: 3, icon: "fa-heart-pulse",
+                name: { de: "Zäh", en: "Tenacious", es: "Tenaz", fr: "Tenace" },
+                desc: { de: "Nimmt weniger Schaden basierend auf aktueller Gesundheit (Effekt startet bei 50% HP).", en: "Takes less damage based on current health (starts at 50% HP).", es: "Menos daño recibido según salud (inicia al 50%).", fr: "Subit moins de dégâts selon la santé (débute à 50%)." },
+                t1: { de: "-12.5% Dmg", en: "-12.5% Dmg", es: "-12.5% Daño", fr: "-12.5% Dég" },
+                t2: { de: "-18.75% Dmg", en: "-18.75% Dmg", es: "-18.75% Daño", fr: "-18.75% Dég" },
+                t3: { de: "-25.0% Dmg", en: "-25.0% Dmg", es: "-25.0% Daño", fr: "-25.0% Dég" }
             },
             {
-                name_de: "Vampirisch", name_en: "Vampiric",
-                category: "Kampf",
-                desc: "Heilt den Dino um einen Prozentsatz des verursachten Schadens (Effekt sinkt bei hohem Drag Weight).",
-                t1: "5% Lifesteal", t2: "7.5% Lifesteal", t3: "10.0% Lifesteal",
-                stack: 1, icon: "fa-droplet"
-            },
-             {
-                name_de: "Ablenkend", name_en: "Distracting",
-                category: "Kampf",
-                desc: "Gegner, die von diesem Dino getroffen werden, verursachen 20s lang weniger Schaden an anderen.",
-                t1: "-5% Dmg", t2: "-7.5% Dmg", t3: "-10% Dmg",
-                stack: 1, icon: "fa-mask"
+                id: "vamp", category: "Kampf", stack: 1, icon: "fa-droplet",
+                name: { de: "Vampirisch", en: "Vampiric", es: "Vampírico", fr: "Vampirique" },
+                desc: { de: "Heilt den Dino um einen Prozentsatz des verursachten Schadens (Lifesteal).", en: "Heals dino for a percentage of damage dealt (Lifesteal).", es: "Cura al dino un porcentaje del daño (Robo de vida).", fr: "Soigne le dino d'un pourcentage des dégâts (Vol de vie)." },
+                t1: { de: "5% Lifesteal", en: "5% Lifesteal", es: "5% Robo de vida", fr: "5% Vol de vie" },
+                t2: { de: "7.5% Lifesteal", en: "7.5% Lifesteal", es: "7.5% Robo de vida", fr: "7.5% Vol de vie" },
+                t3: { de: "10% Lifesteal", en: "10% Lifesteal", es: "10% Robo de vida", fr: "10% Vol de vie" }
             },
             {
-                name_de: "Aufgeregt", name_en: "Excitable",
-                category: "Kampf",
-                desc: "Treffer mit dem Basis-Angriff reduzieren die Abklingzeit anderer Fähigkeiten.",
-                t1: "-0.25s CD", t2: "-0.375s CD", t3: "-0.5s CD",
-                stack: 1, icon: "fa-stopwatch"
-            },
-
-            // --- UTILITY / ATTRIBUTE ---
-            {
-                name_de: "Athletisch", name_en: "Athletic",
-                category: "Attribute",
-                desc: "Erhält HP- und Stamina-Regeneration basierend auf dem Sauerstoff-Wert.",
-                t1: "0.05 Reg/Oxy", t2: "0.075 Reg/Oxy", t3: "0.1 Reg/Oxy",
-                stack: 3, icon: "fa-person-running"
+                id: "distract", category: "Kampf", stack: 1, icon: "fa-mask",
+                name: { de: "Ablenkend", en: "Distracting", es: "Distracción", fr: "Distrayant" },
+                desc: { de: "Gegner, die getroffen werden, verursachen 20s lang weniger Schaden.", en: "Enemies hit deal less damage for 20s.", es: "Enemigos golpeados hacen menos daño por 20s.", fr: "Les ennemis touchés infligent moins de dégâts pendant 20s." },
+                t1: { de: "-5% Dmg", en: "-5% Dmg", es: "-5% Daño", fr: "-5% Dég" },
+                t2: { de: "-7.5% Dmg", en: "-7.5% Dmg", es: "-7.5% Daño", fr: "-7.5% Dég" },
+                t3: { de: "-10% Dmg", en: "-10% Dmg", es: "-10% Daño", fr: "-10% Dég" }
             },
             {
-                name_de: "Aquatisch", name_en: "Aquatic/Swimmer",
-                category: "Utility",
-                desc: "Schwimmt schneller und verbraucht weniger Sauerstoff/Ausdauer im Wasser.",
-                t1: "+7.5% Speed", t2: "+11.25% Speed", t3: "+15% Speed",
-                stack: 3, icon: "fa-water"
+                id: "excite", category: "Kampf", stack: 1, icon: "fa-stopwatch",
+                name: { de: "Aufgeregt", en: "Excitable", es: "Excitable", fr: "Excitable" },
+                desc: { de: "Treffer mit dem Basis-Angriff reduzieren die Abklingzeit anderer Fähigkeiten.", en: "Basic attack hits reduce cooldown of other abilities.", es: "Ataques básicos reducen enfriamiento de habilidades.", fr: "Les attaques de base réduisent le temps de recharge des capacités." },
+                t1: { de: "-0.25s CD", en: "-0.25s CD", es: "-0.25s CD", fr: "-0.25s CD" },
+                t2: { de: "-0.375s CD", en: "-0.375s CD", es: "-0.375s CD", fr: "-0.375s CD" },
+                t3: { de: "-0.5s CD", en: "-0.5s CD", es: "-0.5s CD", fr: "-0.5s CD" }
+            },
+            // UTILITY / ATTRIBUTE
+            {
+                id: "ath", category: "Attribute", stack: 3, icon: "fa-person-running",
+                name: { de: "Athletisch", en: "Athletic", es: "Atlético", fr: "Athlétique" },
+                desc: { de: "Erhält HP- und Stamina-Regeneration basierend auf dem Sauerstoff-Wert.", en: "Gains HP/Stamina regen based on Oxygen stat.", es: "Regenera Salud/Estamina basado en Oxígeno.", fr: "Regagne Santé/Endurance selon l'Oxygène." },
+                t1: { de: "0.05 Reg/Oxy", en: "0.05 Reg/Oxy", es: "0.05 Reg/Oxy", fr: "0.05 Reg/Oxy" },
+                t2: { de: "0.075 Reg/Oxy", en: "0.075 Reg/Oxy", es: "0.075 Reg/Oxy", fr: "0.075 Reg/Oxy" },
+                t3: { de: "0.1 Reg/Oxy", en: "0.1 Reg/Oxy", es: "0.1 Reg/Oxy", fr: "0.1 Reg/Oxy" }
             },
             {
-                name_de: "Lastenträger", name_en: "Bearing/Carrier",
-                category: "Utility",
-                desc: "Reduziert das Gewicht einer spezifischen Item-Kategorie im Inventar.",
-                t1: "-15% Gewicht", t2: "-22.5% Gewicht", t3: "-30% Gewicht",
-                stack: 3, icon: "fa-weight-hanging"
+                id: "aqua", category: "Utility", stack: 3, icon: "fa-water",
+                name: { de: "Aquatisch", en: "Aquatic", es: "Acuático", fr: "Aquatique" },
+                desc: { de: "Schwimmt schneller und verbraucht weniger Sauerstoff/Ausdauer im Wasser.", en: "Swims faster, consumes less oxygen/stamina in water.", es: "Nada más rápido, consume menos oxígeno/estamina.", fr: "Nage plus vite, consomme moins d'oxygène/endurance." },
+                t1: { de: "+7.5% Speed", en: "+7.5% Speed", es: "+7.5% Vel", fr: "+7.5% Vit" },
+                t2: { de: "+11.25% Speed", en: "+11.25% Speed", es: "+11.25% Vel", fr: "+11.25% Vit" },
+                t3: { de: "+15% Speed", en: "+15% Speed", es: "+15% Vel", fr: "+15% Vit" }
             },
             {
-                name_de: "Sorglos", name_en: "Carefree",
-                category: "Utility",
-                desc: "Erhält einen Bewegungsgeschwindigkeits-Bonus, der bei Kampf oder Reiter verloren geht.",
-                t1: "+7.5% Speed", t2: "+11.25% Speed", t3: "+15.0% Speed",
-                stack: 1, icon: "fa-feather"
+                id: "bear", category: "Utility", stack: 3, icon: "fa-weight-hanging",
+                name: { de: "Lastenträger", en: "Carrier", es: "Portador", fr: "Porteur" },
+                desc: { de: "Reduziert das Gewicht einer spezifischen Item-Kategorie im Inventar.", en: "Reduces weight of a specific item category.", es: "Reduce peso de una categoría de ítem.", fr: "Réduit le poids d'une catégorie d'objets." },
+                t1: { de: "-15% Gewicht", en: "-15% Weight", es: "-15% Peso", fr: "-15% Poids" },
+                t2: { de: "-22.5% Gewicht", en: "-22.5% Weight", es: "-22.5% Peso", fr: "-22.5% Poids" },
+                t3: { de: "-30% Gewicht", en: "-30% Weight", es: "-30% Peso", fr: "-30% Poids" }
             },
             {
-                name_de: "Kälteresistent", name_en: "Cold",
-                category: "Utility",
-                desc: "Kreatur und Reiter erhalten Hitzeschutz (Hyperthermic) und weniger Feuerschaden.",
-                t1: "40 Iso / -5% Fire", t2: "60 Iso / -7.5% Fire", t3: "80 Iso / -10% Fire",
-                stack: 3, icon: "fa-sun"
+                id: "care", category: "Utility", stack: 1, icon: "fa-feather",
+                name: { de: "Sorglos", en: "Carefree", es: "Despreocupado", fr: "Insouciant" },
+                desc: { de: "Erhält einen Bewegungsgeschwindigkeits-Bonus (verloren bei Kampf/Reiter).", en: "Speed bonus (lost in combat/ridden).", es: "Bono velocidad (se pierde en combate/montado).", fr: "Bonus vitesse (perdu en combat/monté)." },
+                t1: { de: "+7.5% Speed", en: "+7.5% Speed", es: "+7.5% Vel", fr: "+7.5% Vit" },
+                t2: { de: "+11.25% Speed", en: "+11.25% Speed", es: "+11.25% Vel", fr: "+11.25% Vit" },
+                t3: { de: "+15% Speed", en: "+15% Speed", es: "+15% Vel", fr: "+15% Vit" }
             },
             {
-                name_de: "Feige", name_en: "Cowardly",
-                category: "Utility",
-                desc: "Erhält einen Geschwindigkeits-Buff, wenn Schaden von nicht-verbündeten Zielen genommen wird.",
-                t1: "+2.5% Speed", t2: "+3.75% Speed", t3: "+5.0% Speed",
-                stack: 3, icon: "fa-person-falling-burst"
+                id: "cold", category: "Utility", stack: 3, icon: "fa-sun",
+                name: { de: "Kälteresistent", en: "Cold", es: "Frío", fr: "Froid" },
+                desc: { de: "Hitzeschutz und weniger Feuerschaden.", en: "Hyperthermic protection and less fire damage.", es: "Protección calor y menos daño fuego.", fr: "Protection chaleur et moins dégâts feu." },
+                t1: { de: "40 Iso / -5% Fire", en: "40 Iso / -5% Fire", es: "40 Iso / -5% Fuego", fr: "40 Iso / -5% Feu" },
+                t2: { de: "60 Iso / -7.5% Fire", en: "60 Iso / -7.5% Fire", es: "60 Iso / -7.5% Fuego", fr: "60 Iso / -7.5% Feu" },
+                t3: { de: "80 Iso / -10% Fire", en: "80 Iso / -10% Fire", es: "80 Iso / -10% Fuego", fr: "80 Iso / -10% Feu" }
             },
             {
-                name_de: "Tagaktiv", name_en: "Diurnal",
-                category: "Utility",
-                desc: "Reduziert den Ausdauerverbrauch am Tag.",
-                t1: "-2.5% Stamina", t2: "-3.75% Stamina", t3: "-5.0% Stamina",
-                stack: 3, icon: "fa-sun"
+                id: "coward", category: "Utility", stack: 3, icon: "fa-person-falling-burst",
+                name: { de: "Feige", en: "Cowardly", es: "Cobarde", fr: "Lâche" },
+                desc: { de: "Geschwindigkeits-Buff, wenn Schaden von Fremden genommen wird.", en: "Speed buff when damaged by non-allies.", es: "Velocidad al recibir daño de no-aliados.", fr: "Vitesse quand blessé par non-alliés." },
+                t1: { de: "+2.5% Speed", en: "+2.5% Speed", es: "+2.5% Vel", fr: "+2.5% Vit" },
+                t2: { de: "+3.75% Speed", en: "+3.75% Speed", es: "+3.75% Vel", fr: "+3.75% Vit" },
+                t3: { de: "+5.0% Speed", en: "+5.0% Speed", es: "+5.0% Vel", fr: "+5.0% Vit" }
             },
             {
-                name_de: "Schnelllerner", name_en: "Fast Learner",
-                category: "Utility",
-                desc: "Erhöht den Erfahrungsgewinn.",
-                t1: "+15% XP", t2: "+22.5% XP", t3: "+30% XP",
-                stack: 3, icon: "fa-graduation-cap"
+                id: "fastlearn", category: "Utility", stack: 3, icon: "fa-graduation-cap",
+                name: { de: "Schnelllerner", en: "Fast Learner", es: "Aprendiz Rápido", fr: "Apprentissage Rapide" },
+                desc: { de: "Erhöht den Erfahrungsgewinn.", en: "Increases XP gain.", es: "Aumenta ganancia XP.", fr: "Augmente gain XP." },
+                t1: { de: "+15% XP", en: "+15% XP", es: "+15% XP", fr: "+15% XP" },
+                t2: { de: "+22.5% XP", en: "+22.5% XP", es: "+22.5% XP", fr: "+22.5% XP" },
+                t3: { de: "+30% XP", en: "+30% XP", es: "+30% XP", fr: "+30% XP" }
             },
             {
-                name_de: "Fettpolster", name_en: "Fatty",
-                category: "Attribute",
-                desc: "Erhält Rüstung basierend auf dem Nahrungswert.",
-                t1: "0.1 Rüstung/Food", t2: "0.15 Rüstung/Food", t3: "0.2 Rüstung/Food",
-                stack: 3, icon: "fa-shield-heart"
+                id: "fatty", category: "Attribute", stack: 3, icon: "fa-shield-heart",
+                name: { de: "Fettpolster", en: "Fatty", es: "Grasoso", fr: "Gras" },
+                desc: { de: "Erhält Rüstung basierend auf dem Nahrungswert.", en: "Gains armor based on Food stat.", es: "Gana armadura según Comida.", fr: "Gagne armure selon Nourriture." },
+                t1: { de: "0.1 Armor/Food", en: "0.1 Armor/Food", es: "0.1 Armadura/Comida", fr: "0.1 Armure/Nourr." },
+                t2: { de: "0.15 Armor/Food", en: "0.15 Armor/Food", es: "0.15 Armadura/Comida", fr: "0.15 Armure/Nourr." },
+                t3: { de: "0.2 Armor/Food", en: "0.2 Armor/Food", es: "0.2 Armadura/Comida", fr: "0.2 Armure/Nourr." }
             },
             {
-                name_de: "Frenetisch", name_en: "Frenetic",
-                category: "Attribute",
-                desc: "Erhöht die Erholung von Betäubung (Torpor).",
-                t1: "+7.5% Recovery", t2: "+11.25% Recovery", t3: "+15.0% Recovery",
-                stack: 3, icon: "fa-bed"
+                id: "warm", category: "Utility", stack: 3, icon: "fa-snowflake",
+                name: { de: "Wärme", en: "Warm", es: "Cálido", fr: "Chaud" },
+                desc: { de: "Kälteschutz und weniger Eisschaden.", en: "Hypothermic protection and less ice damage.", es: "Protección frío y menos daño hielo.", fr: "Protection froid et moins dégâts glace." },
+                t1: { de: "40 Iso / -5% Ice", en: "40 Iso / -5% Ice", es: "40 Iso / -5% Hielo", fr: "40 Iso / -5% Glace" },
+                t2: { de: "60 Iso / -7.5% Ice", en: "60 Iso / -7.5% Ice", es: "60 Iso / -7.5% Hielo", fr: "60 Iso / -7.5% Glace" },
+                t3: { de: "80 Iso / -10% Ice", en: "80 Iso / -10% Ice", es: "80 Iso / -10% Hielo", fr: "80 Iso / -10% Glace" }
+            },
+            // ZUCHT
+            {
+                id: "robust", category: "Zucht", stack: 3, icon: "fa-dna",
+                name: { de: "Robust", en: "Robust", es: "Robusto", fr: "Robuste" },
+                desc: { de: "Erhöht die Chance, den HÖHEREN Stat zu vererben.", en: "Higher chance to inherit HIGHER stat.", es: "Mayor probabilidad heredar stat ALTO.", fr: "Plus de chance d'hériter stat ÉLEVÉE." },
+                t1: { de: "+1.5% Chance", en: "+1.5% Chance", es: "+1.5% Prob.", fr: "+1.5% Chance" },
+                t2: { de: "+2.25% Chance", en: "+2.25% Chance", es: "+2.25% Prob.", fr: "+2.25% Chance" },
+                t3: { de: "+3.0% Chance", en: "+3.0% Chance", es: "+3.0% Prob.", fr: "+3.0% Chance" }
             },
             {
-                name_de: "Nachtaktiv", name_en: "Nocturnal",
-                category: "Utility",
-                desc: "Reduziert den Ausdauerverbrauch in der Nacht.",
-                t1: "-2.5% Stamina", t2: "-3.7% Stamina", t3: "-5.0% Stamina",
-                stack: 3, icon: "fa-moon"
+                id: "frail", category: "Zucht", stack: 3, icon: "fa-link-slash",
+                name: { de: "Gebrechlich", en: "Frail", es: "Frágil", fr: "Frêle" },
+                desc: { de: "VERRINGERT die Chance, den HÖHEREN Stat zu vererben.", en: "LOWER chance to inherit HIGHER stat.", es: "MENOR probabilidad heredar stat ALTO.", fr: "MOINS de chance d'hériter stat ÉLEVÉE." },
+                t1: { de: "-1.5% Chance", en: "-1.5% Chance", es: "-1.5% Prob.", fr: "-1.5% Chance" },
+                t2: { de: "-2.25% Chance", en: "-2.25% Chance", es: "-2.25% Prob.", fr: "-2.25% Chance" },
+                t3: { de: "-3.0% Chance", en: "-3.0% Chance", es: "-3.0% Prob.", fr: "-3.0% Chance" }
             },
             {
-                name_de: "Langsamer Stoffwechsel", name_en: "Slow Metabolism",
-                category: "Utility",
-                desc: "Verbraucht weniger Nahrung (auch für Fähigkeiten wie Daedon-Heilung).",
-                t1: "-5% Food", t2: "-7.5% Food", t3: "-10% Food",
-                stack: 3, icon: "fa-utensils"
-            },
-            {
-                name_de: "Sprinter", name_en: "Sprinter",
-                category: "Utility",
-                desc: "Verbraucht weniger Ausdauer beim Sprinten.",
-                t1: "-4% Stamina", t2: "-6% Stamina", t3: "-8% Stamina",
-                stack: 3, icon: "fa-shoe-prints"
-            },
-            {
-                name_de: "Wärme", name_en: "Warm",
-                category: "Utility",
-                desc: "Kreatur und Reiter erhalten Kälteschutz (Hypothermic) und weniger Eisschaden.",
-                t1: "40 Iso / -5% Ice", t2: "60 Iso / -7.5% Ice", t3: "80 Iso / -10% Ice",
-                stack: 3, icon: "fa-snowflake"
-            },
-
-            // --- ZUCHT ---
-            {
-                name_de: "Robust", name_en: "Robust",
-                category: "Zucht",
-                desc: "Erhöht die Wahrscheinlichkeit, den HÖHEREN Stat der Eltern zu vererben.",
-                t1: "+1.5% Chance", t2: "+2.25% Chance", t3: "+3.0% Chance",
-                stack: 3, icon: "fa-dna"
-            },
-            {
-                name_de: "Gebrechlich", name_en: "Frail",
-                category: "Zucht",
-                desc: "VERRINGERT die Wahrscheinlichkeit, den HÖHEREN Stat der Eltern zu vererben.",
-                t1: "-1.5% Chance", t2: "-2.25% Chance", t3: "-3.0% Chance",
-                stack: 3, icon: "fa-link-slash"
-            },
-            {
-                name_de: "Veränderlich", name_en: "Mutable",
-                category: "Zucht",
-                desc: "Erhöht die Wahrscheinlichkeit für eine Mutation auf einem bestimmten Stat.",
-                t1: "+1.0% Chance", t2: "+1.5% Chance", t3: "+2.0% Chance",
-                stack: 3, icon: "fa-bacterium"
+                id: "mutable", category: "Zucht", stack: 3, icon: "fa-bacterium",
+                name: { de: "Veränderlich", en: "Mutable", es: "Mutable", fr: "Mutable" },
+                desc: { de: "Erhöht die Wahrscheinlichkeit für eine Mutation.", en: "Increases mutation chance.", es: "Aumenta prob. mutación.", fr: "Augmente chance mutation." },
+                t1: { de: "+1.0% Chance", en: "+1.0% Chance", es: "+1.0% Prob.", fr: "+1.0% Chance" },
+                t2: { de: "+1.5% Chance", en: "+1.5% Chance", es: "+1.5% Prob.", fr: "+1.5% Chance" },
+                t3: { de: "+2.0% Chance", en: "+2.0% Chance", es: "+2.0% Prob.", fr: "+2.0% Chance" }
             }
         ];
 
@@ -641,38 +651,60 @@
         const grid = document.getElementById('contentGrid');
         const searchInput = document.getElementById('searchInput');
         const filterBtns = document.querySelectorAll('.filter-btn');
-        const sortDeBtn = document.getElementById('sortDeBtn');
-        const sortEnBtn = document.getElementById('sortEnBtn');
 
         // STATE
         let currentFilter = 'all';
         let currentSearch = '';
-        let currentSort = 'de'; // 'de' or 'en'
+        let currentLang = 'de';
 
-        // RENDER FUNKTION
+        // FUNCTIONS
+        function setLang(lang) {
+            currentLang = lang;
+            
+            // Buttons
+            document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('btn-'+lang).classList.add('active');
+
+            // Static UI
+            document.getElementById('mainTitle').innerText = UI_TEXT[lang].title;
+            document.getElementById('searchInput').placeholder = UI_TEXT[lang].search;
+            
+            // Filters
+            document.getElementById('filter-all').querySelector('span').innerText = UI_TEXT[lang].all;
+            document.getElementById('filter-combat').querySelector('span').innerText = UI_TEXT[lang].combat;
+            document.getElementById('filter-utility').querySelector('span').innerText = UI_TEXT[lang].utility;
+            document.getElementById('filter-stats').querySelector('span').innerText = UI_TEXT[lang].stats;
+            document.getElementById('filter-breed').querySelector('span').innerText = UI_TEXT[lang].breed;
+
+            renderTraits();
+        }
+
         function renderTraits() {
             grid.innerHTML = '';
             
-            // 1. Filtern
+            // 1. Filtern (Suche über alle Sprachen!)
             let filteredData = traitData.filter(trait => {
                 const matchesCat = currentFilter === 'all' || trait.category === currentFilter;
-                const matchesSearch = trait.name_de.toLowerCase().includes(currentSearch.toLowerCase()) || 
-                                      trait.name_en.toLowerCase().includes(currentSearch.toLowerCase()) || 
-                                      trait.desc.toLowerCase().includes(currentSearch.toLowerCase());
+                
+                // Smart Search: Check all languages
+                const s = currentSearch.toLowerCase();
+                const matchesSearch = 
+                    trait.name.de.toLowerCase().includes(s) || 
+                    trait.name.en.toLowerCase().includes(s) || 
+                    trait.name.es.toLowerCase().includes(s) || 
+                    trait.name.fr.toLowerCase().includes(s) ||
+                    trait.desc[currentLang].toLowerCase().includes(s); // Only search desc in current lang to avoid confusing hits
+
                 return matchesCat && matchesSearch;
             });
 
-            // 2. Sortieren
+            // 2. Sortieren (Immer basierend auf aktueller Sprache)
             filteredData.sort((a, b) => {
-                if (currentSort === 'de') {
-                    return a.name_de.localeCompare(b.name_de);
-                } else {
-                    return a.name_en.localeCompare(b.name_en);
-                }
+                return a.name[currentLang].localeCompare(b.name[currentLang]);
             });
 
             if (filteredData.length === 0) {
-                grid.innerHTML = '<div class="no-results">Keine Gene gefunden... vielleicht neu züchten? 🧬</div>';
+                grid.innerHTML = `<div class="no-results">${UI_TEXT[currentLang].no_res}</div>`;
                 return;
             }
 
@@ -681,35 +713,41 @@
                 card.className = 'trait-card';
                 card.setAttribute('data-cat', trait.category);
                 
+                // Determine secondary name (English usually, or German if EN is active)
+                const secLang = currentLang === 'de' ? 'en' : (currentLang === 'en' ? 'de' : 'en');
+                
+                // Translate Category for Tag
+                const catDisplay = CAT_TRANS[trait.category] ? CAT_TRANS[trait.category][currentLang] : trait.category;
+
                 card.innerHTML = `
                     <div class="card-header-row">
                         <div class="trait-name-container">
-                            <span class="trait-name-de">${trait.name_de}</span>
-                            <span class="trait-name-en">/ ${trait.name_en}</span>
+                            <span class="trait-name-primary">${trait.name[currentLang]}</span>
+                            <span class="trait-name-secondary">/ ${trait.name[secLang]}</span>
                         </div>
                         <i class="fa-solid ${trait.icon} trait-icon"></i>
                     </div>
                     
-                    <div class="trait-desc">${trait.desc}</div>
+                    <div class="trait-desc">${trait.desc[currentLang]}</div>
                     
                     <div class="values-box">
                         <div class="value-row">
                             <span class="tier-label">1 Stack (T1):</span>
-                            <span class="tier-val">${trait.t1}</span>
+                            <span class="tier-val">${trait.t1[currentLang]}</span>
                         </div>
                         <div class="value-row">
                             <span class="tier-label">2 Stacks (T2):</span>
-                            <span class="tier-val">${trait.t2}</span>
+                            <span class="tier-val">${trait.t2[currentLang]}</span>
                         </div>
                         <div class="value-row">
                             <span class="tier-label">3 Stacks (T3):</span>
-                            <span class="tier-val">${trait.t3}</span>
+                            <span class="tier-val">${trait.t3[currentLang]}</span>
                         </div>
                     </div>
 
                     <div class="card-footer">
-                        <div class="stack-info">Max. Stapel: <span>${trait.stack}</span></div>
-                        <span class="tag">${trait.category}</span>
+                        <div class="stack-info">${UI_TEXT[currentLang].stack} <span>${trait.stack}</span></div>
+                        <span class="tag">${catDisplay}</span>
                     </div>
                 `;
                 
@@ -732,25 +770,10 @@
             });
         });
 
-        // Sortier Events
-        sortDeBtn.addEventListener('click', () => {
-            if (currentSort === 'de') return;
-            currentSort = 'de';
-            sortDeBtn.classList.add('active');
-            sortEnBtn.classList.remove('active');
-            renderTraits();
-        });
-
-        sortEnBtn.addEventListener('click', () => {
-            if (currentSort === 'en') return;
-            currentSort = 'en';
-            sortEnBtn.classList.add('active');
-            sortDeBtn.classList.remove('active');
-            renderTraits();
-        });
-
         // Initial Render
-        renderTraits();
+        window.onload = function() {
+            setLang('de');
+        };
 
     </script>
 </body>
