@@ -48,7 +48,7 @@
             0% { background-position: 0% 50%; }
             100% { background-position: 200% 50%; }
         }
-
+        
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
         /* --- WIDGET CONTAINER --- */
@@ -77,6 +77,7 @@
             flex-shrink: 0;
             background-image: 
                 radial-gradient(circle at 10% 50%, rgba(255,51,0,0.05) 0%, transparent 40%);
+            position: relative;
         }
 
         .header-content {
@@ -101,11 +102,38 @@
         }
 
         .subtitle {
+            font-size: 0.8rem;
             color: var(--c-dim);
-            font-size: 0.85rem;
-            margin-top: 5px;
-            letter-spacing: 1px;
             text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 5px;
+            display: block;
+        }
+
+        /* FLAGGEN SWITCHER */
+        .lang-switch {
+            display: flex;
+            gap: 8px;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 20;
+        }
+        .lang-btn {
+            width: 25px; height: 16px;
+            cursor: pointer;
+            border-radius: 2px;
+            border: 1px solid #fff;
+            opacity: 0.5;
+            transition: transform 0.2s, opacity 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+            padding: 0;
+            display: block;
+        }
+        .lang-btn:hover, .lang-btn.active {
+            opacity: 1; transform: scale(1.15);
+            border-color: var(--c-fire);
+            z-index: 10;
         }
 
         /* SEARCH BAR */
@@ -140,7 +168,7 @@
             color: var(--c-dim);
         }
 
-        /* --- NAVIGATION TABS (OBEN) --- */
+        /* --- NAVIGATION TABS --- */
         .nav-tabs {
             display: flex;
             background-color: var(--c-panel);
@@ -168,7 +196,10 @@
             gap: 10px;
         }
 
-        .nav-tab:hover { color: #fff; background-color: rgba(255,255,255,0.02); }
+        .nav-tab:hover {
+            color: #fff;
+            background-color: rgba(255,255,255,0.02);
+        }
 
         .nav-tab.active {
             background-color: rgba(255,51,0,0.05);
@@ -181,18 +212,20 @@
         .content-area {
             flex-grow: 1;
             overflow-y: auto;
-            padding: 40px;
+            padding: 30px 40px;
+            scroll-behavior: smooth;
             background-color: var(--c-bg);
             background-image: radial-gradient(circle at 50% 50%, rgba(255,51,0,0.02) 0%, transparent 40%);
         }
         .content-area::-webkit-scrollbar { width: 8px; }
         .content-area::-webkit-scrollbar-thumb { background-color: #333; border-radius: 4px; }
+        .content-area::-webkit-scrollbar-track { background-color: #080808; }
 
         /* Sections */
         .section { display: none; animation: fadeIn 0.4s ease; max-width: 1200px; margin: 0 auto; }
         .section.active { display: block; }
 
-        /* Section Headers */
+        /* Headers */
         .section-header {
             border-bottom: 1px solid var(--c-border);
             padding-bottom: 15px;
@@ -215,10 +248,12 @@
             color: #ccc;
             font-size: 1rem;
         }
-        .info-block h3 { color: var(--c-fire); font-family: var(--f-head); margin-top: 0; }
+        .info-block.searchable { transition: transform 0.2s; }
+        
+        .info-block h3 { color: var(--c-fire); font-family: var(--f-head); margin-top: 0; font-size: 1.5rem; }
         .info-block strong { color: #fff; }
         .info-block ul { padding-left: 20px; margin: 15px 0; }
-        .info-block li { margin-bottom: 5px; }
+        .info-block li { margin-bottom: 8px; }
 
         /* Locations List (Showcase) */
         .location-list {
@@ -251,6 +286,8 @@
             border-radius: 6px;
             overflow: hidden;
             transition: transform 0.2s;
+            display: flex;
+            flex-direction: column;
         }
         .card:hover { transform: translateY(-5px); border-color: var(--c-fire); }
         .card-img-container {
@@ -260,7 +297,7 @@
         }
         .card-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s; cursor: pointer; }
         .card:hover .card-img { transform: scale(1.05); }
-        .card-body { padding: 15px; }
+        .card-body { padding: 15px; flex-grow: 1; }
         .card-title { font-family: var(--f-head); color: var(--c-fire); font-size: 1.3rem; margin: 0 0 5px 0; }
         .card-text { font-size: 0.9rem; color: #bbb; line-height: 1.4; }
 
@@ -278,6 +315,7 @@
         .cd-img { width: 100%; border-radius: 4px; cursor: pointer; border: 1px solid #444; }
         .cd-text-col { flex-grow: 1; }
         .cd-title { font-family: var(--f-head); font-size: 1.6rem; color: var(--c-fire); margin-top: 0; }
+        .cd-text-col p { color: #ccc; margin-bottom: 10px; line-height: 1.5; }
 
         /* Big Images */
         .big-img {
@@ -296,7 +334,9 @@
 
         @media (max-width: 900px) {
             .widget-container { flex-direction: column; width: 100%; height: 100vh; border: none; border-radius: 0; }
-            .nav-menu { display: flex; margin: 0; }
+            .header { flex-direction: column; gap: 15px; text-align: center; }
+            .lang-switch { position: static; margin-bottom: 10px; transform: none; }
+            .card-grid { grid-template-columns: 1fr; }
             .creature-detail { flex-direction: column; }
             .cd-img-col { width: 100%; }
         }
@@ -309,395 +349,346 @@
         <!-- HEADER -->
         <div class="header">
             <div class="header-content">
-                <h1 class="title">Community Center</h1>
-                <span class="subtitle">Eigene Exklusive Karte & Schwarzmarkt</span>
+                <h1 class="title" id="uiTitle">Community Center</h1>
+                <span class="subtitle" id="uiSubtitle">Eigene Exklusive Karte & Schwarzmarkt</span>
             </div>
             
+            <!-- Flaggen -->
+            <div class="lang-switch">
+                <svg class="lang-btn active" id="btn-de" onclick="setLang('de')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 5 3">
+                    <rect width="5" height="3" fill="#000"/><rect width="5" height="2" y="1" fill="#D00"/><rect width="5" height="1" y="2" fill="#FFCE00"/>
+                </svg>
+                <svg class="lang-btn" id="btn-en" onclick="setLang('en')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 30">
+                    <clipPath id="s"><path d="M0,0 v30 h60 v-30 z"/></clipPath>
+                    <clipPath id="t"><path d="M30,15 h30 v15 z v15 h-30 z h-30 v-15 z v-15 h30 z"/></clipPath>
+                    <g clip-path="url(#s)">
+                        <path d="M0,0 v30 h60 v-30 z" fill="#012169"/>
+                        <path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/>
+                        <path d="M0,0 L60,30 M60,0 L0,30" clip-path="url(#t)" stroke="#C8102E" stroke-width="4"/>
+                        <path d="M30,0 v30 M0,15 h60" stroke="#fff" stroke-width="10"/>
+                        <path d="M30,0 v30 M0,15 h60" stroke="#C8102E" stroke-width="6"/>
+                    </g>
+                </svg>
+                <svg class="lang-btn" id="btn-es" onclick="setLang('es')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 750 500">
+                    <rect width="750" height="500" fill="#AA151B"/>
+                    <rect width="750" height="250" y="125" fill="#F1BF00"/>
+                </svg>
+                <svg class="lang-btn" id="btn-fr" onclick="setLang('fr')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600">
+                    <rect width="900" height="600" fill="#ED2939"/>
+                    <rect width="600" height="600" fill="#fff"/>
+                    <rect width="300" height="600" fill="#002395"/>
+                </svg>
+            </div>
+
             <div class="search-container">
                 <i class="fa-solid fa-search search-icon"></i>
-                <input type="text" id="searchInput" class="search-input" placeholder="Suche (z.B. Drache, Lizenz)...">
+                <input type="text" id="searchInput" class="search-input" placeholder="Suche...">
             </div>
         </div>
 
         <!-- NAVIGATION -->
         <div class="nav-tabs">
-            <div class="nav-tab active" onclick="showTab('showcase', this)">
+            <div class="nav-tab active" onclick="showTab('showcase', this)" id="navShowcase">
                 <i class="fa-solid fa-map-location-dot"></i> Showcase
             </div>
-            <div class="nav-tab" onclick="showTab('traders', this)">
+            <div class="nav-tab" onclick="showTab('traders', this)" id="navTraders">
                 <i class="fa-solid fa-store"></i> Schwarzmarkt Händler
             </div>
-            <div class="nav-tab" onclick="showTab('mounts', this)">
+            <div class="nav-tab" onclick="showTab('mounts', this)" id="navMounts">
                 <i class="fa-solid fa-dragon"></i> Exklusive Reittiere
             </div>
-            <div class="nav-tab" onclick="showTab('casino', this)">
+            <div class="nav-tab" onclick="showTab('casino', this)" id="navCasino">
                 <i class="fa-solid fa-dice"></i> Casino
             </div>
         </div>
 
         <!-- CONTENT -->
-        <div class="content-area">
-
-            <!-- TAB 1: SHOWCASE -->
-            <div id="showcase" class="section active">
-                <div class="section-header">
-                    <i class="fa-solid fa-map section-icon"></i>
-                    <h2 class="section-title">Übersicht & Erklärung</h2>
-                </div>
-
-                <div class="info-block searchable">
-                    <h3>Willkommen im Zentrum</h3>
-                    <p>Diese Modkarte wurde speziell für die Community von Infinity of Phoenix erstellt. Sie bietet auf die Community zugeschnittene Inhalte wie Logos, besondere Orte und Custom-Inhalte. Die Karte ist als ultimative Markt- und Event-Karte im Mittelalter-Fantasy-Stil geplant. Sie befindet sich in einem Tal mit viel Vegetation, Felsen und speziellen Nacht-Leuchteffekten.</p>
-                    <img src="https://i.postimg.cc/sgN2Zvv5/40.png" class="big-img" onclick="openModal(this.src)">
-                </div>
-
-                <div class="info-block searchable">
-                    <h3>Wichtige Orte</h3>
-                    <div class="location-list">
-                        <div class="location-item"><span>Land-Arena</span> <small>Mit Tribünen & Schutz-Cube</small></div>
-                        <div class="location-item"><span>Wasser-Arena</span> <small>Mit Unterwasser-Tribüne</small></div>
-                        <div class="location-item"><span>Dynamische Event-Orte</span> <small>Land & Wasser</small></div>
-                        <div class="location-item"><span>Spielermarkt</span> <small>61 nummerierte Häuser</small></div>
-                        <div class="location-item"><span>Spielerbank</span> <small>Im Adelsviertel</small></div>
-                        <div class="location-item"><span>Phoenix Tempel</span> <small>Zentraler Treffpunkt</small></div>
-                        <div class="location-item"><span>Fußballplatz</span> <small>Football Ark Mod</small></div>
-                        <div class="location-item"><span>Hall of Thunder</span> <small>Mjölnirs Heilung</small></div>
-                        <div class="location-item"><span>Phoenix Brauerei</span> <small>Getränkelager</small></div>
-                        <div class="location-item"><span>Kirche</span> <small>Zur Anbetung</small></div>
-                    </div>
-                </div>
-
-                <div class="info-block searchable">
-                    <h3>Marktlizenz</h3>
-                    <p>Möchtest du auf dem Schwarzmarkt ein Haus mieten? Hol dir die Marktlizenz!</p>
-                    <ul>
-                        <li><strong>Dauer:</strong> Unbegrenzt (Muss jährlich erneuert werden).</li>
-                        <li><strong>Berechtigung:</strong> 50 Strukturen, Unlimited Weight auf dem Schwarzmarkt.</li>
-                        <li><strong>Regeln:</strong> Nur 1 Haus pro Stamm. Dekoration nur im Haus/Garten.</li>
-                        <li><strong>Stände:</strong> Bis zu 4 Verkaufsstände erlaubt (Items, Waffen, Rüstung, Kreaturen).</li>
-                    </ul>
-                    <img src="https://i.postimg.cc/1trv8yzZ/gy-H8-Rd-QZJw-AL5-R33-IYOkx-Xriuq1-ENIbvs-Wlze-DA2.webp" class="big-img" onclick="openModal(this.src)">
-                </div>
-            </div>
-
-            <!-- TAB 2: TRADERS -->
-            <div id="traders" class="section">
-                <div class="section-header">
-                    <i class="fa-solid fa-shop section-icon"></i>
-                    <h2 class="section-title">Schwarzmarkt Händler</h2>
-                </div>
-
-                <div class="info-block searchable">
-                    <p>Der Schwarzmarkt befindet sich in der Mitte der Karte (nördlich vom Spawn). In der Burg auf dem Berg findet ihr diverse Händler. Bezahlt wird mit Edelsteinen oder Gold.</p>
-                </div>
-
-                <div class="card-grid">
-                    <!-- Cards -->
-                    <div class="card searchable">
-                        <div class="card-img-container"><img src="https://i.postimg.cc/Ss3SrdGL/Bild-2025-01-07-204538284.png" class="card-img" onclick="openModal(this.src)"></div>
-                        <div class="card-body"><h4 class="card-title">Reittierhändler</h4><p class="card-text">Verkauft einzigartige Mod-Reittiere.</p></div>
-                    </div>
-                    <div class="card searchable">
-                        <div class="card-img-container"><img src="https://i.postimg.cc/hGQ3m0fR/Bild-2025-01-07-204624283.png" class="card-img" onclick="openModal(this.src)"></div>
-                        <div class="card-body"><h4 class="card-title">Schultertiere</h4><p class="card-text">Besondere Begleiter für die Schulter.</p></div>
-                    </div>
-                    <div class="card searchable">
-                        <div class="card-img-container"><img src="https://i.postimg.cc/50WrBkYW/Bild-2025-01-07-211521912.png" class="card-img" onclick="openModal(this.src)"></div>
-                        <div class="card-body"><h4 class="card-title">Alchemist</h4><p class="card-text">Magische Waren, Potions und Zaubertränke.</p></div>
-                    </div>
-                    <div class="card searchable">
-                        <div class="card-img-container"><img src="https://i.postimg.cc/ncpkRrm9/Bild-2025-01-07-202102408.png" class="card-img" onclick="openModal(this.src)"></div>
-                        <div class="card-body"><h4 class="card-title">Gemischtwaren</h4><p class="card-text">Deko-Artikel und Verkaufsstrukturen.</p></div>
-                    </div>
-                    <div class="card searchable">
-                        <div class="card-img-container"><img src="https://i.postimg.cc/x1XG440B/Bild-2025-01-07-203733522.png" class="card-img" onclick="openModal(this.src)"></div>
-                        <div class="card-body"><h4 class="card-title">Rüstungshändler</h4><p class="card-text">Verbesserte Rüstungen und Kleidung.</p></div>
-                    </div>
-                    <div class="card searchable">
-                        <div class="card-img-container"><img src="https://i.postimg.cc/6QNk6R16/Bild-2025-01-07-204010173.png" class="card-img" onclick="openModal(this.src)"></div>
-                        <div class="card-body"><h4 class="card-title">Waffenhändler</h4><p class="card-text">Verbesserte Waffen und Werkzeuge.</p></div>
-                    </div>
-                    <div class="card searchable">
-                        <div class="card-img-container"><img src="https://i.postimg.cc/fL9kSk4R/Bild-2025-01-07-210123829.png" class="card-img" onclick="openModal(this.src)"></div>
-                        <div class="card-body"><h4 class="card-title">Tribute Ankäufer</h4><p class="card-text">Kauft Tribute an und zahlt in Gold.</p></div>
-                    </div>
-                    <div class="card searchable">
-                        <div class="card-img-container"><img src="https://i.postimg.cc/1RbfSGqV/Bild-2025-01-07-205944692.png" class="card-img" onclick="openModal(this.src)"></div>
-                        <div class="card-body"><h4 class="card-title">Der Hehler</h4><p class="card-text">Geheime Waren und korrupte Kreaturen.</p></div>
-                    </div>
-                    <div class="card searchable">
-                        <div class="card-img-container"><img src="https://i.postimg.cc/50dtWD02/Bild-2025-05-20-232903234.png" class="card-img" onclick="openModal(this.src)"></div>
-                        <div class="card-body"><h4 class="card-title">Teleportation</h4><p class="card-text">Teleport-Steine für schnelles Reisen.</p></div>
-                    </div>
-                     <div class="card searchable">
-                        <div class="card-img-container"><img src="https://i.postimg.cc/ZnSChZWs/Bild-2025-01-07-205603129.png" class="card-img" onclick="openModal(this.src)"></div>
-                        <div class="card-body"><h4 class="card-title">Chibi Händler</h4><p class="card-text">Verkauft normale Chibis.</p></div>
-                    </div>
-                     <div class="card searchable">
-                        <div class="card-img-container"><img src="https://i.postimg.cc/NMYcs0xX/Bild-2025-01-07-205703117.png" class="card-img" onclick="openModal(this.src)"></div>
-                        <div class="card-body"><h4 class="card-title">Skin Händler</h4><p class="card-text">Skins für Rüstungen und Waffen.</p></div>
-                    </div>
-                     <div class="card searchable">
-                        <div class="card-img-container"><img src="https://i.postimg.cc/dtCnQ0k4/Bild-2025-01-07-204257313.png" class="card-img" onclick="openModal(this.src)"></div>
-                        <div class="card-body"><h4 class="card-title">Pferdehändler</h4><p class="card-text">Verkauft Pferde.</p></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- TAB 3: MOUNTS -->
-            <div id="mounts" class="section">
-                <div class="section-header">
-                    <i class="fa-solid fa-dragon section-icon"></i>
-                    <h2 class="section-title">Exklusive Reittiere</h2>
-                </div>
-
-                <div class="info-block searchable">
-                    <h3>Infos zur Zucht & Herkunft</h3>
-                    <p>Diese Kreaturen sind (außer Shiny/S-Varianten) nur auf dem Schwarzmarkt erhältlich. Sie werden <strong>kastriert</strong> verkauft (Level 140-160).</p>
-                    <p><strong>Master Breeding:</strong> Über "IOP Fertility Injektoren" (erspielbar) könnt ihr diese Tiere 1x paaren lassen. Das Baby kommt ebenfalls kastriert zur Welt.</p>
-                </div>
-
-                <!-- Creature Items -->
-                <div class="creature-detail searchable">
-                    <div class="cd-img-col">
-                        <img src="https://i.postimg.cc/wjQF1fMS/Bild-2025-01-26-175759173.png" class="cd-img" onclick="openModal(this.src)">
-                    </div>
-                    <div class="cd-text-col">
-                        <h3 class="cd-title">Dragon's Kingdom Drachen</h3>
-                        <p><strong>Arten:</strong> Verschiedene Größen (T1 - T5).</p>
-                        <p><strong>Besonderheiten:</strong> Sturzflug, verschiedene Atmen-Arten, neue Animationen & Sounds, kein Ausdauerverbrauch im Gleitmodus.</p>
-                    </div>
-                </div>
-
-                <div class="creature-detail searchable">
-                    <div class="cd-img-col">
-                        <img src="https://i.postimg.cc/zBPwY4v1/GUke7-Dc-WUAIBUz-B.jpg" class="cd-img" onclick="openModal(this.src)">
-                    </div>
-                    <div class="cd-text-col">
-                        <h3 class="cd-title">Marnii's Owlgriffins</h3>
-                        <p><strong>Arten:</strong> Royal Griffin, Normaler Owlgriffin.</p>
-                        <p><strong>Besonderheiten:</strong> Sturzflug, Waffen beim Reiten, Greif-Funktion, leiser Flug. Die Royal-Variante ist größer und majestätischer.</p>
-                    </div>
-                </div>
-
-                <!-- SIVATHERIUM REMOVED HERE -->
-
-                <div class="creature-detail searchable">
-                    <div class="cd-img-col">
-                        <img src="https://i.postimg.cc/3JZFw1Ky/arkascended-4-22-2024-12-06-11-pm-min.png" class="cd-img" onclick="openModal(this.src)">
-                    </div>
-                    <div class="cd-text-col">
-                        <h3 class="cd-title">Cyrus' Critters: Jumping Spider</h3>
-                        <p><strong>Arten:</strong> Snow, Jungle, Aberrant.</p>
-                        <p><strong>Besonderheiten:</strong> Klettern an Wänden, aufgeladener Weitsprung, lähmt Beute beim Drüberspringen.</p>
-                    </div>
-                </div>
-
-                <div class="creature-detail searchable">
-                    <div class="cd-img-col">
-                        <img src="https://i.postimg.cc/v8VYr2jK/t0jtr199j17d1.png" class="cd-img" onclick="openModal(this.src)">
-                    </div>
-                    <div class="cd-text-col">
-                        <h3 class="cd-title">Draconis Glaucus</h3>
-                        <p><strong>Besonderheiten:</strong> Elektrische Angriffe (Nesseltiergift/Biotoxin nötig), kann Wasser verlassen, starke Betäubung.</p>
-                    </div>
-                </div>
-
-                <div class="creature-detail searchable">
-                    <div class="cd-img-col">
-                        <img src="https://i.postimg.cc/4d53rWkG/scorched-earth-2.jpg" class="cd-img" onclick="openModal(this.src)">
-                    </div>
-                    <div class="cd-text-col">
-                        <h3 class="cd-title">Colossusscorpius</h3>
-                        <p><strong>Arten:</strong> Normal, Aberrant.</p>
-                        <p><strong>Besonderheiten:</strong> Zangen- und Schwanzangriffe, hoher Torpor-Schaden, kann Kreaturen greifen und tragen (Taste C).</p>
-                    </div>
-                </div>
-
-                <div class="creature-detail searchable">
-                    <div class="cd-img-col">
-                        <img src="https://i.postimg.cc/C17w5dKp/image-2024-07-09-230915146.png" class="cd-img" onclick="openModal(this.src)">
-                    </div>
-                    <div class="cd-text-col">
-                        <h3 class="cd-title">Moro's Nothosaurus</h3>
-                        <p><strong>Besonderheiten:</strong> Elektro-Angriffe, schnelle Regeneration im Wasser, wendig, findet Silica Pearls.</p>
-                    </div>
-                </div>
-
-                <div class="creature-detail searchable">
-                    <div class="cd-img-col">
-                        <img src="https://i.postimg.cc/TwHQGMDq/13244164-Tylosaurus-mosasaur-and-prey-illustration.jpg" class="cd-img" onclick="openModal(this.src)">
-                    </div>
-                    <div class="cd-text-col">
-                        <h3 class="cd-title">Moro's Tylosaurus</h3>
-                        <p><strong>Besonderheiten:</strong> Schnappangriffe, Todesrolle, produziert Gifte (Pheromon, Toxisch, Torpor).</p>
-                    </div>
-                </div>
-
-                 <div class="creature-detail searchable">
-                    <div class="cd-img-col">
-                        <img src="https://i.postimg.cc/JhXLjLVc/Bild-2025-05-20-214815786.png" class="cd-img" onclick="openModal(this.src)">
-                    </div>
-                    <div class="cd-text-col">
-                        <h3 class="cd-title">Skyshroud Drakara (Avatar Ikran)</h3>
-                        <p><strong>Arten:</strong> Dwarf, Normal, Aberrant, Bloodfang, Arctic.</p>
-                        <p><strong>Besonderheiten:</strong> Majestätische Flugtiere inspiriert von Avatar. Unterschiedliche Stats und Fähigkeiten.</p>
-                    </div>
-                </div>
-                 <div class="creature-detail searchable">
-                    <div class="cd-img-col">
-                        <img src="https://i.postimg.cc/cJRH7YfJ/arkascended-12-8-2024-5-56-29-pm.jpg" class="cd-img" onclick="openModal(this.src)">
-                    </div>
-                    <div class="cd-text-col">
-                        <h3 class="cd-title">Dracotheutis</h3>
-                        <p><strong>Besonderheiten:</strong> Saugt Ladelicht für Energie, eingeschränkter Flug, absorbiert Ladung für Heilung/Schaden.</p>
-                    </div>
-                </div>
-                 <div class="creature-detail searchable">
-                    <div class="cd-img-col">
-                        <img src="https://i.postimg.cc/J0sHvLp7/after-sacrificing-many-many-kairukus-and-collecting-v0-xibrkyltvrac1.jpg" class="cd-img" onclick="openModal(this.src)">
-                    </div>
-                    <div class="cd-text-col">
-                        <h3 class="cd-title">Moro's Indomitable Duo</h3>
-                        <p><strong>Arten:</strong> Indominus Rex, Indo-Raptor.</p>
-                        <p><strong>Besonderheiten:</strong> Die ultimativen Jäger. Extrem stark und gefährlich.</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- TAB 4: CASINO -->
-            <div id="casino" class="section">
-                <div class="section-header">
-                    <i class="fa-solid fa-dice section-icon"></i>
-                    <h2 class="section-title">Das Casino</h2>
-                </div>
-
-                <div class="info-block searchable">
-                    <h3>Spielspaß & Gewinne</h3>
-                    <p>Das Infinity of Phoenix Casino befindet sich auf dem Schwarzmarkt (neben dem Reittierhändler). Hier könnt ihr euer Gold in 3 Arten von Casino Coins tauschen.</p>
-                    <p><strong>Spiele:</strong></p>
-                    <ul>
-                        <li><strong>Blackjack:</strong> Spiele gegen den Server.</li>
-                        <li><strong>Spielautomaten:</strong> Versuche dein Glück an den Maschinen.</li>
-                        <li><strong>Raptorenrennen:</strong> Wette auf deinen Favoriten!</li>
-                        <li><strong>Glücksräder:</strong> (Silber & Gold Coins) Für einzigartige Items.</li>
-                        <li><strong>Poker:</strong> Spiele gegen andere Spieler.</li>
-                        <li><strong>Mystery Boxen:</strong> Öffne Boxen mit Gold Coins.</li>
-                    </ul>
-                    <p><strong>Daily Reward:</strong> Im Mystery Raum gibt es eine Tafel, die eine tägliche Aufgabe stellt. Als Belohnung gibt es einen Coin.</p>
-                </div>
-
-                <div class="card-grid">
-                      <div class="card searchable">
-                        <div class="card-img-container"><img src="https://i.postimg.cc/k45LvpwD/Bild-2025-01-07-225546162.png" class="card-img" onclick="openModal(this.src)"></div>
-                        <div class="card-body"><h4 class="card-title">Eingang</h4></div>
-                    </div>
-                      <div class="card searchable">
-                        <div class="card-img-container"><img src="https://i.postimg.cc/FRq7C3vv/Bild-2025-01-07-211636787.png" class="card-img" onclick="openModal(this.src)"></div>
-                        <div class="card-body"><h4 class="card-title">Coin Raum</h4></div>
-                    </div>
-                      <div class="card searchable">
-                        <div class="card-img-container"><img src="https://i.postimg.cc/W4zg1M2R/Bild-2025-01-07-211721957.png" class="card-img" onclick="openModal(this.src)"></div>
-                        <div class="card-body"><h4 class="card-title">Spielautomaten</h4></div>
-                    </div>
-                      <div class="card searchable">
-                        <div class="card-img-container"><img src="https://i.postimg.cc/t4MsRJ27/Bild-2025-01-07-212655107.png" class="card-img" onclick="openModal(this.src)"></div>
-                        <div class="card-body"><h4 class="card-title">Pokertisch</h4></div>
-                    </div>
-                      <div class="card searchable">
-                        <div class="card-img-container"><img src="https://i.postimg.cc/y8qGMyzN/Bild-2025-01-07-212821396.png" class="card-img" onclick="openModal(this.src)"></div>
-                        <div class="card-body"><h4 class="card-title">Raptorenrennen</h4></div>
-                    </div>
-                      <div class="card searchable">
-                        <div class="card-img-container"><img src="https://i.postimg.cc/FR2qhyJG/Bild-2025-01-07-212905779.png" class="card-img" onclick="openModal(this.src)"></div>
-                        <div class="card-body"><h4 class="card-title">Glücksrad</h4></div>
-                    </div>
-                </div>
-
-            </div>
-
+        <div class="content-area" id="contentContainer">
+             <!-- Content injected via JS -->
         </div>
+
     </div>
 
     <!-- Modal -->
     <div id="imgModal" class="modal">
         <span class="close-btn" onclick="closeModal()">&times;</span>
-        <span class="modal-nav modal-prev" onclick="changeImage(-1)">&#10094;</span>
-        <img id="modalImage" class="modal-img" src="">
-        <span class="modal-nav modal-next" onclick="changeImage(1)">&#10095;</span>
+        <img id="modalImage" src="">
     </div>
 
     <script>
-        function showTab(tabId, btn) {
-            document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
+        // =========================================================================
+        // 1. DATENBANK (ÜBERSETZUNGEN)
+        // =========================================================================
+        const translations = {
+            subtitle: { de: "Eigene Exklusive Karte & Schwarzmarkt", en: "Own Exclusive Map & Black Market", es: "Mapa Exclusivo y Mercado Negro", fr: "Carte Exclusive et Marché Noir" },
+            search: { de: "Suche (z.B. Drache, Lizenz)...", en: "Search (e.g. Dragon, License)...", es: "Buscar...", fr: "Rechercher..." },
             
-            document.getElementById(tabId).classList.add('active');
-            btn.classList.add('active');
+            nav: {
+                showcase: { de: "Showcase", en: "Showcase", es: "Exhibición", fr: "Vitrine" },
+                traders: { de: "Schwarzmarkt Händler", en: "Black Market Traders", es: "Comerciantes Mercado Negro", fr: "Marchands Marché Noir" },
+                mounts: { de: "Exklusive Reittiere", en: "Exclusive Mounts", es: "Monturas Exclusivas", fr: "Montures Exclusives" },
+                casino: { de: "Casino", en: "Casino", es: "Casino", fr: "Casino" }
+            },
+
+            sections: {
+                showcase: [
+                    {
+                        type: "header", icon: "fa-map",
+                        title: { de: "Übersicht & Erklärung", en: "Overview & Explanation", es: "Resumen y Explicación", fr: "Aperçu et Explication" }
+                    },
+                    {
+                        type: "info",
+                        title: { de: "Willkommen im Zentrum", en: "Welcome to the Center", es: "Bienvenido al Centro", fr: "Bienvenue au Centre" },
+                        content: { 
+                            de: "Diese Modkarte wurde speziell für die Community von Infinity of Phoenix erstellt. Sie bietet auf die Community zugeschnittene Inhalte wie Logos, besondere Orte und Custom-Inhalte. Die Karte ist als ultimative Markt- und Event-Karte im Mittelalter-Fantasy-Stil geplant. Sie befindet sich in einem Tal mit viel Vegetation, Felsen und speziellen Nacht-Leuchteffekten.", 
+                            en: "This mod map was created specifically for the Infinity of Phoenix community. It offers community-tailored content like logos, special places, and custom content. The map is planned as the ultimate market and event map in medieval fantasy style, located in a valley with lush vegetation, rocks, and special night lighting effects.",
+                            es: "Este mapa mod fue creado para la comunidad de IOP. Ofrece contenido personalizado como logotipos, lugares especiales y contenido único. Es un mapa de mercado y eventos de fantasía medieval en un valle iluminado por la noche.",
+                            fr: "Cette carte mod a été créée pour la communauté IOP. Elle offre du contenu personnalisé comme des logos, des lieux spéciaux et du contenu unique. C'est une carte de marché et d'événements de style médiéval fantastique dans une vallée illuminée la nuit."
+                        },
+                        img: "https://i.postimg.cc/sgN2Zvv5/40.png"
+                    },
+                    {
+                        type: "locations",
+                        title: { de: "Wichtige Orte", en: "Important Places", es: "Lugares Importantes", fr: "Lieux Importants" },
+                        list: [
+                            { name: { de: "Land-Arena", en: "Land Arena", es: "Arena Terrestre", fr: "Arène Terrestre" }, sub: { de: "Mit Tribünen & Schutz-Cube", en: "With stands & protection cube", es: "Con gradas y cubo protector", fr: "Avec tribunes et cube de protection" } },
+                            { name: { de: "Wasser-Arena", en: "Water Arena", es: "Arena Acuática", fr: "Arène Aquatique" }, sub: { de: "Mit Unterwasser-Tribüne", en: "With underwater stand", es: "Con grada submarina", fr: "Avec tribune sous-marine" } },
+                            { name: { de: "Dynamische Event-Orte", en: "Dynamic Event Spots", es: "Lugares de Eventos Dinámicos", fr: "Lieux d'Événements Dynamiques" }, sub: { de: "Land & Wasser", en: "Land & Water", es: "Tierra y Agua", fr: "Terre et Eau" } },
+                            { name: { de: "Spielermarkt", en: "Player Market", es: "Mercado de Jugadores", fr: "Marché des Joueurs" }, sub: { de: "61 nummerierte Häuser", en: "61 numbered houses", es: "61 casas numeradas", fr: "61 maisons numérotées" } },
+                            { name: { de: "Spielerbank", en: "Player Bank", es: "Banco de Jugadores", fr: "Banque des Joueurs" }, sub: { de: "Im Adelsviertel", en: "In the Noble District", es: "En el Barrio Noble", fr: "Dans le Quartier Noble" } },
+                            { name: { de: "Phoenix Tempel", en: "Phoenix Temple", es: "Templo Fénix", fr: "Temple Phénix" }, sub: { de: "Zentraler Treffpunkt", en: "Central meeting point", es: "Punto de encuentro central", fr: "Point de rencontre central" } },
+                            { name: { de: "Fußballplatz", en: "Soccer Field", es: "Campo de Fútbol", fr: "Terrain de Football" }, sub: { de: "Football Ark Mod", en: "Football Ark Mod", es: "Football Ark Mod", fr: "Football Ark Mod" } },
+                            { name: { de: "Hall of Thunder", en: "Hall of Thunder", es: "Salón del Trueno", fr: "Hall du Tonnerre" }, sub: { de: "Mjölnirs Heilung", en: "Mjölnirs Healing", es: "Curación de Mjölnir", fr: "Guérison de Mjölnir" } },
+                            { name: { de: "Phoenix Brauerei", en: "Phoenix Brewery", es: "Cervecería Fénix", fr: "Brasserie Phénix" }, sub: { de: "Getränkelager", en: "Drink storage", es: "Almacén de bebidas", fr: "Entrepôt de boissons" } },
+                            { name: { de: "Kirche", en: "Church", es: "Iglesia", fr: "Église" }, sub: { de: "Zur Anbetung", en: "For worship", es: "Para adoración", fr: "Pour le culte" } }
+                        ]
+                    },
+                    {
+                        type: "info",
+                        title: { de: "Marktlizenz", en: "Market License", es: "Licencia de Mercado", fr: "Licence de Marché" },
+                        content: { de: "Möchtest du auf dem Schwarzmarkt ein Haus mieten? Hol dir die Marktlizenz!", en: "Want to rent a house on the black market? Get the market license!", es: "¿Quieres alquilar una casa en el mercado negro? ¡Obtén la licencia!", fr: "Vous voulez louer une maison au marché noir ? Obtenez la licence !" },
+                        list: [
+                            { de: "<strong>Dauer:</strong> Unbegrenzt (Muss jährlich erneuert werden).", en: "<strong>Duration:</strong> Unlimited (Must be renewed annually).", es: "<strong>Duración:</strong> Ilimitada (Renovar anualmente).", fr: "<strong>Durée :</strong> Illimitée (Renouvellement annuel)." },
+                            { de: "<strong>Berechtigung:</strong> 50 Strukturen, Unlimited Weight auf dem Schwarzmarkt.", en: "<strong>Permission:</strong> 50 Structures, Unlimited Weight on Black Market.", es: "<strong>Permiso:</strong> 50 Estructuras, Peso Ilimitado.", fr: "<strong>Permission :</strong> 50 Structures, Poids Illimité." },
+                            { de: "<strong>Regeln:</strong> Nur 1 Haus pro Stamm. Dekoration nur im Haus/Garten.", en: "<strong>Rules:</strong> 1 House per Tribe. Decoration only in house/garden.", es: "<strong>Reglas:</strong> 1 Casa por Tribu. Decoración solo casa/jardín.", fr: "<strong>Règles :</strong> 1 Maison par Tribu. Décoration maison/jardin uniquement." },
+                            { de: "<strong>Stände:</strong> Bis zu 4 Verkaufsstände erlaubt.", en: "<strong>Stands:</strong> Up to 4 sales stands allowed.", es: "<strong>Puestos:</strong> Hasta 4 puestos permitidos.", fr: "<strong>Stands :</strong> Jusqu'à 4 stands autorisés." }
+                        ],
+                        img: "https://i.postimg.cc/1trv8yzZ/gy-H8-Rd-QZJw-AL5-R33-IYOkx-Xriuq1-ENIbvs-Wlze-DA2.webp"
+                    }
+                ],
+                traders: [
+                    {
+                        type: "header", icon: "fa-shop",
+                        title: { de: "Schwarzmarkt Händler", en: "Black Market Traders", es: "Comerciantes Mercado Negro", fr: "Marchands Marché Noir" }
+                    },
+                    {
+                        type: "info",
+                        content: { de: "<p>Der Schwarzmarkt befindet sich in der Mitte der Karte (nördlich vom Spawn). In der Burg auf dem Berg findet ihr diverse Händler. Bezahlt wird mit Edelsteinen oder Gold.</p>", en: "<p>The Black Market is in the middle of the map (north of spawn). In the castle on the hill you will find various traders. Payment is made with gems or gold.</p>", es: "<p>El Mercado Negro está en el centro. Castillo en la colina. Pago con gemas u oro.</p>", fr: "<p>Le Marché Noir est au centre. Château sur la colline. Paiement en gemmes ou or.</p>" }
+                    },
+                    {
+                        type: "cardGrid",
+                        cards: [
+                            { title: { de: "Reittierhändler", en: "Mount Trader", es: "Comerciante de Monturas", fr: "Marchand de Montures" }, text: { de: "Verkauft einzigartige Mod-Reittiere.", en: "Sells unique mod mounts.", es: "Vende monturas únicas.", fr: "Vend des montures uniques." }, img: "https://i.postimg.cc/Ss3SrdGL/Bild-2025-01-07-204538284.png" },
+                            { title: { de: "Schultertiere", en: "Shoulder Pets", es: "Mascotas de Hombro", fr: "Animaux d'Épaule" }, text: { de: "Besondere Begleiter.", en: "Special companions.", es: "Compañeros especiales.", fr: "Compagnons spéciaux." }, img: "https://i.postimg.cc/hGQ3m0fR/Bild-2025-01-07-204624283.png" },
+                            { title: { de: "Alchemist", en: "Alchemist", es: "Alquimista", fr: "Alchimiste" }, text: { de: "Magische Waren, Potions.", en: "Magical goods, potions.", es: "Bienes mágicos, pociones.", fr: "Biens magiques, potions." }, img: "https://i.postimg.cc/50WrBkYW/Bild-2025-01-07-211521912.png" },
+                            { title: { de: "Gemischtwaren", en: "General Goods", es: "Bienes Generales", fr: "Marchandises Générales" }, text: { de: "Deko & Strukturen.", en: "Decor & structures.", es: "Decoración y estructuras.", fr: "Déco et structures." }, img: "https://i.postimg.cc/ncpkRrm9/Bild-2025-01-07-202102408.png" },
+                            { title: { de: "Rüstungshändler", en: "Armor Trader", es: "Armero", fr: "Armurier" }, text: { de: "Verbesserte Rüstungen.", en: "Improved armor.", es: "Armaduras mejoradas.", fr: "Armures améliorées." }, img: "https://i.postimg.cc/x1XG440B/Bild-2025-01-07-203733522.png" },
+                            { title: { de: "Waffenhändler", en: "Weapon Trader", es: "Vendedor de Armas", fr: "Marchand d'Armes" }, text: { de: "Verbesserte Waffen.", en: "Improved weapons.", es: "Armas mejoradas.", fr: "Armes améliorées." }, img: "https://i.postimg.cc/6QNk6R16/Bild-2025-01-07-204010173.png" },
+                            { title: { de: "Tribute Ankäufer", en: "Tribute Buyer", es: "Comprador de Tributos", fr: "Acheteur de Tributs" }, text: { de: "Kauft Tribute gegen Gold.", en: "Buys tributes for gold.", es: "Compra tributos por oro.", fr: "Achète tributs contre or." }, img: "https://i.postimg.cc/fL9kSk4R/Bild-2025-01-07-210123829.png" },
+                            { title: { de: "Der Hehler", en: "The Fence", es: "El Perista", fr: "Le Receleur" }, text: { de: "Geheime Waren.", en: "Secret goods.", es: "Bienes secretos.", fr: "Marchandises secrètes." }, img: "https://i.postimg.cc/1RbfSGqV/Bild-2025-01-07-205944692.png" },
+                            { title: { de: "Teleportation", en: "Teleportation", es: "Teletransportación", fr: "Téléportation" }, text: { de: "Teleport-Steine.", en: "Teleport stones.", es: "Piedras de teletransporte.", fr: "Pierres de téléportation." }, img: "https://i.postimg.cc/50dtWD02/Bild-2025-05-20-232903234.png" },
+                            { title: { de: "Chibi Händler", en: "Chibi Trader", es: "Vendedor Chibi", fr: "Marchand Chibi" }, text: { de: "Normale Chibis.", en: "Normal Chibis.", es: "Chibis normales.", fr: "Chibis normaux." }, img: "https://i.postimg.cc/ZnSChZWs/Bild-2025-01-07-205603129.png" },
+                            { title: { de: "Skin Händler", en: "Skin Trader", es: "Vendedor de Skins", fr: "Marchand de Skins" }, text: { de: "Skins für Gear.", en: "Skins for gear.", es: "Skins para equipo.", fr: "Skins pour équipement." }, img: "https://i.postimg.cc/NMYcs0xX/Bild-2025-01-07-205703117.png" },
+                            { title: { de: "Pferdehändler", en: "Horse Trader", es: "Vendedor de Caballos", fr: "Marchand de Chevaux" }, text: { de: "Verkauft Pferde.", en: "Sells horses.", es: "Vende caballos.", fr: "Vend des chevaux." }, img: "https://i.postimg.cc/dtCnQ0k4/Bild-2025-01-07-204257313.png" }
+                        ]
+                    }
+                ],
+                mounts: [
+                    {
+                        type: "header", icon: "fa-dragon",
+                        title: { de: "Exklusive Reittiere", en: "Exclusive Mounts", es: "Monturas Exclusivas", fr: "Montures Exclusives" }
+                    },
+                    {
+                        type: "info",
+                        title: { de: "Infos zur Zucht & Herkunft", en: "Breeding & Origin Info", es: "Info de Crianza y Origen", fr: "Infos Élevage et Origine" },
+                        content: { de: "<p>Diese Kreaturen sind (außer Shiny/S-Varianten) nur auf dem Schwarzmarkt erhältlich. Sie werden <strong>kastriert</strong> verkauft (Level 140-160).</p><p><strong>Master Breeding:</strong> Über 'IOP Fertility Injektoren' (erspielbar) könnt ihr diese Tiere 1x paaren lassen.</p>", en: "<p>These creatures are only available on the Black Market (except Shiny/S). Sold <strong>neutered</strong> (Lvl 140-160).</p><p><strong>Master Breeding:</strong> Use 'IOP Fertility Injectors' to breed them once.</p>", es: "<p>Solo en Mercado Negro. Vendidos <strong>castrados</strong>.</p><p><strong>Master Breeding:</strong> Usa inyectores para criar una vez.</p>", fr: "<p>Uniquement au Marché Noir. Vendus <strong>castrés</strong>.</p><p><strong>Master Breeding :</strong> Utilisez des injecteurs pour élever une fois.</p>" }
+                    },
+                    {
+                        type: "creatures",
+                        items: [
+                            { title: "Dragon's Kingdom Drachen", specs: { de: "Sturzflug, verschiedene Atmen-Arten.", en: "Dive, various breath types.", es: "Picado, varios alientos.", fr: "Piqué, divers souffles." }, img: "https://i.postimg.cc/wjQF1fMS/Bild-2025-01-26-175759173.png" },
+                            { title: "Marnii's Owlgriffins", specs: { de: "Sturzflug, Waffen beim Reiten.", en: "Dive, weapons while riding.", es: "Picado, armas al montar.", fr: "Piqué, armes en selle." }, img: "https://i.postimg.cc/zBPwY4v1/GUke7-Dc-WUAIBUz-B.jpg" },
+                            { title: "Cyrus' Jumping Spider", specs: { de: "Klettern, Weitsprung.", en: "Climbing, long jump.", es: "Escalar, salto largo.", fr: "Escalade, saut en longueur." }, img: "https://i.postimg.cc/3JZFw1Ky/arkascended-4-22-2024-12-06-11-pm-min.png" },
+                            { title: "Draconis Glaucus", specs: { de: "Elektro-Angriffe, Amphibisch.", en: "Electric attacks, amphibious.", es: "Ataques eléctricos, anfibio.", fr: "Attaques électriques, amphibie." }, img: "https://i.postimg.cc/v8VYr2jK/t0jtr199j17d1.png" },
+                            { title: "Colossusscorpius", specs: { de: "Hoher Torpor, Greifen.", en: "High torpor, grabbing.", es: "Alto torpor, agarre.", fr: "Haute torpeur, saisie." }, img: "https://i.postimg.cc/4d53rWkG/scorched-earth-2.jpg" },
+                            { title: "Moro's Nothosaurus", specs: { de: "Elektro, Regeneration.", en: "Electric, regeneration.", es: "Eléctrico, regeneración.", fr: "Électrique, régénération." }, img: "https://i.postimg.cc/C17w5dKp/image-2024-07-09-230915146.png" },
+                            { title: "Moro's Tylosaurus", specs: { de: "Todesrolle, Gifte.", en: "Death roll, poisons.", es: "Giro mortal, venenos.", fr: "Roulement mortel, poisons." }, img: "https://i.postimg.cc/TwHQGMDq/13244164-Tylosaurus-mosasaur-and-prey-illustration.jpg" },
+                            { title: "Skyshroud Drakara", specs: { de: "Avatar Ikran Stil.", en: "Avatar Ikran style.", es: "Estilo Avatar Ikran.", fr: "Style Avatar Ikran." }, img: "https://i.postimg.cc/JhXLjLVc/Bild-2025-05-20-214815786.png" },
+                            { title: "Dracotheutis", specs: { de: "Saugt Ladelicht.", en: "Absorbs charge light.", es: "Absorbe luz de carga.", fr: "Absorbe lumière de charge." }, img: "https://i.postimg.cc/cJRH7YfJ/arkascended-12-8-2024-5-56-29-pm.jpg" },
+                            { title: "Moro's Indomitable", specs: { de: "Ultimative Jäger.", en: "Ultimate hunters.", es: "Cazadores definitivos.", fr: "Chasseurs ultimes." }, img: "https://i.postimg.cc/J0sHvLp7/after-sacrificing-many-many-kairukus-and-collecting-v0-xibrkyltvrac1.jpg" }
+                        ]
+                    }
+                ],
+                casino: [
+                    {
+                        type: "header", icon: "fa-dice",
+                        title: { de: "Das Casino", en: "The Casino", es: "El Casino", fr: "Le Casino" }
+                    },
+                    {
+                        type: "info",
+                        title: { de: "Spielspaß & Gewinne", en: "Fun & Wins", es: "Diversión y Ganancias", fr: "Plaisir et Gains" },
+                        content: { de: "<p>Tausche Gold in Casino Coins. Spiele Blackjack, Slots, Poker uvm.</p>", en: "<p>Exchange gold for casino coins. Play Blackjack, Slots, Poker etc.</p>", es: "<p>Cambia oro por fichas. Blackjack, Tragaperras, Póker.</p>", fr: "<p>Échangez de l'or contre des jetons. Blackjack, Machines à sous, Poker.</p>" }
+                    },
+                    {
+                        type: "cardGrid",
+                        cards: [
+                            { title: { de: "Eingang", en: "Entrance", es: "Entrada", fr: "Entrée" }, text: { de: "", en: "", es: "", fr: "" }, img: "https://i.postimg.cc/k45LvpwD/Bild-2025-01-07-225546162.png" },
+                            { title: { de: "Coin Raum", en: "Coin Room", es: "Sala de Fichas", fr: "Salle des Jetons" }, text: { de: "", en: "", es: "", fr: "" }, img: "https://i.postimg.cc/FRq7C3vv/Bild-2025-01-07-211636787.png" },
+                            { title: { de: "Spielautomaten", en: "Slot Machines", es: "Tragaperras", fr: "Machines à Sous" }, text: { de: "", en: "", es: "", fr: "" }, img: "https://i.postimg.cc/W4zg1M2R/Bild-2025-01-07-211721957.png" },
+                            { title: { de: "Pokertisch", en: "Poker Table", es: "Mesa de Póker", fr: "Table de Poker" }, text: { de: "", en: "", es: "", fr: "" }, img: "https://i.postimg.cc/t4MsRJ27/Bild-2025-01-07-212655107.png" },
+                            { title: { de: "Raptorenrennen", en: "Raptor Race", es: "Carrera de Raptores", fr: "Course de Raptors" }, text: { de: "", en: "", es: "", fr: "" }, img: "https://i.postimg.cc/y8qGMyzN/Bild-2025-01-07-212821396.png" },
+                            { title: { de: "Glücksrad", en: "Wheel of Fortune", es: "Rueda de la Fortuna", fr: "Roue de la Fortune" }, text: { de: "", en: "", es: "", fr: "" }, img: "https://i.postimg.cc/FR2qhyJG/Bild-2025-01-07-212905779.png" }
+                        ]
+                    }
+                ]
+            }
+        };
+
+        // =========================================================================
+        // 2. LOGIC
+        // =========================================================================
+        let currentLang = 'de';
+        let currentTab = 'showcase';
+
+        function setLang(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('btn-' + lang).classList.add('active');
+            
+            // Statics
+            document.getElementById('uiSubtitle').innerText = translations.subtitle[lang];
+            document.getElementById('searchInput').placeholder = translations.search[lang];
+            
+            // Nav
+            document.getElementById('navShowcase').innerHTML = `<i class="fa-solid fa-map-location-dot"></i> ${translations.nav.showcase[lang]}`;
+            document.getElementById('navTraders').innerHTML = `<i class="fa-solid fa-store"></i> ${translations.nav.traders[lang]}`;
+            document.getElementById('navMounts').innerHTML = `<i class="fa-solid fa-dragon"></i> ${translations.nav.mounts[lang]}`;
+            document.getElementById('navCasino').innerHTML = `<i class="fa-solid fa-dice"></i> ${translations.nav.casino[lang]}`;
+
+            renderContent();
         }
 
-        // --- SEARCH LOGIC ---
-        const searchInput = document.getElementById('searchInput');
-        
-        searchInput.addEventListener('input', (e) => {
-            const term = e.target.value.toLowerCase();
-            const activeSection = document.querySelector('.section.active');
-            const searchables = activeSection.querySelectorAll('.searchable');
-            
-            searchables.forEach(el => {
-                const text = el.innerText.toLowerCase();
-                if(text.includes(term)) {
-                    el.style.display = ''; // Show default
-                } else {
-                    el.style.display = 'none';
-                }
-            });
-        });
+        function showTab(tab, btn) {
+            currentTab = tab;
+            document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderContent();
+        }
 
-        // --- MODAL LOGIC ---
+        function renderContent() {
+            const container = document.getElementById('contentContainer');
+            container.innerHTML = '';
+            
+            const data = translations.sections[currentTab];
+            const searchVal = document.getElementById('searchInput').value.toLowerCase();
+
+            data.forEach(block => {
+                // Check Search (Title, Content, List Items)
+                let textContent = "";
+                if(block.title) textContent += block.title[currentLang];
+                if(block.content) textContent += block.content[currentLang];
+                
+                if(block.list) {
+                    textContent += block.list.map(l => {
+                        if(l.name && l.name[currentLang]) return l.name[currentLang];
+                        if(l[currentLang]) return l[currentLang];
+                        return "";
+                    }).join(" ");
+                }
+                
+                if(block.cards) textContent += block.cards.map(c => c.title && c.title[currentLang] ? c.title[currentLang] : "").join(" ");
+                if(block.items) textContent += block.items.map(i => i.title || "").join(" "); 
+
+                if(searchVal && !textContent.toLowerCase().includes(searchVal)) return;
+
+                const div = document.createElement('div');
+                div.className = 'searchable';
+                
+                let html = "";
+                
+                if (block.type === 'header') {
+                    html = `<div class="section-header"><i class="fa-solid ${block.icon} section-icon"></i><h2 class="section-title">${block.title[currentLang]}</h2></div>`;
+                }
+                else if (block.type === 'info') {
+                    div.className = "info-block searchable";
+                    html = "";
+                    if (block.title) {
+                        html += `<h3>${block.title[currentLang]}</h3>`;
+                    }
+                    if(block.content) html += block.content[currentLang];
+                    if(block.list) {
+                        html += `<ul>` + block.list.map(l => {
+                            if (typeof l === 'object' && l[currentLang]) return `<li>${l[currentLang]}</li>`;
+                            if (typeof l === 'object' && l.name && l.name[currentLang]) return `<li><strong>${l.name[currentLang]}</strong>: ${l.sub[currentLang]}</li>`; // Fallback for list style
+                            return `<li>${l}</li>`;
+                        }).join('') + `</ul>`;
+                    }
+                    if(block.img) html += `<img src="${block.img}" class="big-img" onclick="openModal(this.src)">`;
+                }
+                else if (block.type === 'locations') {
+                    div.className = "info-block searchable";
+                    html = `<h3>${block.title[currentLang]}</h3><div class="location-list">`;
+                    block.list.forEach(loc => {
+                        html += `<div class="location-item"><span>${loc.name[currentLang]}</span> <small>${loc.sub[currentLang]}</small></div>`;
+                    });
+                    html += `</div>`;
+                }
+                else if (block.type === 'cardGrid') {
+                    html = `<div class="card-grid">`;
+                    block.cards.forEach(card => {
+                        html += `
+                        <div class="card searchable">
+                            <div class="card-img-container"><img src="${card.img}" class="card-img" onclick="openModal(this.src)"></div>
+                            <div class="card-body"><h4 class="card-title">${card.title[currentLang]}</h4><p class="card-text">${card.text[currentLang]}</p></div>
+                        </div>`;
+                    });
+                    html += `</div>`;
+                }
+                else if (block.type === 'creatures') {
+                    html = `<div style="display:flex; flex-direction:column;">`;
+                    block.items.forEach(c => {
+                        html += `
+                        <div class="creature-detail searchable">
+                            <div class="cd-img-col"><img src="${c.img}" class="cd-img" onclick="openModal(this.src)"></div>
+                            <div class="cd-text-col"><h3 class="cd-title">${c.title}</h3><p>${c.specs[currentLang]}</p></div>
+                        </div>`;
+                    });
+                    html += `</div>`;
+                }
+
+                div.innerHTML = html;
+                container.appendChild(div);
+            });
+        }
+
+        // Search Event
+        document.getElementById('searchInput').addEventListener('input', renderContent);
+
+        // Modal
         const modal = document.getElementById('imgModal');
         const modalImg = document.getElementById('modalImage');
-        let galleryImages = [];
-        let currentIndex = 0;
 
         function openModal(src) {
-            // Find current context images
-            const activeSection = document.querySelector('.section.active');
-            galleryImages = Array.from(activeSection.querySelectorAll('img')).map(img => img.src);
-            
-            currentIndex = galleryImages.indexOf(src);
-            if(currentIndex === -1) currentIndex = 0;
-
-            updateModalImage();
+            modalImg.src = src;
             modal.classList.add('open');
         }
+        function closeModal() { modal.classList.remove('open'); }
+        modal.addEventListener('click', (e) => { if(e.target === modal) closeModal(); });
 
-        function closeModal() {
-            modal.classList.remove('open');
-        }
-
-        function updateModalImage() {
-            modalImg.src = galleryImages[currentIndex];
-        }
-
-        function changeImage(direction) {
-            currentIndex += direction;
-            if(currentIndex >= galleryImages.length) currentIndex = 0;
-            if(currentIndex < 0) currentIndex = galleryImages.length - 1;
-            updateModalImage();
-        }
-
-        modal.addEventListener('click', (e) => {
-            if(e.target === modal) closeModal();
-        });
-
-        document.addEventListener('keydown', (e) => {
-            if (!modal.classList.contains('open')) return;
-            if (e.key === 'ArrowLeft') changeImage(-1);
-            if (e.key === 'ArrowRight') changeImage(1);
-            if (e.key === 'Escape') closeModal();
-        });
+        // Init
+        window.onload = function() {
+            setLang('de');
+        };
     </script>
-
 </body>
 </html>
