@@ -57,8 +57,8 @@
         .interface-container {
             display: flex;
             flex-direction: column;
-            width: 98%; /* Breite angepasst wie gewünscht */
-            height: 95vh; /* Höhe ebenfalls angepasst */
+            width: 98%; 
+            height: 95vh; 
             background-color: var(--c-bg);
             border: 2px solid var(--c-fire);
             border-radius: 12px;
@@ -79,6 +79,7 @@
             flex-shrink: 0;
             background-image: 
                 radial-gradient(circle at 10% 50%, rgba(255,51,0,0.05) 0%, transparent 40%);
+            position: relative;
         }
 
         .header-content {
@@ -108,6 +109,31 @@
             margin-top: 5px;
             letter-spacing: 1px;
             text-transform: uppercase;
+        }
+
+        /* FLAGGEN SWITCHER */
+        .lang-switch {
+            display: flex;
+            gap: 8px;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .lang-btn {
+            width: 30px; height: 20px;
+            cursor: pointer;
+            border-radius: 3px;
+            border: 1px solid #fff;
+            opacity: 0.5;
+            transition: transform 0.2s, opacity 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+            padding: 0;
+            display: block;
+        }
+        .lang-btn:hover, .lang-btn.active {
+            opacity: 1; transform: scale(1.15);
+            border-color: var(--c-fire);
+            z-index: 10;
         }
 
         /* SEARCH BAR */
@@ -313,6 +339,7 @@
             .nav-tab { padding: 12px 15px; font-size: 0.9rem; }
             .header { flex-direction: column; gap: 15px; text-align: center; }
             .search-container { width: 100%; }
+            .lang-switch { position: static; transform: none; margin-bottom: 10px; order: -1; }
         }
 
     </style>
@@ -325,211 +352,60 @@
         <div class="header">
             <div class="header-content">
                 <h1 class="title">IOP Quest System</h1>
-                <span class="subtitle">Quests, Tracker, Statistiken & Scoreboards</span>
+                <span class="subtitle" id="uiSubtitle">Quests, Tracker, Statistiken & Scoreboards</span>
             </div>
             
+            <!-- 4 Flaggen -->
+            <div class="lang-switch">
+                <svg class="lang-btn active" id="btn-de" onclick="setLang('de')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 5 3">
+                    <rect width="5" height="3" fill="#000"/><rect width="5" height="2" y="1" fill="#D00"/><rect width="5" height="1" y="2" fill="#FFCE00"/>
+                </svg>
+                <svg class="lang-btn" id="btn-en" onclick="setLang('en')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 30">
+                    <clipPath id="s"><path d="M0,0 v30 h60 v-30 z"/></clipPath>
+                    <clipPath id="t"><path d="M30,15 h30 v15 z v15 h-30 z h-30 v-15 z v-15 h30 z"/></clipPath>
+                    <g clip-path="url(#s)">
+                        <path d="M0,0 v30 h60 v-30 z" fill="#012169"/>
+                        <path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/>
+                        <path d="M0,0 L60,30 M60,0 L0,30" clip-path="url(#t)" stroke="#C8102E" stroke-width="4"/>
+                        <path d="M30,0 v30 M0,15 h60" stroke="#fff" stroke-width="10"/>
+                        <path d="M30,0 v30 M0,15 h60" stroke="#C8102E" stroke-width="6"/>
+                    </g>
+                </svg>
+                <svg class="lang-btn" id="btn-es" onclick="setLang('es')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 750 500">
+                    <rect width="750" height="500" fill="#AA151B"/>
+                    <rect width="750" height="250" y="125" fill="#F1BF00"/>
+                </svg>
+                <svg class="lang-btn" id="btn-fr" onclick="setLang('fr')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600">
+                    <rect width="900" height="600" fill="#ED2939"/>
+                    <rect width="600" height="600" fill="#fff"/>
+                    <rect width="300" height="600" fill="#002395"/>
+                </svg>
+            </div>
+
             <div class="search-container">
                 <i class="fa-solid fa-search search-icon"></i>
-                <input type="text" id="searchInput" class="search-input" placeholder="Suche (z.B. Daily, Kills)...">
+                <input type="text" id="searchInput" class="search-input" placeholder="Suche...">
             </div>
         </div>
 
         <!-- NAVIGATION -->
         <div class="nav-tabs">
-            <div class="nav-tab active" onclick="showSection('quests')">
+            <div class="nav-tab active" onclick="showSection('quests')" id="navQuests">
                 <i class="fa-solid fa-scroll"></i> Questsystem
             </div>
-            <div class="nav-tab" onclick="showSection('tracker')">
+            <div class="nav-tab" onclick="showSection('tracker')" id="navTracker">
                 <i class="fa-solid fa-chart-pie"></i> Tracker System
             </div>
-            <div class="nav-tab" onclick="showSection('scoreboards')">
+            <div class="nav-tab" onclick="showSection('scoreboards')" id="navScoreboards">
                 <i class="fa-solid fa-trophy"></i> Scoreboards
             </div>
         </div>
 
         <!-- CONTENT -->
-        <div class="content-area">
-
-            <!-- QUESTS SECTION -->
-            <div id="quests" class="section active">
-                
-                <div class="info-block searchable">
-                    <div class="block-header">
-                        <i class="fa-solid fa-info-circle" style="color:var(--c-fire)"></i>
-                        <h3 class="block-title">Funktionsweise & Belohnungen</h3>
-                    </div>
-                    <div class="block-body">
-                        <p>Unser System erfasst automatisch deine Aktionen im Spiel. Du musst keine Quests manuell annehmen – erledige einfach die Aufgaben!</p>
-                        <ul class="feature-list">
-                            <li><strong>Farmen:</strong> Alles was du selbst oder mit Dinos abbaust.</li>
-                            <li><strong>Kampf:</strong> Aktive Kills (Spieler oder Dino).</li>
-                            <li><strong>Zähmen:</strong> Erfolgreiche Tames werden gezählt.</li>
-                            <li><strong>Handwerk:</strong> Hergestellte Items (Inventar & Strukturen).</li>
-                        </ul>
-                        <p><em>Hinweis: Wenn eine Quest Aufgaben enthält, die du in der Vergangenheit bereits erledigt hast (z.B. "Erreiche Level 50"), wird sie automatisch als fertig markiert.</em></p>
-                        
-                        <div class="cmd-box">
-                            <strong>Belohnung abholen:</strong><br>
-                            Tippe im Chat: <code>/belohnungen</code>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="info-block searchable">
-                    <div class="block-header">
-                        <i class="fa-solid fa-calendar-check" style="color:var(--c-fire)"></i>
-                        <h3 class="block-title">Quest-Typen</h3>
-                    </div>
-                    <div class="block-body">
-                        <div class="quest-grid">
-                            <div class="quest-card">
-                                <div class="quest-head" style="color: #4CAF50;">Daily Quests (Täglich)</div>
-                                <p style="font-size:0.9rem; color:#ccc;">Reset alle 24 Stunden.</p>
-                                <p style="font-size:0.9rem; font-weight:bold; margin-bottom:5px;">Mögliche Belohnungen:</p>
-                                <ul class="reward-list">
-                                    <li>Lebensversicherungs-Punkte</li>
-                                    <li>Wyvern Milch (mit Glück)</li>
-                                    <li>Lootcrates</li>
-                                    <li>Erfahrungspunkte (XP)</li>
-                                </ul>
-                            </div>
-                            <div class="quest-card">
-                                <div class="quest-head" style="color: #9C27B0;">Weekly Quests (Wöchentlich)</div>
-                                <p style="font-size:0.9rem; color:#ccc;">Reset alle 7 Tage.</p>
-                                <p style="font-size:0.9rem; font-weight:bold; margin-bottom:5px;">Mögliche Belohnungen:</p>
-                                <ul class="reward-list">
-                                    <li>Höhere Mengen an Punkten</li>
-                                    <li>Seltenere Items</li>
-                                    <li>Hochwertige Lootcrates</li>
-                                    <li>Große XP Pakete</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="info-block searchable">
-                    <div class="block-header">
-                        <i class="fa-solid fa-bars-progress" style="color:var(--c-fire)"></i>
-                        <h3 class="block-title">Interface Vorschau</h3>
-                    </div>
-                    <div class="block-body">
-                        <p>Unter <strong>"Active Quests"</strong> siehst du deinen aktuellen Fortschritt. Unter <strong>"Completed Quests"</strong> findest du deine Erfolge.</p>
-                        <img src="https://i.postimg.cc/bJ1MnqHh/Bild-2024-05-17-163408358.png" alt="Quest Interface Overview" title="Klicken zum Vergrößern" onclick="openImage(this.src)">
-                    </div>
-                </div>
-
-                <div class="quest-grid">
-                    <div class="info-block searchable">
-                        <div class="block-header"><h3 class="block-title">Laufende Quests</h3></div>
-                        <div class="block-body" style="padding:10px;">
-                            <img src="https://i.postimg.cc/HWctzbns/Bild-2024-05-17-165434932.png" onclick="openImage(this.src)">
-                        </div>
-                    </div>
-                    <div class="info-block searchable">
-                        <div class="block-header"><h3 class="block-title">Abgeschlossene Quests</h3></div>
-                        <div class="block-body" style="padding:10px;">
-                            <img src="https://i.postimg.cc/cLXY0JCb/Bild-2024-05-17-165503846.png" onclick="openImage(this.src)">
-                        </div>
-                    </div>
-                </div>
-                
-                <div style="height: 50px;"></div>
-
-            </div>
-
-            <!-- TRACKER SECTION -->
-            <div id="tracker" class="section">
-                
-                <div class="info-block searchable">
-                    <div class="block-header">
-                        <i class="fa-solid fa-eye" style="color:var(--c-fire)"></i>
-                        <h3 class="block-title">Was wird getrackt?</h3>
-                    </div>
-                    <div class="block-body">
-                        <p>Unser Tracker läuft im Hintergrund mit und speichert deinen Fortschritt clusterweit.</p>
-                        <div class="quest-grid">
-                            <div>
-                                <h4 style="color:#fff; margin-bottom:10px; font-family:var(--f-head);">Aktivitäten</h4>
-                                <ul class="feature-list">
-                                    <li>Gesammelte Ressourcen (Holz, Stein, etc.)</li>
-                                    <li>Hergestellte Gegenstände</li>
-                                    <li>Absolvierte Quests (Daily/Weekly)</li>
-                                    <li>Teilnahme an Server Events</li>
-                                </ul>
-                            </div>
-                            <div>
-                                <h4 style="color:#fff; margin-bottom:10px; font-family:var(--f-head);">Kampf & Zucht</h4>
-                                <ul class="feature-list">
-                                    <li>Gezähmte Kreaturen</li>
-                                    <li>Getötete wilde Dinos</li>
-                                    <li>Getötete Bosse</li>
-                                    <li>Tode (Spieler)</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="info-block searchable">
-                    <div class="block-header">
-                        <i class="fa-solid fa-images" style="color:var(--c-fire)"></i>
-                        <h3 class="block-title">Statistik Ansicht</h3>
-                    </div>
-                    <div class="block-body">
-                        <p>Detaillierte Einsicht in deine Farm-Ergebnisse und Kampf-Statistiken.</p>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                            <img src="https://i.postimg.cc/xd373hfm/Bild-2024-05-17-171303694.png" onclick="openImage(this.src)">
-                            <img src="https://i.postimg.cc/05hsjgb5/Bild-2024-05-17-171327220.png" onclick="openImage(this.src)">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="info-block searchable">
-                    <div class="block-header">
-                        <i class="fa-solid fa-user-tag" style="color:var(--c-fire)"></i>
-                        <h3 class="block-title">Profil Übersicht</h3>
-                    </div>
-                    <div class="block-body">
-                        <img src="https://i.postimg.cc/CLmP6kkZ/Bild-2024-05-17-171514409.png" onclick="openImage(this.src)" style="width:100%">
-                    </div>
-                </div>
-                
-                <div style="height: 50px;"></div>
-
-            </div>
-
-            <!-- SCOREBOARDS SECTION -->
-            <div id="scoreboards" class="section">
-                
-                <div class="info-block searchable">
-                    <div class="block-header">
-                        <i class="fa-solid fa-user" style="color:var(--c-fire)"></i>
-                        <h3 class="block-title">Spieler Scoreboard</h3>
-                    </div>
-                    <div class="block-body">
-                        <p>Hier misst du dich mit jedem anderen Spieler auf dem Cluster. Die Daten werden über alle Server hinweg synchronisiert.</p>
-                        <p><strong>Kategorien:</strong> Tode, Gezähmte Tiere, WildDino Kills, Gesamtspielzeit.</p>
-                        <img src="https://i.postimg.cc/Fs7r6scZ/Bild-2024-05-17-170300086.png" onclick="openImage(this.src)">
-                    </div>
-                </div>
-
-                <div class="info-block searchable">
-                    <div class="block-header">
-                        <i class="fa-solid fa-users" style="color:var(--c-fire)"></i>
-                        <h3 class="block-title">Stamm Scoreboard</h3>
-                    </div>
-                    <div class="block-body">
-                        <p>Hier werden die Leistungen aller Mitglieder eines Stammes zusammengezählt. Welcher Tribe beherrscht den Server?</p>
-                        <img src="https://i.postimg.cc/vB7bGDb6/Bild-2024-05-17-160116864.png" onclick="openImage(this.src)">
-                    </div>
-                </div>
-                
-                <div style="height: 50px;"></div>
-
-            </div>
-
+        <div class="content-area" id="contentContainer">
+             <!-- Content generated by JS -->
         </div>
+
     </div>
 
     <!-- Image Modal -->
@@ -541,51 +417,312 @@
     </div>
 
     <script>
-        // DATA
-        const questItems = [
-            // Dummy array for search logic logic reference if needed, but content is static in HTML above
-        ];
+        // =========================================================================
+        // 1. DATENBANK (ÜBERSETZUNGEN)
+        // =========================================================================
+        const translations = {
+            subtitle: { de: "Quests, Tracker, Statistiken & Scoreboards", en: "Quests, Tracker, Statistics & Scoreboards", es: "Misiones, Rastreador y Estadísticas", fr: "Quêtes, Suivi et Statistiques" },
+            search: { de: "Suche (z.B. Daily, Kills)...", en: "Search (e.g., Daily, Kills)...", es: "Buscar...", fr: "Rechercher..." },
+            
+            nav: {
+                quests: { de: "Questsystem", en: "Quest System", es: "Sistema de Misiones", fr: "Système de Quêtes" },
+                tracker: { de: "Tracker System", en: "Tracker System", es: "Sistema de Rastreo", fr: "Système de Suivi" },
+                scoreboards: { de: "Scoreboards", en: "Scoreboards", es: "Tablas de Puntuación", fr: "Tableaux des Scores" }
+            },
 
-        // Navigation Logic
-        function showSection(sectionId) {
-            // Hide all sections
-            document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
+            sections: {
+                quests: [
+                    {
+                        title: { de: "Funktionsweise & Belohnungen", en: "How it Works & Rewards", es: "Cómo Funciona y Recompensas", fr: "Fonctionnement et Récompenses" },
+                        icon: "fa-info-circle",
+                        type: "info",
+                        content: {
+                            de: "<p>Unser System erfasst automatisch deine Aktionen im Spiel. Du musst keine Quests manuell annehmen – erledige einfach die Aufgaben!</p>",
+                            en: "<p>Our system automatically tracks your actions in-game. You don't need to accept quests manually – just complete the tasks!</p>",
+                            es: "<p>Nuestro sistema rastrea automáticamente tus acciones. No necesitas aceptar misiones manualmente.</p>",
+                            fr: "<p>Notre système suit automatiquement vos actions en jeu. Pas besoin d'accepter les quêtes manuellement.</p>"
+                        },
+                        list: {
+                            de: ["<strong>Farmen:</strong> Alles was du selbst oder mit Dinos abbaust.", "<strong>Kampf:</strong> Aktive Kills (Spieler oder Dino).", "<strong>Zähmen:</strong> Erfolgreiche Tames werden gezählt.", "<strong>Handwerk:</strong> Hergestellte Items (Inventar & Strukturen)."],
+                            en: ["<strong>Farming:</strong> Everything you harvest yourself or with dinos.", "<strong>Combat:</strong> Active kills (Player or Dino).", "<strong>Taming:</strong> Successful tames are counted.", "<strong>Crafting:</strong> Crafted items (Inventory & Structures)."],
+                            es: ["<strong>Farmeo:</strong> Cosecha propia o con dinos.", "<strong>Combate:</strong> Bajas activas.", "<strong>Tameo:</strong> Tameos exitosos.", "<strong>Fabricación:</strong> Items creados."],
+                            fr: ["<strong>Récolte :</strong> Tout ce que vous récoltez.", "<strong>Combat :</strong> Éliminations actives.", "<strong>Taming :</strong> Apprivoisements réussis.", "<strong>Artisanat :</strong> Objets fabriqués."]
+                        },
+                        note: {
+                            de: "Hinweis: Wenn eine Quest Aufgaben enthält, die du in der Vergangenheit bereits erledigt hast (z.B. 'Erreiche Level 50'), wird sie automatisch als fertig markiert.",
+                            en: "Note: If a quest includes tasks you completed in the past (e.g. 'Reach Level 50'), it will be marked as done automatically.",
+                            es: "Nota: Tareas pasadas (ej. Nivel 50) se marcan automáticamente.",
+                            fr: "Note : Les tâches passées (ex. Niveau 50) sont marquées automatiquement."
+                        },
+                        cmd: {
+                            title: { de: "Belohnung abholen:", en: "Claim Rewards:", es: "Reclamar Recompensas:", fr: "Réclamer Récompenses :" },
+                            text: { de: "Tippe im Chat: <code>/belohnungen</code>", en: "Type in chat: <code>/rewards</code>", es: "Escribe: <code>/recompensas</code>", fr: "Tapez : <code>/recompenses</code>" }
+                        }
+                    },
+                    {
+                        title: { de: "Quest-Typen", en: "Quest Types", es: "Tipos de Misiones", fr: "Types de Quêtes" },
+                        icon: "fa-calendar-check",
+                        type: "questGrid",
+                        cards: [
+                            {
+                                head: { de: "Daily Quests (Täglich)", en: "Daily Quests", es: "Misiones Diarias", fr: "Quêtes Quotidiennes" },
+                                sub: { de: "Reset alle 24 Stunden.", en: "Reset every 24 hours.", es: "Reinicio cada 24h.", fr: "Reset toutes les 24h." },
+                                rewards_title: { de: "Mögliche Belohnungen:", en: "Possible Rewards:", es: "Recompensas Posibles:", fr: "Récompenses Possibles :" },
+                                rewards: {
+                                    de: ["Lebensversicherungs-Punkte", "Wyvern Milch (mit Glück)", "Lootcrates", "Erfahrungspunkte (XP)"],
+                                    en: ["Life Insurance Points", "Wyvern Milk (with luck)", "Lootcrates", "Experience Points (XP)"],
+                                    es: ["Puntos de Seguro de Vida", "Leche de Wyvern", "Cajas de Botín", "Experiencia (XP)"],
+                                    fr: ["Points d'Assurance Vie", "Lait de Wyverne", "Lootcrates", "Points d'Expérience (XP)"]
+                                },
+                                color: "#4CAF50"
+                            },
+                            {
+                                head: { de: "Weekly Quests (Wöchentlich)", en: "Weekly Quests", es: "Misiones Semanales", fr: "Quêtes Hebdomadaires" },
+                                sub: { de: "Reset alle 7 Tage.", en: "Reset every 7 days.", es: "Reinicio cada 7 días.", fr: "Reset tous les 7 jours." },
+                                rewards_title: { de: "Mögliche Belohnungen:", en: "Possible Rewards:", es: "Recompensas Posibles:", fr: "Récompenses Possibles :" },
+                                rewards: {
+                                    de: ["Höhere Mengen an Punkten", "Seltenere Items", "Hochwertige Lootcrates", "Große XP Pakete"],
+                                    en: ["Higher amount of points", "Rarer items", "High-quality Lootcrates", "Large XP Packs"],
+                                    es: ["Más puntos", "Items raros", "Cajas de botín alta calidad", "Paquetes XP grandes"],
+                                    fr: ["Plus de points", "Objets rares", "Lootcrates haute qualité", "Gros packs XP"]
+                                },
+                                color: "#9C27B0"
+                            }
+                        ]
+                    },
+                    {
+                        title: { de: "Interface Vorschau", en: "Interface Preview", es: "Vista Previa Interfaz", fr: "Aperçu de l'Interface" },
+                        icon: "fa-bars-progress",
+                        type: "info",
+                        content: {
+                            de: "<p>Unter <strong>'Active Quests'</strong> siehst du deinen aktuellen Fortschritt. Unter <strong>'Completed Quests'</strong> findest du deine Erfolge.</p>",
+                            en: "<p>Under <strong>'Active Quests'</strong> you see your current progress. Under <strong>'Completed Quests'</strong> you find your achievements.</p>",
+                            es: "<p>En <strong>'Active Quests'</strong> ves tu progreso. En <strong>'Completed Quests'</strong> tus logros.</p>",
+                            fr: "<p>Sous <strong>'Active Quests'</strong> voyez vos progrès. Sous <strong>'Completed Quests'</strong> vos succès.</p>"
+                        },
+                        img: "https://i.postimg.cc/bJ1MnqHh/Bild-2024-05-17-163408358.png"
+                    },
+                    {
+                        type: "grid",
+                        items: [
+                            { title: { de: "Laufende Quests", en: "Active Quests", es: "Misiones Activas", fr: "Quêtes Actives" }, img: "https://i.postimg.cc/HWctzbns/Bild-2024-05-17-165434932.png" },
+                            { title: { de: "Abgeschlossene Quests", en: "Completed Quests", es: "Misiones Completadas", fr: "Quêtes Terminées" }, img: "https://i.postimg.cc/cLXY0JCb/Bild-2024-05-17-165503846.png" }
+                        ]
+                    }
+                ],
+                tracker: [
+                    {
+                        title: { de: "Was wird getrackt?", en: "What is tracked?", es: "¿Qué se rastrea?", fr: "Qu'est-ce qui est suivi ?" },
+                        icon: "fa-eye",
+                        type: "questGrid",
+                        content: { de: "Unser Tracker läuft im Hintergrund mit und speichert deinen Fortschritt clusterweit.", en: "Our tracker runs in the background and saves progress cluster-wide.", es: "Nuestro rastreador guarda el progreso en todo el clúster.", fr: "Notre traqueur sauvegarde la progression sur tout le cluster." },
+                        cards: [
+                            {
+                                head: { de: "Aktivitäten", en: "Activities", es: "Actividades", fr: "Activités" },
+                                rewards: {
+                                    de: ["Gesammelte Ressourcen", "Hergestellte Gegenstände", "Absolvierte Quests", "Teilnahme an Server Events"],
+                                    en: ["Harvested Resources", "Crafted Items", "Completed Quests", "Event Participation"],
+                                    es: ["Recursos recolectados", "Items fabricados", "Misiones completadas", "Participación en eventos"],
+                                    fr: ["Ressources récoltées", "Objets fabriqués", "Quêtes terminées", "Participation événements"]
+                                },
+                                simpleList: true
+                            },
+                            {
+                                head: { de: "Kampf & Zucht", en: "Combat & Breeding", es: "Combate y Crianza", fr: "Combat et Élevage" },
+                                rewards: {
+                                    de: ["Gezähmte Kreaturen", "Getötete wilde Dinos", "Getötete Bosse", "Tode (Spieler)"],
+                                    en: ["Tamed Creatures", "Killed Wild Dinos", "Killed Bosses", "Deaths (Player)"],
+                                    es: ["Criaturas tameadas", "Dinos salvajes matados", "Jefes matados", "Muertes (Jugador)"],
+                                    fr: ["Créatures apprivoisées", "Dinos sauvages tués", "Boss tués", "Morts (Joueur)"]
+                                },
+                                simpleList: true
+                            }
+                        ]
+                    },
+                    {
+                        title: { de: "Statistik Ansicht", en: "Statistics View", es: "Vista de Estadísticas", fr: "Vue Statistiques" },
+                        icon: "fa-images",
+                        type: "info",
+                        content: { de: "<p>Detaillierte Einsicht in deine Farm-Ergebnisse und Kampf-Statistiken.</p>", en: "<p>Detailed view of your farming results and combat statistics.</p>", es: "<p>Vista detallada de resultados de farmeo y combate.</p>", fr: "<p>Vue détaillée des résultats de farm et combat.</p>" },
+                        gridImages: ["https://i.postimg.cc/xd373hfm/Bild-2024-05-17-171303694.png", "https://i.postimg.cc/05hsjgb5/Bild-2024-05-17-171327220.png"]
+                    },
+                    {
+                        title: { de: "Profil Übersicht", en: "Profile Overview", es: "Resumen de Perfil", fr: "Aperçu du Profil" },
+                        icon: "fa-user-tag",
+                        type: "info",
+                        img: "https://i.postimg.cc/CLmP6kkZ/Bild-2024-05-17-171514409.png"
+                    }
+                ],
+                scoreboards: [
+                    {
+                        title: { de: "Spieler Scoreboard", en: "Player Scoreboard", es: "Tabla de Jugadores", fr: "Tableau des Joueurs" },
+                        icon: "fa-user",
+                        type: "info",
+                        content: { 
+                            de: "<p>Hier misst du dich mit jedem anderen Spieler auf dem Cluster. Die Daten werden über alle Server hinweg synchronisiert.</p><p><strong>Kategorien:</strong> Tode, Gezähmte Tiere, WildDino Kills, Gesamtspielzeit.</p>",
+                            en: "<p>Measure yourself against every other player on the cluster. Data is synced across all servers.</p><p><strong>Categories:</strong> Deaths, Tamed Creatures, Wild Dino Kills, Total Playtime.</p>",
+                            es: "<p>Compite con otros jugadores. Datos sincronizados.</p><p><strong>Categorías:</strong> Muertes, Tameos, Kills, Tiempo de Juego.</p>",
+                            fr: "<p>Mesurez-vous aux autres joueurs. Données synchronisées.</p><p><strong>Catégories :</strong> Morts, Tames, Kills, Temps de Jeu.</p>"
+                        },
+                        img: "https://i.postimg.cc/Fs7r6scZ/Bild-2024-05-17-170300086.png"
+                    },
+                    {
+                        title: { de: "Stamm Scoreboard", en: "Tribe Scoreboard", es: "Tabla de Tribus", fr: "Tableau des Tribus" },
+                        icon: "fa-users",
+                        type: "info",
+                        content: {
+                            de: "<p>Hier werden die Leistungen aller Mitglieder eines Stammes zusammengezählt. Welcher Tribe beherrscht den Server?</p>",
+                            en: "<p>The achievements of all tribe members are summed up here. Which tribe rules the server?</p>",
+                            es: "<p>Logros de la tribu sumados. ¿Qué tribu domina el servidor?</p>",
+                            fr: "<p>Les succès de tous les membres sont additionnés. Quelle tribu domine le serveur ?</p>"
+                        },
+                        img: "https://i.postimg.cc/vB7bGDb6/Bild-2024-05-17-160116864.png"
+                    }
+                ]
+            }
+        };
+
+        // =========================================================================
+        // 2. LOGIC
+        // =========================================================================
+        let currentLang = 'de';
+        let currentSection = 'quests';
+
+        function setLang(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('btn-' + lang).classList.add('active');
             
-            // Show active
-            document.getElementById(sectionId).classList.add('active');
-            
-            // Highlight Button
-            const btns = document.querySelectorAll('.nav-tab');
-            btns.forEach(btn => {
-                if(btn.getAttribute('onclick').includes(sectionId)) {
-                    btn.classList.add('active');
-                }
-            });
+            // Render UI
+            renderUI();
         }
 
-        // Search Logic
-        const searchInput = document.getElementById('searchInput');
-        const blocks = document.querySelectorAll('.searchable');
+        function showSection(section) {
+            currentSection = section;
+            renderUI();
+        }
 
-        searchInput.addEventListener('input', (e) => {
-            const term = e.target.value.toLowerCase();
+        function renderUI() {
+            // Statics
+            document.getElementById('uiSubtitle').innerText = translations.subtitle[currentLang];
+            document.getElementById('searchInput').placeholder = translations.search[currentLang];
             
-            blocks.forEach(block => {
-                const text = block.innerText.toLowerCase();
-                const parentSection = block.closest('.section');
-                
-                // Only filter if we want to search across all or current?
-                // Visual feedback: search in current tab
-                if(parentSection.classList.contains('active')) {
-                    if(text.includes(term)) {
-                        block.style.display = 'block';
-                    } else {
-                        block.style.display = 'none';
-                    }
-                }
+            // Tabs
+            const tabs = ['quests', 'tracker', 'scoreboards'];
+            const icons = ['fa-scroll', 'fa-chart-pie', 'fa-trophy'];
+            
+            // Active Tab Class
+            document.querySelectorAll('.nav-tab').forEach((el, index) => {
+                el.innerHTML = `<i class="fa-solid ${icons[index]}"></i> ${translations.nav[tabs[index]][currentLang]}`;
+                el.classList.toggle('active', tabs[index] === currentSection);
             });
-        });
+
+            // Content
+            const container = document.getElementById('contentContainer');
+            container.innerHTML = '';
+            
+            const data = translations.sections[currentSection];
+            const searchVal = document.getElementById('searchInput').value.toLowerCase();
+
+            data.forEach(block => {
+                // Search Filter - Fixed access to properties
+                const title = block.title ? block.title[currentLang] : "";
+                const contentText = block.content && block.content[currentLang] ? block.content[currentLang] : "";
+                const listText = block.list ? block.list[currentLang].join(" ") : "";
+                // For grids/cards
+                let extraText = "";
+                if(block.cards) extraText += block.cards.map(c => c.head[currentLang]).join(" ");
+                if(block.items) extraText += block.items.map(i => i.title[currentLang]).join(" ");
+
+                if (searchVal && 
+                    !title.toLowerCase().includes(searchVal) && 
+                    !contentText.toLowerCase().includes(searchVal) &&
+                    !listText.toLowerCase().includes(searchVal) &&
+                    !extraText.toLowerCase().includes(searchVal)
+                   ) return;
+
+                const div = document.createElement('div');
+                div.className = 'info-block searchable';
+                
+                // Header - Only render if title exists
+                let html = "";
+                if(title) {
+                    html += `
+                    <div class="block-header">
+                        ${block.icon ? `<i class="fa-solid ${block.icon}" style="color:var(--c-fire)"></i>` : ''}
+                        <h3 class="block-title">${title}</h3>
+                    </div>`;
+                }
+                
+                html += `<div class="block-body">`;
+
+                // Content Type Logic
+                if (block.type === 'info') {
+                    if (block.content) html += block.content[currentLang];
+                    if (block.list) {
+                        html += `<ul class="feature-list">` + block.list[currentLang].map(li => `<li>${li}</li>`).join('') + `</ul>`;
+                    }
+                    if (block.note) {
+                         html += `<p><em>${block.note[currentLang]}</em></p>`;
+                    }
+                    if (block.cmd) {
+                        html += `<div class="cmd-box"><strong>${block.cmd.title[currentLang]}</strong><br>${block.cmd.text[currentLang]}</div>`;
+                    }
+                    if (block.img) {
+                        html += `<img src="${block.img}" onclick="openImage(this.src)" title="Klicken zum Vergrößern">`;
+                    }
+                    if (block.gridImages) {
+                         html += `<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                                    ${block.gridImages.map(src => `<img src="${src}" onclick="openImage(this.src)">`).join('')}
+                                  </div>`;
+                    }
+                } 
+                else if (block.type === 'questGrid') {
+                    if (block.content) html += `<p>${block.content[currentLang]}</p>`;
+                    html += `<div class="quest-grid">`;
+                    block.cards.forEach(card => {
+                        let rewardsHTML = "";
+                        if(card.rewards) {
+                            rewardsHTML = `<ul class="reward-list">` + card.rewards[currentLang].map(r => `<li>${r}</li>`).join('') + `</ul>`;
+                        }
+                        
+                        html += `
+                        <div class="quest-card">
+                            <div class="quest-head" style="color: ${card.color || '#fff'};">${card.head[currentLang]}</div>
+                            ${card.sub ? `<p style="font-size:0.9rem; color:#ccc;">${card.sub[currentLang]}</p>` : ''}
+                            ${card.rewards_title ? `<p style="font-size:0.9rem; font-weight:bold; margin-bottom:5px;">${card.rewards_title[currentLang]}</p>` : ''}
+                            ${rewardsHTML}
+                        </div>`;
+                    });
+                    html += `</div>`;
+                }
+                else if (block.type === 'grid') {
+                     html += `<div class="quest-grid">`;
+                     block.items.forEach(item => {
+                         html += `
+                         <div class="info-block" style="margin-bottom:0">
+                            <div class="block-header"><h3 class="block-title" style="font-size:1rem">${item.title[currentLang]}</h3></div>
+                            <div class="block-body" style="padding:10px;">
+                                <img src="${item.img}" onclick="openImage(this.src)" style="margin-top:0">
+                            </div>
+                         </div>`;
+                     });
+                     html += `</div>`;
+                }
+
+                html += `</div>`; // End block-body
+                div.innerHTML = html;
+                container.appendChild(div);
+            });
+            
+            // Spacer
+            const spacer = document.createElement('div');
+            spacer.style.height = "50px";
+            container.appendChild(spacer);
+        }
+
+        // Search Event
+        document.getElementById('searchInput').addEventListener('input', renderUI);
 
         // Image Modal
         const modal = document.getElementById('imgModal');
@@ -604,6 +741,10 @@
             if(e.target === modal) closeModal();
         });
 
+        // Init
+        window.onload = function() {
+            setLang('de');
+        };
     </script>
 </body>
 </html>
