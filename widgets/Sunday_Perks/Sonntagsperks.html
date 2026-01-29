@@ -80,6 +80,7 @@
             align-items: center;
             flex-shrink: 0;
             background-image: radial-gradient(circle at 50% -100%, rgba(255,51,0,0.15) 0%, transparent 60%);
+            position: relative;
         }
 
         .header-content {
@@ -109,6 +110,37 @@
             margin-top: 5px;
             letter-spacing: 1px;
             text-transform: uppercase;
+        }
+
+        /* FLAGGEN SWITCHER */
+        .lang-switch {
+            position: absolute;
+            top: 15px;
+            right: 80px; /* Platz neben Icon */
+            display: flex;
+            gap: 5px;
+        }
+        .lang-btn {
+            width: 30px; height: 20px;
+            cursor: pointer;
+            border-radius: 3px;
+            border: 1px solid #fff;
+            opacity: 0.5;
+            transition: transform 0.2s, opacity 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+            padding: 0;
+            display: block;
+        }
+        .lang-btn:hover, .lang-btn.active {
+            opacity: 1; transform: scale(1.15);
+            border-color: var(--c-fire);
+            z-index: 10;
+        }
+
+        /* Header Icon */
+        .header-icon {
+            font-size: 2rem; 
+            color: var(--c-fire);
         }
 
         /* --- CONTENT AREA --- */
@@ -261,6 +293,7 @@
         @media (max-width: 900px) { 
             .widget-container { width: 100%; height: 100vh; border: none; border-radius: 0; }
             .header { flex-direction: column; gap: 15px; text-align: center; }
+            .lang-switch { position: static; margin-bottom: 5px; }
             .perks-grid { grid-template-columns: 1fr; }
             .info-block { padding: 20px; }
         }
@@ -274,11 +307,38 @@
         <!-- HEADER -->
         <div class="header">
             <div class="header-content">
-                <h1 class="title">IOP Sonntag Perks</h1>
-                <span class="subtitle">Wöchentliches Bonus-System</span>
+                <h1 class="title" id="uiTitle">IOP Sonntag Perks</h1>
+                <span class="subtitle" id="uiSubtitle">Wöchentliches Bonus-System</span>
             </div>
-            <!-- Optional: Clock or Icon -->
-            <i class="fa-solid fa-calendar-check" style="font-size: 2rem; color: var(--c-fire);"></i>
+            
+            <!-- 4 Flaggen -->
+            <div class="lang-switch">
+                <svg class="lang-btn active" id="btn-de" onclick="setLang('de')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 5 3">
+                    <rect width="5" height="3" fill="#000"/><rect width="5" height="2" y="1" fill="#D00"/><rect width="5" height="1" y="2" fill="#FFCE00"/>
+                </svg>
+                <svg class="lang-btn" id="btn-en" onclick="setLang('en')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 30">
+                    <clipPath id="s"><path d="M0,0 v30 h60 v-30 z"/></clipPath>
+                    <clipPath id="t"><path d="M30,15 h30 v15 z v15 h-30 z h-30 v-15 z v-15 h30 z"/></clipPath>
+                    <g clip-path="url(#s)">
+                        <path d="M0,0 v30 h60 v-30 z" fill="#012169"/>
+                        <path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/>
+                        <path d="M0,0 L60,30 M60,0 L0,30" clip-path="url(#t)" stroke="#C8102E" stroke-width="4"/>
+                        <path d="M30,0 v30 M0,15 h60" stroke="#fff" stroke-width="10"/>
+                        <path d="M30,0 v30 M0,15 h60" stroke="#C8102E" stroke-width="6"/>
+                    </g>
+                </svg>
+                <svg class="lang-btn" id="btn-es" onclick="setLang('es')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 750 500">
+                    <rect width="750" height="500" fill="#AA151B"/>
+                    <rect width="750" height="250" y="125" fill="#F1BF00"/>
+                </svg>
+                <svg class="lang-btn" id="btn-fr" onclick="setLang('fr')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600">
+                    <rect width="900" height="600" fill="#ED2939"/>
+                    <rect width="600" height="600" fill="#fff"/>
+                    <rect width="300" height="600" fill="#002395"/>
+                </svg>
+            </div>
+
+            <i class="fa-solid fa-calendar-check header-icon"></i>
         </div>
 
         <!-- CONTENT -->
@@ -286,8 +346,8 @@
 
             <!-- INFO SECTION -->
             <div class="info-block">
-                <h3><i class="fa-solid fa-gift"></i> Wähle deinen Vorteil!</h3>
-                <p>
+                <h3 id="uiInfoTitle"><i class="fa-solid fa-gift"></i> Wähle deinen Vorteil!</h3>
+                <p id="uiInfoText">
                     Wir dachten uns, wir machen etwas für euch, das euch die Möglichkeit gibt, unter der Woche verlorene Zeit aufzuholen.
                     <br>
                     Ihr habt nun jeden <strong>Sonntag ab 00:00 Uhr</strong> zusätzlich zum Wochenend-Boost oder Support-Rängen die Möglichkeit, euch für ein Player Perk eurer Wahl zu entscheiden, das ihr den ganzen Sonntag nutzen könnt. 
@@ -299,122 +359,142 @@
             </div>
 
             <!-- PERKS GRID -->
-            <div class="perks-grid">
-                
-                <div class="perk-card">
-                    <div class="perk-icon-wrapper">
-                        <img src="https://github.com/iophantonie/IOPWebsiteWidgets/blob/main/widgets/Sunday_Perks/Perk_Gewicht.png?raw=true" alt="Weight" class="perk-img">
-                    </div>
-                    <div class="perk-content">
-                        <h4 class="perk-title">Gewichts Boost</h4>
-                        <div class="perk-desc">Erhöht deine maximale Traglast.</div>
-                        <div class="perk-value">+ 25%</div>
-                    </div>
-                </div>
-
-                <div class="perk-card">
-                    <div class="perk-icon-wrapper">
-                        <img src="https://github.com/iophantonie/IOPWebsiteWidgets/blob/main/widgets/Sunday_Perks/Perk_Taming.png?raw=true" alt="Taming" class="perk-img">
-                    </div>
-                    <div class="perk-content">
-                        <h4 class="perk-title">Taming Boost</h4>
-                        <div class="perk-desc">Beschleunigt das Zähmen.</div>
-                        <div class="perk-value">+ 25%</div>
-                    </div>
-                </div>
-
-                <div class="perk-card">
-                    <div class="perk-icon-wrapper">
-                        <img src="https://github.com/iophantonie/IOPWebsiteWidgets/blob/main/widgets/Sunday_Perks/Perk_XP.png?raw=true" alt="XP" class="perk-img">
-                    </div>
-                    <div class="perk-content">
-                        <h4 class="perk-title">XP Boost</h4>
-                        <div class="perk-desc">Steigert den Erfahrungsgewinn.</div>
-                        <div class="perk-value">+ 25%</div>
-                    </div>
-                </div>
-
-                <div class="perk-card">
-                    <div class="perk-icon-wrapper">
-                        <img src="https://github.com/iophantonie/IOPWebsiteWidgets/blob/main/widgets/Sunday_Perks/Perk_ressistenz.png?raw=true" alt="Resistance" class="perk-img">
-                    </div>
-                    <div class="perk-content">
-                        <h4 class="perk-title">Resistenz Boost</h4>
-                        <div class="perk-desc">Reduziert erlittenen Schaden.</div>
-                        <div class="perk-value">+ 25%</div>
-                    </div>
-                </div>
-
-                <div class="perk-card">
-                    <div class="perk-icon-wrapper">
-                        <img src="https://github.com/iophantonie/IOPWebsiteWidgets/blob/main/widgets/Sunday_Perks/Perk_HP.png?raw=true" alt="HP" class="perk-img">
-                    </div>
-                    <div class="perk-content">
-                        <h4 class="perk-title">HP Boost</h4>
-                        <div class="perk-desc">Erhöht maximale Gesundheit.</div>
-                        <div class="perk-value">+ 25%</div>
-                    </div>
-                </div>
-
-                <div class="perk-card">
-                    <div class="perk-icon-wrapper">
-                        <img src="https://github.com/iophantonie/IOPWebsiteWidgets/blob/main/widgets/Sunday_Perks/Perk_Stamina.png?raw=true" alt="Stamina" class="perk-img">
-                    </div>
-                    <div class="perk-content">
-                        <h4 class="perk-title">Stamina Boost</h4>
-                        <div class="perk-desc">Steigert deine Ausdauer.</div>
-                        <div class="perk-value">+ 25%</div>
-                    </div>
-                </div>
-
-                <div class="perk-card">
-                    <div class="perk-icon-wrapper">
-                        <img src="https://github.com/iophantonie/IOPWebsiteWidgets/blob/main/widgets/Sunday_Perks/Perk_MeleeDamage.webp?raw=true" alt="Melee" class="perk-img">
-                    </div>
-                    <div class="perk-content">
-                        <h4 class="perk-title">Melee DMG Boost</h4>
-                        <div class="perk-desc">Erhöht Nahkampfschaden.</div>
-                        <div class="perk-value">+ 25%</div>
-                    </div>
-                </div>
-
-                <div class="perk-card">
-                    <div class="perk-icon-wrapper">
-                        <img src="https://github.com/iophantonie/IOPWebsiteWidgets/blob/main/widgets/Sunday_Perks/Perk_NahrungundWasser.png?raw=true" alt="FoodWater" class="perk-img">
-                    </div>
-                    <div class="perk-content">
-                        <h4 class="perk-title">Food & Water</h4>
-                        <div class="perk-desc">Mehr Nahrung & Wasser.</div>
-                        <div class="perk-value">+ 25%</div>
-                    </div>
-                </div>
-
-                <div class="perk-card">
-                    <div class="perk-icon-wrapper">
-                        <img src="https://github.com/iophantonie/IOPWebsiteWidgets/blob/main/widgets/Sunday_Perks/Perk_Sauerstoff.png?raw=true" alt="Oxygen" class="perk-img">
-                    </div>
-                    <div class="perk-content">
-                        <h4 class="perk-title">Oxygen Boost</h4>
-                        <div class="perk-desc">Verlängert Atemzeit.</div>
-                        <div class="perk-value">+ 25%</div>
-                    </div>
-                </div>
-
-                <div class="perk-card">
-                    <div class="perk-icon-wrapper">
-                        <img src="https://github.com/iophantonie/IOPWebsiteWidgets/blob/main/widgets/Sunday_Perks/Perk_Farmen.png?raw=true" alt="Harvest" class="perk-img">
-                    </div>
-                    <div class="perk-content">
-                        <h4 class="perk-title">Harvest Boost</h4>
-                        <div class="perk-desc">Mehr Ressourcen sammeln.</div>
-                        <div class="perk-value">+ 25%</div>
-                    </div>
-                </div>
-
+            <div class="perks-grid" id="perksContainer">
+                <!-- Perks generated by JS -->
             </div>
 
         </div>
     </div>
 
+    <script>
+        // =========================================================================
+        // 1. DATENBANK (ÜBERSETZUNGEN)
+        // =========================================================================
+        const translations = {
+            title: { de: "IOP Sonntag Perks", en: "IOP Sunday Perks", es: "Ventajas de Domingo IOP", fr: "Avantages du Dimanche IOP" },
+            subtitle: { de: "Wöchentliches Bonus-System", en: "Weekly Bonus System", es: "Sistema de Bonos Semanal", fr: "Système de Bonus Hebdomadaire" },
+            
+            infoTitle: { de: '<i class="fa-solid fa-gift"></i> Wähle deinen Vorteil!', en: '<i class="fa-solid fa-gift"></i> Choose Your Perk!', es: '<i class="fa-solid fa-gift"></i> ¡Elige tu Ventaja!', fr: '<i class="fa-solid fa-gift"></i> Choisissez votre Avantage !' },
+            
+            infoText: { 
+                de: "Wir dachten uns, wir machen etwas für euch, das euch die Möglichkeit gibt, unter der Woche verlorene Zeit aufzuholen.<br>Ihr habt nun jeden <strong>Sonntag ab 00:00 Uhr</strong> zusätzlich zum Wochenend-Boost oder Support-Rängen die Möglichkeit, euch für ein Player Perk eurer Wahl zu entscheiden, das ihr den ganzen Sonntag nutzen könnt.<br>Ab <strong>Montag 00:00 Uhr</strong> verfallen diese wieder.<br><br><span class=\"info-highlight\" style=\"font-size:1.3rem;\">Die Perks sind Sonntags im Token Shop erhältlich und kosten euch nichts!</span>", 
+                en: "We wanted to give you a chance to catch up on time lost during the week.<br>Every <strong>Sunday from 00:00</strong>, in addition to weekend boosts, you can choose a Player Perk of your choice to use all Sunday.<br>They expire on <strong>Monday 00:00</strong>.<br><br><span class=\"info-highlight\" style=\"font-size:1.3rem;\">Perks are free in the Token Shop on Sundays!</span>", 
+                es: "Queremos ayudarte a recuperar tiempo.<br>Cada <strong>Domingo desde las 00:00</strong>, elige una Ventaja de Jugador para usar todo el día.<br>Caducan el <strong>Lunes 00:00</strong>.<br><br><span class=\"info-highlight\" style=\"font-size:1.3rem;\">¡Las ventajas son gratis en la Tienda de Fichas los domingos!</span>", 
+                fr: "Nous voulions vous donner une chance de rattraper le temps perdu.<br>Chaque <strong>Dimanche dès 00:00</strong>, choisissez un Avantage Joueur à utiliser toute la journée.<br>Ils expirent <strong>Lundi 00:00</strong>.<br><br><span class=\"info-highlight\" style=\"font-size:1.3rem;\">Les avantages sont gratuits dans la Boutique de Jetons le dimanche !</span>" 
+            },
+
+            perks: [
+                {
+                    img: "https://github.com/iophantonie/IOPWebsiteWidgets/blob/main/widgets/Sunday_Perks/Perk_Gewicht.png?raw=true",
+                    val: "+ 25%",
+                    title: { de: "Gewichts Boost", en: "Weight Boost", es: "Boost de Peso", fr: "Boost de Poids" },
+                    desc: { de: "Erhöht deine maximale Traglast.", en: "Increases your max carry weight.", es: "Aumenta tu peso máximo.", fr: "Augmente votre poids max." }
+                },
+                {
+                    img: "https://github.com/iophantonie/IOPWebsiteWidgets/blob/main/widgets/Sunday_Perks/Perk_Taming.png?raw=true",
+                    val: "+ 25%",
+                    title: { de: "Taming Boost", en: "Taming Boost", es: "Boost de Tameo", fr: "Boost de Taming" },
+                    desc: { de: "Beschleunigt das Zähmen.", en: "Speeds up taming.", es: "Acelera el tameo.", fr: "Accélère l'apprivoisement." }
+                },
+                {
+                    img: "https://github.com/iophantonie/IOPWebsiteWidgets/blob/main/widgets/Sunday_Perks/Perk_XP.png?raw=true",
+                    val: "+ 25%",
+                    title: { de: "XP Boost", en: "XP Boost", es: "Boost de XP", fr: "Boost d'XP" },
+                    desc: { de: "Steigert den Erfahrungsgewinn.", en: "Increases experience gain.", es: "Aumenta ganancia de XP.", fr: "Augmente le gain d'expérience." }
+                },
+                {
+                    img: "https://github.com/iophantonie/IOPWebsiteWidgets/blob/main/widgets/Sunday_Perks/Perk_ressistenz.png?raw=true",
+                    val: "+ 25%",
+                    title: { de: "Resistenz Boost", en: "Resistance Boost", es: "Boost de Resistencia", fr: "Boost de Résistance" },
+                    desc: { de: "Reduziert erlittenen Schaden.", en: "Reduces damage taken.", es: "Reduce daño recibido.", fr: "Réduit les dégâts subis." }
+                },
+                {
+                    img: "https://github.com/iophantonie/IOPWebsiteWidgets/blob/main/widgets/Sunday_Perks/Perk_HP.png?raw=true",
+                    val: "+ 25%",
+                    title: { de: "HP Boost", en: "HP Boost", es: "Boost de Salud", fr: "Boost de PV" },
+                    desc: { de: "Erhöht maximale Gesundheit.", en: "Increases max health.", es: "Aumenta salud máxima.", fr: "Augmente la santé max." }
+                },
+                {
+                    img: "https://github.com/iophantonie/IOPWebsiteWidgets/blob/main/widgets/Sunday_Perks/Perk_Stamina.png?raw=true",
+                    val: "+ 25%",
+                    title: { de: "Stamina Boost", en: "Stamina Boost", es: "Boost de Estamina", fr: "Boost d'Endurance" },
+                    desc: { de: "Steigert deine Ausdauer.", en: "Increases your stamina.", es: "Aumenta tu estamina.", fr: "Augmente votre endurance." }
+                },
+                {
+                    img: "https://github.com/iophantonie/IOPWebsiteWidgets/blob/main/widgets/Sunday_Perks/Perk_MeleeDamage.webp?raw=true",
+                    val: "+ 25%",
+                    title: { de: "Melee DMG Boost", en: "Melee DMG Boost", es: "Boost Daño Melee", fr: "Boost Dégâts Mêlée" },
+                    desc: { de: "Erhöht Nahkampfschaden.", en: "Increases melee damage.", es: "Aumenta daño cuerpo a cuerpo.", fr: "Augmente dégâts de mêlée." }
+                },
+                {
+                    img: "https://github.com/iophantonie/IOPWebsiteWidgets/blob/main/widgets/Sunday_Perks/Perk_NahrungundWasser.png?raw=true",
+                    val: "+ 25%",
+                    title: { de: "Food & Water", en: "Food & Water", es: "Comida y Agua", fr: "Nourriture & Eau" },
+                    desc: { de: "Mehr Nahrung & Wasser.", en: "More food & water.", es: "Más comida y agua.", fr: "Plus de nourriture & eau." }
+                },
+                {
+                    img: "https://github.com/iophantonie/IOPWebsiteWidgets/blob/main/widgets/Sunday_Perks/Perk_Sauerstoff.png?raw=true",
+                    val: "+ 25%",
+                    title: { de: "Oxygen Boost", en: "Oxygen Boost", es: "Boost de Oxígeno", fr: "Boost d'Oxygène" },
+                    desc: { de: "Verlängert Atemzeit.", en: "Increases breath time.", es: "Aumenta tiempo de respiración.", fr: "Augmente le temps de respiration." }
+                },
+                {
+                    img: "https://github.com/iophantonie/IOPWebsiteWidgets/blob/main/widgets/Sunday_Perks/Perk_Farmen.png?raw=true",
+                    val: "+ 25%",
+                    title: { de: "Harvest Boost", en: "Harvest Boost", es: "Boost de Cosecha", fr: "Boost de Récolte" },
+                    desc: { de: "Mehr Ressourcen sammeln.", en: "Gather more resources.", es: "Recolecta más recursos.", fr: "Récoltez plus de ressources." }
+                }
+            ]
+        };
+
+        // =========================================================================
+        // 2. LOGIC
+        // =========================================================================
+        let currentLang = 'de';
+
+        function setLang(lang) {
+            currentLang = lang;
+            
+            // Buttons
+            document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('btn-'+lang).classList.add('active');
+
+            // Static Text
+            document.getElementById('uiTitle').innerText = translations.title[lang];
+            document.getElementById('uiSubtitle').innerText = translations.subtitle[lang];
+            document.getElementById('uiInfoTitle').innerHTML = translations.infoTitle[lang];
+            document.getElementById('uiInfoText').innerHTML = translations.infoText[lang];
+
+            // Render Perks
+            renderPerks();
+        }
+
+        function renderPerks() {
+            const container = document.getElementById('perksContainer');
+            container.innerHTML = '';
+
+            translations.perks.forEach(perk => {
+                const card = document.createElement('div');
+                card.className = 'perk-card';
+                card.innerHTML = `
+                    <div class="perk-icon-wrapper">
+                        <img src="${perk.img}" alt="${perk.title.en}" class="perk-img">
+                    </div>
+                    <div class="perk-content">
+                        <h4 class="perk-title">${perk.title[currentLang]}</h4>
+                        <div class="perk-desc">${perk.desc[currentLang]}</div>
+                        <div class="perk-value">${perk.val}</div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Init
+        window.onload = function() {
+            setLang('de');
+        };
+
+    </script>
 </body>
 </html>
