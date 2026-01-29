@@ -17,7 +17,7 @@
             
             /* Boss Colors */
             --color-boss-primary: #D32F2F; /* Deep Red */
-            --color-boss-accent: #7C4DFF; /* Purple for "Mystic/Boss" feel */
+            --color-boss-accent: #7C4DFF; /* Purple */
             --color-boss-glow: rgba(211, 47, 47, 0.6);
             
             --font-main: sans-serif;
@@ -46,8 +46,8 @@
             border-radius: 8px; 
             border: 2px solid var(--color-boss-primary);
             box-shadow: 0 4px 30px rgba(0, 0, 0, 0.8);
-            width: 100%;
-            height: 100%;
+            width: 98%;
+            height: 95vh;
             display: flex;
             flex-direction: column;
             overflow: hidden;
@@ -57,16 +57,15 @@
         /* Header */
         .header {
             background: linear-gradient(135deg, rgba(50,0,0,0.9), rgba(30,0,30,0.9));
-            padding: 20px;
+            padding: 20px 25px;
             text-align: center;
             border-bottom: 2px solid var(--color-boss-primary);
             flex-shrink: 0;
             display: flex;
-            flex-direction: column;
+            justify-content: space-between;
             align-items: center;
-            gap: 5px;
             position: relative;
-            overflow: hidden;
+            overflow: visible; /* Für Flaggen */
         }
         
         .header::after {
@@ -75,6 +74,13 @@
             top: 0; left: 0; width: 100%; height: 100%;
             background: radial-gradient(circle at center, rgba(124, 77, 255, 0.15) 0%, transparent 70%);
             pointer-events: none;
+        }
+
+        .header-content {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            z-index: 2;
         }
 
         .title {
@@ -89,21 +95,47 @@
             color: transparent;
             text-shadow: 0 0 20px rgba(211, 47, 47, 0.3);
             letter-spacing: 2px;
+            line-height: 1.1;
         }
 
         .subtitle {
             color: #ddd;
-            font-size: 1rem;
+            font-size: 0.9rem;
             font-style: italic;
             z-index: 1;
         }
 
-        /* SEARCH BAR (NEU) */
+        /* FLAGGEN SWITCHER */
+        .lang-switch {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+            z-index: 10;
+        }
+        .lang-btn {
+            width: 30px; height: 20px;
+            cursor: pointer;
+            border-radius: 3px;
+            border: 1px solid #fff;
+            opacity: 0.5;
+            transition: transform 0.2s, opacity 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+            padding: 0;
+            display: block;
+        }
+        .lang-btn:hover, .lang-btn.active {
+            opacity: 1; transform: scale(1.15);
+            border-color: var(--color-boss-accent);
+            z-index: 10;
+        }
+
+        /* SEARCH BAR */
         .search-container {
-            width: 100%;
-            max-width: 500px;
+            width: 300px;
             position: relative;
-            margin-top: 10px;
             z-index: 2;
         }
 
@@ -117,10 +149,10 @@
             font-family: var(--font-main);
             font-size: 1rem;
             transition: border-color 0.3s, box-shadow 0.3s;
+            outline: none;
         }
 
         .search-input:focus {
-            outline: none;
             border-color: var(--color-boss-accent);
             box-shadow: 0 0 15px rgba(124, 77, 255, 0.5);
         }
@@ -154,6 +186,11 @@
             flex-grow: 1; 
             text-align: center;
             font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            white-space: nowrap;
         }
 
         .nav-tab:hover { color: #fff; background-color: rgba(255,255,255,0.05); }
@@ -176,14 +213,8 @@
         .content-area::-webkit-scrollbar-thumb { background-color: var(--color-boss-primary); border-radius: 4px; }
 
         /* Sections */
-        .section { display: none; animation: fadeIn 0.4s ease; }
+        .section { display: none; animation: fadeIn 0.4s ease; max-width: 1400px; margin: 0 auto; }
         .section.active { display: block; }
-        
-        /* Suche Styles */
-        .content-area.searching .boss-section { display: block !important; }
-        .content-area.searching .info-section { display: none !important; }
-        .hidden { display: none !important; }
-
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         /* Info Cards */
@@ -252,6 +283,8 @@
         .boss-content {
             padding: 15px;
             flex-grow: 1;
+            display: flex;
+            flex-direction: column;
         }
 
         .boss-title {
@@ -276,6 +309,7 @@
             padding: 10px;
             font-size: 0.85rem;
             color: #ccc;
+            margin-top: auto;
         }
         .boss-drops-preview ul { margin: 0; padding-left: 15px; }
 
@@ -298,7 +332,7 @@
             display: inline-block;
             background-color: #5865F2;
             color: white;
-            padding: 3px 8px;
+            padding: 2px 6px;
             border-radius: 4px;
             text-decoration: none;
             font-weight: bold;
@@ -374,11 +408,10 @@
             height: 100%;
             object-fit: contain;
             max-height: 85vh;
-            display: none; /* JS toggles this */
+            display: none;
         }
         .modal-left img.active { display: block; }
 
-        /* Gallery Controls */
         .gallery-controls {
             position: absolute;
             bottom: 15px;
@@ -443,15 +476,14 @@
         .drop-list li i { color: var(--color-gold); width: 20px; text-align: center; }
 
         @media (max-width: 900px) {
+            .widget-container { width: 100%; height: 100vh; border: none; border-radius: 0; }
+            .header { flex-direction: column; gap: 15px; padding: 15px; }
+            .header-content { align-items: center; text-align: center; }
+            .lang-switch { position: static; transform: none; margin-bottom: 10px; }
             .modal-content { flex-direction: column; }
             .modal-left { flex: none; height: 35vh; border-right: none; border-bottom: 2px solid var(--color-boss-primary); }
             .modal-right { flex: 1; }
-        }
-        
-        @media (max-width: 600px) {
-            .title { font-size: 1.8rem; }
-            .nav-tab { padding: 12px; font-size: 0.9rem; }
-            .search-container { max-width: 90%; }
+            .search-container { width: 90%; }
         }
     </style>
 </head>
@@ -460,188 +492,59 @@
     <div class="boss-container">
         
         <div class="header">
-            <h1 class="title">IOP World Bosse</h1>
-            <div class="subtitle">Map Spezifische MiniBosse & Custom Loot</div>
+            <div class="header-content">
+                <h1 class="title" id="uiTitle">IOP World Bosse</h1>
+                <span class="subtitle" id="uiSubtitle">Map Spezifische MiniBosse & Custom Loot</span>
+            </div>
             
+            <!-- 4 Flaggen -->
+            <div class="lang-switch">
+                <svg class="lang-btn active" id="btn-de" onclick="setLang('de')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 5 3">
+                    <rect width="5" height="3" fill="#000"/><rect width="5" height="2" y="1" fill="#D00"/><rect width="5" height="1" y="2" fill="#FFCE00"/>
+                </svg>
+                <svg class="lang-btn" id="btn-en" onclick="setLang('en')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 30">
+                    <clipPath id="s"><path d="M0,0 v30 h60 v-30 z"/></clipPath>
+                    <clipPath id="t"><path d="M30,15 h30 v15 z v15 h-30 z h-30 v-15 z v-15 h30 z"/></clipPath>
+                    <g clip-path="url(#s)">
+                        <path d="M0,0 v30 h60 v-30 z" fill="#012169"/>
+                        <path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/>
+                        <path d="M0,0 L60,30 M60,0 L0,30" clip-path="url(#t)" stroke="#C8102E" stroke-width="4"/>
+                        <path d="M30,0 v30 M0,15 h60" stroke="#fff" stroke-width="10"/>
+                        <path d="M30,0 v30 M0,15 h60" stroke="#C8102E" stroke-width="6"/>
+                    </g>
+                </svg>
+                <svg class="lang-btn" id="btn-es" onclick="setLang('es')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 750 500">
+                    <rect width="750" height="500" fill="#AA151B"/>
+                    <rect width="750" height="250" y="125" fill="#F1BF00"/>
+                </svg>
+                <svg class="lang-btn" id="btn-fr" onclick="setLang('fr')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600">
+                    <rect width="900" height="600" fill="#ED2939"/>
+                    <rect width="600" height="600" fill="#fff"/>
+                    <rect width="300" height="600" fill="#002395"/>
+                </svg>
+            </div>
+
             <div class="search-container">
                 <i class="fa-solid fa-search search-icon"></i>
-                <input type="text" id="searchInput" class="search-input" placeholder="Boss suchen (z.B. Mantis, Rhino)...">
+                <input type="text" id="searchInput" class="search-input" placeholder="Boss suchen...">
             </div>
         </div>
 
         <!-- Navigation -->
         <div class="nav-tabs">
-            <div class="nav-tab active" onclick="showSection('info', this)"><i class="fa-solid fa-circle-info"></i> Info & Regeln</div>
-            <div class="nav-tab" onclick="showSection('island', this)"><i class="fa-solid fa-tree"></i> The Island</div>
-            <div class="nav-tab" onclick="showSection('scorched', this)"><i class="fa-solid fa-sun"></i> Scorched Earth</div>
+            <div class="nav-tab active" onclick="showTab('info', this)" id="navInfo">
+                <i class="fa-solid fa-circle-info"></i> Info & Regeln
+            </div>
+            <div class="nav-tab" onclick="showTab('island', this)" id="navIsland">
+                <i class="fa-solid fa-tree"></i> The Island
+            </div>
+            <div class="nav-tab" onclick="showTab('scorched', this)" id="navScorched">
+                <i class="fa-solid fa-sun"></i> Scorched Earth
+            </div>
         </div>
 
         <div class="content-area" id="contentArea">
-
-            <!-- 1. INFO SECTION -->
-            <div id="info" class="section info-section active">
-                
-                <div class="info-box">
-                    <h3><i class="fa-solid fa-skull"></i> World-Boss Events</h3>
-                    <div class="text-content">
-                        <p>Einige Maps haben eigens kreierte Minibosse, die in einer speziellen Kuppel (Dome) spawnen.</p>
-                        <ul>
-                            <li><strong>Ankündigung:</strong> Verfolgt Spawns im Discord-Kanal <span class="discord-link">MiniBoss-Starts</span> oder Ingame.</li>
-                            <li><strong>Schwierigkeit:</strong> Mit Übung und mittlerem Gear machbar. Aber Vorsicht: Carchas und Gigas haben hier einen DMG-Reduce!</li>
-                            <li><strong>Belohnung:</strong> Jeder Boss droppt 2-3 Rote Lootcrates, Shop-Punkte und speziellen Loot.</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="warning-box">
-                    <i class="fa-solid fa-shield-halved"></i>
-                    <div class="text-content">
-                        <strong>Kuppel-Mechanik & Anti-Cheese</strong><br>
-                        Jeder Boss spawnt in seiner eigenen Kuppel.<br>
-                        <ul>
-                            <li><strong>Außerhalb:</strong> Boss ist unverwundbar (Schadensresistent) und macht 0 Schaden.</li>
-                            <li><strong>Teleport:</strong> Wird er raus gekitet, teleportiert er sich zurück in die Mitte (HP wird dabei NICHT resettet).</li>
-                            <li><strong>Minions:</strong> Jeder Boss wird von eigenen Mobs unterstützt.</li>
-                        </ul>
-                    </div>
-                </div>
-
-            </div>
-
-            <!-- 2. THE ISLAND BOSSES -->
-            <div id="island" class="section boss-section">
-                <div class="boss-grid">
-                    
-                    <!-- Beelzebufoking -->
-                    <div class="boss-card" onclick="openModal('beelzebufo')">
-                        <img src="https://i.postimg.cc/gkJmzr1f/Bild-2024-05-17-180231359.png" class="boss-img" alt="Beelzebufoking">
-                        <div class="boss-content">
-                            <h3 class="boss-title">Beelzebufoking</h3>
-                            <div class="boss-location"><i class="fa-solid fa-snowflake"></i> The Island - Eisgebiet</div>
-                            <div class="boss-drops-preview">
-                                <strong>Haupt-Drops:</strong>
-                                <ul>
-                                    <li>5.000x Zement</li>
-                                    <li>Lebensversicherungs Punkte</li>
-                                    <li>Rote Lootcrates & XP</li>
-                                </ul>
-                            </div>
-                        </div>
-                        <!-- Hidden Data for Modal -->
-                        <div id="data-beelzebufo" style="display:none;">
-                            <div class="modal-imgs">
-                                <span data-src="https://i.postimg.cc/gkJmzr1f/Bild-2024-05-17-180231359.png"></span>
-                                <span data-src="https://i.postimg.cc/gr9bFM7P/Bild-2024-05-17-201338540.png"></span>
-                            </div>
-                            <div class="modal-drops">
-                                <li><i class="fa-solid fa-star"></i> Massig XP</li>
-                                <li><i class="fa-solid fa-box-open"></i> Rote Lootcrates (2-3 Stück)</li>
-                                <li><i class="fa-solid fa-cubes"></i> 5.000x Zement</li>
-                                <li><i class="fa-solid fa-coins"></i> Lebensversicherungs Punkte (Shop)</li>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- WoollyrhinoBeast -->
-                    <div class="boss-card" onclick="openModal('rhino')">
-                        <img src="https://i.postimg.cc/JzfytPCG/Bild-2024-05-17-195751193.png" class="boss-img" alt="WoollyrhinoBeast">
-                        <div class="boss-content">
-                            <h3 class="boss-title">WoollyrhinoBeast</h3>
-                            <div class="boss-location"><i class="fa-solid fa-snowflake"></i> The Island - Eisgebiet</div>
-                            <div class="boss-drops-preview">
-                                <strong>Haupt-Drops:</strong>
-                                <ul>
-                                    <li>1.000x Pelz & Wolle</li>
-                                    <li>Lebensversicherungs Punkte</li>
-                                    <li>Rote Lootcrates & XP</li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div id="data-rhino" style="display:none;">
-                            <div class="modal-imgs">
-                                <span data-src="https://i.postimg.cc/JzfytPCG/Bild-2024-05-17-195751193.png"></span>
-                                <span data-src="https://i.postimg.cc/ZYs64Pny/Bild-2024-05-17-195933010.png"></span>
-                            </div>
-                            <div class="modal-drops">
-                                <li><i class="fa-solid fa-star"></i> Massig XP</li>
-                                <li><i class="fa-solid fa-box-open"></i> Rote Lootcrates (2-3 Stück)</li>
-                                <li><i class="fa-solid fa-rug"></i> 1.000x Pelz</li>
-                                <li><i class="fa-solid fa-scissors"></i> 1.000x Wolle</li>
-                                <li><i class="fa-solid fa-coins"></i> Lebensversicherungs Punkte (Shop)</li>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-
-            <!-- 3. SCORCHED EARTH BOSSES -->
-            <div id="scorched" class="section boss-section">
-                <div class="boss-grid">
-                    
-                    <!-- Scorpionking -->
-                    <div class="boss-card" onclick="openModal('scorpion')">
-                        <img src="https://i.postimg.cc/jqnkVjdK/Bild-2024-05-17-200157932.png" class="boss-img" alt="Scorpionking">
-                        <div class="boss-content">
-                            <h3 class="boss-title">Scorpionking</h3>
-                            <div class="boss-location"><i class="fa-solid fa-landmark"></i> SE - Kolosseum</div>
-                            <div class="boss-drops-preview">
-                                <strong>Haupt-Drops:</strong>
-                                <ul>
-                                    <li>Wyvernmilch</li>
-                                    <li>1.000x Gammelfleisch</li>
-                                    <li>Lebensversicherungs Punkte</li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div id="data-scorpion" style="display:none;">
-                            <div class="modal-imgs">
-                                <span data-src="https://i.postimg.cc/jqnkVjdK/Bild-2024-05-17-200157932.png"></span>
-                                <span data-src="https://i.postimg.cc/66GwHwk4/Bild-2024-05-17-200418541.png"></span>
-                            </div>
-                            <div class="modal-drops">
-                                <li><i class="fa-solid fa-star"></i> Massig XP</li>
-                                <li><i class="fa-solid fa-box-open"></i> Rote Lootcrates (2-3 Stück)</li>
-                                <li><i class="fa-solid fa-flask"></i> Wyvernmilch</li>
-                                <li><i class="fa-solid fa-drumstick-bite"></i> 1.000x Vergammeltes Fleisch</li>
-                                <li><i class="fa-solid fa-coins"></i> Lebensversicherungs Punkte (Shop)</li>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Mantisqueen -->
-                    <div class="boss-card" onclick="openModal('mantis')">
-                        <img src="https://i.postimg.cc/Gt2xLqvH/Bild-2024-05-17-200952189.png" class="boss-img" alt="Mantisqueen">
-                        <div class="boss-content">
-                            <h3 class="boss-title">Mantisqueen</h3>
-                            <div class="boss-location"><i class="fa-solid fa-landmark"></i> SE - Kolosseum</div>
-                            <div class="boss-drops-preview">
-                                <strong>Haupt-Drops:</strong>
-                                <ul>
-                                    <li>Wyvernmilch</li>
-                                    <li>1.000x Org. Polymer</li>
-                                    <li>Lebensversicherungs Punkte</li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div id="data-mantis" style="display:none;">
-                            <div class="modal-imgs">
-                                <span data-src="https://i.postimg.cc/Gt2xLqvH/Bild-2024-05-17-200952189.png"></span>
-                                <span data-src="https://i.postimg.cc/SNgfPFFC/Bild-2024-05-17-200839471.png"></span>
-                            </div>
-                            <div class="modal-drops">
-                                <li><i class="fa-solid fa-star"></i> Massig XP</li>
-                                <li><i class="fa-solid fa-box-open"></i> Rote Lootcrates (2-3 Stück)</li>
-                                <li><i class="fa-solid fa-flask"></i> Wyvernmilch</li>
-                                <li><i class="fa-solid fa-soap"></i> 1.000x Organisches Polymer</li>
-                                <li><i class="fa-solid fa-coins"></i> Lebensversicherungs Punkte (Shop)</li>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-
+            <!-- Content injected via JS -->
         </div>
 
         <!-- MODAL -->
@@ -662,7 +565,7 @@
                 <div class="modal-right">
                     <h2 class="modal-title" id="modalTitle">Titel</h2>
                     
-                    <span class="modal-subtitle">Belohnungen & Drops</span>
+                    <span class="modal-subtitle" id="uiDrops">Belohnungen & Drops</span>
                     <ul class="drop-list" id="modalDrops">
                         <!-- Drops loaded via JS -->
                     </ul>
@@ -673,87 +576,255 @@
     </div>
 
     <script>
-        function showSection(sectionId, tabElement) {
-            // Reset Suche
+        // =========================================================================
+        // 1. DATENBANK (ÜBERSETZUNGEN)
+        // =========================================================================
+        const translations = {
+            subtitle: { de: "Map Spezifische MiniBosse & Custom Loot", en: "Map Specific MiniBosses & Custom Loot", es: "MiniJefes por Mapa y Botín Personalizado", fr: "MiniBoss Spécifiques et Butin Personnalisé" },
+            search_ph: { de: "Boss suchen (z.B. Mantis, Rhino)...", en: "Search Boss (e.g. Mantis, Rhino)...", es: "Buscar Jefe (ej. Mantis)...", fr: "Chercher Boss (ex. Mantis)..." },
+            drops_title: { de: "Belohnungen & Drops", en: "Rewards & Drops", es: "Recompensas y Botín", fr: "Récompenses et Butin" },
+            main_drops: { de: "Haupt-Drops:", en: "Main Drops:", es: "Botín Principal:", fr: "Butin Principal :" },
+            
+            nav: {
+                info: { de: "Info & Regeln", en: "Info & Rules", es: "Info y Reglas", fr: "Info et Règles" },
+                island: { de: "The Island", en: "The Island", es: "The Island", fr: "The Island" },
+                scorched: { de: "Scorched Earth", en: "Scorched Earth", es: "Scorched Earth", fr: "Scorched Earth" }
+            },
+
+            sections: {
+                info: {
+                    title: { de: "World-Boss Events", en: "World-Boss Events", es: "Eventos World-Boss", fr: "Événements World-Boss" },
+                    text: {
+                        de: "<p>Einige Maps haben eigens kreierte Minibosse, die in einer speziellen Kuppel (Dome) spawnen.</p>",
+                        en: "<p>Some maps feature custom MiniBosses spawning inside a special Dome.</p>",
+                        es: "<p>Algunos mapas tienen MiniJefes personalizados en una Cúpula especial.</p>",
+                        fr: "<p>Certaines cartes ont des MiniBoss personnalisés apparaissant dans un Dôme spécial.</p>"
+                    },
+                    list: {
+                        de: ["<strong>Ankündigung:</strong> Verfolgt Spawns im Discord-Kanal <span class='discord-link'>MiniBoss-Starts</span> oder Ingame.", "<strong>Schwierigkeit:</strong> Mit Übung machbar. Vorsicht: Carchas/Gigas haben DMG-Reduce!", "<strong>Belohnung:</strong> 2-3 Rote Lootcrates, Shop-Punkte und spezieller Loot."],
+                        en: ["<strong>Announcement:</strong> Check Discord <span class='discord-link'>MiniBoss-Starts</span> or Ingame.", "<strong>Difficulty:</strong> Doable with practice. Carchas/Gigas have DMG reduction!", "<strong>Reward:</strong> 2-3 Red Lootcrates, Shop Points, special loot."],
+                        es: ["<strong>Anuncio:</strong> Discord <span class='discord-link'>MiniBoss-Starts</span> o en juego.", "<strong>Dificultad:</strong> Practicable. ¡Carchas/Gigas tienen reducción de daño!", "<strong>Recompensa:</strong> 2-3 Cajas Rojas, Puntos, botín especial."],
+                        fr: ["<strong>Annonce :</strong> Discord <span class='discord-link'>MiniBoss-Starts</span> ou en jeu.", "<strong>Difficulté :</strong> Faisable. Carchas/Gigas ont une réduction de dégâts !", "<strong>Récompense :</strong> 2-3 Lootcrates Rouges, Points, butin spécial."]
+                    },
+                    warnTitle: { de: "Kuppel-Mechanik & Anti-Cheese", en: "Dome Mechanics & Anti-Cheese", es: "Mecánica de Cúpula y Anti-Trampas", fr: "Mécanique du Dôme et Anti-Cheese" },
+                    warnText: {
+                        de: "Jeder Boss spawnt in seiner eigenen Kuppel.",
+                        en: "Each boss spawns within its own dome.",
+                        es: "Cada jefe aparece en su propia cúpula.",
+                        fr: "Chaque boss apparaît dans son propre dôme."
+                    },
+                    warnList: {
+                        de: ["<strong>Außerhalb:</strong> Boss ist unverwundbar und macht 0 Schaden.", "<strong>Teleport:</strong> Bei Kiting raus teleportiert er sich zurück (HP bleibt).", "<strong>Minions:</strong> Jeder Boss hat eigene Unterstützer."],
+                        en: ["<strong>Outside:</strong> Boss is invulnerable and deals 0 damage.", "<strong>Teleport:</strong> Teleports back if kited out (HP remains).", "<strong>Minions:</strong> Each boss has minions."],
+                        es: ["<strong>Fuera:</strong> Jefe invulnerable, 0 daño.", "<strong>Teletransporte:</strong> Regresa si se aleja (HP se mantiene).", "<strong>Esbirros:</strong> Cada jefe tiene apoyo."],
+                        fr: ["<strong>Dehors :</strong> Boss invulnérable, 0 dégât.", "<strong>Téléport :</strong> Revient si éloigné (PV restent).", "<strong>Sbires :</strong> Chaque boss a des soutiens."]
+                    }
+                },
+                bosses: {
+                    island: [
+                        {
+                            id: "beelzebufo",
+                            name: "Beelzebufoking",
+                            loc: { de: "The Island - Eisgebiet", en: "The Island - Ice Area", es: "The Island - Hielo", fr: "The Island - Glace" },
+                            img1: "https://i.postimg.cc/gkJmzr1f/Bild-2024-05-17-180231359.png",
+                            img2: "https://i.postimg.cc/gr9bFM7P/Bild-2024-05-17-201338540.png",
+                            preview: { de: ["5.000x Zement", "Lebensversicherungs Punkte", "Rote Lootcrates & XP"], en: ["5,000x Cement", "Life Insurance Points", "Red Lootcrates & XP"], es: ["5.000x Cemento", "Puntos Seguro", "Cajas Rojas & XP"], fr: ["5.000x Ciment", "Points Assurance Vie", "Lootcrates Rouges & XP"] },
+                            drops: [
+                                { icon: "fa-star", text: { de: "Massig XP", en: "Massive XP", es: "Mucha XP", fr: "Beaucoup d'XP" } },
+                                { icon: "fa-box-open", text: { de: "Rote Lootcrates (2-3 Stück)", en: "Red Lootcrates (2-3 pcs)", es: "Cajas Rojas (2-3)", fr: "Lootcrates Rouges (2-3)" } },
+                                { icon: "fa-cubes", text: { de: "5.000x Zement", en: "5,000x Cementing Paste", es: "5.000x Cemento", fr: "5.000x Ciment" } },
+                                { icon: "fa-coins", text: { de: "Lebensversicherungs Punkte (Shop)", en: "Life Insurance Points (Shop)", es: "Puntos Seguro (Tienda)", fr: "Points Assurance (Boutique)" } }
+                            ]
+                        },
+                        {
+                            id: "rhino",
+                            name: "WoollyrhinoBeast",
+                            loc: { de: "The Island - Eisgebiet", en: "The Island - Ice Area", es: "The Island - Hielo", fr: "The Island - Glace" },
+                            img1: "https://i.postimg.cc/JzfytPCG/Bild-2024-05-17-195751193.png",
+                            img2: "https://i.postimg.cc/ZYs64Pny/Bild-2024-05-17-195933010.png",
+                            preview: { de: ["1.000x Pelz & Wolle", "Lebensversicherungs Punkte", "Rote Lootcrates & XP"], en: ["1,000x Fur & Wool", "Life Insurance Points", "Red Lootcrates & XP"], es: ["1.000x Piel/Lana", "Puntos Seguro", "Cajas Rojas & XP"], fr: ["1.000x Fourrure/Laine", "Points Assurance", "Lootcrates Rouges & XP"] },
+                            drops: [
+                                { icon: "fa-star", text: { de: "Massig XP", en: "Massive XP", es: "Mucha XP", fr: "Beaucoup d'XP" } },
+                                { icon: "fa-box-open", text: { de: "Rote Lootcrates (2-3 Stück)", en: "Red Lootcrates (2-3 pcs)", es: "Cajas Rojas (2-3)", fr: "Lootcrates Rouges (2-3)" } },
+                                { icon: "fa-rug", text: { de: "1.000x Pelz", en: "1,000x Pelt", es: "1.000x Piel", fr: "1.000x Fourrure" } },
+                                { icon: "fa-scissors", text: { de: "1.000x Wolle", en: "1,000x Wool", es: "1.000x Lana", fr: "1.000x Laine" } },
+                                { icon: "fa-coins", text: { de: "Lebensversicherungs Punkte (Shop)", en: "Life Insurance Points (Shop)", es: "Puntos Seguro (Tienda)", fr: "Points Assurance (Boutique)" } }
+                            ]
+                        }
+                    ],
+                    scorched: [
+                        {
+                            id: "scorpion",
+                            name: "Scorpionking",
+                            loc: { de: "SE - Kolosseum", en: "SE - Colosseum", es: "SE - Coliseo", fr: "SE - Colisée" },
+                            img1: "https://i.postimg.cc/jqnkVjdK/Bild-2024-05-17-200157932.png",
+                            img2: "https://i.postimg.cc/66GwHwk4/Bild-2024-05-17-200418541.png",
+                            preview: { de: ["Wyvernmilch", "1.000x Gammelfleisch", "Lebensversicherungs Punkte"], en: ["Wyvern Milk", "1,000x Spoiled Meat", "Life Insurance Points"], es: ["Leche Wyvern", "1.000x Carne Podrida", "Puntos Seguro"], fr: ["Lait Wyverne", "1.000x Viande Avariée", "Points Assurance"] },
+                            drops: [
+                                { icon: "fa-star", text: { de: "Massig XP", en: "Massive XP", es: "Mucha XP", fr: "Beaucoup d'XP" } },
+                                { icon: "fa-box-open", text: { de: "Rote Lootcrates (2-3 Stück)", en: "Red Lootcrates (2-3 pcs)", es: "Cajas Rojas (2-3)", fr: "Lootcrates Rouges (2-3)" } },
+                                { icon: "fa-flask", text: { de: "Wyvernmilch", en: "Wyvern Milk", es: "Leche Wyvern", fr: "Lait Wyverne" } },
+                                { icon: "fa-drumstick-bite", text: { de: "1.000x Gammelfleisch", en: "1,000x Spoiled Meat", es: "1.000x Carne Podrida", fr: "1.000x Viande Avariée" } },
+                                { icon: "fa-coins", text: { de: "Lebensversicherungs Punkte", en: "Life Insurance Points", es: "Puntos Seguro", fr: "Points Assurance" } }
+                            ]
+                        },
+                        {
+                            id: "mantis",
+                            name: "Mantisqueen",
+                            loc: { de: "SE - Kolosseum", en: "SE - Colosseum", es: "SE - Coliseo", fr: "SE - Colisée" },
+                            img1: "https://i.postimg.cc/Gt2xLqvH/Bild-2024-05-17-200952189.png",
+                            img2: "https://i.postimg.cc/SNgfPFFC/Bild-2024-05-17-200839471.png",
+                            preview: { de: ["Wyvernmilch", "1.000x Org. Polymer", "Lebensversicherungs Punkte"], en: ["Wyvern Milk", "1,000x Org. Polymer", "Life Insurance Points"], es: ["Leche Wyvern", "1.000x Polímero Org.", "Puntos Seguro"], fr: ["Lait Wyverne", "1.000x Polymère Org.", "Points Assurance"] },
+                            drops: [
+                                { icon: "fa-star", text: { de: "Massig XP", en: "Massive XP", es: "Mucha XP", fr: "Beaucoup d'XP" } },
+                                { icon: "fa-box-open", text: { de: "Rote Lootcrates (2-3 Stück)", en: "Red Lootcrates (2-3 pcs)", es: "Cajas Rojas (2-3)", fr: "Lootcrates Rouges (2-3)" } },
+                                { icon: "fa-flask", text: { de: "Wyvernmilch", en: "Wyvern Milk", es: "Leche Wyvern", fr: "Lait Wyverne" } },
+                                { icon: "fa-soap", text: { de: "1.000x Org. Polymer", en: "1,000x Org. Polymer", es: "1.000x Polímero Org.", fr: "1.000x Polymère Org." } },
+                                { icon: "fa-coins", text: { de: "Lebensversicherungs Punkte", en: "Life Insurance Points", es: "Puntos Seguro", fr: "Points Assurance" } }
+                            ]
+                        }
+                    ]
+                }
+            }
+        };
+
+        // =========================================================================
+        // 2. LOGIC
+        // =========================================================================
+        let currentLang = 'de';
+        let currentTab = 'info';
+
+        function setLang(lang) {
+            currentLang = lang;
+            
+            // UI Buttons
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('btn-' + lang).classList.add('active');
+
+            // Static Text
+            document.getElementById('uiSubtitle').innerText = translations.subtitle[lang];
+            document.getElementById('searchInput').placeholder = translations.search_ph[lang];
+            
+            // Nav
+            document.getElementById('navInfo').innerHTML = `<i class="fa-solid fa-circle-info"></i> ${translations.nav.info[lang]}`;
+            document.getElementById('navIsland').innerHTML = `<i class="fa-solid fa-tree"></i> ${translations.nav.island[lang]}`;
+            document.getElementById('navScorched').innerHTML = `<i class="fa-solid fa-sun"></i> ${translations.nav.scorched[lang]}`;
+
+            renderContent();
+        }
+
+        function showTab(tabId, btn) {
+            currentTab = tabId;
+            document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            // Reset Search
             document.getElementById('searchInput').value = '';
             document.getElementById('contentArea').classList.remove('searching');
             document.querySelectorAll('.boss-card').forEach(c => c.classList.remove('hidden'));
 
-            // Hide all sections
-            document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
-            // Remove active classes from tabs
-            document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
-
-            // Show target section
-            document.getElementById(sectionId).classList.add('active');
-            // Add active class to tab
-            if(tabElement) tabElement.classList.add('active');
+            renderContent();
         }
 
-        /* --- SEARCH LOGIC --- */
-        const searchInput = document.getElementById('searchInput');
-        const contentArea = document.getElementById('contentArea');
-        const allBossCards = document.querySelectorAll('.boss-card');
+        function renderContent() {
+            const container = document.getElementById('contentArea');
+            container.innerHTML = '';
+            const data = translations.sections;
 
+            if (currentTab === 'info') {
+                container.innerHTML = `
+                    <div class="section active">
+                        <div class="info-box">
+                            <h3><i class="fa-solid fa-skull"></i> ${data.info.title[currentLang]}</h3>
+                            <div class="text-content">
+                                ${data.info.text[currentLang]}
+                                <ul>${data.info.list[currentLang].map(li => `<li>${li}</li>`).join('')}</ul>
+                            </div>
+                        </div>
+                        <div class="warning-box">
+                            <i class="fa-solid fa-shield-halved"></i>
+                            <div class="text-content">
+                                <strong>${data.info.warnTitle[currentLang]}</strong><br>
+                                ${data.info.warnText[currentLang]}<br>
+                                <ul>${data.info.warnList[currentLang].map(li => `<li>${li}</li>`).join('')}</ul>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                const bosses = currentTab === 'island' ? data.bosses.island : data.bosses.scorched;
+                const grid = document.createElement('div');
+                grid.className = 'boss-grid';
+
+                bosses.forEach(b => {
+                    const card = document.createElement('div');
+                    card.className = 'boss-card';
+                    card.onclick = () => openModal(b);
+                    
+                    const dropsPreview = b.preview[currentLang].map(d => `<li>${d}</li>`).join('');
+
+                    card.innerHTML = `
+                        <img src="${b.img1}" class="boss-img" alt="${b.name}">
+                        <div class="boss-content">
+                            <h3 class="boss-title">${b.name}</h3>
+                            <div class="boss-location"><i class="fa-solid fa-map-marker-alt"></i> ${b.loc[currentLang]}</div>
+                            <div class="boss-drops-preview">
+                                <strong>${translations.main_drops[currentLang]}</strong>
+                                <ul>${dropsPreview}</ul>
+                            </div>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+                container.appendChild(grid);
+            }
+        }
+
+        // --- SEARCH LOGIC ---
+        const searchInput = document.getElementById('searchInput');
         searchInput.addEventListener('keyup', (e) => {
             const term = e.target.value.toLowerCase();
-
+            
             if (term.length > 0) {
-                // Suche aktiv: Zeige beide Boss-Sektionen, verstecke Info
-                contentArea.classList.add('searching');
-                
-                allBossCards.forEach(card => {
+                // Temporarily show all boss sections if searching
+                if(currentTab === 'info') {
+                    // Logic for search in info tab? Maybe switch to Island first for results
+                    // For simplicity, search only filters current view or we combine views.
+                    // Given the structure, let's keep search simple: filter visible cards.
+                    // If user is on Info, maybe highlight text? Complex.
+                    // Let's force switch to a boss tab if they search? 
+                    // No, let's just filter the current view if it has cards.
+                }
+
+                const cards = document.querySelectorAll('.boss-card');
+                cards.forEach(card => {
                     const title = card.querySelector('.boss-title').innerText.toLowerCase();
-                    if (title.includes(term)) {
-                        card.classList.remove('hidden');
-                    } else {
-                        card.classList.add('hidden');
-                    }
+                    card.style.display = title.includes(term) ? 'flex' : 'none';
                 });
             } else {
-                // Suche leer: Reset
-                contentArea.classList.remove('searching');
-                allBossCards.forEach(card => card.classList.remove('hidden'));
-                
-                // Stelle aktiven Tab wieder her
-                const activeTab = document.querySelector('.nav-tab.active');
-                if(activeTab) {
-                    // Wir müssen nicht klicken, nur die Sections resetten
-                    const targetId = activeTab.getAttribute('onclick').match(/'([^']+)'/)[1];
-                    // Hide all first
-                    document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
-                    document.getElementById(targetId).classList.add('active');
-                } else {
-                    showSection('info', document.querySelector('.nav-tab'));
-                }
+                document.querySelectorAll('.boss-card').forEach(c => c.style.display = 'flex');
             }
         });
 
-        /* --- MODAL LOGIC --- */
+        // --- MODAL LOGIC ---
         const modal = document.getElementById('bossModal');
-        let currentImgIndex = 1;
+        let currentBossObj = null;
 
-        function openModal(bossId) {
-            const dataContainer = document.getElementById('data-' + bossId);
-            const card = dataContainer.parentElement; // Der Container liegt in der Card
+        function openModal(bossData) {
+            currentBossObj = bossData;
+            document.getElementById('modalTitle').innerText = bossData.name;
+            document.getElementById('uiDrops').innerText = translations.drops_title[currentLang];
             
-            // Get Data
-            const title = card.querySelector('.boss-title').innerText;
-            const dropHtml = dataContainer.querySelector('.modal-drops').innerHTML;
-            
-            // Get Images
-            const imgSources = dataContainer.querySelectorAll('.modal-imgs span');
-            const src1 = imgSources[0].dataset.src;
-            const src2 = imgSources[1].dataset.src;
+            // Images
+            document.getElementById('modalImg1').src = bossData.img1;
+            document.getElementById('modalImg2').src = bossData.img2;
+            switchImage(1); // Reset to first image
 
-            // Set Data
-            document.getElementById('modalTitle').innerText = title;
-            document.getElementById('modalDrops').innerHTML = dropHtml;
-            document.getElementById('modalImg1').src = src1;
-            document.getElementById('modalImg2').src = src2;
-
-            // Reset Gallery
-            switchImage(1);
+            // Drops
+            const list = document.getElementById('modalDrops');
+            list.innerHTML = bossData.drops.map(d => 
+                `<li><i class="fa-solid ${d.icon}"></i> ${d.text[currentLang]}</li>`
+            ).join('');
 
             modal.classList.add('active');
         }
@@ -763,21 +834,21 @@
         }
 
         function switchImage(index) {
-            currentImgIndex = index;
-            
-            // Toggle Images
             document.getElementById('modalImg1').classList.toggle('active', index === 1);
             document.getElementById('modalImg2').classList.toggle('active', index === 2);
-            
-            // Toggle Dots
-            const dots = document.querySelectorAll('.gallery-dot');
-            dots[0].classList.toggle('active', index === 1);
-            dots[1].classList.toggle('active', index === 2);
+            document.querySelectorAll('.gallery-dot')[0].classList.toggle('active', index === 1);
+            document.querySelectorAll('.gallery-dot')[1].classList.toggle('active', index === 2);
         }
 
         modal.addEventListener('click', (e) => {
             if(e.target === modal) closeModal();
         });
+
+        // Init
+        window.onload = function() {
+            setLang('de');
+        };
+
     </script>
 </body>
 </html>
