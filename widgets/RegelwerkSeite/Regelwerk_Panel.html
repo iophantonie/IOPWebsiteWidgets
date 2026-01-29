@@ -3,33 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Server Regelwerk (Akkordeon)</title>
+    <title>Server Regelwerk</title>
     <style>
-        /* Farben und Schriftarten */
         :root {
-            --color-red: #E53935; /* Feuerrot */
+            --color-red: #E53935;
             --color-dark: rgba(20, 20, 20, 0.95);
             --color-text: #f7f7f7;
             --color-light-dark: rgba(30, 30, 30, 0.95);
         }
-        
-        /* Smooth Scrolling */
-        html {
-            scroll-behavior: smooth;
-        }
 
-        /* Body Styles */
+        /* --- DEIN ORIGINAL DESIGN --- */
+        html { scroll-behavior: smooth; }
+        
         body {
             background-color: transparent;
             font-family: sans-serif;
             color: var(--color-text);
-            margin: 0;
-            padding: 20px; 
-            display: flex;
-            justify-content: center;
+            margin: 0; padding: 20px; 
+            display: flex; justify-content: center;
         }
 
-        /* Haupt-Card */
         .rules-card {
             background-color: var(--color-dark);
             border-radius: 12px;
@@ -38,198 +31,120 @@
             max-width: 1600px; 
             border: 3px solid var(--color-red);
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
-            position: relative; /* Wichtig für die Positionierung der Flaggen */
+            position: relative;
         }
 
-        /* --- SPRACHUMSCHALTER (NEU) --- */
+        /* Flaggen */
         .lang-switch {
             position: absolute;
-            top: 20px;
-            right: 20px;
-            display: flex;
-            gap: 10px;
+            top: 20px; right: 20px;
+            display: flex; gap: 8px;
             z-index: 200;
         }
-
         .lang-btn {
-            width: 35px;
-            height: 25px;
+            width: 30px; height: 20px;
             cursor: pointer;
-            border-radius: 4px;
+            border-radius: 3px;
             border: 1px solid #fff;
-            opacity: 0.6;
+            opacity: 0.5;
             transition: transform 0.2s, opacity 0.2s;
             box-shadow: 0 2px 5px rgba(0,0,0,0.5);
         }
-
         .lang-btn:hover, .lang-btn.active {
-            opacity: 1;
-            transform: scale(1.1);
+            opacity: 1; transform: scale(1.15);
             border-color: var(--color-red);
+            z-index: 10;
         }
 
-        /* Sprach-Logik CSS */
-        /* Standardmäßig Englisch ausblenden */
-        .lang-en { display: none; }
-        
-        /* Wenn der Container die Klasse 'show-en' hat: Englisch an, Deutsch aus */
-        .rules-card.show-en .lang-en { display: inline; }
-        .rules-card.show-en .lang-en-block { display: block; } /* Für Blockelemente */
-        .rules-card.show-en .lang-de { display: none; }
-        
-        /* --- ENDE SPRACHUMSCHALTER --- */
-        
-        /* Haupt-Überschrift */
         .main-widget-header {
-            font-size: 2rem;
-            font-weight: 800;
+            font-size: 2rem; font-weight: 800;
             color: var(--color-red);
             margin-bottom: 1.5rem;
             text-transform: uppercase;
             text-align: center;
             border-bottom: 3px solid var(--color-red);
             padding-bottom: 10px;
-            margin-right: 80px; /* Platz für Flaggen lassen */
+            margin-right: 140px;
         }
 
-        .card-header { display: none; }
-
-        /* --- Regelwerk Sektionen --- */
-        .rule-section { border-bottom: none; }
+        /* Accordion Styles */
         .rule-section h2 { display: none; }
-
-        /* Dynamischer Titel */
         .rule-content h3.dynamic-rule-title {
-            font-size: 1.6rem;
-            font-weight: 800;
+            font-size: 1.6rem; font-weight: 800;
             color: var(--color-red);
-            padding: 10px 0;
-            margin-top: 0;
-            margin-bottom: 20px;
+            padding: 10px 0; margin-top: 0; margin-bottom: 20px;
             border-bottom: 2px solid var(--color-red);
             transition: color 0.3s, text-shadow 0.3s, border-bottom 0.3s; 
         }
-
         .rule-content h3.dynamic-rule-title.glow-active {
-            color: #FFEB3B;
-            text-shadow: 0 0 10px rgba(255, 235, 59, 0.9);
-            border-bottom: 2px solid #FFEB3B;
+            color: #FFEB3B; text-shadow: 0 0 10px rgba(255, 235, 59, 0.9); border-bottom: 2px solid #FFEB3B;
+        }
+        /* Sub-Header Styles */
+        .rule-content h3.sub-header {
+            font-size: 1.25rem; font-weight: 700;
+            color: var(--color-text);
+            margin-top: 20px; margin-bottom: 10px;
+            border-left: none; padding-left: 0;
         }
         
-        /* Unter-Header */
-        .rule-content h3 {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: var(--color-text);
-            margin-top: 20px;
-            margin-bottom: 10px;
-            border-left: none; 
-            padding-left: 0; 
-        }
-
-        /* Accordion Inhalt */
         .rule-content {
-            max-height: 0;
-            overflow: hidden;
+            max-height: 0; overflow: hidden;
             padding: 0 10px;
             background-color: var(--color-light-dark);
             transition: max-height 0.5s ease-in-out, padding 0.5s;
         }
-        
         .rule-content.active {
-            max-height: 8000px; /* Erhöht für lange englische Texte */
-            padding: 15px 10px;
-            border-top: none; 
+            max-height: 8000px; padding: 15px 10px; border-top: none; 
         }
-        
-        /* Listen Styles */
-        .rule-content ul {
-            list-style: none;
-            padding-left: 10px;
-        }
-
+        .rule-content ul { list-style: none; padding-left: 10px; }
         .rule-content ul li {
-            position: relative;
-            margin-bottom: 15px;
-            padding-left: 20px;
-            line-height: 1.6;
-            text-align: left;
-            opacity: 0;
-            transform: translateY(10px);
+            position: relative; margin-bottom: 15px; padding-left: 20px;
+            line-height: 1.6; text-align: left;
+            opacity: 0; transform: translateY(10px);
             transition: opacity 0.4s ease-out, transform 0.4s ease-out;
         }
-        
-        .rule-content ul li.show-item {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
+        .rule-content ul li.show-item { opacity: 1; transform: translateY(0); }
         .rule-content ul li::before {
-            content: '♦'; 
-            position: absolute;
-            left: 0;
-            color: var(--color-red);
-            font-size: 1.2rem;
-            line-height: 1;
+            content: '♦'; position: absolute; left: 0;
+            color: var(--color-red); font-size: 1.2rem; line-height: 1;
         }
         
-        /* Quicklink Navigation */
+        /* Navigation */
         .quick-nav {
-            position: sticky;
-            top: 0; 
+            position: sticky; top: 0; 
             background-color: var(--color-light-dark);
-            padding: 10px 0;
-            margin-bottom: 0px;
+            padding: 10px 0; margin-bottom: 0px;
             border-bottom: 1px solid var(--color-red);
             z-index: 100;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
             border-radius: 0 0 8px 8px;
         }
-        
         .quick-nav-links {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 5px 10px;
+            display: flex; flex-wrap: wrap; justify-content: center; gap: 5px 10px;
         }
-
         .quick-nav-links a {
-            color: var(--color-red);
-            text-decoration: none;
-            font-weight: 800; 
-            padding: 8px 14px;
-            border: 1px solid var(--color-red);
-            border-radius: 5px;
-            transition: all 0.2s;
-            font-size: 1rem;
+            color: var(--color-red); text-decoration: none;
+            font-weight: 800; padding: 8px 14px;
+            border: 1px solid var(--color-red); border-radius: 5px;
+            transition: all 0.2s; font-size: 1rem; cursor: pointer;
         }
-
         .quick-nav-links a:hover {
-            background-color: var(--color-red);
-            color: var(--color-text);
+            background-color: var(--color-red); color: var(--color-text);
         }
     </style>
 </head>
 <body>
 
-    <div class="rules-card" id="mainRulesCard">
+    <div class="rules-card">
         
-        <!-- NEU: SPRACHUMSCHALTER OBEN RECHTS -->
+        <!-- 4 FLAGGEN NAVIGATION -->
         <div class="lang-switch">
-            <!-- Deutsche Flagge (SVG) -->
             <svg class="lang-btn active" id="btn-de" onclick="setLanguage('de')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 5 3">
-                <rect width="5" height="3" y="0" x="0" fill="#000"/>
-                <rect width="5" height="2" y="1" x="0" fill="#D00"/>
-                <rect width="5" height="1" y="2" x="0" fill="#FFCE00"/>
+                <rect width="5" height="3" fill="#000"/><rect width="5" height="2" y="1" fill="#D00"/><rect width="5" height="1" y="2" fill="#FFCE00"/>
             </svg>
-            <!-- Englische Flagge (SVG) -->
             <svg class="lang-btn" id="btn-en" onclick="setLanguage('en')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 30">
-                <clipPath id="s">
-                    <path d="M0,0 v30 h60 v-30 z"/>
-                </clipPath>
-                <clipPath id="t">
-                    <path d="M30,15 h30 v15 z v15 h-30 z h-30 v-15 z v-15 h30 z"/>
-                </clipPath>
+                <clipPath id="s"><path d="M0,0 v30 h60 v-30 z"/></clipPath>
+                <clipPath id="t"><path d="M30,15 h30 v15 z v15 h-30 z h-30 v-15 z v-15 h30 z"/></clipPath>
                 <g clip-path="url(#s)">
                     <path d="M0,0 v30 h60 v-30 z" fill="#012169"/>
                     <path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/>
@@ -238,593 +153,347 @@
                     <path d="M30,0 v30 M0,15 h60" stroke="#C8102E" stroke-width="6"/>
                 </g>
             </svg>
+            <svg class="lang-btn" id="btn-es" onclick="setLanguage('es')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 750 500">
+                <rect width="750" height="500" fill="#AA151B"/>
+                <rect width="750" height="250" y="125" fill="#F1BF00"/>
+            </svg>
+            <svg class="lang-btn" id="btn-fr" onclick="setLanguage('fr')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600">
+                <rect width="900" height="600" fill="#ED2939"/>
+                <rect width="600" height="600" fill="#fff"/>
+                <rect width="300" height="600" fill="#002395"/>
+            </svg>
         </div>
 
-        <!-- HAUPTÜBERSCHRIFT -->
-        <div class="main-widget-header">
-            <span class="lang-de">Infinity of Phoenix - Regelwerk</span>
-            <span class="lang-en">Infinity of Phoenix - Rules</span>
-        </div>
+        <div class="main-widget-header" id="mainTitle">Infinity of Phoenix - Regelwerk</div>
         
-        <!-- QUICKLINK NAVIGATION -->
         <div class="quick-nav">
-            <div class="quick-nav-links">
-                <a href="#regeln-s1" onclick="handleAccordionClick('regeln-s1')">
-                    <span class="lang-de">§1 SERVER</span><span class="lang-en">§1 SERVER</span>
-                </a>
-                <a href="#regeln-s2" onclick="handleAccordionClick('regeln-s2')">
-                    <span class="lang-de">§2 VERHALTEN</span><span class="lang-en">§2 BEHAVIOR</span>
-                </a>
-                <a href="#regeln-s3" onclick="handleAccordionClick('regeln-s3')">
-                    <span class="lang-de">§3 BAUEN</span><span class="lang-en">§3 BUILDING</span>
-                </a>
-                <a href="#regeln-s4" onclick="handleAccordionClick('regeln-s4')">
-                    <span class="lang-de">§4 ADMIN</span><span class="lang-en">§4 ADMIN</span>
-                </a>
-                <a href="#regeln-s5" onclick="handleAccordionClick('regeln-s5')">
-                    <span class="lang-de">§5 ZUCHT</span><span class="lang-en">§5 BREEDING</span>
-                </a>
-                <a href="#regeln-s6" onclick="handleAccordionClick('regeln-s6')">
-                    <span class="lang-de">§6 STRIKE</span><span class="lang-en">§6 STRIKE</span>
-                </a>
-                <a href="#regeln-s7" onclick="handleAccordionClick('regeln-s7')">
-                    <span class="lang-de">§7 MARKT</span><span class="lang-en">§7 MARKET</span>
-                </a>
+            <div class="quick-nav-links" id="navContainer">
+                <!-- Navigation wird per JS generiert -->
             </div>
         </div>
 
-        <!-- DETAILREGELN -->
+        <!-- CONTENT BEREICH (Wird per JS gefüllt) -->
         <div class="rule-section">
-            
-            <!-- §1 SERVER -->
-            <h2 id="regeln-s1" data-target="content-s1" 
-                data-title-de="§1 Serverregeln" 
-                data-title-en="§1 Server Rules"></h2>
-            <div id="content-s1" class="rule-content">
-                <ul>
-                    <li>
-                        <span class="lang-de">§1.1 Bei Fragen oder Problemen fragt im Chat, vielleicht kann euch schon mit einer Antwort geholfen werden.</span>
-                        <span class="lang-en">§1.1 If you have questions or problems, ask in chat; you might get help immediately.</span>
-                    </li>
-                    <li>
-                        <span class="lang-de">§1.2 Jeder Spieler muss dem Discord zugehören, um seinen Strukturenverfall durch Verifizierung auf 30 Tage setzen zu können und um bei Problemen oder Kontaktaufnahme erreichbar zu sein.</span>
-                        <span class="lang-en">§1.2 Every player must join the Discord to extend structure decay to 30 days via verification and to be reachable for problems or contact.</span>
-                    </li>
-                    <li>
-                        <span class="lang-de">§1.3 Beleidigungen oder rassistische Bemerkungen (Chat/Voice), Spamen, unhaltbare Anschuldigungen oder persönlich werdende Äußerungen sind zu unterlassen. Konflikte sollen LOKAL oder im DC gelöst werden. Admins können hier als Vermittler dienen.</span>
-                        <span class="lang-en">§1.3 Insults, racist remarks (chat/voice), spamming, baseless accusations, or personal attacks are prohibited. Conflicts should be resolved LOCALLY or in DC. Admins can act as mediators.</span>
-                    </li>
-                    <li>
-                        <span class="lang-de">§1.4 Multiaccounting für das Token-Double-Farming oder Edelstein-Farmen mit 2 Accounts, führt zu sofortigem Community-Ausschluss.</span>
-                        <span class="lang-en">§1.4 Multi-accounting for Token Double Farming or Gem Farming with 2 accounts leads to immediate community exclusion.</span>
-                    </li>
-                    <li>
-                        <span class="lang-de">§1.5 Spielt bitte fair mit euren Mitspielern, behandelt die Mitspieler mit Respekt und seid höflich!</span>
-                        <span class="lang-en">§1.5 Please play fairly, treat other players with respect, and be polite!</span>
-                    </li>
-                    <li>
-                        <span class="lang-de">§1.6 Der Charaktername, der Tribename und die Tribezugehörigkeit sowie der Tribe Rang (Tribeowner/Tribeadmin) müssen auf jedem Server identisch sein, mit Ausnahme der Overhaul's, IOP Adventures & IOP Battlegrounds.</span>
-                        <span class="lang-en">§1.6 Character name, Tribe name, Tribe affiliation, and Tribe rank (Owner/Admin) must be identical on every server, except for Overhauls, IOP Adventures & IOP Battlegrounds.</span>
-                    </li>
-                    <li>
-                        <span class="lang-de">§1.7 Generell gilt, auch Solo-Spieler müssen sich einen Tribe erstellen.</span>
-                        <span class="lang-en">§1.7 Generally, even solo players must create a Tribe.</span>
-                    </li>
-                    <li>
-                        <span class="lang-de">§1.8 Tribeinternas werden vom Adminteam nicht supportet, unterstützen aber gerne bei der Schlichtung von Problemen.</span>
-                        <span class="lang-en">§1.8 Tribe internal matters are not supported by the Admin team, though we are happy to assist in conflict resolution.</span>
-                    </li>
-                </ul>
-            </div>
-
-            <!-- §2 VERHALTEN -->
-            <h2 id="regeln-s2" data-target="content-s2" 
-                data-title-de="§2 Verhaltensregeln" 
-                data-title-en="§2 Code of Conduct"></h2>
-            <div id="content-s2" class="rule-content">
-                <ul>
-                    <li>
-                        <span class="lang-de">§2.1 Es ist untersagt, Spieler beim Zähmen zu stören.</span>
-                        <span class="lang-en">§2.1 Disturbing players while taming is prohibited.</span>
-                    </li>
-                    <li>
-                        <span class="lang-de">§2.2 Andere Spieler mit Flugdinos aufzuheben und absichtlich fallen zu lassen, zu ertränken oder auf irgendeine Weise zu Tode kommen zu lassen oder zu bestehlen, ist verboten.</span>
-                        <span class="lang-en">§2.2 Picking up other players with flyers and intentionally dropping, drowning, or causing their death or stealing from them is prohibited.</span>
-                    </li>
-                    <li>
-                        <span class="lang-de">§2.3 Das Ausnutzen von In-Game-Bugs, um Euch Vorteile zu verschaffen, ist verboten.</span>
-                        <span class="lang-en">§2.3 Exploiting in-game bugs to gain advantages is prohibited.</span>
-                    </li>
-                    <li>
-                        <span class="lang-de">§2.4 Es ist verboten, in fremden Basen einzudringen, Kisten/Strukturen zu durchsuchen bzw. zu stehlen oder Tiere in diese abzuwerfen. Fragt im Chat/Voice-Chat nach, ob der Besitzer zu Hause ist und euch Zutritt gewährt. (Ausgenommen sind Airdrops, die in jener Base landen).</span>
-                        <span class="lang-en">§2.4 Entering foreign bases, searching/stealing from boxes/structures, or dropping animals into them is forbidden. Ask in Chat/Voice if the owner is home and grants entry. (Exception: Airdrops landing in that base).</span>
-                    </li>
-                    <li>
-                        <span class="lang-de">§2.5 Das Looten von Taschen von Stamm-fremden Spielern, Dinos oder Strukturen ist strengstens untersagt! Ausgenommen ist hier natürlich, wenn ihr einem anderen Spieler dabei hilft, seinen Loot vor Verlust zu retten.</span>
-                        <span class="lang-en">§2.5 Looting bags of non-tribe players, dinos, or structures is strictly prohibited! Exception: helping another player save their loot from loss.</span>
-                    </li>
-                    <li>
-                        <span class="lang-de">§2.6 Die Übernahme Stamm-fremder Dinos ist grundsätzlich verboten, außer sie wurden vom Eigentümer direkt für euch freigegeben.</span>
-                        <span class="lang-en">§2.6 Taking over non-tribe dinos is generally forbidden unless directly released to you by the owner.</span>
-                    </li>
-                    <li>
-                        <span class="lang-de">§2.7 Das Abstellen von Tieren innerhalb von Dungeons ist zu unterlassen. Tiere, die Wege, Lootboxen etc. blockieren, werden entfernt.</span>
-                        <span class="lang-en">§2.7 Parking animals inside dungeons is prohibited. Animals blocking paths, loot boxes, etc., will be removed.</span>
-                    </li>
-                    <li>
-                        <span class="lang-de">§2.8 Wer zuerst kommt, malt zuerst: Das gilt für Lootstrahlen, Wyvernnester und für das Zähmen von Dinos, sowie für die Rare-Spawns und für die Shinys. Bitte sprecht euch ab und beachtet dabei den allgemeinen Umgangston. Im Zweifel kontaktiert bitte einen Admin zur Klärung.</span>
-                        <span class="lang-en">§2.8 First come, first served: This applies to Loot Drops, Wyvern Nests, Taming, Rare Spawns, and Shinys. Please coordinate and maintain a polite tone. When in doubt, contact an Admin.</span>
-                    </li>
-                    <li>
-                        <span class="lang-de">§2.9 Das Reservieren von Basespots in jeglicher Form ist strengstens Untersagt und Verboten. Es muss mindestens eine Spawnhütte dort stehen, ein Umzug angemeldet sein via. Ticket oder der Stamm muss dort sichtlich eine erkennbare Base mit Location Flag sowie einem Schild haben.</span>
-                        <span class="lang-en">§2.9 Reserving base spots is strictly prohibited. There must be at least a spawn hut, a registered move via Ticket, or a visible base with a Location Flag and sign.</span>
-                    </li>
-                    <li>
-                        <span class="lang-de">§2.10 Das ineinander stacken von Kreaturen ist strengstens untersagt.</span>
-                        <span class="lang-en">§2.10 Stacking creatures inside each other is strictly prohibited.</span>
-                    </li>
-                    <li>
-                        <span class="lang-de">§2.11 Die Weitergabe von Strukturen, Rüstungsteilen & Waffen, sowie Sättel und Kreaturen an Spieler, die das erforderliche Level für die Engramme der Sättel, Items & Co noch nicht erreicht haben, ist strengstens untersagt. Tek Strukturen...</span>
-                        <span class="lang-en">§2.11 Passing structures, armor, weapons, saddles, and creatures to players who haven't reached the required level for the engrams is strictly prohibited. Tek structures...</span>
-                    </li>
-                    <li>
-                        <span class="lang-de">§2.12 Das bekämpfen der Bosse auf unseren Ark Karten ist in einer Allianz, oder Gruppe problemlos möglich...</span>
-                        <span class="lang-en">§2.12 Fighting bosses on our Ark maps in an alliance or group is allowed without issues...</span>
-                    </li>
-                </ul>
-            </div>
-
-            <!-- §3 BAUEN -->
-            <h2 id="regeln-s3" data-target="content-s3" 
-                data-title-de="§3 Bauregeln" 
-                data-title-en="§3 Building Rules"></h2>
-            <div id="content-s3" class="rule-content">
-                <h3>
-                    <span class="lang-de">Generelle Bauregeln:</span>
-                    <span class="lang-en">General Building Rules:</span>
-                </h3>
-                <ul>
-                    <li>
-                        <span class="lang-de">§3.1 1x1 Strukturen, Lagerfeuer, Übergangsbasen und Schlafplätze, müssen vom Besitzer nach Benutzung wieder entfernt werden.</span>
-                        <span class="lang-en">§3.1 1x1 structures, campfires, temporary bases, and sleeping bags must be removed by the owner after use.</span>
-                    </li>
-                    <li>
-                        <span class="lang-de">§3.2 Beim Bau einer Basis muss darauf geachtet werden, dass Spawn-Plätze, Dungeons und Loot-Kisten/Drops weiterhin erreichbar bleiben.</span>
-                        <span class="lang-en">§3.2 When building a base, ensure spawn points, dungeons, and loot crates/drops remain accessible.</span>
-                    </li>
-                    <li>
-                        <span class="lang-de">§3.3 Zähm-Fallen dürfen nur stehen bleiben, wenn diese auch sehr nah oder direkt in die Spielerbasis integriert wurden. Zähm-Fallen generell müssen sofort nach Benutzung entfernt werden.</span>
-                        <span class="lang-en">§3.3 Taming traps may only remain if integrated very close to or directly into the player base. General taming traps must be removed immediately after use.</span>
-                    </li>
-                    <li>
-                        <span class="lang-de">§3.4 Das Blockieren von großen Ressourcen-Spawn-Plätzen wie Metall, Kristall, Obsidian o.ä., Artefakte, Loot-Kisten, Drops und Explorernotes, sowie Biberdämme durch Strukturen, ist verboten...</span>
-                        <span class="lang-en">§3.4 Blocking large resource spawns (Metal, Crystal, Obsidian, etc.), Artifacts, Loot Crates, Drops, Explorer Notes, and Beaver Dams with structures is forbidden...</span>
-                    </li>
-                </ul>
-                
-                <h3>
-                    <span class="lang-de">Bauregeln Hauptbasen:</span>
-                    <span class="lang-en">Main Base Rules:</span>
-                </h3>
-                <ul>
-                    <li>
-                        <span class="lang-de">§3.5 Die Anzahl der Hauptbasen auf dem Cluster (nicht Server!) wird nun anhand der Stammesmitglieder bemessen...</span>
-                        <span class="lang-en">§3.5 The number of main bases on the cluster is calculated based on tribe members...</span>
-                    </li>
-                    <li>
-                        <span class="lang-de">§3.55 Unabhängig der Stammesgröße dürfen pro Stamm auf den Inoffiziellen Mod Karten... 2 weitere Hauptbasen gebaut werden...</span>
-                        <span class="lang-en">§3.55 Regardless of tribe size, 2 additional main bases may be built per tribe on Unofficial Mod Maps...</span>
-                    </li>
-                    <li>
-                        <span class="lang-de">§3.56 Unabhängig der Stammesgröße dürfen pro Stamm auf jedem Overhaul Server 1 Hauptbasis, und 1 Wasserbasis errichtet werden.</span>
-                        <span class="lang-en">§3.56 Regardless of tribe size, 1 main base and 1 water base may be built per tribe on every Overhaul Server.</span>
-                    </li>
-                    <li>
-                        <span class="lang-de">§3.6 Eine Hauptbasis darf eine Größe von 7x7 Behemoth-Tore nicht überschreiten.</span>
-                        <span class="lang-en">§3.6 A main base must not exceed the size of 7x7 Behemoth Gates.</span>
-                    </li>
-                </ul>
-                
-                <h3>
-                    <span class="lang-de">Bauregeln Wasserbasen:</span>
-                    <span class="lang-en">Water Base Rules:</span>
-                </h3>
-                <ul>
-                    <li>
-                        <span class="lang-de">§3.7 Auf dem gesamten Cluster ist pro Tribe 1 Wasserbasis erlaubt.</span>
-                        <span class="lang-en">§3.7 1 water base per tribe is allowed on the entire cluster.</span>
-                    </li>
-                    <li>
-                        <span class="lang-de">§3.8 Eine Wasserbasis darf eine Maximalgröße von 1 Ozeanplattform oder 3x3 Behemoth-Tore nicht überschreiten.</span>
-                        <span class="lang-en">§3.8 A water base must not exceed 1 Ocean Platform or 3x3 Behemoth Gates.</span>
-                    </li>
-                    <li>
-                        <span class="lang-de">§3.9 Eine Wasserbasis darf prinzipiell auch auf einem Server sein, auf der eine Spawnhütte oder eine Hauptbasis steht.</span>
-                        <span class="lang-en">§3.9 A water base may generally be on the same server as a spawn hut or main base.</span>
-                    </li>
-                </ul>
-                
-                <h3>
-                    <span class="lang-de">Bauregeln Spawnhütten:</span>
-                    <span class="lang-en">Spawn Hut Rules:</span>
-                </h3>
-                <ul>
-                    <li>
-                        <span class="lang-de">§3.10 Spawnhütten dürfen nur auf Servern gebaut werden, auf denen der Stamm sonst keinerlei Strukturen besitzt (Wasserbasis ausgenommen).</span>
-                        <span class="lang-en">§3.10 Spawn huts may only be built on servers where the tribe owns no other structures (water base excluded).</span>
-                    </li>
-                    <li>
-                        <span class="lang-de">§3.11 Die Größe ist auf eine Fundamentfläche von 8x8 Fundamenten begrenzt, wobei die Höhe nicht mehr als 6 Wände überschreiten darf.</span>
-                        <span class="lang-en">§3.11 Size is limited to 8x8 foundations, height not exceeding 6 walls.</span>
-                    </li>
-                    <li>
-                        <span class="lang-de">§3.12 Tek-Schilde sind an und in Spawnhütten verboten.</span>
-                        <span class="lang-en">§3.12 Tek Shields are forbidden on/in spawn huts.</span>
-                    </li>
-                    <li>
-                        <span class="lang-de">§3.13 Kreaturen an oder in Spawnhütten werden ohne Warnung gelöscht.</span>
-                        <span class="lang-en">§3.13 Creatures at or in spawn huts will be deleted without warning.</span>
-                    </li>
-                    <li>
-                        <span class="lang-de">§3.14 Ein Unterbau, um unebenen Untergrund auszugleichen, wird nicht zur Höhe hinzugerechnet...</span>
-                        <span class="lang-en">§3.14 Foundations to level ground do not count towards height...</span>
-                    </li>
-                </ul>
-                
-                <h3>
-                    <span class="lang-de">Höhleneingänge:</span>
-                    <span class="lang-en">Cave Entrances:</span>
-                </h3>
-                <ul>
-                    <li>
-                        <span class="lang-de">§3.16 Jeder Höhleneingang ist im Umkreis von 100m freizuhalten, und nicht zu bebauen.</span>
-                        <span class="lang-en">§3.16 Every cave entrance must be kept clear within a 100m radius and not be built upon.</span>
-                    </li>
-                </ul>
-                
-                <h3>
-                    <span class="lang-de">Abstand zum Nachbar:</span>
-                    <span class="lang-en">Distance to Neighbors:</span>
-                </h3>
-                <ul>
-                    <li>
-                        <span class="lang-de">§3.17 Beim Bau einer Basis muss darauf geachtet werden, dass ein Abstand von 150m zum Nachbar eingehalten wird...</span>
-                        <span class="lang-en">§3.17 A distance of 150m to neighbors must be maintained when building a base...</span>
-                    </li>
-                </ul>
-                
-                <h3>
-                    <span class="lang-de">Bauregeln - Kennzeichnungen:</span>
-                    <span class="lang-en">Building Rules - Labeling:</span>
-                </h3>
-                <ul>
-                    <li>
-                        <span class="lang-de">§3.18 Jede Art von Basis... muss mit einem Schild kenntlich gemacht werden...</span>
-                        <span class="lang-en">§3.18 Every type of base... must be labeled with a sign...</span>
-                    </li>
-                    <li>
-                        <span class="lang-de">§3.19 Jede Art von Basis... muss mit einer Location Flag getagged werden...</span>
-                        <span class="lang-en">§3.19 Every type of base... must be tagged with a Location Flag...</span>
-                    </li>
-                </ul>
-                
-                <h3>
-                    <span class="lang-de">Bauregeln - Neue Karten:</span>
-                    <span class="lang-en">Building Rules - New Maps:</span>
-                </h3>
-                <ul>
-                    <li>
-                        <span class="lang-de">§3.20 Mit jeder neuen Karte werden die Basen-Limit-Grenzen bis Öffnung des Travels ausgehebelt...</span>
-                        <span class="lang-en">§3.20 With every new map, base limits are lifted until Travel opens...</span>
-                    </li>
-                </ul>
-                
-                <h3>
-                    <span class="lang-de">Tek Drill/Bohrer für Custom Caves:</span>
-                    <span class="lang-en">Tek Drill for Custom Caves:</span>
-                </h3>
-                <ul>
-                    <li>
-                        <span class="lang-de">§3.30 Der Tek Drill/ Bohrer darf nur für 1 Cave pro Hauptbasis verwendet werden.</span>
-                        <span class="lang-en">§3.30 The Tek Drill may only be used for 1 Cave per Main Base.</span>
-                    </li>
-                </ul>
-            </div>
-
-            <!-- §4 ADMIN -->
-            <h2 id="regeln-s4" data-target="content-s4" 
-                data-title-de="§4 Adminregeln" 
-                data-title-en="§4 Admin Rules"></h2>
-            <div id="content-s4" class="rule-content">
-                <ul>
-                    <li>
-                        <span class="lang-de">§4.1 Admins ist es erlaubt, Konsolenbefehle zu nutzen, um Spielern zu helfen, Mods oder Inhalte zu testen, Fehler (Bugs) im Spiel zu umgehen...</span>
-                        <span class="lang-en">§4.1 Admins are allowed to use console commands to help players, test mods/content, bypass bugs...</span>
-                    </li>
-                    <li>
-                        <span class="lang-de">§4.2 Admins ist es erlaubt, bei begründetem Verdacht eines groben Regelverstoßes die Tribelogs beschuldigter Spieler zu lesen...</span>
-                        <span class="lang-en">§4.2 Admins are allowed to read tribe logs of accused players in case of reasonable suspicion of gross rule violations...</span>
-                    </li>
-                    <li>
-                        <span class="lang-de">§4.3 Admins ist es erlaubt, Strukturen, die nicht dem Regelwerk entsprechen, zu entfernen.</span>
-                        <span class="lang-en">§4.3 Admins are allowed to remove structures that do not comply with the rules.</span>
-                    </li>
-                    <li>
-                        <span class="lang-de">§4.4 Admins können ohne Ankündigung Funktionen und Regeln objektiv ändern.</span>
-                        <span class="lang-en">§4.4 Admins can objectively change functions and rules without notice.</span>
-                    </li>
-                </ul>
-            </div>
-
-            <!-- §5 ZUCHT -->
-            <h2 id="regeln-s5" data-target="content-s5" 
-                data-title-de="§5 Zuchtregeln" 
-                data-title-en="§5 Breeding Rules"></h2>
-            <div id="content-s5" class="rule-content">
-                <ul>
-                    <li>
-                        <span class="lang-de">§5.0 Kreaturen aus dem Schwarzmarkt, dürfen nicht gehandelt werden.</span>
-                        <span class="lang-en">§5.0 Creatures from the black market may not be traded.</span>
-                    </li>
-                    <li>
-                        <span class="lang-de">§5.1 Kreaturen mit mehr als 100 Mutationen in einem Stat, dürfen generell nicht mehr verkauft werden.</span>
-                        <span class="lang-en">§5.1 Creatures with more than 100 mutations in a stat may generally no longer be sold.</span>
-                    </li>
-                    <li>
-                        <span class="lang-de">§5.2 Es dürfen keine mutierten Kreaturen unkastriert weitergegeben werden.</span>
-                        <span class="lang-en">§5.2 No mutated creatures may be passed on unneutered/unspayed.</span>
-                    </li>
-                    <li>
-                        <span class="lang-de">§5.3 Die Zuchtlinie muss vom Basiswert an nachvollziehbar sein, und nachgewiesen werden können.</span>
-                        <span class="lang-en">§5.3 The breeding line must be traceable from the base value and provable.</span>
-                    </li>
-                    <li>
-                        <span class="lang-de">§5.4 Mutierte Kreaturen, müssen zu angemessenen Preisen verkauft werden.</span>
-                        <span class="lang-en">§5.4 Mutated creatures must be sold at reasonable prices.</span>
-                    </li>
-                    <li>
-                        <span class="lang-de">§5.5 Mutierte Kreaturen, dürfen nicht verschenkt werden.</span>
-                        <span class="lang-en">§5.5 Mutated creatures may not be given away for free.</span>
-                    </li>
-                    <li>
-                        <span class="lang-de">§5.6 Kreaturen, die "nur" Farbmutationen haben, fallen aus diesen Regelungen raus.</span>
-                        <span class="lang-en">§5.6 Creatures that "only" have color mutations are exempt from these rules.</span>
-                    </li>
-                    <li>
-                        <span class="lang-de">§5.7 Wer Kreaturenverkäufe für bspw. 1 Faser anbietet, um die Regel zu umgehen, verstößt gegen die Zuchtregeln.</span>
-                        <span class="lang-en">§5.7 Offering creature sales for e.g. 1 Fiber to bypass the rule violates breeding rules.</span>
-                    </li>
-                </ul>
-                <h3>
-                    <span class="lang-de">Zuchtallianz-Regeln:</span>
-                    <span class="lang-en">Breeding Alliance Rules:</span>
-                </h3>
-                <ul>
-                    <li>
-                        <span class="lang-de">§5.9 Jeder Stamm darf auf dem Cluster nur Eine Zuchtallianz haben.</span>
-                        <span class="lang-en">§5.9 Each tribe may have only ONE breeding alliance on the cluster.</span>
-                    </li>
-                    <li>
-                        <span class="lang-de">§5.91 In einer Zuchtallianz sind nicht mehr als 2 Stämme erlaubt.</span>
-                        <span class="lang-en">§5.91 No more than 2 tribes are allowed in a breeding alliance.</span>
-                    </li>
-                </ul>
-            </div>
-
-            <!-- §6 STRIKE -->
-            <h2 id="regeln-s6" data-target="content-s6" 
-                data-title-de="§6 Strike System" 
-                data-title-en="§6 Strike System"></h2>
-            <div id="content-s6" class="rule-content">
-                <ul>
-                    <li>
-                        <span class="lang-de">§6.1 Strikes werden generell nur bei schwerwiegenden Verfehlungen oder Verstößen ausgesprochen...</span>
-                        <span class="lang-en">§6.1 Strikes are generally only issued for serious misconduct or violations...</span>
-                    </li>
-                    <li>
-                        <span class="lang-de">§6.2 Bei Regelverstößen, je nach Schwere werden Strikes ausgesprochen, und der Stamm entsprechend markiert.</span>
-                        <span class="lang-en">§6.2 In case of rule violations, depending on severity, strikes are issued and the tribe marked.</span>
-                    </li>
-                    <li>
-                        <span class="lang-de">§6.3 Bei 3 Strikes, wird ein temporärer oder dauerhafter Bann veranlasst.</span>
-                        <span class="lang-en">§6.3 At 3 strikes, a temporary or permanent ban is initiated.</span>
-                    </li>
-                    <li>
-                        <span class="lang-de">§6.4 Alle 6 Monate, werden die Strikes zurückgesetzt...</span>
-                        <span class="lang-en">§6.4 Strikes are reset every 6 months...</span>
-                    </li>
-                </ul>
-            </div>
-
-            <!-- §7 MARKT -->
-            <h2 id="regeln-s7" data-target="content-s7" 
-                data-title-de="§7 Marktplatz Regeln - Community Center" 
-                data-title-en="§7 Marketplace Rules - Community Center"></h2>
-            <div id="content-s7" class="rule-content">
-                <ul>
-                    <li>
-                        <span class="lang-de">§7.1 Das dauerhafte Abstellen von Kreaturen auf dem Marktplatz, außerhalb des Markthauses ist strikt verboten.</span>
-                        <span class="lang-en">§7.1 Permanent parking of creatures at the marketplace outside the market house is strictly prohibited.</span>
-                    </li>
-                    <li>
-                        <span class="lang-de">§7.2 Es darf grundsätzlich nur im Markthaus & Gärten, sowie vor Haustüren gebaut werden...</span>
-                        <span class="lang-en">§7.2 Building is generally only allowed in the market house, gardens, and in front of doors...</span>
-                    </li>
-                    <li>
-                        <span class="lang-de">§7.3 Häußer dürfen auch privat genutzt werden, es ist aber grundsätzlich Regel, dass ein Teil des Hauses als Markt verwendet werden muss.</span>
-                        <span class="lang-en">§7.3 Houses may also be used privately, but it is a rule that part of the house must be used as a market.</span>
-                    </li>
-                    <li>
-                        <span class="lang-de">§7.4 Jedes Markthaus ist ausnahmslos mit einem Zaunfundament, einer Wand/Türrahmen und einer Tür zu beanspruchen...</span>
-                        <span class="lang-en">§7.4 Every market house must be claimed with a fence foundation, wall/doorframe, and door without exception...</span>
-                    </li>
-                    <li>
-                        <span class="lang-de">§7.5 Jeder Stamm darf sich maximal 1 Markthaus anmieten/besetzen.</span>
-                        <span class="lang-en">§7.5 Each tribe may rent/occupy a maximum of 1 market house.</span>
-                    </li>
-                    <li>
-                        <span class="lang-de">§7.6 Jedes Markthaus muss mit einem Scribble-Wandschild... gekennzeichnet werden.</span>
-                        <span class="lang-en">§7.6 Every market house must be labeled with a scribble wall sign...</span>
-                    </li>
-                </ul>
-            </div>
-            
+            <h2 id="regeln-s1" data-target="content-s1"></h2>
+            <div id="content-s1" class="rule-content"></div>
+        </div>
+        <div class="rule-section">
+            <h2 id="regeln-s2" data-target="content-s2"></h2>
+            <div id="content-s2" class="rule-content"></div>
+        </div>
+        <div class="rule-section">
+            <h2 id="regeln-s3" data-target="content-s3"></h2>
+            <div id="content-s3" class="rule-content"></div>
+        </div>
+        <div class="rule-section">
+            <h2 id="regeln-s4" data-target="content-s4"></h2>
+            <div id="content-s4" class="rule-content"></div>
+        </div>
+        <div class="rule-section">
+            <h2 id="regeln-s5" data-target="content-s5"></h2>
+            <div id="content-s5" class="rule-content"></div>
+        </div>
+        <div class="rule-section">
+            <h2 id="regeln-s6" data-target="content-s6"></h2>
+            <div id="content-s6" class="rule-content"></div>
+        </div>
+        <div class="rule-section">
+            <h2 id="regeln-s7" data-target="content-s7"></h2>
+            <div id="content-s7" class="rule-content"></div>
         </div>
     </div>
 
 <script>
-    const ITEM_DELAY = 100;
-
-    // --- SPRACH STEUERUNG (NEU) ---
-    let currentLang = 'de';
-
-    function setLanguage(lang) {
-        currentLang = lang;
-        const mainCard = document.getElementById('mainRulesCard');
-        const btnDe = document.getElementById('btn-de');
-        const btnEn = document.getElementById('btn-en');
-
-        if (lang === 'en') {
-            mainCard.classList.add('show-en');
-            btnEn.classList.add('active');
-            btnDe.classList.remove('active');
-            document.documentElement.lang = 'en';
-        } else {
-            mainCard.classList.remove('show-en');
-            btnDe.classList.add('active');
-            btnEn.classList.remove('active');
-            document.documentElement.lang = 'de';
+    // =========================================================================
+    // 1. DATABASE (DE, EN, ES, FR) - FERTIG ÜBERSETZT
+    // =========================================================================
+    const translations = {
+        meta: {
+            title: { 
+                de: "Infinity of Phoenix - Regelwerk", 
+                en: "Infinity of Phoenix - Rules",
+                es: "Infinity of Phoenix - Reglas",
+                fr: "Infinity of Phoenix - Règles"
+            }
+        },
+        nav: [
+            { id: "nav-s1", target: "regeln-s1", de: "§1 SERVER", en: "§1 SERVER", es: "§1 SERVIDOR", fr: "§1 SERVEUR" },
+            { id: "nav-s2", target: "regeln-s2", de: "§2 VERHALTEN", en: "§2 BEHAVIOR", es: "§2 CONDUCTA", fr: "§2 CONDUITE" },
+            { id: "nav-s3", target: "regeln-s3", de: "§3 BAUEN", en: "§3 BUILDING", es: "§3 CONSTR.", fr: "§3 CONSTR." },
+            { id: "nav-s4", target: "regeln-s4", de: "§4 ADMIN", en: "§4 ADMIN", es: "§4 ADMIN", fr: "§4 ADMIN" },
+            { id: "nav-s5", target: "regeln-s5", de: "§5 ZUCHT", en: "§5 BREEDING", es: "§5 CRIANZA", fr: "§5 ÉLEVAGE" },
+            { id: "nav-s6", target: "regeln-s6", de: "§6 STRIKE", en: "§6 STRIKE", es: "§6 STRIKE", fr: "§6 STRIKE" },
+            { id: "nav-s7", target: "regeln-s7", de: "§7 MARKT", en: "§7 MARKET", es: "§7 MERCADO", fr: "§7 MARCHÉ" },
+        ],
+        sections: {
+            "s1": {
+                title: { de: "§1 Serverregeln", en: "§1 Server Rules", es: "§1 Reglas del Servidor", fr: "§1 Règles du Serveur" },
+                content: [
+                    { type: 'list', items: [
+                        { de: "§1.1 Bei Fragen oder Problemen fragt im Chat, vielleicht kann euch schon mit einer Antwort geholfen werden.", en: "§1.1 If you have questions or problems, ask in chat; you might get help immediately.", es: "§1.1 Si tienes preguntas o problemas, pregunta en el chat.", fr: "§1.1 Si vous avez des questions, demandez dans le chat." },
+                        { de: "§1.2 Jeder Spieler muss dem Discord zugehören, um seinen Strukturenverfall durch Verifizierung auf 30 Tage setzen zu können.", en: "§1.2 Every player must join Discord to extend structure decay to 30 days via verification.", es: "§1.2 Todo jugador debe unirse a Discord para extender el deterioro de estructuras a 30 días.", fr: "§1.2 Chaque joueur doit rejoindre Discord pour étendre la dégradation des structures à 30 jours." },
+                        { de: "§1.3 Beleidigungen oder rassistische Bemerkungen, Spamen und unhaltbare Anschuldigungen sind zu unterlassen.", en: "§1.3 Insults, racist remarks, spamming, and baseless accusations are prohibited.", es: "§1.3 Insultos, comentarios racistas y spam están prohibidos.", fr: "§1.3 Les insultes, remarques racistes et le spam sont interdits." },
+                        { de: "§1.4 Multiaccounting für das Token-Double-Farming führt zu sofortigem Community-Ausschluss.", en: "§1.4 Multi-accounting for Token Double Farming leads to immediate exclusion.", es: "§1.4 El uso de multicuentas para Token-Double-Farming conlleva la exclusión inmediata.", fr: "§1.4 Le multi-compte pour le Token-Double-Farming entraîne une exclusion immédiate." },
+                        { de: "§1.5 Spielt bitte fair mit euren Mitspielern, behandelt die Mitspieler mit Respekt und seid höflich!", en: "§1.5 Please play fairly, treat others with respect, and be polite!", es: "§1.5 ¡Juega limpio y trata a los demás con respeto!", fr: "§1.5 Jouez loyalement et traitez les autres avec respect !" },
+                        { de: "§1.6 Der Charaktername und Tribename müssen auf jedem Server identisch sein (Ausnahme Overhaul).", en: "§1.6 Character and Tribe name must be identical on every server (Exception: Overhaul).", es: "§1.6 El nombre del personaje y tribu deben ser idénticos en cada servidor.", fr: "§1.6 Le nom du personnage et de la tribu doivent être identiques sur chaque serveur." },
+                        { de: "§1.7 Generell gilt, auch Solo-Spieler müssen sich einen Tribe erstellen.", en: "§1.7 Generally, even solo players must create a Tribe.", es: "§1.7 Incluso los jugadores solitarios deben crear una tribu.", fr: "§1.7 Même les joueurs solo doivent créer une tribu." },
+                        { de: "§1.8 Tribeinternas werden vom Adminteam nicht supportet.", en: "§1.8 Tribe internal matters are not supported by Admins.", es: "§1.8 Los asuntos internos de la tribu no son gestionados por Admins.", fr: "§1.8 Les affaires internes de la tribu ne sont pas gérées par les Admins." }
+                    ]}
+                ]
+            },
+            "s2": {
+                title: { de: "§2 Verhaltensregeln", en: "§2 Code of Conduct", es: "§2 Código de Conducta", fr: "§2 Code de Conduite" },
+                content: [
+                    { type: 'list', items: [
+                        { de: "§2.1 Es ist untersagt, Spieler beim Zähmen zu stören.", en: "§2.1 Disturbing players while taming is prohibited.", es: "§2.1 Está prohibido molestar a jugadores mientras domestican.", fr: "§2.1 Il est interdit de déranger les joueurs pendant le taming." },
+                        { de: "§2.2 Andere Spieler mit Flugdinos aufzuheben und fallen zu lassen ist verboten.", en: "§2.2 Picking up and dropping players with flyers is prohibited.", es: "§2.2 Levantar y dejar caer jugadores con voladores está prohibido.", fr: "§2.2 Saisir et lâcher des joueurs avec des volants est interdit." },
+                        { de: "§2.3 Das Ausnutzen von In-Game-Bugs ist verboten.", en: "§2.3 Exploiting in-game bugs is prohibited.", es: "§2.3 Aprovecharse de bugs está prohibido.", fr: "§2.3 L'exploitation de bugs est interdite." },
+                        { de: "§2.4 Es ist verboten, in fremden Basen einzudringen oder zu stehlen.", en: "§2.4 Entering foreign bases or stealing is prohibited.", es: "§2.4 Entrar en bases ajenas o robar está prohibido.", fr: "§2.4 Entrer dans des bases étrangères ou voler est interdit." },
+                        { de: "§2.5 Das Looten von Taschen fremder Spieler ist untersagt!", en: "§2.5 Looting bags of other players is prohibited!", es: "§2.5 ¡Saquear bolsas de otros jugadores está prohibido!", fr: "§2.5 Piller les sacs d'autres joueurs est interdit !" },
+                        { de: "§2.6 Die Übernahme fremder Dinos ist grundsätzlich verboten.", en: "§2.6 Taking over foreign dinos is generally forbidden.", es: "§2.6 Quedarse con dinos ajenos está prohibido.", fr: "§2.6 S'approprier des dinos étrangers est interdit." },
+                        { de: "§2.7 Das Abstellen von Tieren innerhalb von Dungeons ist zu unterlassen.", en: "§2.7 Parking animals inside dungeons is prohibited.", es: "§2.7 Prohibido dejar animales en mazmorras.", fr: "§2.7 Interdit de laisser des animaux dans les donjons." },
+                        { de: "§2.8 Wer zuerst kommt, malt zuerst (Loot, Tame, Spawns).", en: "§2.8 First come, first served (Loot, Tame, Spawns).", es: "§2.8 El primero en llegar se lo queda (Loot, Tame, Spawns).", fr: "§2.8 Premier arrivé, premier servi (Loot, Tame, Spawns)." },
+                        { de: "§2.9 Das Reservieren von Basespots ist verboten.", en: "§2.9 Reserving base spots is prohibited.", es: "§2.9 Reservar lugares para bases está prohibido.", fr: "§2.9 La réservation d'emplacements de base est interdite." },
+                        { de: "§2.10 Das ineinander stacken von Kreaturen ist untersagt.", en: "§2.10 Stacking creatures is prohibited.", es: "§2.10 Apilar criaturas está prohibido.", fr: "§2.10 Empiler des créatures est interdit." }
+                    ]}
+                ]
+            },
+            "s3": {
+                title: { de: "§3 Bauregeln", en: "§3 Building Rules", es: "§3 Reglas de Construcción", fr: "§3 Règles de Construction" },
+                content: [
+                    { type: 'header', text: { de: "Generelle Bauregeln:", en: "General Building Rules:", es: "Reglas Generales:", fr: "Règles Générales :" } },
+                    { type: 'list', items: [
+                        { de: "§3.1 1x1 Strukturen und temporäre Bauten müssen nach Benutzung entfernt werden.", en: "§3.1 1x1 structures and temporary builds must be removed after use.", es: "§3.1 Estructuras 1x1 y temporales deben eliminarse tras su uso.", fr: "§3.1 Les structures 1x1 et temporaires doivent être retirées après usage." },
+                        { de: "§3.2 Spawn-Plätze und Loot-Drops müssen erreichbar bleiben.", en: "§3.2 Spawn points and loot drops must remain accessible.", es: "§3.2 Puntos de spawn y loot drops deben seguir accesibles.", fr: "§3.2 Les points de spawn et loot drops doivent rester accessibles." },
+                        { de: "§3.3 Zähm-Fallen müssen sofort nach Benutzung entfernt werden.", en: "§3.3 Taming traps must be removed immediately after use.", es: "§3.3 Trampas de tameo deben eliminarse inmediatamente.", fr: "§3.3 Les pièges de taming doivent être retirés immédiatement." },
+                        { de: "§3.4 Das Blockieren von Ressourcen-Spawns ist verboten.", en: "§3.4 Blocking resource spawns is prohibited.", es: "§3.4 Bloquear spawns de recursos está prohibido.", fr: "§3.4 Bloquer les spawns de ressources est interdit." }
+                    ]},
+                    { type: 'header', text: { de: "Bauregeln Hauptbasen:", en: "Main Base Rules:", es: "Reglas Base Principal:", fr: "Règles Base Principale :" } },
+                    { type: 'list', items: [
+                        { de: "§3.5 Anzahl der Hauptbasen basiert auf Stammesgröße (Min 2, +1 pro Mitglied, Max 4).", en: "§3.5 Number of main bases based on tribe size (Min 2, +1 per member, Max 4).", es: "§3.5 Número de bases según tamaño de tribu (Min 2, +1 por miembro, Max 4).", fr: "§3.5 Nombre de bases selon la taille de la tribu (Min 2, +1 par membre, Max 4)." },
+                        { de: "§3.6 Eine Hauptbasis darf 7x7 Behemoth-Tore nicht überschreiten.", en: "§3.6 A main base must not exceed 7x7 Behemoth Gates.", es: "§3.6 Una base principal no debe exceder 7x7 Puertas Behemoth.", fr: "§3.6 Une base principale ne doit pas dépasser 7x7 Portes Béhémoth." }
+                    ]},
+                    { type: 'header', text: { de: "Bauregeln Wasserbasen:", en: "Water Base Rules:", es: "Reglas Base Acuática:", fr: "Règles Base Aquatique :" } },
+                    { type: 'list', items: [
+                        { de: "§3.7 Pro Tribe ist 1 Wasserbasis erlaubt.", en: "§3.7 1 water base per tribe is allowed.", es: "§3.7 Se permite 1 base acuática por tribu.", fr: "§3.7 1 base aquatique par tribu est autorisée." },
+                        { de: "§3.8 Max Größe: 1 Ozeanplattform oder 3x3 Behemoth-Tore.", en: "§3.8 Max size: 1 Ocean Platform or 3x3 Behemoth Gates.", es: "§3.8 Tamaño máx: 1 Plataforma Oceánica o 3x3 Puertas Behemoth.", fr: "§3.8 Taille max : 1 Plateforme Océanique ou 3x3 Portes Béhémoth." }
+                    ]},
+                    { type: 'header', text: { de: "Bauregeln Spawnhütten:", en: "Spawn Hut Rules:", es: "Reglas Choza de Spawn:", fr: "Règles Hutte de Spawn :" } },
+                    { type: 'list', items: [
+                        { de: "§3.10 Spawnhütten nur auf Servern ohne andere Strukturen.", en: "§3.10 Spawn huts only on servers without other structures.", es: "§3.10 Chozas de spawn solo en servidores sin otras estructuras.", fr: "§3.10 Huttes de spawn uniquement sur serveurs sans autres structures." },
+                        { de: "§3.11 Max Größe: 8x8 Fundamente, 6 Wände hoch.", en: "§3.11 Max size: 8x8 foundations, 6 walls high.", es: "§3.11 Tamaño máx: 8x8 cimientos, 6 paredes de alto.", fr: "§3.11 Taille max : 8x8 fondations, 6 murs de haut." }
+                    ]},
+                    { type: 'header', text: { de: "Abstand:", en: "Distance:", es: "Distancia:", fr: "Distance :" } },
+                    { type: 'list', items: [
+                        { de: "§3.17 Abstand zum Nachbar: 150m.", en: "§3.17 Distance to neighbor: 150m.", es: "§3.17 Distancia al vecino: 150m.", fr: "§3.17 Distance avec le voisin : 150m." }
+                    ]}
+                ]
+            },
+            "s4": {
+                title: { de: "§4 Adminregeln", en: "§4 Admin Rules", es: "§4 Reglas de Admin", fr: "§4 Règles Admin" },
+                content: [
+                    { type: 'list', items: [
+                        { de: "§4.1 Admins nutzen Befehle für Support, Tests und Events.", en: "§4.1 Admins use commands for support, tests, and events.", es: "§4.1 Admins usan comandos para soporte y eventos.", fr: "§4.1 Les admins utilisent des commandes pour le support et les événements." },
+                        { de: "§4.2 Bei Verdacht dürfen Admins Tribelogs lesen.", en: "§4.2 Admins may read tribe logs on suspicion.", es: "§4.2 Admins pueden leer logs de tribu bajo sospecha.", fr: "§4.2 Les admins peuvent lire les logs de tribu en cas de soupçon." },
+                        { de: "§4.3 Admins dürfen regelwidrige Strukturen entfernen.", en: "§4.3 Admins may remove structures violating rules.", es: "§4.3 Admins pueden eliminar estructuras ilegales.", fr: "§4.3 Les admins peuvent supprimer les structures illégales." }
+                    ]}
+                ]
+            },
+            "s5": {
+                title: { de: "§5 Zuchtregeln", en: "§5 Breeding Rules", es: "§5 Reglas de Crianza", fr: "§5 Règles d'Élevage" },
+                content: [
+                    { type: 'list', items: [
+                        { de: "§5.0 Schwarzmarkt-Kreaturen sind verboten.", en: "§5.0 Black market creatures are prohibited.", es: "§5.0 Criaturas del mercado negro están prohibidas.", fr: "§5.0 Les créatures du marché noir sont interdites." },
+                        { de: "§5.1 Max 100 Mutationen pro Stat für Verkauf.", en: "§5.1 Max 100 mutations per stat for sales.", es: "§5.1 Máx 100 mutaciones por stat para venta.", fr: "§5.1 Max 100 mutations par stat pour la vente." },
+                        { de: "§5.2 Mutierte Kreaturen nur kastriert weitergeben.", en: "§5.2 Mutated creatures must be neutered before trading.", es: "§5.2 Criaturas mutadas deben ser castradas antes de intercambiar.", fr: "§5.2 Les créatures mutées doivent être castrées avant l'échange." }
+                    ]}
+                ]
+            },
+            "s6": {
+                title: { de: "§6 Strike System", en: "§6 Strike System", es: "§6 Sistema de Strikes", fr: "§6 Système de Strikes" },
+                content: [
+                    { type: 'list', items: [
+                        { de: "§6.1 Strikes nur bei schweren Verstößen.", en: "§6.1 Strikes only for serious violations.", es: "§6.1 Strikes solo por violaciones graves.", fr: "§6.1 Strikes uniquement pour violations graves." },
+                        { de: "§6.3 Bei 3 Strikes folgt ein Bann.", en: "§6.3 3 Strikes result in a ban.", es: "§6.3 3 Strikes resultan en baneo.", fr: "§6.3 3 Strikes entraînent un bannissement." },
+                        { de: "§6.4 Strikes werden alle 6 Monate zurückgesetzt.", en: "§6.4 Strikes reset every 6 months.", es: "§6.4 Strikes se reinician cada 6 meses.", fr: "§6.4 Les strikes sont réinitialisés tous les 6 mois." }
+                    ]}
+                ]
+            },
+            "s7": {
+                title: { de: "§7 Marktplatz Regeln", en: "§7 Marketplace Rules", es: "§7 Reglas del Mercado", fr: "§7 Règles du Marché" },
+                content: [
+                    { type: 'list', items: [
+                        { de: "§7.1 Dauerhaftes Abstellen von Tieren verboten.", en: "§7.1 Permanent parking of animals prohibited.", es: "§7.1 Estacionamiento permanente de animales prohibido.", fr: "§7.1 Stationnement permanent d'animaux interdit." },
+                        { de: "§7.5 Jeder Stamm darf max 1 Markthaus haben.", en: "§7.5 Each tribe may have max 1 market house.", es: "§7.5 Cada tribu puede tener máx 1 casa de mercado.", fr: "§7.5 Chaque tribu peut avoir max 1 maison de marché." },
+                        { de: "§7.7 Markthäuser müssen im Discord registriert werden.", en: "§7.7 Market houses must be registered in Discord.", es: "§7.7 Casas de mercado deben registrarse en Discord.", fr: "§7.7 Les maisons de marché doivent être enregistrées sur Discord." }
+                    ]}
+                ]
+            }
         }
+    };
+
+    // =========================================================================
+    // 2. LOGIC
+    // =========================================================================
+    const ITEM_DELAY = 100;
+    
+    function setLanguage(lang) {
+        // Buttons
+        document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+        document.getElementById('btn-' + lang).classList.add('active');
         
-        // Aktualisiere offenen Accordion Titel, falls vorhanden
-        const openTitle = document.querySelector('.dynamic-rule-title');
-        const activeHeader = document.querySelector('h2.active');
-        if (openTitle && activeHeader) {
-            // Hole neuen Text basierend auf Sprache
-            const newTitle = lang === 'en' ? activeHeader.getAttribute('data-title-en') : activeHeader.getAttribute('data-title-de');
-            if(newTitle) openTitle.textContent = newTitle;
+        // Render
+        renderContent(lang);
+    }
+
+    function renderContent(lang) {
+        // Titel
+        document.getElementById('mainTitle').textContent = translations.meta.title[lang];
+        
+        // Navigation
+        const navContainer = document.getElementById('navContainer');
+        navContainer.innerHTML = '';
+        translations.nav.forEach(item => {
+            const a = document.createElement('a');
+            a.textContent = item[lang];
+            a.onclick = () => handleAccordionClick(item.target);
+            navContainer.appendChild(a);
+        });
+
+        // Sections
+        for (const [key, data] of Object.entries(translations.sections)) {
+            // Header Attribut updaten (für den Klick)
+            const headerId = `regeln-${key}`;
+            const headerEl = document.getElementById(headerId);
+            if(headerEl) {
+                headerEl.setAttribute('data-title', data.title[lang]);
+            }
+
+            // Content neu bauen
+            const contentId = `content-${key}`;
+            const contentEl = document.getElementById(contentId);
+            if(contentEl) {
+                const wasActive = contentEl.classList.contains('active');
+                contentEl.innerHTML = ''; // Clear old content
+                
+                // Falls aktiv, Titel sofort wieder einfügen
+                if(wasActive) {
+                    const h3 = document.createElement('h3');
+                    h3.className = 'dynamic-rule-title';
+                    h3.textContent = data.title[lang];
+                    contentEl.appendChild(h3);
+                }
+
+                data.content.forEach(block => {
+                    if(block.type === 'header') {
+                        const h3 = document.createElement('h3');
+                        h3.className = 'sub-header';
+                        h3.textContent = block.text[lang];
+                        contentEl.appendChild(h3);
+                    } else if(block.type === 'list') {
+                        const ul = document.createElement('ul');
+                        block.items.forEach(item => {
+                            const li = document.createElement('li');
+                            li.textContent = item[lang];
+                            if(wasActive) li.classList.add('show-item');
+                            ul.appendChild(li);
+                        });
+                        contentEl.appendChild(ul);
+                    }
+                });
+            }
         }
     }
-    // --- ENDE SPRACH STEUERUNG ---
 
-
+    // ACCORDION
     function toggleAccordion(headerElement) {
         const targetId = headerElement.getAttribute('data-target');
         const content = document.getElementById(targetId);
-        const allContentItems = content.querySelectorAll('li');
 
+        // Andere schließen
         document.querySelectorAll('.rule-content.active').forEach(item => {
             if (item !== content) {
                 item.classList.remove('active');
+                const prevHeader = item.previousElementSibling;
+                if(prevHeader) prevHeader.classList.remove('active');
                 
-                const correspondingHeader = item.previousElementSibling;
-                if (correspondingHeader && correspondingHeader.tagName === 'H2') {
-                    correspondingHeader.classList.remove('active');
-                    correspondingHeader.classList.remove('glow-active');
-                }
+                const dynTitle = item.querySelector('.dynamic-rule-title');
+                if(dynTitle) dynTitle.remove();
                 
-                const dynamicTitle = item.querySelector('.dynamic-rule-title');
-                if (dynamicTitle) dynamicTitle.remove();
-
                 item.querySelectorAll('li').forEach(li => li.classList.remove('show-item'));
             }
         });
 
         if (content.classList.contains('active')) {
+            // Schließen
             content.classList.remove('active');
             headerElement.classList.remove('active');
-            headerElement.classList.remove('glow-active'); 
-            
-            const titleToRemove = content.querySelector('.dynamic-rule-title');
-            if (titleToRemove) titleToRemove.remove();
-
-            allContentItems.forEach(li => li.classList.remove('show-item'));
-            
+            const dynTitle = content.querySelector('.dynamic-rule-title');
+            if(dynTitle) dynTitle.remove();
+            content.querySelectorAll('li').forEach(li => li.classList.remove('show-item'));
         } else {
+            // Öffnen
             content.classList.add('active');
             headerElement.classList.add('active');
             
-            // TITEL GENERIERUNG (ANGEPASST FÜR SPRACHE)
-            // Prüfen welche Sprache aktiv ist
-            const isEn = document.getElementById('mainRulesCard').classList.contains('show-en');
-            
             // Titel holen
-            const titleText = isEn 
-                ? headerElement.getAttribute('data-title-en') 
-                : headerElement.getAttribute('data-title-de');
-
-            if (titleText) {
-                const contentHeader = document.createElement('h3');
-                contentHeader.className = 'dynamic-rule-title';
-                contentHeader.textContent = titleText;
-                content.prepend(contentHeader);
-            }
-
-            const finalHeader = content.querySelector('.dynamic-rule-title');
-            if (finalHeader) {
-                finalHeader.classList.add('glow-active');
-                setTimeout(() => {
-                    finalHeader.classList.remove('glow-active');
-                }, 2000); 
-            }
+            const titleText = headerElement.getAttribute('data-title');
+            const dynTitle = document.createElement('h3');
+            dynTitle.className = 'dynamic-rule-title glow-active';
+            dynTitle.textContent = titleText;
+            content.prepend(dynTitle);
             
-            allContentItems.forEach((li, index) => {
-                setTimeout(() => {
-                    li.classList.add('show-item');
-                }, index * ITEM_DELAY);
+            setTimeout(() => dynTitle.classList.remove('glow-active'), 2000);
+
+            // Animation
+            const items = content.querySelectorAll('li');
+            items.forEach((li, index) => {
+                setTimeout(() => li.classList.add('show-item'), index * ITEM_DELAY);
             });
         }
     }
 
     function handleAccordionClick(anchorId) {
         const targetHeader = document.getElementById(anchorId);
-        
-        if (targetHeader && targetHeader.hasAttribute('data-target')) {
-            
+        if (targetHeader) {
             const iframe = window.frameElement; 
             if (iframe) {
                 const headerRect = targetHeader.getBoundingClientRect();
-                const offset = 90;
-                
                 window.parent.postMessage({
                     action: 'scrollToElement',
-                    offsetTop: iframe.offsetTop + window.scrollY + headerRect.top - offset,
+                    offsetTop: iframe.offsetTop + window.scrollY + headerRect.top - 90,
                     scrollBehavior: 'smooth' 
                 }, '*'); 
             }
-            
             if (!targetHeader.classList.contains('active')) {
                 toggleAccordion(targetHeader);
             } else {
+                // Re-Trigger Animation
                 const contentId = targetHeader.getAttribute('data-target');
-                const contentElement = document.getElementById(contentId);
+                const content = document.getElementById(contentId);
+                const items = content.querySelectorAll('li');
+                items.forEach(li => li.classList.remove('show-item'));
+                items.forEach((li, idx) => setTimeout(() => li.classList.add('show-item'), idx * ITEM_DELAY));
                 
-                contentElement.querySelectorAll('li').forEach(li => li.classList.remove('show-item'));
-                contentElement.querySelectorAll('li').forEach((li, index) => {
-                      setTimeout(() => {
-                          li.classList.add('show-item');
-                      }, index * ITEM_DELAY);
-                });
-
-                const finalHeader = contentElement.querySelector('.dynamic-rule-title');
-                if (finalHeader) {
-                    document.querySelectorAll('.dynamic-rule-title').forEach(h => h.classList.remove('glow-active'));
-                    finalHeader.classList.add('glow-active');
-                    setTimeout(() => {
-                        finalHeader.classList.remove('glow-active');
-                    }, 2000); 
+                const t = content.querySelector('.dynamic-rule-title');
+                if(t) {
+                    t.classList.remove('glow-active');
+                    void t.offsetWidth;
+                    t.classList.add('glow-active');
                 }
             }
-            
         }
     }
 
+    // INIT
     document.addEventListener('DOMContentLoaded', () => {
-        const firstHeader = document.getElementById('regeln-s1');
-        if(firstHeader) {
-            toggleAccordion(firstHeader);
-        }
+        renderContent('de'); // Start in Deutsch
+        setTimeout(() => {
+            const first = document.getElementById('regeln-s1');
+            if(first) toggleAccordion(first);
+        }, 50);
     });
+
 </script>
 </body>
 </html>
