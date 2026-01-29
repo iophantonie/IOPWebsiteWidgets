@@ -49,6 +49,7 @@
             overflow: hidden;
             height: 98%; 
             max-height: 98vh;
+            position: relative;
         }
 
         /* Header */
@@ -58,6 +59,7 @@
             text-align: center;
             border-bottom: 2px solid var(--color-red);
             flex-shrink: 0;
+            position: relative; /* Für Flaggen Positionierung */
         }
 
         .title {
@@ -75,6 +77,40 @@
             color: #aaa;
             margin-top: 5px;
             font-style: italic;
+        }
+
+        /* FLAGGEN SWITCHER */
+        .lang-switch {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            display: flex;
+            gap: 5px;
+        }
+        .lang-btn {
+            width: 30px; height: 20px;
+            cursor: pointer;
+            border-radius: 3px;
+            border: 1px solid #fff;
+            opacity: 0.5;
+            transition: transform 0.2s, opacity 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+            padding: 0;
+            display: block;
+        }
+        .lang-btn:hover, .lang-btn.active {
+            opacity: 1; transform: scale(1.15);
+            border-color: var(--color-red);
+            z-index: 10;
+        }
+
+        /* Responsive Header Adjustment */
+        @media (max-width: 600px) {
+            .lang-switch {
+                position: static;
+                justify-content: center;
+                margin-bottom: 10px;
+            }
         }
 
         /* Content Area mit Scrollbar für alles außer Header */
@@ -234,38 +270,65 @@
     <div class="progress-container">
         
         <div class="header">
-            <h1 class="title">Progressives Level-Upgrade</h1>
-            <div class="subtitle">Strukturen & Decay Skalierung</div>
+            <!-- 4 Flaggen -->
+            <div class="lang-switch">
+                <svg class="lang-btn active" id="btn-de" onclick="setLang('de')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 5 3">
+                    <rect width="5" height="3" fill="#000"/><rect width="5" height="2" y="1" fill="#D00"/><rect width="5" height="1" y="2" fill="#FFCE00"/>
+                </svg>
+                <svg class="lang-btn" id="btn-en" onclick="setLang('en')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 30">
+                    <clipPath id="s"><path d="M0,0 v30 h60 v-30 z"/></clipPath>
+                    <clipPath id="t"><path d="M30,15 h30 v15 z v15 h-30 z h-30 v-15 z v-15 h30 z"/></clipPath>
+                    <g clip-path="url(#s)">
+                        <path d="M0,0 v30 h60 v-30 z" fill="#012169"/>
+                        <path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/>
+                        <path d="M0,0 L60,30 M60,0 L0,30" clip-path="url(#t)" stroke="#C8102E" stroke-width="4"/>
+                        <path d="M30,0 v30 M0,15 h60" stroke="#fff" stroke-width="10"/>
+                        <path d="M30,0 v30 M0,15 h60" stroke="#C8102E" stroke-width="6"/>
+                    </g>
+                </svg>
+                <svg class="lang-btn" id="btn-es" onclick="setLang('es')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 750 500">
+                    <rect width="750" height="500" fill="#AA151B"/>
+                    <rect width="750" height="250" y="125" fill="#F1BF00"/>
+                </svg>
+                <svg class="lang-btn" id="btn-fr" onclick="setLang('fr')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600">
+                    <rect width="900" height="600" fill="#ED2939"/>
+                    <rect width="600" height="600" fill="#fff"/>
+                    <rect width="300" height="600" fill="#002395"/>
+                </svg>
+            </div>
+
+            <h1 class="title" id="uiTitle">Progressives Level-Upgrade</h1>
+            <div class="subtitle" id="uiSubtitle">Strukturen & Decay Skalierung</div>
         </div>
 
         <div class="content-scroll">
             
             <!-- Erklärung -->
             <div class="info-card">
-                <h3><i class="fa-solid fa-circle-info"></i> Wie es funktioniert</h3>
-                <p>
+                <h3><i class="fa-solid fa-circle-info"></i> <span id="uiInfoHead">Wie es funktioniert</span></h3>
+                <p id="uiInfoText">
                     Euer Strukturenlimit und Decay skalieren nun direkt mit eurem <strong>Spieler-Level</strong>. 
                     Login löst die Achievements aus und aktualisiert eure Limits. 
                     Die Werte sind so ausgelegt, dass die Standard-Limits (Level 100) auch ohne Bosse erreichbar sind.
                 </p>
                 <p style="margin-top: 10px; font-size: 0.85rem; color: #aaa;">
-                    <em>Hinweis: In den ersten 100 Leveln gibt es viele kleine Schritte für schnelle Erfolgserlebnisse!</em>
+                    <em id="uiInfoNote">Hinweis: In den ersten 100 Leveln gibt es viele kleine Schritte für schnelle Erfolgserlebnisse!</em>
                 </p>
             </div>
 
             <div class="alert-box">
                 <i class="fa-solid fa-triangle-exclamation"></i>
                 <div>
-                    <strong>Wichtig für Stämme:</strong><br>
-                    Der Spieler mit dem <u>höchsten</u> Strukturenlimit und Decay im Stamm gibt diese Werte für alle Stammesstrukturen vor.
+                    <strong id="uiAlertHead">Wichtig für Stämme:</strong><br>
+                    <span id="uiAlertText">Der Spieler mit dem <u>höchsten</u> Strukturenlimit und Decay im Stamm gibt diese Werte für alle Stammesstrukturen vor.</span>
                 </div>
             </div>
 
             <!-- Tabelle Header -->
             <div class="list-header">
-                <div>Level</div>
-                <div><i class="fa-solid fa-hourglass-half"></i> Decay</div>
-                <div><i class="fa-solid fa-warehouse"></i> Limit</div>
+                <div id="thLevel">Level</div>
+                <div id="thDecay"><i class="fa-solid fa-hourglass-half"></i> Decay</div>
+                <div id="thLimit"><i class="fa-solid fa-warehouse"></i> Limit</div>
             </div>
 
             <!-- Liste (Generiert durch JS) -->
@@ -312,10 +375,98 @@
             { lvl: 200, decay: 50, limit: 9000, milestone: "max" } // Absolute Max
         ];
 
+        // --- TRANSLATION DATABASE ---
+        const UI_TEXT = {
+            de: {
+                title: "Progressives Level-Upgrade",
+                subtitle: "Strukturen & Decay Skalierung",
+                info_head: "Wie es funktioniert",
+                info_text: "Euer Strukturenlimit und Decay skalieren nun direkt mit eurem <strong>Spieler-Level</strong>. Login löst die Achievements aus und aktualisiert eure Limits. Die Werte sind so ausgelegt, dass die Standard-Limits (Level 100) auch ohne Bosse erreichbar sind.",
+                info_note: "Hinweis: In den ersten 100 Leveln gibt es viele kleine Schritte für schnelle Erfolgserlebnisse!",
+                alert_head: "Wichtig für Stämme:",
+                alert_text: "Der Spieler mit dem <u>höchsten</u> Strukturenlimit und Decay im Stamm gibt diese Werte für alle Stammesstrukturen vor.",
+                th_level: "Level",
+                th_decay: '<i class="fa-solid fa-hourglass-half"></i> Decay',
+                th_limit: '<i class="fa-solid fa-warehouse"></i> Limit',
+                unit_days: "Tage",
+                unit_pcs: "Stk."
+            },
+            en: {
+                title: "Progressive Level Upgrade",
+                subtitle: "Structure & Decay Scaling",
+                info_head: "How it works",
+                info_text: "Your structure limit and decay now scale directly with your <strong>Player Level</strong>. Logging in triggers achievements and updates your limits. The values are designed so standard limits (Level 100) are reachable without bosses.",
+                info_note: "Note: The first 100 levels have many small steps for quick sense of achievement!",
+                alert_head: "Important for Tribes:",
+                alert_text: "The player with the <u>highest</u> structure limit and decay in the tribe sets these values for all tribe structures.",
+                th_level: "Level",
+                th_decay: '<i class="fa-solid fa-hourglass-half"></i> Decay',
+                th_limit: '<i class="fa-solid fa-warehouse"></i> Limit',
+                unit_days: "Days",
+                unit_pcs: "Pcs"
+            },
+            es: {
+                title: "Mejora de Nivel Progresiva",
+                subtitle: "Escalado de Estructuras y Deterioro",
+                info_head: "Cómo funciona",
+                info_text: "Tu límite de estructuras y deterioro ahora escalan directamente con tu <strong>Nivel de Jugador</strong>. Iniciar sesión activa logros y actualiza tus límites. Los valores estándar (Nivel 100) son alcanzables sin jefes.",
+                info_note: "Nota: ¡Los primeros 100 niveles tienen muchos pasos pequeños para logros rápidos!",
+                alert_head: "Importante para Tribus:",
+                alert_text: "El jugador con el <u>mayor</u> límite de estructuras y deterioro en la tribu establece estos valores para todas las estructuras.",
+                th_level: "Nivel",
+                th_decay: '<i class="fa-solid fa-hourglass-half"></i> Deterioro',
+                th_limit: '<i class="fa-solid fa-warehouse"></i> Límite',
+                unit_days: "Días",
+                unit_pcs: "Uds"
+            },
+            fr: {
+                title: "Amélioration Progressive de Niveau",
+                subtitle: "Échelle de Structures et Dégradation",
+                info_head: "Comment ça marche",
+                info_text: "Votre limite de structure et dégradation s'adaptent désormais directement à votre <strong>Niveau de Joueur</strong>. La connexion active les succès et met à jour vos limites. Les valeurs standards (Niveau 100) sont accessibles sans boss.",
+                info_note: "Remarque : Les 100 premiers niveaux comportent de nombreuses petites étapes pour des succès rapides !",
+                alert_head: "Important pour les Tribus :",
+                alert_text: "Le joueur avec la limite de structure et dégradation la <u>plus élevée</u> de la tribu définit ces valeurs pour toutes les structures.",
+                th_level: "Niveau",
+                th_decay: '<i class="fa-solid fa-hourglass-half"></i> Dégradation',
+                th_limit: '<i class="fa-solid fa-warehouse"></i> Limite',
+                unit_days: "Jours",
+                unit_pcs: "Pcs"
+            }
+        };
+
+        let currentLang = 'de';
         const listContainer = document.getElementById('progressList');
+
+        function setLang(lang) {
+            currentLang = lang;
+            
+            // Buttons UI
+            document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('btn-'+lang).classList.add('active');
+
+            // Static Text Updates
+            document.getElementById('uiTitle').innerText = UI_TEXT[lang].title;
+            document.getElementById('uiSubtitle').innerText = UI_TEXT[lang].subtitle;
+            document.getElementById('uiInfoHead').innerText = UI_TEXT[lang].info_head;
+            document.getElementById('uiInfoText').innerHTML = UI_TEXT[lang].info_text;
+            document.getElementById('uiInfoNote').innerText = UI_TEXT[lang].info_note;
+            document.getElementById('uiAlertHead').innerText = UI_TEXT[lang].alert_head;
+            document.getElementById('uiAlertText').innerHTML = UI_TEXT[lang].alert_text;
+            
+            // Table Headers
+            document.getElementById('thLevel').innerText = UI_TEXT[lang].th_level;
+            document.getElementById('thDecay').innerHTML = UI_TEXT[lang].th_decay;
+            document.getElementById('thLimit').innerHTML = UI_TEXT[lang].th_limit;
+
+            // Re-render list with new units
+            renderList();
+        }
 
         function renderList() {
             listContainer.innerHTML = '';
+            const daysTxt = UI_TEXT[currentLang].unit_days;
+            const pcsTxt = UI_TEXT[currentLang].unit_pcs;
             
             levelData.forEach(item => {
                 const row = document.createElement('div');
@@ -333,18 +484,21 @@
                     </div>
                     <div class="data-col">
                         <i class="fa-solid fa-hourglass-half"></i>
-                        <span><span class="highlight">${item.decay}</span> Tage</span>
+                        <span><span class="highlight">${item.decay}</span> ${daysTxt}</span>
                     </div>
                     <div class="data-col">
                         <i class="fa-solid fa-warehouse"></i>
-                        <span><span class="highlight">${item.limit}</span> Stk.</span>
+                        <span><span class="highlight">${item.limit}</span> ${pcsTxt}</span>
                     </div>
                 `;
                 listContainer.appendChild(row);
             });
         }
 
-        renderList();
+        // Init
+        window.onload = function() {
+            setLang('de');
+        };
 
     </script>
 </body>
