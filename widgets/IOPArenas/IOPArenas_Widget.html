@@ -76,6 +76,33 @@
             align-items: center;
             flex-shrink: 0;
             background-image: radial-gradient(circle at 50% -100%, rgba(255,51,0,0.15) 0%, transparent 60%);
+            position: relative;
+        }
+
+        /* FLAGGEN SWITCHER */
+        .lang-switch {
+            display: flex;
+            gap: 8px;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 20;
+        }
+        .lang-btn {
+            width: 25px; height: 16px;
+            cursor: pointer;
+            border-radius: 2px;
+            border: 1px solid #fff;
+            opacity: 0.5;
+            transition: transform 0.2s, opacity 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+            padding: 0;
+            display: block;
+        }
+        .lang-btn:hover, .lang-btn.active {
+            opacity: 1; transform: scale(1.15);
+            border-color: var(--c-fire);
+            z-index: 10;
         }
 
         .title {
@@ -95,11 +122,12 @@
         }
 
         .subtitle {
+            font-size: 0.8rem;
             color: var(--c-dim);
-            font-size: 0.85rem;
-            margin-top: 5px;
-            letter-spacing: 1px;
             text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 5px;
+            display: block;
         }
 
         /* SEARCH BAR */
@@ -202,6 +230,14 @@
             text-align: center;
         }
         
+        .info-block h3 {
+            font-family: var(--f-head);
+            font-size: 1.5rem;
+            color: var(--c-fire);
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+
         .banner-img {
             width: 100%;
             max-height: 300px;
@@ -294,6 +330,7 @@
         @media (max-width: 900px) { 
             .widget-container { width: 100%; height: 100vh; border: none; border-radius: 0; }
             .header { flex-direction: column; gap: 15px; text-align: center; }
+            .lang-switch { position: static; margin-bottom: 10px; transform: none; }
             .arena-grid { grid-template-columns: 1fr; }
         }
     </style>
@@ -305,10 +342,37 @@
         <!-- HEADER -->
         <div class="header">
             <div class="header-content">
-                <h1 class="title">IOP Arenas</h1>
-                <span class="subtitle">Informationen, Ablauf & Belohnungen</span>
+                <h1 class="title" id="uiTitle">IOP Arenas</h1>
+                <span class="subtitle" id="uiSubtitle">Informationen, Ablauf & Belohnungen</span>
             </div>
             
+            <!-- Flaggen -->
+            <div class="lang-switch">
+                <svg class="lang-btn active" id="btn-de" onclick="setLang('de')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 5 3">
+                    <rect width="5" height="3" fill="#000"/><rect width="5" height="2" y="1" fill="#D00"/><rect width="5" height="1" y="2" fill="#FFCE00"/>
+                </svg>
+                <svg class="lang-btn" id="btn-en" onclick="setLang('en')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 30">
+                    <clipPath id="s"><path d="M0,0 v30 h60 v-30 z"/></clipPath>
+                    <clipPath id="t"><path d="M30,15 h30 v15 z v15 h-30 z h-30 v-15 z v-15 h30 z"/></clipPath>
+                    <g clip-path="url(#s)">
+                        <path d="M0,0 v30 h60 v-30 z" fill="#012169"/>
+                        <path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/>
+                        <path d="M0,0 L60,30 M60,0 L0,30" clip-path="url(#t)" stroke="#C8102E" stroke-width="4"/>
+                        <path d="M30,0 v30 M0,15 h60" stroke="#fff" stroke-width="10"/>
+                        <path d="M30,0 v30 M0,15 h60" stroke="#C8102E" stroke-width="6"/>
+                    </g>
+                </svg>
+                <svg class="lang-btn" id="btn-es" onclick="setLang('es')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 750 500">
+                    <rect width="750" height="500" fill="#AA151B"/>
+                    <rect width="750" height="250" y="125" fill="#F1BF00"/>
+                </svg>
+                <svg class="lang-btn" id="btn-fr" onclick="setLang('fr')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600">
+                    <rect width="900" height="600" fill="#ED2939"/>
+                    <rect width="600" height="600" fill="#fff"/>
+                    <rect width="300" height="600" fill="#002395"/>
+                </svg>
+            </div>
+
             <div class="search-container">
                 <i class="fa-solid fa-search search-icon"></i>
                 <input type="text" id="searchInput" class="search-input" placeholder="Suche Arena...">
@@ -317,10 +381,10 @@
 
         <!-- TABS -->
         <div class="nav-tabs">
-            <div class="nav-tab active" onclick="showTab('overview', this)">
+            <div class="nav-tab active" onclick="showTab('overview', this)" id="tabOverview">
                 <i class="fa-solid fa-info-circle"></i> Übersicht
             </div>
-            <div class="nav-tab" onclick="showTab('list', this)">
+            <div class="nav-tab" onclick="showTab('list', this)" id="tabList">
                 <i class="fa-solid fa-list-ol"></i> Arenen Liste
             </div>
         </div>
@@ -331,14 +395,14 @@
             <!-- TAB 1: OVERVIEW -->
             <div id="overview" class="section active">
                 <div class="info-block">
-                    <h3>Arenen Vorstellung & Sneak Peak</h3>
+                    <h3 id="overviewTitle">Arenen Vorstellung & Sneak Peak</h3>
                     <img src="https://i.postimg.cc/4dGpvnxr/Bild-2025-04-30-215611532.png" class="banner-img" style="cursor:default;">
                     
                     <div class="video-container">
                         <iframe src="https://www.youtube.com/embed/4dPjKiQV7Bo?rel=0&showinfo=0" frameborder="0" allowfullscreen></iframe>
                     </div>
 
-                    <p style="margin-top:20px; color:#bbb;">
+                    <p style="margin-top:20px; color:#bbb;" id="overviewText">
                         Willkommen beim IOP Arena Showcase. Hier findest du eine Übersicht über alle verfügbaren Arenen, deren Layouts und Besonderheiten. Klicke dich durch die Liste, um Details zu den einzelnen Kampfzonen zu erfahren.
                     </p>
                     <img src="https://i.postimg.cc/g2H7mKpX/Bild-2025-04-30-213456532.png" class="banner-img" onclick="openModal(this.src)" style="margin-top:20px;">
@@ -362,26 +426,78 @@
     </div>
 
     <script>
-        // DATA
-        const arenas = [
-            { id: 1, name: "Aberration Arena", img: "https://i.postimg.cc/43ZT1dft/Bild-2025-04-30-213542086.png" },
-            { id: 2, name: "Honig Arena", img: "https://i.postimg.cc/8580NX3S/Bild-2025-04-30-213304294.png" },
-            { id: 3, name: "Lava Arena", img: "https://i.postimg.cc/mrRy2xjB/Bild-2025-04-30-213814321.png" },
-            { id: 4, name: "Eis Arena", img: "https://i.postimg.cc/HW42Rk93/Bild-2025-04-30-214041915.png" },
-            { id: 5, name: "Sumpf Arena", img: "https://i.postimg.cc/c4bRYgc9/Bild-2025-04-30-213707938.png" }, // Adjusted based on previous context/HTML naming flow, trusting visual match from user's last input order
-            { id: 6, name: "Kristall Arena", img: "https://i.postimg.cc/ryfJqFKJ/Bild-2025-04-30-214651686.png" },
-            { id: 7, name: "Wald Arena", img: "https://i.postimg.cc/x8jVMT25/Bild-2025-04-30-214751020.png" },
-            { id: 8, name: "Jungle Arena", img: "https://i.postimg.cc/4y8vNwPP/Bild-2025-04-30-215020988.png" },
-            { id: 9, name: "Wasser Arena", img: "https://i.postimg.cc/LsqkTrRM/Bild-2025-04-30-215334252.png" }, // Re-checked order: In provided HTML, water arena (9) had img ...LsqkTrRM...
-            { id: 10, name: "Wüsten Arena", img: "https://i.postimg.cc/rwYyTH4s/Bild-2025-04-30-215427360.png" }
-        ];
+        // =========================================================================
+        // 1. DATENBANK (ÜBERSETZUNGEN)
+        // =========================================================================
+        const translations = {
+            meta: {
+                title: { de: "IOP Arenas", en: "IOP Arenas", es: "Arenas IOP", fr: "Arènes IOP" },
+                subtitle: { de: "Informationen, Ablauf & Belohnungen", en: "Information, Process & Rewards", es: "Información, Proceso y Recompensas", fr: "Informations, Processus et Récompenses" },
+                search: { de: "Suche Arena...", en: "Search Arena...", es: "Buscar Arena...", fr: "Rechercher Arène..." }
+            },
+            nav: {
+                overview: { de: "Übersicht", en: "Overview", es: "Resumen", fr: "Aperçu" },
+                list: { de: "Arenen Liste", en: "Arena List", es: "Lista de Arenas", fr: "Liste des Arènes" }
+            },
+            overview: {
+                title: { de: "Arenen Vorstellung & Sneak Peak", en: "Arena Showcase & Sneak Peak", es: "Presentación de Arenas", fr: "Présentation des Arènes" },
+                text: { 
+                    de: "Willkommen beim IOP Arena Showcase. Hier findest du eine Übersicht über alle verfügbaren Arenen, deren Layouts und Besonderheiten. Klicke dich durch die Liste, um Details zu den einzelnen Kampfzonen zu erfahren.",
+                    en: "Welcome to the IOP Arena Showcase. Here you will find an overview of all available arenas, their layouts, and special features. Check the list to learn details about the individual combat zones.",
+                    es: "Bienvenido a la presentación de Arenas IOP. Aquí encontrarás un resumen de todas las arenas disponibles, sus diseños y características. Revisa la lista para más detalles.",
+                    fr: "Bienvenue à la présentation des Arènes IOP. Vous trouverez ici un aperçu de toutes les arènes disponibles, leurs dispositions et particularités. Consultez la liste pour plus de détails."
+                }
+            },
+            arenas: [
+                { id: 1, img: "https://i.postimg.cc/43ZT1dft/Bild-2025-04-30-213542086.png", name: { de: "Aberration Arena", en: "Aberration Arena", es: "Arena Aberration", fr: "Arène Aberration" } },
+                { id: 2, img: "https://i.postimg.cc/8580NX3S/Bild-2025-04-30-213304294.png", name: { de: "Honig Arena", en: "Honey Arena", es: "Arena de Miel", fr: "Arène de Miel" } },
+                { id: 3, img: "https://i.postimg.cc/mrRy2xjB/Bild-2025-04-30-213814321.png", name: { de: "Lava Arena", en: "Lava Arena", es: "Arena de Lava", fr: "Arène de Lave" } },
+                { id: 4, img: "https://i.postimg.cc/HW42Rk93/Bild-2025-04-30-214041915.png", name: { de: "Eis Arena", en: "Ice Arena", es: "Arena de Hielo", fr: "Arène de Glace" } },
+                { id: 5, img: "https://i.postimg.cc/c4bRYgc9/Bild-2025-04-30-213707938.png", name: { de: "Sumpf Arena", en: "Swamp Arena", es: "Arena de Pantano", fr: "Arène de Marais" } },
+                { id: 6, img: "https://i.postimg.cc/ryfJqFKJ/Bild-2025-04-30-214651686.png", name: { de: "Kristall Arena", en: "Crystal Arena", es: "Arena de Cristal", fr: "Arène de Cristal" } },
+                { id: 7, img: "https://i.postimg.cc/x8jVMT25/Bild-2025-04-30-214751020.png", name: { de: "Wald Arena", en: "Forest Arena", es: "Arena de Bosque", fr: "Arène de Forêt" } },
+                { id: 8, img: "https://i.postimg.cc/4y8vNwPP/Bild-2025-04-30-215020988.png", name: { de: "Jungle Arena", en: "Jungle Arena", es: "Arena de Jungla", fr: "Arène de Jungle" } },
+                { id: 9, img: "https://i.postimg.cc/LsqkTrRM/Bild-2025-04-30-215334252.png", name: { de: "Wasser Arena", en: "Water Arena", es: "Arena de Agua", fr: "Arène Aquatique" } },
+                { id: 10, img: "https://i.postimg.cc/rwYyTH4s/Bild-2025-04-30-215427360.png", name: { de: "Wüsten Arena", en: "Desert Arena", es: "Arena de Desierto", fr: "Arène du Désert" } }
+            ]
+        };
 
-        // RENDER
+        // =========================================================================
+        // 2. LOGIC
+        // =========================================================================
+        let currentLang = 'de';
+
+        function setLang(lang) {
+            currentLang = lang;
+            
+            // Buttons
+            document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('btn-'+lang).classList.add('active');
+
+            // Static Text
+            document.getElementById('uiTitle').innerText = translations.meta.title[lang];
+            document.getElementById('uiSubtitle').innerText = translations.meta.subtitle[lang];
+            document.getElementById('searchInput').placeholder = translations.meta.search[lang];
+            
+            // Nav
+            document.getElementById('tabOverview').innerHTML = `<i class="fa-solid fa-info-circle"></i> ${translations.nav.overview[lang]}`;
+            document.getElementById('tabList').innerHTML = `<i class="fa-solid fa-list-ol"></i> ${translations.nav.list[lang]}`;
+
+            // Content Overview
+            document.getElementById('overviewTitle').innerText = translations.overview.title[lang];
+            document.getElementById('overviewText').innerText = translations.overview.text[lang];
+
+            // Re-render List (to update names)
+            const searchVal = document.getElementById('searchInput').value;
+            renderArenas(searchVal);
+        }
+
         function renderArenas(search) {
             const container = document.getElementById('arenaGrid');
             container.innerHTML = '';
-
-            const filtered = arenas.filter(a => a.name.toLowerCase().includes(search));
+            
+            const term = search.toLowerCase();
+            const filtered = translations.arenas.filter(a => a.name[currentLang].toLowerCase().includes(term));
 
             if(filtered.length === 0) {
                 container.innerHTML = '<div style="grid-column:1/-1; text-align:center; color:#666; margin-top:50px;">Keine Arena gefunden.</div>';
@@ -397,7 +513,7 @@
                     </div>
                     <div class="arena-body">
                         <div class="arena-num">${a.id}</div>
-                        <h3 class="arena-title">${a.name}</h3>
+                        <h3 class="arena-title">${a.name[currentLang]}</h3>
                     </div>
                 `;
                 container.appendChild(card);
@@ -414,11 +530,10 @@
 
         // SEARCH
         document.getElementById('searchInput').addEventListener('input', (e) => {
-            // Auto switch to list if searching
             if(e.target.value.length > 0 && !document.getElementById('list').classList.contains('active')) {
                 showTab('list', document.querySelectorAll('.nav-tab')[1]);
             }
-            renderArenas(e.target.value.toLowerCase());
+            renderArenas(e.target.value);
         });
 
         // MODAL
@@ -433,7 +548,9 @@
         modal.addEventListener('click', (e) => { if(e.target === modal) closeModal(); });
 
         // INIT
-        renderArenas('');
+        window.onload = function() {
+            setLang('de');
+        };
 
     </script>
 </body>
