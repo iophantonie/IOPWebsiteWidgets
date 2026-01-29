@@ -69,6 +69,31 @@
             grid-template-columns: 100%;
             padding: 1.5rem;
             box-sizing: border-box;
+            position: relative; /* Wichtig für Flaggen */
+        }
+
+        /* --- FLAGGEN (Aus Bulletproof übernommen) --- */
+        .lang-switch {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 8px;
+            z-index: 200;
+        }
+        .lang-btn {
+            width: 30px; height: 20px;
+            cursor: pointer;
+            border-radius: 3px;
+            border: 1px solid #fff;
+            opacity: 0.5;
+            transition: transform 0.2s, opacity 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+        }
+        .lang-btn:hover, .lang-btn.active {
+            opacity: 1; transform: scale(1.15);
+            border-color: var(--color-red);
+            z-index: 10;
         }
         
         /* HAUPTÜBERSCHRIFT */
@@ -81,7 +106,7 @@
             text-align: center;
             border-bottom: 3px solid var(--color-accent-header);
             padding-bottom: 10px;
-            margin: 0 0 20px 0; /* Abstand nach unten */
+            margin: 0 140px 20px 0; /* Rechts Platz für Flaggen */
         }
 
         /* --- HAUPT-CONTENT-BEREICH (Split Layout) --- */
@@ -102,7 +127,7 @@
             flex-direction: column;
             gap: 5px;
             box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.3);
-            height: fit-content; /* Passt sich dem Inhalt an */
+            height: fit-content;
         }
         
         /* Trenn-Header im Menü */
@@ -187,12 +212,11 @@
             text-transform: uppercase;
         }
         
-        /* Kleinerer Unter-Header (z.B. für Wildbau Regeln) */
         .sub-section-title {
             display: block;
             font-size: 1.1rem;
             font-weight: 700;
-            color: var(--color-text); /* Weiß und Fett */
+            color: var(--color-text);
             margin-top: 20px;
             margin-bottom: 8px;
             text-transform: uppercase;
@@ -219,7 +243,6 @@
             width: 100%;
         }
         
-        /* Flex-Container für Raten-Tabellen nebeneinander */
         .rates-flex-wrapper {
             display: flex;
             gap: 20px;
@@ -227,7 +250,7 @@
             margin-bottom: 20px;
         }
         .rates-table-block {
-            flex: 1 1 400px; /* Mindestbreite, wächst */
+            flex: 1 1 400px; 
         }
 
         .caps-table {
@@ -267,12 +290,10 @@
         .max-value-col { color: var(--color-cap); }
 
         /* FARBEN FÜR DINO LEVEL & TYPEN */
-        /* Wichtig: !important stellt sicher, dass die Farbe angewendet wird */
         .tek-row .item-col, .tek-row .max-value-col { color: var(--color-tek) !important; }
         .wyvern-row .item-col, .wyvern-row .max-value-col { color: var(--color-wyvern-red) !important; }
         .rockdrake-row .item-col, .rockdrake-row .max-value-col { color: var(--color-rockdrake) !important; }
         .crystal-row .item-col, .crystal-row .max-value-col { color: var(--color-crystal-yellow) !important; }
-        /* Standard bleibt weiß */
         
         /* Farben für Rüstungen */
         .swat-row .item-col { color: var(--color-swat) !important; }
@@ -301,7 +322,7 @@
             transition: max-height 0.4s ease-out;
         }
         .local-accordion-content.active {
-            max-height: 2000px; /* Genug Platz für die Tabelle */
+            max-height: 2000px;
         }
         .local-arrow { transition: transform 0.3s; }
         .local-accordion-header.active .local-arrow { transform: rotate(90deg); }
@@ -317,270 +338,435 @@
 
     <div class="settings-card-main">
         
-        <div class="main-widget-header">Server Einstellungen & Balancing</div>
+        <!-- FLAGGEN NAVIGATION -->
+        <div class="lang-switch">
+            <svg class="lang-btn active" id="btn-de" onclick="setLanguage('de')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 5 3">
+                <rect width="5" height="3" fill="#000"/><rect width="5" height="2" y="1" fill="#D00"/><rect width="5" height="1" y="2" fill="#FFCE00"/>
+            </svg>
+            <svg class="lang-btn" id="btn-en" onclick="setLanguage('en')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 30">
+                <clipPath id="s"><path d="M0,0 v30 h60 v-30 z"/></clipPath>
+                <clipPath id="t"><path d="M30,15 h30 v15 z v15 h-30 z h-30 v-15 z v-15 h30 z"/></clipPath>
+                <g clip-path="url(#s)">
+                    <path d="M0,0 v30 h60 v-30 z" fill="#012169"/>
+                    <path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/>
+                    <path d="M0,0 L60,30 M60,0 L0,30" clip-path="url(#t)" stroke="#C8102E" stroke-width="4"/>
+                    <path d="M30,0 v30 M0,15 h60" stroke="#fff" stroke-width="10"/>
+                    <path d="M30,0 v30 M0,15 h60" stroke="#C8102E" stroke-width="6"/>
+                </g>
+            </svg>
+            <svg class="lang-btn" id="btn-es" onclick="setLanguage('es')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 750 500">
+                <rect width="750" height="500" fill="#AA151B"/>
+                <rect width="750" height="250" y="125" fill="#F1BF00"/>
+            </svg>
+            <svg class="lang-btn" id="btn-fr" onclick="setLanguage('fr')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600">
+                <rect width="900" height="600" fill="#ED2939"/>
+                <rect width="600" height="600" fill="#fff"/>
+                <rect width="300" height="600" fill="#002395"/>
+            </svg>
+        </div>
+        
+        <div class="main-widget-header" id="mainHeader">Server Einstellungen & Balancing</div>
 
         <div class="main-content-grid">
             
-            <!-- ====== LINKE NAVIGATION ====== -->
-            <div class="left-nav">
-                
-                <!-- GRUPPE: SERVER EINSTELLUNGEN -->
-                <div class="nav-group-separator">Server Einstellungen</div>
-
-                <div id="nav-decay" class="accordion-header" onclick="switchTab('decay')">Decay Einstellungen</div>
-                <div id="nav-dino-level" class="accordion-header" onclick="switchTab('dino-level')">Dino Level Limits</div>
-                <div id="nav-gesperrt" class="accordion-header" onclick="switchTab('gesperrt')">Gesperrte Strukturen & Dinos</div>
-                <div id="nav-item-caps" class="accordion-header" onclick="switchTab('item-caps')">Item & Crafting Caps</div>
-                <div id="nav-limits" class="accordion-header" onclick="switchTab('limits')">Strukturen & Dino Limits</div>
-                <div id="nav-player-stats" class="accordion-header" onclick="switchTab('player-stats')">Spieler/Dino Stat Einstellungen</div>
-                <div id="nav-rates" class="accordion-header" onclick="switchTab('rates')">Server Raten</div>
-                <div id="nav-restarts" class="accordion-header" onclick="switchTab('restarts')">Server Neustarts</div>
-                <div id="nav-travel" class="accordion-header" onclick="switchTab('travel')">Travel Einstellungen</div>
-                
-                <!-- GRUPPE: MOD EINSTELLUNGEN -->
-                <div class="nav-group-separator">Mod Einstellungen</div>
-                
-                <div id="nav-cs" class="accordion-header" onclick="switchTab('cs')">CS Einstellungen</div>
-                <div id="nav-pcs" class="accordion-header" onclick="switchTab('pcs')">PCS Einstellungen</div>
-            </div>
+            <!-- LINKE NAVIGATION (Wird per JS gefüllt) -->
+            <div class="left-nav" id="leftNavContainer"></div>
             
-            <!-- ====== RECHTER INHALT ====== -->
-            <div class="right-content-area">
-                
-                <!-- 1. DECAY EINSTELLUNGEN -->
-                <div id="content-decay" class="accordion-content">
-                    <div class="section-header-title">Decay Einstellungen</div>
-                    
-                    <div class="description">
-                        Die Verfallstimer basieren auf dem progressiven Level System (Prog Lvl) und variieren je nach Spielerlevel.
-                        <br><br>
-                        <!-- Lokales Akkordeon für die lange Tabelle -->
-                        <div class="local-accordion-header" onclick="toggleLocal(this)">
-                            <span>Prog Lvl Decay-Limits anzeigen</span>
-                            <span class="local-arrow">▶</span>
-                        </div>
-                        <div class="local-accordion-content">
-                             <table class="caps-table" style="margin-top: 10px;">
-                                <thead>
-                                    <tr><th>Level Bereich</th><th style="text-align:right;">Decay Zeit</th></tr>
-                                </thead>
-                                <tbody>
-                                    <tr><td>Level 1 - 9</td><td class="max-value-col">5 Tage</td></tr>
-                                    <tr><td>Level 10 - 19</td><td class="max-value-col">7 Tage</td></tr>
-                                    <tr><td>Level 20 - 29</td><td class="max-value-col">10 Tage</td></tr>
-                                    <tr><td>Level 30 - 39</td><td class="max-value-col">12 Tage</td></tr>
-                                    <tr><td>Level 40 - 49</td><td class="max-value-col">14 Tage</td></tr>
-                                    <tr><td>Level 50 - 59</td><td class="max-value-col">16 Tage</td></tr>
-                                    <tr><td>Level 60 - 69</td><td class="max-value-col">18 Tage</td></tr>
-                                    <tr><td>Level 70 - 79</td><td class="max-value-col">21 Tage</td></tr>
-                                    <tr><td>Level 80 - 89</td><td class="max-value-col">25 Tage</td></tr>
-                                    <tr><td>Level 90 - 99</td><td class="max-value-col">27 Tage</td></tr>
-                                    <tr><td>Level 100 - 104</td><td class="max-value-col">30 Tage</td></tr>
-                                    <tr><td>Level 105 - 109</td><td class="max-value-col">31 Tage</td></tr>
-                                    <tr><td>Level 110 - 114</td><td class="max-value-col">32 Tage</td></tr>
-                                    <tr><td>Level 115 - 119</td><td class="max-value-col">33 Tage</td></tr>
-                                    <tr><td>Level 120 - 124</td><td class="max-value-col">34 Tage</td></tr>
-                                    <tr><td>Level 125 - 129</td><td class="max-value-col">35 Tage</td></tr>
-                                    <tr><td>Level 130 - 134</td><td class="max-value-col">36 Tage</td></tr>
-                                    <tr><td>Level 135 - 139</td><td class="max-value-col">37 Tage</td></tr>
-                                    <tr><td>Level 140 - 144</td><td class="max-value-col">38 Tage</td></tr>
-                                    <tr><td>Level 145 - 149</td><td class="max-value-col">39 Tage</td></tr>
-                                    <tr><td>Level 150 - 154</td><td class="max-value-col">40 Tage</td></tr>
-                                    <tr><td>Level 155 - 159</td><td class="max-value-col">41 Tage</td></tr>
-                                    <tr><td>Level 160 - 164</td><td class="max-value-col">42 Tage</td></tr>
-                                    <tr><td>Level 165 - 169</td><td class="max-value-col">43 Tage</td></tr>
-                                    <tr><td>Level 170 - 174</td><td class="max-value-col">44 Tage</td></tr>
-                                    <tr><td>Level 175 - 179</td><td class="max-value-col">45 Tage</td></tr>
-                                    <tr><td>Level 180 - 184</td><td class="max-value-col">46 Tage</td></tr>
-                                    <tr><td>Level 185 - 189</td><td class="max-value-col">47 Tage</td></tr>
-                                    <tr><td>Level 190 - 194</td><td class="max-value-col">48 Tage</td></tr>
-                                    <tr><td>Level 195 - 199</td><td class="max-value-col">49 Tage</td></tr>
-                                    <tr><td>Ab Level 200</td><td class="max-value-col">50 Tage</td></tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                    
-                    <div class="section-header-title">Regeln für den Wildbau-Verfall</div>
-                    
-                    <div class="description">
-                        <span class="sub-section-title">Allgemein gilt:</span>
-                        <ul>
-                            <li>Täglich wird um <strong>01:00 Uhr</strong> eine automatische Entfernung von Wildbauten durchgeführt, um die Serverleistung und Spawn-Punkte zu sichern, sowie die Server zusätzlich sauber zu halten.</li>
-                            <li>Der Spieler mit dem höchsten Verfallswert (Decay) gibt den Verfallstimer für den Stamm vor.</li>
-                            <li>Alle Strukturen-Arten haben denselben Verfallstimer.</li>
-                        </ul>
-                        
-                        <span class="sub-section-title">Voraussetzungen für Wildbauten:</span>
-                        <ul>
-                            <li>Spezifische Strukturen, die eine Mindestmenge von 8 Strukturen in einem Radius von 10 Fundamenten nicht erreicht haben.</li>
-                        </ul>
-                        
-                        <span class="sub-section-title">Wildbauten Strukturen-Arten:</span>
-                        <ol>
-                            <li>Metallbarrikaden</li>
-                            <li>Holzbarrikaden</li>
-                            <li>Schlafsäcke</li>
-                            <li>Lagerfeuer</li>
-                        </ol>
-                    </div>
-                </div>
-
-                <!-- 2. SERVER RATEN -->
-                <div id="content-rates" class="accordion-content">
-                    <div class="section-header-title">Server Raten</div>
-                    <div class="description">
-                        Unsere Server-Einstellungen bieten optimierte Raten für ein ausbalanciertes Spielerlebnis.
-                    </div>
-                    
-                    <div class="rates-flex-wrapper">
-                        <!-- Werktags -->
-                        <div class="rates-table-block">
-                            <div class="sub-section-title" style="color: var(--color-rate-accent); border-bottom: 1px solid var(--color-rate-accent); padding-bottom: 5px;">Werktags-Raten</div>
-                            <table class="caps-table">
-                                <tr><td>XP-Rate</td><td class="multiplier-col">1.0x</td></tr>
-                                <tr><td>Farmen</td><td class="multiplier-col">1.5x</td></tr>
-                                <tr><td>Zähmung</td><td class="multiplier-col">2.0x</td></tr>
-                                <tr><td>Brüten</td><td class="multiplier-col">5.0x</td></tr>
-                                <tr><td>Reifen</td><td class="multiplier-col">5.0x</td></tr>
-                            </table>
-                            <div style="font-size: 0.9rem; opacity: 0.8;">Montag 00:00 - Freitag 00:00 Uhr</div>
-                        </div>
-                        
-                        <!-- Wochenende -->
-                        <div class="rates-table-block">
-                             <div class="sub-section-title" style="color: var(--color-rate-accent); border-bottom: 1px solid var(--color-rate-accent); padding-bottom: 5px;">Wochenend-Raten</div>
-                            <table class="caps-table">
-                                <tr><td>XP-Rate</td><td class="multiplier-col">2.0x</td></tr>
-                                <tr><td>Farmen</td><td class="multiplier-col">3.0x</td></tr>
-                                <tr><td>Zähmung</td><td class="multiplier-col">4.0x</td></tr>
-                                <tr><td>Brüten</td><td class="multiplier-col">10.0x</td></tr>
-                                <tr><td>Reifen</td><td class="multiplier-col">10.0x</td></tr>
-                            </table>
-                            <div style="font-size: 0.9rem; opacity: 0.8;">Freitag 00:00 - Montag 00:00 Uhr</div>
-                        </div>
-                    </div>
-                    
-                    <!-- Wild Dino Schaden -->
-                     <div class="rates-table-block" style="margin-top: 20px;">
-                         <div class="sub-section-title">Balancing Info</div>
-                        <table class="caps-table">
-                            <tr>
-                                <td>Wild Dino Schaden</td>
-                                <td class="multiplier-col" style="color: var(--color-red);">x2.0</td>
-                            </tr>
-                        </table>
-                        <div class="description">Aus Balancing-Gründen machen wilde Dinos den Spielern doppelten Schaden.</div>
-                     </div>
-                </div>
-
-                <!-- 3. DINO LEVEL LIMITS -->
-                <div id="content-dino-level" class="accordion-content">
-                    <div class="section-header-title">Dino Level Limits</div>
-                    <div class="description">Maximale Dino-Level für verschiedene Kreaturtypen:</div>
-                    <table class="caps-table">
-                        <thead>
-                            <tr><th>Dino Typ</th><th style="text-align:right;">Max Level</th></tr>
-                        </thead>
-                        <tbody>
-                            <tr class="standard-row"><td class="item-col">Standard Dinos</td><td class="max-value-col">150</td></tr>
-                            <tr class="tek-row"><td class="item-col">Tek Dinos</td><td class="max-value-col">180</td></tr>
-                            <tr class="wyvern-row"><td class="item-col">Wyvern</td><td class="max-value-col">190</td></tr>
-                            <tr class="rockdrake-row"><td class="item-col">Rock Drakes</td><td class="max-value-col">190</td></tr>
-                            <tr class="crystal-row"><td class="item-col">Crystal Wyvern</td><td class="max-value-col">225</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <!-- 4. ITEM CAPS -->
-                <div id="content-item-caps" class="accordion-content">
-                    <div class="section-header-title">Item & Crafting Caps</div>
-                    
-                    <div class="sub-section-title">Rüstungs Caps</div>
-                    <table class="caps-table">
-                        <thead><tr><th>Rüstungstyp</th><th style="text-align:right;">Max Wert</th></tr></thead>
-                        <tbody>
-                            <tr class="tek-row"><td class="item-col">Tek-Rüstung</td><td class="max-value-col">1125</td></tr>
-                            <tr class="swat-row"><td class="item-col">SWAT-Rüstung</td><td class="max-value-col">920</td></tr>
-                            <tr class="flak-row"><td class="item-col">Flak-Rüstung</td><td class="max-value-col">800</td></tr>
-                            <tr class="chitin-row"><td class="item-col">Chitin-Rüstung</td><td class="max-value-col">400</td></tr>
-                            <tr class="fur-row"><td class="item-col">Pelz Rüstung</td><td class="max-value-col">320</td></tr>
-                            <tr class="ghillie-row"><td class="item-col">Ghilli Rüstung</td><td class="max-value-col">256</td></tr>
-                        </tbody>
-                    </table>
-
-                    <div class="sub-section-title" style="margin-top: 20px;">Waffen & Werkzeuge Cap</div>
-                    <div class="description">Maximaler Schadenswert:</div>
-                    <table class="caps-table">
-                        <tbody>
-                            <tr><td style="color:var(--color-red);">Waffen (Nah/Fern)</td><td class="max-value-col">400 %</td></tr>
-                            <tr><td style="color:var(--color-red);">Werkzeuge</td><td class="max-value-col">400 %</td></tr>
-                        </tbody>
-                    </table>
-
-                    <div class="sub-section-title" style="margin-top: 20px;">Sättel Cap</div>
-                    <table class="caps-table">
-                        <tbody>
-                            <tr class="crystal-row"><td class="item-col">Alle Sättel</td><td class="max-value-col">200.0</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <!-- 5. SERVER NEUSTARTS -->
-                <div id="content-restarts" class="accordion-content">
-                    <div class="section-header-title">Server Neustarts</div>
-                    <div class="description">
-                        Automatische Neustarts alle 12 Stunden. Countdown startet 30 Min vorher.
-                    </div>
-                    <table class="caps-table">
-                        <thead>
-                            <tr><th>Server / Cluster</th><th style="text-align:center;">Uhrzeit (MEZ)</th></tr>
-                        </thead>
-                        <tbody>
-                            <tr><td colspan="2" style="background: rgba(229,57,53,0.15); color:var(--color-red); font-weight:700;">IOP OFFICIAL CLUSTER</td></tr>
-                            <tr><td>The Island, Center, Scorched, Aberration, Extinction, Ragnarok, Valguero, Astraeos, Svartalfheim, Community Center</td><td class="max-value-col" style="color:var(--color-gold); text-align:center !important;">00:00 & 12:00</td></tr>
-                            <tr><td>Club Ark</td><td class="max-value-col" style="color:var(--color-gold); text-align:center !important;">01:00 & 13:00</td></tr>
-                            
-                            <tr><td colspan="2" style="background: rgba(229,57,53,0.15); color:var(--color-red); font-weight:700;">ANDERE CLUSTER</td></tr>
-                            <tr><td>Primal Nemesis / Primal Chaos</td><td class="max-value-col" style="color:var(--color-gold); text-align:center !important;">00:00 & 12:00</td></tr>
-                            <tr><td>Minecraft / Palworld</td><td class="max-value-col" style="color:var(--color-gold); text-align:center !important;">01:00 & 13:00</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <!-- PLATZHALTER ANDERE MENÜPUNKTE -->
-                <div id="content-gesperrt" class="accordion-content"><div class="section-header-title">Gesperrte Strukturen & Dinos</div><div class="description">Inhalt folgt.</div></div>
-                <div id="content-limits" class="accordion-content"><div class="section-header-title">Strukturen & Dino Limits</div><div class="description">Inhalt folgt.</div></div>
-                <div id="content-player-stats" class="accordion-content"><div class="section-header-title">Spieler Stats</div><div class="description">Inhalt folgt.</div></div>
-                <div id="content-travel" class="accordion-content"><div class="section-header-title">Travel Einstellungen</div><div class="description">Inhalt folgt.</div></div>
-                <div id="content-cs" class="accordion-content"><div class="section-header-title">CS Einstellungen</div><div class="description">Inhalt folgt.</div></div>
-                <div id="content-pcs" class="accordion-content"><div class="section-header-title">PCS Einstellungen</div><div class="description">Inhalt folgt.</div></div>
-
-            </div>
+            <!-- RECHTER INHALT (Wird per JS gefüllt) -->
+            <div class="right-content-area" id="rightContentContainer"></div>
         </div>
     </div>
 
     <script>
+        // =========================================================================
+        // 1. DATENBANK (ÜBERSETZUNGEN)
+        // =========================================================================
+        const translations = {
+            meta: {
+                header: { de: "Server Einstellungen & Balancing", en: "Server Settings & Balancing", es: "Ajustes del Servidor y Balanceo", fr: "Paramètres du Serveur et Équilibrage" }
+            },
+            // Navigation
+            nav: {
+                group_server: { de: "Server Einstellungen", en: "Server Settings", es: "Ajustes del Servidor", fr: "Paramètres Serveur" },
+                group_mod: { de: "Mod Einstellungen", en: "Mod Settings", es: "Ajustes de Mods", fr: "Paramètres Mods" },
+                items: [
+                    { id: 'decay', de: 'Decay Einstellungen', en: 'Decay Settings', es: 'Ajustes de Deterioro', fr: 'Paramètres de Dégradation' },
+                    { id: 'dino-level', de: 'Dino Level Limits', en: 'Dino Level Limits', es: 'Límites de Nivel de Dino', fr: 'Limites de Niveau des Dinos' },
+                    { id: 'gesperrt', de: 'Gesperrte Strukturen & Dinos', en: 'Blocked Structures & Dinos', es: 'Estructuras y Dinos Bloqueados', fr: 'Structures et Dinos Bloqués' },
+                    { id: 'item-caps', de: 'Item & Crafting Caps', en: 'Item & Crafting Caps', es: 'Límites de Items y Crafting', fr: 'Limites d\'Objets et Crafting' },
+                    { id: 'limits', de: 'Strukturen & Dino Limits', en: 'Structure & Dino Limits', es: 'Límites de Estructuras y Dinos', fr: 'Limites Structures et Dinos' },
+                    { id: 'player-stats', de: 'Spieler/Dino Stat Einstellungen', en: 'Player/Dino Stat Settings', es: 'Estadísticas Jugador/Dino', fr: 'Stats Joueur/Dino' },
+                    { id: 'rates', de: 'Server Raten', en: 'Server Rates', es: 'Tasas del Servidor', fr: 'Taux du Serveur' },
+                    { id: 'restarts', de: 'Server Neustarts', en: 'Server Restarts', es: 'Reinicios del Servidor', fr: 'Redémarrages Serveur' },
+                    { id: 'travel', de: 'Travel Einstellungen', en: 'Travel Settings', es: 'Ajustes de Viaje', fr: 'Paramètres de Voyage' },
+                    { id: 'cs', de: 'CS Einstellungen', en: 'CS Settings', es: 'Ajustes CS', fr: 'Paramètres CS' },
+                    { id: 'pcs', de: 'PCS Einstellungen', en: 'PCS Settings', es: 'Ajustes PCS', fr: 'Paramètres PCS' }
+                ]
+            },
+            // Inhalte
+            sections: {
+                decay: {
+                    title: { de: 'Decay Einstellungen', en: 'Decay Settings', es: 'Ajustes de Deterioro', fr: 'Paramètres de Dégradation' },
+                    desc: { 
+                        de: 'Die Verfallstimer basieren auf dem progressiven Level System (Prog Lvl) und variieren je nach Spielerlevel.', 
+                        en: 'Decay timers are based on the progressive level system (Prog Lvl) and vary by player level.',
+                        es: 'Los temporizadores de deterioro se basan en el sistema de nivel progresivo (Prog Lvl) y varían según el nivel del jugador.',
+                        fr: 'Les minuteurs de dégradation sont basés sur le système de niveau progressif (Prog Lvl) et varient selon le niveau du joueur.'
+                    },
+                    accordion_btn: { de: 'Prog Lvl Decay-Limits anzeigen', en: 'Show Prog Lvl Decay Limits', es: 'Ver límites de deterioro Prog Lvl', fr: 'Voir les limites de dégradation Prog Lvl' },
+                    table_header_lvl: { de: 'Level Bereich', en: 'Level Range', es: 'Rango de Nivel', fr: 'Plage de Niveau' },
+                    table_header_time: { de: 'Decay Zeit', en: 'Decay Time', es: 'Tiempo de Deterioro', fr: 'Temps de Dégradation' },
+                    wild_title: { de: 'Regeln für den Wildbau-Verfall', en: 'Wild Build Decay Rules', es: 'Reglas de Deterioro de Construcción Salvaje', fr: 'Règles de Dégradation des Constructions Sauvages' },
+                    wild_general: { de: 'Allgemein gilt:', en: 'General Rules:', es: 'Reglas Generales:', fr: 'Règles Générales :' },
+                    wild_list: {
+                        de: [
+                            'Täglich wird um <strong>01:00 Uhr</strong> eine automatische Entfernung von Wildbauten durchgeführt.',
+                            'Der Spieler mit dem höchsten Verfallswert (Decay) gibt den Verfallstimer für den Stamm vor.',
+                            'Alle Strukturen-Arten haben denselben Verfallstimer.'
+                        ],
+                        en: [
+                            'Automatic removal of wild builds occurs daily at <strong>01:00 AM</strong>.',
+                            'The player with the highest decay value sets the decay timer for the tribe.',
+                            'All structure types have the same decay timer.'
+                        ],
+                        es: [
+                            'La eliminación automática de construcciones salvajes ocurre diariamente a las <strong>01:00 AM</strong>.',
+                            'El jugador con el mayor valor de deterioro establece el temporizador para la tribu.',
+                            'Todos los tipos de estructuras tienen el mismo temporizador.'
+                        ],
+                        fr: [
+                            'La suppression automatique des constructions sauvages a lieu tous les jours à <strong>01:00</strong>.',
+                            'Le joueur avec la plus haute valeur de dégradation définit le minuteur pour la tribu.',
+                            'Tous les types de structures ont le même minuteur de dégradation.'
+                        ]
+                    },
+                    unit_days: { de: 'Tage', en: 'Days', es: 'Días', fr: 'Jours' },
+                    level_text: { de: 'Level', en: 'Level', es: 'Nivel', fr: 'Niveau' },
+                    from_text: { de: 'Ab', en: 'From', es: 'Desde', fr: 'De' }
+                },
+                rates: {
+                    title: { de: 'Server Raten', en: 'Server Rates', es: 'Tasas del Servidor', fr: 'Taux du Serveur' },
+                    desc: { de: 'Unsere Server-Einstellungen bieten optimierte Raten für ein ausbalanciertes Spielerlebnis.', en: 'Our server settings offer optimized rates for a balanced gaming experience.', es: 'Nuestra configuración ofrece tasas optimizadas para una experiencia equilibrada.', fr: 'Nos paramètres offrent des taux optimisés pour une expérience équilibrée.' },
+                    weekdays: { de: 'Werktags-Raten', en: 'Weekday Rates', es: 'Tasas de Día Laborable', fr: 'Taux de Semaine' },
+                    weekend: { de: 'Wochenend-Raten', en: 'Weekend Rates', es: 'Tasas de Fin de Semana', fr: 'Taux de Week-end' },
+                    time_week: { de: 'Montag 00:00 - Freitag 00:00 Uhr', en: 'Monday 00:00 - Friday 00:00', es: 'Lunes 00:00 - Viernes 00:00', fr: 'Lundi 00:00 - Vendredi 00:00' },
+                    time_weekend: { de: 'Freitag 00:00 - Montag 00:00 Uhr', en: 'Friday 00:00 - Monday 00:00', es: 'Viernes 00:00 - Lunes 00:00', fr: 'Vendredi 00:00 - Lundi 00:00' },
+                    labels: { 
+                        xp: { de: 'XP-Rate', en: 'XP Rate', es: 'Tasa XP', fr: 'Taux XP' },
+                        farm: { de: 'Farmen', en: 'Harvesting', es: 'Cosecha', fr: 'Récolte' },
+                        tame: { de: 'Zähmung', en: 'Taming', es: 'Domesticación', fr: 'Apprivoisement' },
+                        breed: { de: 'Brüten', en: 'Breeding', es: 'Crianza', fr: 'Élevage' },
+                        mature: { de: 'Reifen', en: 'Maturation', es: 'Maduración', fr: 'Maturation' }
+                    },
+                    balancing: { de: 'Balancing Info', en: 'Balancing Info', es: 'Info Balanceo', fr: 'Info Équilibrage' },
+                    wild_dmg: { de: 'Wild Dino Schaden', en: 'Wild Dino Damage', es: 'Daño Dino Salvaje', fr: 'Dégâts Dino Sauvage' },
+                    wild_desc: { de: 'Aus Balancing-Gründen machen wilde Dinos den Spielern doppelten Schaden.', en: 'For balancing reasons, wild dinos deal double damage to players.', es: 'Por razones de equilibrio, los dinos salvajes hacen doble daño.', fr: 'Pour des raisons d\'équilibrage, les dinos sauvages infligent le double de dégâts.' }
+                },
+                dino_level: {
+                    title: { de: 'Dino Level Limits', en: 'Dino Level Limits', es: 'Límites de Nivel de Dino', fr: 'Limites de Niveau des Dinos' },
+                    desc: { de: 'Maximale Dino-Level für verschiedene Kreaturtypen:', en: 'Max dino levels for different creature types:', es: 'Niveles máximos para diferentes tipos de criaturas:', fr: 'Niveaux max des dinos pour différents types :' },
+                    headers: { type: { de: 'Dino Typ', en: 'Dino Type', es: 'Tipo de Dino', fr: 'Type de Dino' }, max: { de: 'Max Level', en: 'Max Level', es: 'Nivel Máx', fr: 'Niveau Max' } },
+                    types: {
+                        std: { de: 'Standard Dinos', en: 'Standard Dinos', es: 'Dinos Estándar', fr: 'Dinos Standard' },
+                        tek: { de: 'Tek Dinos', en: 'Tek Dinos', es: 'Dinos Tek', fr: 'Dinos Tek' },
+                        wyvern: { de: 'Wyvern', en: 'Wyvern', es: 'Wyvern', fr: 'Wyvern' },
+                        rock: { de: 'Rock Drakes', en: 'Rock Drakes', es: 'Rock Drakes', fr: 'Rock Drakes' },
+                        crystal: { de: 'Crystal Wyvern', en: 'Crystal Wyvern', es: 'Crystal Wyvern', fr: 'Crystal Wyvern' }
+                    }
+                },
+                item_caps: {
+                    title: { de: 'Item & Crafting Caps', en: 'Item & Crafting Caps', es: 'Límites de Items y Crafting', fr: 'Limites d\'Objets et Crafting' },
+                    armor_title: { de: 'Rüstungs Caps', en: 'Armor Caps', es: 'Límites de Armadura', fr: 'Limites d\'Armure' },
+                    headers: { type: { de: 'Rüstungstyp', en: 'Armor Type', es: 'Tipo de Armadura', fr: 'Type d\'Armure' }, max: { de: 'Max Wert', en: 'Max Value', es: 'Valor Máx', fr: 'Valeur Max' } },
+                    items: {
+                        tek: { de: 'Tek-Rüstung', en: 'Tek Armor', es: 'Armadura Tek', fr: 'Armure Tek' },
+                        swat: { de: 'SWAT-Rüstung', en: 'SWAT Armor', es: 'Armadura SWAT', fr: 'Armure SWAT' },
+                        flak: { de: 'Flak-Rüstung', en: 'Flak Armor', es: 'Armadura Flak', fr: 'Armure Flak' },
+                        chitin: { de: 'Chitin-Rüstung', en: 'Chitin Armor', es: 'Armadura Quitina', fr: 'Armure Chitine' },
+                        fur: { de: 'Pelz Rüstung', en: 'Fur Armor', es: 'Armadura de Piel', fr: 'Armure en Fourrure' },
+                        ghillie: { de: 'Ghilli Rüstung', en: 'Ghillie Armor', es: 'Armadura Ghillie', fr: 'Armure Ghillie' }
+                    },
+                    weapon_title: { de: 'Waffen & Werkzeuge Cap', en: 'Weapons & Tools Cap', es: 'Límites Armas y Herramientas', fr: 'Limites Armes et Outils' },
+                    weapon_desc: { de: 'Maximaler Schadenswert:', en: 'Max Damage Value:', es: 'Daño Máximo:', fr: 'Dégâts Max :' },
+                    weapon_labels: { 
+                        w: { de: 'Waffen (Nah/Fern)', en: 'Weapons (Melee/Ranged)', es: 'Armas', fr: 'Armes' },
+                        t: { de: 'Werkzeuge', en: 'Tools', es: 'Herramientas', fr: 'Outils' }
+                    },
+                    saddle_title: { de: 'Sättel Cap', en: 'Saddle Cap', es: 'Límites Monturas', fr: 'Limites Selles' },
+                    saddle_all: { de: 'Alle Sättel', en: 'All Saddles', es: 'Todas las Monturas', fr: 'Toutes les Selles' }
+                },
+                restarts: {
+                    title: { de: 'Server Neustarts', en: 'Server Restarts', es: 'Reinicios del Servidor', fr: 'Redémarrages Serveur' },
+                    desc: { de: 'Automatische Neustarts alle 12 Stunden. Countdown startet 30 Min vorher.', en: 'Automatic restarts every 12 hours. Countdown starts 30 mins prior.', es: 'Reinicios automáticos cada 12 horas. Cuenta atrás 30 min antes.', fr: 'Redémarrages auto toutes les 12 heures. Compte à rebours 30 min avant.' },
+                    headers: { s: { de: 'Server / Cluster', en: 'Server / Cluster', es: 'Servidor / Clúster', fr: 'Serveur / Cluster' }, t: { de: 'Uhrzeit (MEZ)', en: 'Time (CET)', es: 'Hora (CET)', fr: 'Heure (CET)' } },
+                    cluster_official: { de: 'IOP OFFICIAL CLUSTER', en: 'IOP OFFICIAL CLUSTER', es: 'IOP CLÚSTER OFICIAL', fr: 'IOP CLUSTER OFFICIEL' },
+                    cluster_other: { de: 'ANDERE CLUSTER', en: 'OTHER CLUSTERS', es: 'OTROS CLÚSTERES', fr: 'AUTRES CLUSTERS' }
+                },
+                generic: {
+                    title: { de: 'Inhalt folgt', en: 'Content coming soon', es: 'Contenido próximamente', fr: 'Contenu à venir' }
+                }
+            }
+        };
+
+        // =========================================================================
+        // 2. LOGIC
+        // =========================================================================
+        let currentTabId = 'rates'; // Default Tab
+
+        function setLanguage(lang) {
+            // UI Buttons
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('btn-' + lang).classList.add('active');
+            
+            // Render UI
+            renderUI(lang);
+        }
+
+        function renderUI(lang) {
+            // Main Header
+            document.getElementById('mainHeader').textContent = translations.meta.header[lang];
+
+            // 1. Render Left Nav
+            const navContainer = document.getElementById('leftNavContainer');
+            navContainer.innerHTML = '';
+            
+            // Separator Server
+            const sep1 = document.createElement('div');
+            sep1.className = 'nav-group-separator';
+            sep1.textContent = translations.nav.group_server[lang];
+            navContainer.appendChild(sep1);
+
+            // Items (First part)
+            const serverItems = ['decay', 'dino-level', 'gesperrt', 'item-caps', 'limits', 'player-stats', 'rates', 'restarts', 'travel'];
+            serverItems.forEach(id => {
+                const item = translations.nav.items.find(i => i.id === id);
+                if(item) createNavButton(navContainer, id, item[lang]);
+            });
+
+            // Separator Mods
+            const sep2 = document.createElement('div');
+            sep2.className = 'nav-group-separator';
+            sep2.textContent = translations.nav.group_mod[lang];
+            navContainer.appendChild(sep2);
+
+            // Items (Mods)
+            const modItems = ['cs', 'pcs'];
+            modItems.forEach(id => {
+                const item = translations.nav.items.find(i => i.id === id);
+                if(item) createNavButton(navContainer, id, item[lang]);
+            });
+
+            // 2. Render Content Areas (Alle erstellen, nur aktives zeigen)
+            const contentContainer = document.getElementById('rightContentContainer');
+            contentContainer.innerHTML = ''; // Reset
+
+            const allIds = [...serverItems, ...modItems];
+            allIds.forEach(id => {
+                const wrapper = document.createElement('div');
+                wrapper.id = 'content-' + id;
+                wrapper.className = 'accordion-content';
+                if(id === currentTabId) wrapper.classList.add('active');
+                
+                // Content generieren
+                wrapper.innerHTML = generateContentHTML(id, lang);
+                contentContainer.appendChild(wrapper);
+            });
+
+            // Re-apply active class to nav
+            const activeNav = document.getElementById('nav-' + currentTabId);
+            if(activeNav) activeNav.classList.add('active');
+        }
+
+        function createNavButton(container, id, text) {
+            const div = document.createElement('div');
+            div.id = 'nav-' + id;
+            div.className = 'accordion-header';
+            if(id === currentTabId) div.classList.add('active');
+            div.textContent = text;
+            div.onclick = () => switchTab(id);
+            container.appendChild(div);
+        }
+
+        function generateContentHTML(id, lang) {
+            const data = translations.sections[id];
+            // Fallback für leere Sections
+            if(!data || !data.title) {
+                const t = translations.sections[id]?.title?.[lang] || translations.nav.items.find(i=>i.id===id)?.[lang];
+                return `<div class="section-header-title">${t}</div><div class="description">${translations.sections.generic.title[lang]}</div>`;
+            }
+
+            // HTML Generierung je nach ID
+            let html = `<div class="section-header-title animated-content">${data.title[lang]}</div>`;
+            if(data.desc && typeof data.desc === 'object') {
+                html += `<div class="description animated-content" style="animation-delay: 50ms">${data.desc[lang]}</div>`;
+            }
+
+            // --- DECAY SPECIAL ---
+            if(id === 'decay') {
+                // Table Data Generation
+                let tableRows = '';
+                const ranges = [
+                    [1,9,5], [10,19,7], [20,29,10], [30,39,12], [40,49,14], [50,59,16], 
+                    [60,69,18], [70,79,21], [80,89,25], [90,99,27], [100,104,30], 
+                    [105,109,31], [110,114,32], [115,119,33], [120,124,34], [125,129,35], 
+                    [130,134,36], [135,139,37], [140,144,38], [145,149,39], [150,154,40],
+                    [155,159,41], [160,164,42], [165,169,43], [170,174,44], [175,179,45],
+                    [180,184,46], [185,189,47], [190,194,48], [195,199,49]
+                ];
+                
+                const lvlTxt = data.level_text[lang];
+                const dayTxt = data.unit_days[lang];
+
+                ranges.forEach(r => {
+                    tableRows += `<tr><td>${lvlTxt} ${r[0]} - ${r[1]}</td><td class="max-value-col">${r[2]} ${dayTxt}</td></tr>`;
+                });
+                // Last row (200+)
+                tableRows += `<tr><td>${data.from_text[lang]} ${lvlTxt} 200</td><td class="max-value-col">50 ${dayTxt}</td></tr>`;
+
+                html += `
+                <div class="local-accordion-header animated-content" onclick="toggleLocal(this)" style="animation-delay: 100ms">
+                    <span>${data.accordion_btn[lang]}</span><span class="local-arrow">▶</span>
+                </div>
+                <div class="local-accordion-content">
+                    <table class="caps-table" style="margin-top: 10px;">
+                        <thead><tr><th>${data.table_header_lvl[lang]}</th><th style="text-align:right;">${data.table_header_time[lang]}</th></tr></thead>
+                        <tbody>${tableRows}</tbody>
+                    </table>
+                </div>
+                <div class="section-header-title animated-content" style="margin-top:30px; animation-delay: 150ms">${data.wild_title[lang]}</div>
+                <div class="description animated-content" style="animation-delay: 200ms">
+                    <span class="sub-section-title">${data.wild_general[lang]}</span>
+                    <ul>${data.wild_list[lang].map(li => `<li>${li}</li>`).join('')}</ul>
+                </div>`;
+            }
+
+            // --- RATES SPECIAL ---
+            if(id === 'rates') {
+                const labels = data.labels;
+                const rowsWeek = `
+                    <tr><td>${labels.xp[lang]}</td><td class="multiplier-col">1.0x</td></tr>
+                    <tr><td>${labels.farm[lang]}</td><td class="multiplier-col">1.5x</td></tr>
+                    <tr><td>${labels.tame[lang]}</td><td class="multiplier-col">2.0x</td></tr>
+                    <tr><td>${labels.breed[lang]}</td><td class="multiplier-col">5.0x</td></tr>
+                    <tr><td>${labels.mature[lang]}</td><td class="multiplier-col">5.0x</td></tr>
+                `;
+                const rowsWeekend = `
+                    <tr><td>${labels.xp[lang]}</td><td class="multiplier-col">2.0x</td></tr>
+                    <tr><td>${labels.farm[lang]}</td><td class="multiplier-col">3.0x</td></tr>
+                    <tr><td>${labels.tame[lang]}</td><td class="multiplier-col">4.0x</td></tr>
+                    <tr><td>${labels.breed[lang]}</td><td class="multiplier-col">10.0x</td></tr>
+                    <tr><td>${labels.mature[lang]}</td><td class="multiplier-col">10.0x</td></tr>
+                `;
+
+                html += `
+                <div class="rates-flex-wrapper animated-content" style="animation-delay: 100ms">
+                    <div class="rates-table-block">
+                        <div class="sub-section-title" style="color: var(--color-rate-accent); border-bottom: 1px solid var(--color-rate-accent); padding-bottom: 5px;">${data.weekdays[lang]}</div>
+                        <table class="caps-table">${rowsWeek}</table>
+                        <div style="font-size: 0.9rem; opacity: 0.8;">${data.time_week[lang]}</div>
+                    </div>
+                    <div class="rates-table-block">
+                        <div class="sub-section-title" style="color: var(--color-rate-accent); border-bottom: 1px solid var(--color-rate-accent); padding-bottom: 5px;">${data.weekend[lang]}</div>
+                        <table class="caps-table">${rowsWeekend}</table>
+                        <div style="font-size: 0.9rem; opacity: 0.8;">${data.time_weekend[lang]}</div>
+                    </div>
+                </div>
+                <div class="rates-table-block animated-content" style="margin-top: 20px; animation-delay: 150ms">
+                    <div class="sub-section-title">${data.balancing[lang]}</div>
+                    <table class="caps-table">
+                        <tr><td>${data.wild_dmg[lang]}</td><td class="multiplier-col" style="color: var(--color-red);">x2.0</td></tr>
+                    </table>
+                    <div class="description">${data.wild_desc[lang]}</div>
+                </div>`;
+            }
+
+            // --- DINO LEVEL SPECIAL ---
+            if(id === 'dino-level') {
+                html += `
+                <table class="caps-table animated-content" style="animation-delay: 100ms">
+                    <thead><tr><th>${data.headers.type[lang]}</th><th style="text-align:right;">${data.headers.max[lang]}</th></tr></thead>
+                    <tbody>
+                        <tr class="standard-row"><td class="item-col">${data.types.std[lang]}</td><td class="max-value-col">150</td></tr>
+                        <tr class="tek-row"><td class="item-col">${data.types.tek[lang]}</td><td class="max-value-col">180</td></tr>
+                        <tr class="wyvern-row"><td class="item-col">${data.types.wyvern[lang]}</td><td class="max-value-col">190</td></tr>
+                        <tr class="rockdrake-row"><td class="item-col">${data.types.rock[lang]}</td><td class="max-value-col">190</td></tr>
+                        <tr class="crystal-row"><td class="item-col">${data.types.crystal[lang]}</td><td class="max-value-col">225</td></tr>
+                    </tbody>
+                </table>`;
+            }
+
+            // --- CAPS SPECIAL ---
+            if(id === 'item-caps') {
+                html += `
+                <div class="sub-section-title animated-content" style="animation-delay: 100ms">${data.armor_title[lang]}</div>
+                <table class="caps-table animated-content" style="animation-delay: 150ms">
+                    <thead><tr><th>${data.headers.type[lang]}</th><th style="text-align:right;">${data.headers.max[lang]}</th></tr></thead>
+                    <tbody>
+                        <tr class="tek-row"><td class="item-col">${data.items.tek[lang]}</td><td class="max-value-col">1125</td></tr>
+                        <tr class="swat-row"><td class="item-col">${data.items.swat[lang]}</td><td class="max-value-col">920</td></tr>
+                        <tr class="flak-row"><td class="item-col">${data.items.flak[lang]}</td><td class="max-value-col">800</td></tr>
+                        <tr class="chitin-row"><td class="item-col">${data.items.chitin[lang]}</td><td class="max-value-col">400</td></tr>
+                        <tr class="fur-row"><td class="item-col">${data.items.fur[lang]}</td><td class="max-value-col">320</td></tr>
+                        <tr class="ghillie-row"><td class="item-col">${data.items.ghillie[lang]}</td><td class="max-value-col">256</td></tr>
+                    </tbody>
+                </table>
+                <div class="sub-section-title animated-content" style="margin-top: 20px; animation-delay: 200ms">${data.weapon_title[lang]}</div>
+                <div class="description animated-content" style="animation-delay: 250ms">${data.weapon_desc[lang]}</div>
+                <table class="caps-table animated-content" style="animation-delay: 300ms">
+                    <tbody>
+                        <tr><td style="color:var(--color-red);">${data.weapon_labels.w[lang]}</td><td class="max-value-col">400 %</td></tr>
+                        <tr><td style="color:var(--color-red);">${data.weapon_labels.t[lang]}</td><td class="max-value-col">400 %</td></tr>
+                    </tbody>
+                </table>
+                <div class="sub-section-title animated-content" style="margin-top: 20px; animation-delay: 350ms">${data.saddle_title[lang]}</div>
+                <table class="caps-table animated-content" style="animation-delay: 400ms">
+                    <tbody>
+                        <tr class="crystal-row"><td class="item-col">${data.saddle_all[lang]}</td><td class="max-value-col">200.0</td></tr>
+                    </tbody>
+                </table>`;
+            }
+
+            // --- RESTARTS SPECIAL ---
+            if(id === 'restarts') {
+                html += `
+                <table class="caps-table animated-content" style="animation-delay: 100ms">
+                    <thead><tr><th>${data.headers.s[lang]}</th><th style="text-align:center;">${data.headers.t[lang]}</th></tr></thead>
+                    <tbody>
+                        <tr><td colspan="2" style="background: rgba(229,57,53,0.15); color:var(--color-red); font-weight:700;">${data.cluster_official[lang]}</td></tr>
+                        <tr><td>The Island, Center, Scorched, Aberration, Extinction, Ragnarok, Valguero, Astraeos, Svartalfheim, Community Center</td><td class="max-value-col" style="color:var(--color-gold); text-align:center !important;">00:00 & 12:00</td></tr>
+                        <tr><td>Club Ark</td><td class="max-value-col" style="color:var(--color-gold); text-align:center !important;">01:00 & 13:00</td></tr>
+                        
+                        <tr><td colspan="2" style="background: rgba(229,57,53,0.15); color:var(--color-red); font-weight:700;">${data.cluster_other[lang]}</td></tr>
+                        <tr><td>Primal Nemesis / Primal Chaos</td><td class="max-value-col" style="color:var(--color-gold); text-align:center !important;">00:00 & 12:00</td></tr>
+                        <tr><td>Minecraft / Palworld</td><td class="max-value-col" style="color:var(--color-gold); text-align:center !important;">01:00 & 13:00</td></tr>
+                    </tbody>
+                </table>`;
+            }
+
+            return html;
+        }
+
         function switchTab(tabId) {
+            currentTabId = tabId;
+            
             // 1. Alle Header deaktivieren
             document.querySelectorAll('.accordion-header').forEach(el => el.classList.remove('active'));
             // 2. Alle Inhalte ausblenden
             document.querySelectorAll('.accordion-content').forEach(el => el.classList.remove('active'));
 
-            // 3. Gewählten Tab aktivieren
+            // 3. Aktiv setzen
             const header = document.getElementById('nav-' + tabId);
             const content = document.getElementById('content-' + tabId);
 
-            if(header && content) {
-                header.classList.add('active');
+            if(header) header.classList.add('active');
+            if(content) {
                 content.classList.add('active');
                 
-                // Animation für Content-Elemente
-                const animatables = content.querySelectorAll('.section-header-title, .description, .caps-table, .rates-flex-wrapper');
-                animatables.forEach((el, index) => {
+                // Animation trigger
+                const animatables = content.querySelectorAll('.animated-content');
+                animatables.forEach((el) => {
                     el.classList.remove('animated-content');
-                    void el.offsetWidth; // Trigger Reflow
-                    el.style.animationDelay = (index * 50) + 'ms';
+                    void el.offsetWidth; 
                     el.classList.add('animated-content');
                 });
             }
@@ -592,9 +778,9 @@
             content.classList.toggle('active');
         }
 
-        // Init: Starte mit Server Raten
+        // Init: Starte mit Deutsch
         document.addEventListener('DOMContentLoaded', () => {
-            switchTab('rates');
+            setLanguage('de');
         });
     </script>
 </body>
