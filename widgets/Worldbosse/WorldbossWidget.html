@@ -4,284 +4,274 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IOP World Bosse</title>
-    <link href="https://fonts.googleapis.com/css2?family=Acme&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Acme&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* IOP Style Variables */
+        /* Farbschema: Feuerrot, Schwarz und Goldgelb */
         :root {
-            --color-dark: rgba(20, 20, 20, 0.95);
-            --color-light-dark: rgba(40, 40, 40, 0.9);
+            --color-red: #E53935;
+            --color-black: #000000;
+            --color-dark: #0a0a0a;
+            --color-light-dark: #161616;
             --color-text: #f7f7f7;
-            --color-gold: #FFEB3B;
-            
-            /* Boss Colors */
-            --color-boss-primary: #D32F2F; /* Deep Red */
-            --color-boss-accent: #7C4DFF; /* Purple */
-            --color-boss-glow: rgba(211, 47, 47, 0.6);
-            
-            --font-main: sans-serif;
+            --color-gold: #FFD700; /* Goldgelb für Akzente */
+            --color-ui-gold: #FFD700;
+            --color-border: #333;
             --font-header: 'Acme', sans-serif;
+            --font-body: 'Roboto', sans-serif;
         }
 
-        * { box-sizing: border-box; }
+        * { box-sizing: border-box; margin: 0; padding: 0; scroll-behavior: smooth; }
 
         body {
             background-color: transparent;
-            font-family: var(--font-main);
+            font-family: var(--font-body);
             color: var(--color-text);
-            margin: 0;
-            padding: 0; 
+            height: 100vh;
+            width: 100vw;
             display: flex;
             flex-direction: column;
             align-items: center;
-            height: 100vh;
-            width: 100vw;
-            overflow: hidden; 
+            overflow: hidden;
         }
 
-        /* Container */
-        .boss-container {
+        /* Widget Container - Einheitliche Breite */
+        .start-container {
             background-color: var(--color-dark);
             border-radius: 8px; 
-            border: 2px solid var(--color-boss-primary);
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.8);
+            border: 2px solid var(--color-red);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
             width: 98%;
-            height: 95vh;
+            height: 96vh;
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            margin-top: 2vh;
             position: relative;
         }
 
-        /* Header */
+        /* Schlichter schwarzer Header */
         .header {
-            background: linear-gradient(135deg, rgba(50,0,0,0.9), rgba(30,0,30,0.9));
-            padding: 20px 25px;
+            background-color: var(--color-black);
+            padding: 25px 20px;
             text-align: center;
-            border-bottom: 2px solid var(--color-boss-primary);
+            border-bottom: 2px solid var(--color-red);
             flex-shrink: 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: relative;
-            overflow: visible; /* Für Flaggen */
-        }
-        
-        .header::after {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at center, rgba(124, 77, 255, 0.15) 0%, transparent 70%);
-            pointer-events: none;
         }
 
         .header-content {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
+            position: relative;
             z-index: 2;
+        }
+
+        /* Flaggen oben rechts */
+        .lang-switch {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            display: flex;
+            gap: 10px;
+            z-index: 100;
+        }
+        .lang-btn {
+            width: 25px; height: 16px;
+            cursor: pointer;
+            border-radius: 2px;
+            border: 1px solid #fff;
+            opacity: 0.6;
+            transition: 0.2s;
+            object-fit: cover;
+        }
+        .lang-btn.active, .lang-btn:hover {
+            opacity: 1;
+            transform: scale(1.15);
+            border-color: var(--color-ui-gold);
         }
 
         .title {
             font-family: var(--font-header);
-            font-size: 2.2rem; 
+            font-size: 2.4rem; 
+            color: var(--color-red);
             text-transform: uppercase;
             margin: 0;
-            z-index: 1;
-            background: linear-gradient(to right, var(--color-boss-primary), var(--color-boss-accent));
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            text-shadow: 0 0 20px rgba(211, 47, 47, 0.3);
             letter-spacing: 2px;
-            line-height: 1.1;
         }
 
         .subtitle {
-            color: #ddd;
-            font-size: 0.9rem;
-            font-style: italic;
-            z-index: 1;
-        }
-
-        /* FLAGGEN SWITCHER */
-        .lang-switch {
-            position: absolute;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 8px;
-            z-index: 10;
-        }
-        .lang-btn {
-            width: 30px; height: 20px;
-            cursor: pointer;
-            border-radius: 3px;
-            border: 1px solid #fff;
-            opacity: 0.5;
-            transition: transform 0.2s, opacity 0.2s;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
-            padding: 0;
-            display: block;
-        }
-        .lang-btn:hover, .lang-btn.active {
-            opacity: 1; transform: scale(1.15);
-            border-color: var(--color-boss-accent);
-            z-index: 10;
-        }
-
-        /* SEARCH BAR */
-        .search-container {
-            width: 300px;
-            position: relative;
-            z-index: 2;
-        }
-
-        .search-input {
-            width: 100%;
-            padding: 10px 15px 10px 40px;
-            border-radius: 20px;
-            border: 2px solid #555;
-            background-color: rgba(0, 0, 0, 0.5);
-            color: #fff;
-            font-family: var(--font-main);
+            color: var(--color-ui-gold);
             font-size: 1rem;
-            transition: border-color 0.3s, box-shadow 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 500;
+        }
+
+        /* Suchleiste */
+        .search-container {
+            padding: 10px 20px;
+            background: rgba(0,0,0,0.5);
+            border-bottom: 1px solid #333;
+        }
+        .search-box {
+            position: relative;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        .search-box input {
+            width: 100%;
+            padding: 8px 15px 8px 35px;
+            border-radius: 20px;
+            border: 1px solid #444;
+            background: #111;
+            color: #fff;
             outline: none;
+            font-size: 0.9rem;
         }
-
-        .search-input:focus {
-            border-color: var(--color-boss-accent);
-            box-shadow: 0 0 15px rgba(124, 77, 255, 0.5);
-        }
-
-        .search-icon {
+        .search-box i {
             position: absolute;
-            left: 15px;
+            left: 12px;
             top: 50%;
             transform: translateY(-50%);
-            color: #aaa;
+            color: #888;
         }
 
         /* Navigation Tabs */
         .nav-tabs {
             display: flex;
-            background-color: rgba(255,255,255,0.05);
+            background-color: #050505;
             padding: 0 10px;
             overflow-x: auto;
             flex-shrink: 0;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+            border-bottom: 1px solid #333;
         }
-
         .nav-tab {
-            padding: 15px 20px;
+            padding: 15px 25px;
             cursor: pointer;
             font-family: var(--font-header);
             text-transform: uppercase;
-            color: #aaa;
+            color: #888;
             border-bottom: 3px solid transparent;
             transition: all 0.2s;
             flex-grow: 1; 
             text-align: center;
-            font-size: 1.1rem;
+            font-size: 1rem;
+            white-space: nowrap;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
-            white-space: nowrap;
+            gap: 8px;
         }
-
         .nav-tab:hover { color: #fff; background-color: rgba(255,255,255,0.05); }
-        
         .nav-tab.active {
-            color: var(--color-boss-primary);
-            border-bottom-color: var(--color-boss-primary);
-            background-color: rgba(211, 47, 47, 0.1);
+            color: var(--color-ui-gold);
+            border-bottom-color: var(--color-ui-gold);
+            background-color: rgba(255, 215, 0, 0.05);
         }
 
         /* Content Area */
         .content-area {
             flex-grow: 1;
             overflow-y: auto;
-            padding: 20px;
+            padding: 30px;
             scrollbar-width: thin;
-            scrollbar-color: var(--color-boss-primary) transparent;
+            scrollbar-color: var(--color-red) #111;
         }
         .content-area::-webkit-scrollbar { width: 8px; }
-        .content-area::-webkit-scrollbar-thumb { background-color: var(--color-boss-primary); border-radius: 4px; }
+        .content-area::-webkit-scrollbar-thumb { background-color: var(--color-red); border-radius: 4px; }
 
-        /* Sections */
-        .section { display: none; animation: fadeIn 0.4s ease; max-width: 1400px; margin: 0 auto; }
-        .section.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* Info Cards */
-        .info-card {
-            background-color: var(--color-light-dark);
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            border: 1px solid rgba(255,255,255,0.05);
-            border-left: 4px solid var(--color-boss-accent);
+        @keyframes slideUpFade {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        .info-card h3 {
-            margin-top: 0;
-            font-family: var(--font-header);
-            font-size: 1.4rem;
-            color: var(--color-boss-accent);
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            padding-bottom: 10px;
-            margin-bottom: 15px;
+        .section { display: none; max-width: 1200px; margin: 0 auto; }
+        .section.active { 
+            display: block; 
+            animation: slideUpFade 0.4s ease-out forwards;
+        }
+
+        /* Info Blocks */
+        .info-block {
+            background-color: var(--color-light-dark);
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            margin-bottom: 30px;
+            overflow: hidden;
+            transition: 0.2s;
+        }
+        .info-block:hover { border-color: var(--color-red); }
+
+        .block-header {
+            padding: 15px 20px;
+            background: #000;
+            border-bottom: 1px solid var(--color-border);
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
         }
+        .block-title {
+            font-family: var(--font-header);
+            font-size: 1.4rem;
+            color: var(--color-red);
+            margin: 0;
+            text-transform: uppercase;
+        }
+        .block-header i { color: var(--color-ui-gold); }
 
-        .text-content { color: #ccc; line-height: 1.6; font-size: 0.95rem; }
-        .text-content strong { color: #fff; }
-        .text-content ul { padding-left: 20px; margin-top: 5px; }
-        .text-content li { margin-bottom: 8px; }
+        .block-body {
+            padding: 25px;
+            line-height: 1.6;
+            color: #ccc;
+            font-size: 1rem;
+        }
+        .block-body strong { color: #fff; }
+
+        .feature-list { list-style: none; margin: 10px 0; }
+        .feature-list li { margin-bottom: 10px; padding-left: 25px; position: relative; }
+        .feature-list li::before {
+            content: "\f105";
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            position: absolute;
+            left: 0;
+            color: var(--color-ui-gold);
+        }
 
         /* Boss Grid */
         .boss-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(320px, 350px)); 
             gap: 20px;
+            justify-content: center;
         }
 
         .boss-card {
             background-color: var(--color-light-dark);
-            border: 1px solid rgba(255,255,255,0.1);
+            border: 1px solid var(--color-border);
             border-radius: 12px;
             overflow: hidden;
-            transition: all 0.3s ease;
-            position: relative;
-            cursor: pointer;
             display: flex;
             flex-direction: column;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+            transition: 0.2s;
+            cursor: pointer;
+            height: 100%;
         }
-
         .boss-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 0 20px var(--color-boss-glow);
-            border-color: var(--color-boss-primary);
+            border-color: var(--color-red);
+            box-shadow: 0 0 20px rgba(229, 57, 53, 0.4);
         }
 
         .boss-img {
             width: 100%;
             height: 200px;
             object-fit: cover;
-            border-bottom: 2px solid var(--color-boss-primary);
-            background-color: #111;
+            border-bottom: 2px solid var(--color-red);
+            background-color: #000;
         }
 
         .boss-content {
-            padding: 15px;
+            padding: 20px;
             flex-grow: 1;
             display: flex;
             flex-direction: column;
@@ -290,8 +280,9 @@
         .boss-title {
             font-family: var(--font-header);
             font-size: 1.6rem;
-            color: var(--color-boss-primary);
+            color: var(--color-red);
             margin: 0 0 5px 0;
+            text-transform: uppercase;
         }
 
         .boss-location {
@@ -302,536 +293,351 @@
             align-items: center;
             gap: 5px;
         }
+        .boss-location i { color: var(--color-ui-gold); }
 
         .boss-drops-preview {
-            background-color: rgba(0,0,0,0.3);
+            background-color: rgba(0,0,0,0.4);
             border-radius: 6px;
-            padding: 10px;
+            padding: 12px;
             font-size: 0.85rem;
             color: #ccc;
             margin-top: auto;
+            border: 1px solid #333;
         }
-        .boss-drops-preview ul { margin: 0; padding-left: 15px; }
+        .boss-drops-preview strong { color: var(--color-ui-gold); display: block; margin-bottom: 5px; }
+        .boss-drops-preview ul { list-style: none; }
+        .boss-drops-preview li { margin-bottom: 3px; position: relative; padding-left: 15px; }
+        .boss-drops-preview li::before { content: '•'; position: absolute; left: 0; color: var(--color-red); }
 
         /* Warning Box */
         .warning-box {
-            background-color: rgba(211, 47, 47, 0.1);
-            border: 1px solid var(--color-boss-primary);
-            color: #ffcdd2;
-            padding: 15px;
-            border-radius: 6px;
+            background-color: rgba(229, 57, 53, 0.1);
+            border: 1px solid var(--color-red);
+            color: #ffcccc;
+            padding: 20px;
+            border-radius: 8px;
             margin-top: 20px;
             display: flex;
-            gap: 15px;
+            gap: 20px;
             align-items: flex-start;
         }
-        .warning-box i { font-size: 1.5rem; color: var(--color-boss-primary); margin-top: 3px; }
+        .warning-box i { font-size: 1.8rem; color: var(--color-red); margin-top: 2px; }
 
-        /* Discord Link */
         .discord-link {
             display: inline-block;
             background-color: #5865F2;
             color: white;
-            padding: 2px 6px;
+            padding: 2px 8px;
             border-radius: 4px;
-            text-decoration: none;
             font-weight: bold;
-            font-size: 0.8rem;
+            font-size: 0.85rem;
         }
 
-        /* === MODAL STYLING === */
+        /* Modal */
         .modal {
-            display: none;
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.9);
-            z-index: 1000;
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95); z-index: 1000; align-items: center; justify-content: center;
             backdrop-filter: blur(8px);
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            opacity: 0;
-            transition: opacity 0.3s ease;
         }
-
-        .modal.active { display: flex; opacity: 1; }
+        .modal.active { display: flex; animation: slideUpFade 0.3s ease; }
 
         .modal-content {
             background-color: var(--color-light-dark);
-            border: 2px solid var(--color-boss-primary);
+            border: 2px solid var(--color-red);
             border-radius: 12px;
-            width: 95%;
-            max-width: 1200px;
-            max-height: 90%;
-            display: flex;
-            flex-direction: row;
-            overflow: hidden;
-            position: relative;
-            box-shadow: 0 0 50px var(--color-boss-glow);
-            transform: scale(0.95);
-            transition: transform 0.3s;
+            width: 95%; max-width: 1100px; max-height: 90vh;
+            display: flex; overflow: hidden; position: relative;
         }
 
-        .modal.active .modal-content { transform: scale(1); }
-
-        .close-btn {
-            position: absolute;
-            top: 15px;
-            right: 20px;
-            color: #fff;
-            font-size: 2.5rem;
-            cursor: pointer;
-            z-index: 10;
-            text-shadow: 0 0 10px #000;
-            transition: color 0.2s;
-            line-height: 0.7;
-        }
-        .close-btn:hover { color: var(--color-boss-primary); }
-
-        /* Image Gallery in Modal */
-        .modal-left {
-            flex: 1.5;
-            background-color: #000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-right: 2px solid var(--color-boss-primary);
-            overflow: hidden;
-            position: relative;
-        }
-
-        .modal-left img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            max-height: 85vh;
-            display: none;
-        }
+        .modal-left { flex: 1.5; background: #000; position: relative; border-right: 2px solid var(--color-red); }
+        .modal-left img { width: 100%; height: 100%; object-fit: contain; display: none; }
         .modal-left img.active { display: block; }
 
-        .gallery-controls {
-            position: absolute;
-            bottom: 15px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 10px;
-            background-color: rgba(0,0,0,0.5);
-            padding: 5px 10px;
-            border-radius: 20px;
-        }
-        .gallery-dot {
-            width: 10px;
-            height: 10px;
-            background-color: #fff;
-            border-radius: 50%;
-            opacity: 0.5;
-            cursor: pointer;
-        }
-        .gallery-dot.active { opacity: 1; background-color: var(--color-boss-primary); }
+        .gallery-controls { position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%); display: flex; gap: 10px; padding: 5px 15px; background: rgba(0,0,0,0.5); border-radius: 20px; }
+        .gallery-dot { width: 12px; height: 12px; background: #fff; opacity: 0.4; border-radius: 50%; cursor: pointer; }
+        .gallery-dot.active { opacity: 1; background: var(--color-red); }
 
-        .modal-right {
-            flex: 1;
-            padding: 30px;
-            overflow-y: auto;
-            background: linear-gradient(135deg, rgba(30,20,20,1) 0%, rgba(20,20,20,1) 100%);
-        }
-
-        .modal-title {
-            font-family: var(--font-header);
-            font-size: 2.5rem;
-            color: var(--color-boss-primary);
-            margin: 0 0 20px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            padding-bottom: 10px;
-        }
-
-        .modal-subtitle {
-            color: var(--color-boss-accent);
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 10px;
-            display: block;
-        }
-
-        .drop-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-        .drop-list li {
-            padding: 10px;
-            background-color: rgba(255,255,255,0.05);
-            margin-bottom: 5px;
-            border-radius: 4px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            color: #ddd;
-        }
+        .modal-right { flex: 1; padding: 30px; overflow-y: auto; }
+        .modal-title { font-family: var(--font-header); font-size: 2.2rem; color: var(--color-red); margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 10px; }
+        .modal-subtitle { color: var(--color-gold); font-weight: bold; text-transform: uppercase; margin-bottom: 15px; display: block; font-family: var(--font-header); font-size: 1.2rem; }
+        
+        .drop-list { list-style: none; }
+        .drop-list li { padding: 12px; background: rgba(255,255,255,0.03); margin-bottom: 8px; border-radius: 6px; display: flex; align-items: center; gap: 12px; }
         .drop-list li i { color: var(--color-gold); width: 20px; text-align: center; }
 
-        @media (max-width: 900px) {
-            .widget-container { width: 100%; height: 100vh; border: none; border-radius: 0; }
-            .header { flex-direction: column; gap: 15px; padding: 15px; }
-            .header-content { align-items: center; text-align: center; }
-            .lang-switch { position: static; transform: none; margin-bottom: 10px; }
+        .close-btn { position: absolute; top: 15px; right: 20px; color: #fff; font-size: 2.5rem; cursor: pointer; z-index: 10; line-height: 1; }
+        .close-btn:hover { color: var(--color-red); }
+
+        @media (max-width: 850px) {
+            .title { font-size: 1.8rem; }
+            .nav-tab { padding: 10px; font-size: 0.85rem; }
             .modal-content { flex-direction: column; }
-            .modal-left { flex: none; height: 35vh; border-right: none; border-bottom: 2px solid var(--color-boss-primary); }
-            .modal-right { flex: 1; }
-            .search-container { width: 90%; }
+            .modal-left { height: 35vh; border-right: none; border-bottom: 2px solid var(--color-red); }
         }
     </style>
 </head>
 <body>
 
-    <div class="boss-container">
-        
-        <div class="header">
+    <div class="start-container">
+        <!-- GLOBAL FLAGS (Top Right) -->
+        <div class="lang-switch">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/b/ba/Flag_of_Germany.svg" class="lang-btn active" id="btn-de" onclick="setLang('de')" title="Deutsch">
+            <img src="https://upload.wikimedia.org/wikipedia/en/a/ae/Flag_of_the_United_Kingdom.svg" class="lang-btn" id="btn-en" onclick="setLang('en')" title="English">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/9/9a/Flag_of_Spain.svg" class="lang-btn" id="btn-es" onclick="setLang('es')" title="Español">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/c/c3/Flag_of_France.svg" class="lang-btn" id="btn-fr" onclick="setLang('fr')" title="Français">
+        </div>
+
+        <header class="header">
             <div class="header-content">
                 <h1 class="title" id="uiTitle">IOP World Bosse</h1>
-                <span class="subtitle" id="uiSubtitle">Map Spezifische MiniBosse & Custom Loot</span>
+                <div class="subtitle" id="uiSubtitle">Map Spezifische MiniBosse & Custom Loot</div>
             </div>
-            
-            <!-- 4 Flaggen -->
-            <div class="lang-switch">
-                <svg class="lang-btn active" id="btn-de" onclick="setLang('de')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 5 3">
-                    <rect width="5" height="3" fill="#000"/><rect width="5" height="2" y="1" fill="#D00"/><rect width="5" height="1" y="2" fill="#FFCE00"/>
-                </svg>
-                <svg class="lang-btn" id="btn-en" onclick="setLang('en')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 30">
-                    <clipPath id="s"><path d="M0,0 v30 h60 v-30 z"/></clipPath>
-                    <clipPath id="t"><path d="M30,15 h30 v15 z v15 h-30 z h-30 v-15 z v-15 h30 z"/></clipPath>
-                    <g clip-path="url(#s)">
-                        <path d="M0,0 v30 h60 v-30 z" fill="#012169"/>
-                        <path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/>
-                        <path d="M0,0 L60,30 M60,0 L0,30" clip-path="url(#t)" stroke="#C8102E" stroke-width="4"/>
-                        <path d="M30,0 v30 M0,15 h60" stroke="#fff" stroke-width="10"/>
-                        <path d="M30,0 v30 M0,15 h60" stroke="#C8102E" stroke-width="6"/>
-                    </g>
-                </svg>
-                <svg class="lang-btn" id="btn-es" onclick="setLang('es')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 750 500">
-                    <rect width="750" height="500" fill="#AA151B"/>
-                    <rect width="750" height="250" y="125" fill="#F1BF00"/>
-                </svg>
-                <svg class="lang-btn" id="btn-fr" onclick="setLang('fr')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600">
-                    <rect width="900" height="600" fill="#ED2939"/>
-                    <rect width="600" height="600" fill="#fff"/>
-                    <rect width="300" height="600" fill="#002395"/>
-                </svg>
-            </div>
+        </header>
 
-            <div class="search-container">
-                <i class="fa-solid fa-search search-icon"></i>
-                <input type="text" id="searchInput" class="search-input" placeholder="Boss suchen...">
+        <div class="search-container">
+            <div class="search-box">
+                <i class="fa fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Boss suchen..." onkeyup="filterContent()">
             </div>
         </div>
 
-        <!-- Navigation -->
-        <div class="nav-tabs">
-            <div class="nav-tab active" onclick="showTab('info', this)" id="navInfo">
-                <i class="fa-solid fa-circle-info"></i> Info & Regeln
-            </div>
-            <div class="nav-tab" onclick="showTab('island', this)" id="navIsland">
-                <i class="fa-solid fa-tree"></i> The Island
-            </div>
-            <div class="nav-tab" onclick="showTab('scorched', this)" id="navScorched">
-                <i class="fa-solid fa-sun"></i> Scorched Earth
-            </div>
-        </div>
+        <nav class="nav-tabs" id="navContainer">
+            <!-- JS Injection -->
+        </nav>
 
-        <div class="content-area" id="contentArea">
-            <!-- Content injected via JS -->
-        </div>
+        <main class="content-area" id="contentArea">
+            <!-- Dynamic Injection -->
+        </main>
+    </div>
 
-        <!-- MODAL -->
-        <div id="bossModal" class="modal">
-            <div class="modal-content">
-                <span class="close-btn" onclick="closeModal()">&times;</span>
-                
-                <div class="modal-left">
-                    <img id="modalImg1" class="gallery-img active" src="" alt="Boss Image 1">
-                    <img id="modalImg2" class="gallery-img" src="" alt="Boss Image 2">
-                    
-                    <div class="gallery-controls">
-                        <div class="gallery-dot active" onclick="switchImage(1)"></div>
-                        <div class="gallery-dot" onclick="switchImage(2)"></div>
-                    </div>
-                </div>
-                
-                <div class="modal-right">
-                    <h2 class="modal-title" id="modalTitle">Titel</h2>
-                    
-                    <span class="modal-subtitle" id="uiDrops">Belohnungen & Drops</span>
-                    <ul class="drop-list" id="modalDrops">
-                        <!-- Drops loaded via JS -->
-                    </ul>
+    <!-- Modal -->
+    <div id="bossModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <div class="modal-left">
+                <img id="modalImg1" class="gallery-img active" src="" alt="Boss Image 1">
+                <img id="modalImg2" class="gallery-img" src="" alt="Boss Image 2">
+                <div class="gallery-controls">
+                    <div class="gallery-dot active" onclick="switchImage(1)"></div>
+                    <div class="gallery-dot" onclick="switchImage(2)"></div>
                 </div>
             </div>
+            <div class="modal-right">
+                <h2 class="modal-title" id="modalTitle">Boss Name</h2>
+                <span class="modal-subtitle" id="uiDropsLabel">Belohnungen & Drops</span>
+                <ul class="drop-list" id="modalDrops"></ul>
+            </div>
         </div>
-
     </div>
 
     <script>
-        // =========================================================================
-        // 1. DATENBANK (ÜBERSETZUNGEN)
-        // =========================================================================
         const translations = {
             subtitle: { de: "Map Spezifische MiniBosse & Custom Loot", en: "Map Specific MiniBosses & Custom Loot", es: "MiniJefes por Mapa y Botín Personalizado", fr: "MiniBoss Spécifiques et Butin Personnalisé" },
             search_ph: { de: "Boss suchen (z.B. Mantis, Rhino)...", en: "Search Boss (e.g. Mantis, Rhino)...", es: "Buscar Jefe (ej. Mantis)...", fr: "Chercher Boss (ex. Mantis)..." },
-            drops_title: { de: "Belohnungen & Drops", en: "Rewards & Drops", es: "Recompensas y Botín", fr: "Récompenses et Butin" },
+            drops_label: { de: "Belohnungen & Drops", en: "Rewards & Drops", es: "Recompensas y Botín", fr: "Récompenses et Butin" },
             main_drops: { de: "Haupt-Drops:", en: "Main Drops:", es: "Botín Principal:", fr: "Butin Principal :" },
-            
             nav: {
                 info: { de: "Info & Regeln", en: "Info & Rules", es: "Info y Reglas", fr: "Info et Règles" },
                 island: { de: "The Island", en: "The Island", es: "The Island", fr: "The Island" },
                 scorched: { de: "Scorched Earth", en: "Scorched Earth", es: "Scorched Earth", fr: "Scorched Earth" }
             },
-
-            sections: {
-                info: {
-                    title: { de: "World-Boss Events", en: "World-Boss Events", es: "Eventos World-Boss", fr: "Événements World-Boss" },
-                    text: {
-                        de: "<p>Einige Maps haben eigens kreierte Minibosse, die in einer speziellen Kuppel (Dome) spawnen.</p>",
-                        en: "<p>Some maps feature custom MiniBosses spawning inside a special Dome.</p>",
-                        es: "<p>Algunos mapas tienen MiniJefes personalizados en una Cúpula especial.</p>",
-                        fr: "<p>Certaines cartes ont des MiniBoss personnalisés apparaissant dans un Dôme spécial.</p>"
-                    },
-                    list: {
-                        de: ["<strong>Ankündigung:</strong> Verfolgt Spawns im Discord-Kanal <span class='discord-link'>MiniBoss-Starts</span> oder Ingame.", "<strong>Schwierigkeit:</strong> Mit Übung machbar. Vorsicht: Carchas/Gigas haben DMG-Reduce!", "<strong>Belohnung:</strong> 2-3 Rote Lootcrates, Shop-Punkte und spezieller Loot."],
-                        en: ["<strong>Announcement:</strong> Check Discord <span class='discord-link'>MiniBoss-Starts</span> or Ingame.", "<strong>Difficulty:</strong> Doable with practice. Carchas/Gigas have DMG reduction!", "<strong>Reward:</strong> 2-3 Red Lootcrates, Shop Points, special loot."],
-                        es: ["<strong>Anuncio:</strong> Discord <span class='discord-link'>MiniBoss-Starts</span> o en juego.", "<strong>Dificultad:</strong> Practicable. ¡Carchas/Gigas tienen reducción de daño!", "<strong>Recompensa:</strong> 2-3 Cajas Rojas, Puntos, botín especial."],
-                        fr: ["<strong>Annonce :</strong> Discord <span class='discord-link'>MiniBoss-Starts</span> ou en jeu.", "<strong>Difficulté :</strong> Faisable. Carchas/Gigas ont une réduction de dégâts !", "<strong>Récompense :</strong> 2-3 Lootcrates Rouges, Points, butin spécial."]
-                    },
-                    warnTitle: { de: "Kuppel-Mechanik & Anti-Cheese", en: "Dome Mechanics & Anti-Cheese", es: "Mecánica de Cúpula y Anti-Trampas", fr: "Mécanique du Dôme et Anti-Cheese" },
-                    warnText: {
-                        de: "Jeder Boss spawnt in seiner eigenen Kuppel.",
-                        en: "Each boss spawns within its own dome.",
-                        es: "Cada jefe aparece en su propia cúpula.",
-                        fr: "Chaque boss apparaît dans son propre dôme."
-                    },
-                    warnList: {
-                        de: ["<strong>Außerhalb:</strong> Boss ist unverwundbar und macht 0 Schaden.", "<strong>Teleport:</strong> Bei Kiting raus teleportiert er sich zurück (HP bleibt).", "<strong>Minions:</strong> Jeder Boss hat eigene Unterstützer."],
-                        en: ["<strong>Outside:</strong> Boss is invulnerable and deals 0 damage.", "<strong>Teleport:</strong> Teleports back if kited out (HP remains).", "<strong>Minions:</strong> Each boss has minions."],
-                        es: ["<strong>Fuera:</strong> Jefe invulnerable, 0 daño.", "<strong>Teletransporte:</strong> Regresa si se aleja (HP se mantiene).", "<strong>Esbirros:</strong> Cada jefe tiene apoyo."],
-                        fr: ["<strong>Dehors :</strong> Boss invulnérable, 0 dégât.", "<strong>Téléport :</strong> Revient si éloigné (PV restent).", "<strong>Sbires :</strong> Chaque boss a des soutiens."]
-                    }
+            info: {
+                header: { de: "World-Boss Events", en: "World-Boss Events", es: "Eventos World-Boss", fr: "Événements World-Boss" },
+                intro: { de: "<p>Einige Maps haben eigens kreierte Minibosse, die in einer speziellen Kuppel (Dome) spawnen.</p>", en: "<p>Some maps feature custom MiniBosses spawning inside a special Dome.</p>", es: "<p>Algunos mapas tienen MiniJefes en una Cúpula especial.</p>", fr: "<p>Certaines cartes ont des MiniBoss dans un Dôme spécial.</p>" },
+                list: {
+                    de: ["<strong>Ankündigung:</strong> Verfolgt Spawns im Discord oder Ingame.", "<strong>Schwierigkeit:</strong> Mit Übung machbar. Carchas/Gigas haben DMG-Reduce!", "<strong>Belohnung:</strong> Rote Lootcrates, Shop-Punkte und spezieller Loot."],
+                    en: ["<strong>Announcement:</strong> Track spawns on Discord or in-game.", "<strong>Difficulty:</strong> Doable. Carchas/Gigas have DMG-Reduction!", "<strong>Reward:</strong> Red Lootcrates, Shop Points, and special loot."],
+                    es: ["<strong>Anuncio:</strong> Discord o en el juego.", "<strong>Dificultad:</strong> ¡Carchas/Gigas tienen reducción!", "<strong>Recompensa:</strong> Cajas Rojas, Puntos y botín."],
+                    fr: ["<strong>Annonce :</strong> Discord ou en jeu.", "<strong>Difficulté :</strong> Carchas/Gigas ont une réduction !", "<strong>Récompense :</strong> Lootcrates, Points et butin."]
                 },
-                bosses: {
-                    island: [
-                        {
-                            id: "beelzebufo",
-                            name: "Beelzebufoking",
-                            loc: { de: "The Island - Eisgebiet", en: "The Island - Ice Area", es: "The Island - Hielo", fr: "The Island - Glace" },
-                            img1: "https://i.postimg.cc/gkJmzr1f/Bild-2024-05-17-180231359.png",
-                            img2: "https://i.postimg.cc/gr9bFM7P/Bild-2024-05-17-201338540.png",
-                            preview: { de: ["5.000x Zement", "Lebensversicherungs Punkte", "Rote Lootcrates & XP"], en: ["5,000x Cement", "Life Insurance Points", "Red Lootcrates & XP"], es: ["5.000x Cemento", "Puntos Seguro", "Cajas Rojas & XP"], fr: ["5.000x Ciment", "Points Assurance Vie", "Lootcrates Rouges & XP"] },
-                            drops: [
-                                { icon: "fa-star", text: { de: "Massig XP", en: "Massive XP", es: "Mucha XP", fr: "Beaucoup d'XP" } },
-                                { icon: "fa-box-open", text: { de: "Rote Lootcrates (2-3 Stück)", en: "Red Lootcrates (2-3 pcs)", es: "Cajas Rojas (2-3)", fr: "Lootcrates Rouges (2-3)" } },
-                                { icon: "fa-cubes", text: { de: "5.000x Zement", en: "5,000x Cementing Paste", es: "5.000x Cemento", fr: "5.000x Ciment" } },
-                                { icon: "fa-coins", text: { de: "Lebensversicherungs Punkte (Shop)", en: "Life Insurance Points (Shop)", es: "Puntos Seguro (Tienda)", fr: "Points Assurance (Boutique)" } }
-                            ]
-                        },
-                        {
-                            id: "rhino",
-                            name: "WoollyrhinoBeast",
-                            loc: { de: "The Island - Eisgebiet", en: "The Island - Ice Area", es: "The Island - Hielo", fr: "The Island - Glace" },
-                            img1: "https://i.postimg.cc/JzfytPCG/Bild-2024-05-17-195751193.png",
-                            img2: "https://i.postimg.cc/ZYs64Pny/Bild-2024-05-17-195933010.png",
-                            preview: { de: ["1.000x Pelz & Wolle", "Lebensversicherungs Punkte", "Rote Lootcrates & XP"], en: ["1,000x Fur & Wool", "Life Insurance Points", "Red Lootcrates & XP"], es: ["1.000x Piel/Lana", "Puntos Seguro", "Cajas Rojas & XP"], fr: ["1.000x Fourrure/Laine", "Points Assurance", "Lootcrates Rouges & XP"] },
-                            drops: [
-                                { icon: "fa-star", text: { de: "Massig XP", en: "Massive XP", es: "Mucha XP", fr: "Beaucoup d'XP" } },
-                                { icon: "fa-box-open", text: { de: "Rote Lootcrates (2-3 Stück)", en: "Red Lootcrates (2-3 pcs)", es: "Cajas Rojas (2-3)", fr: "Lootcrates Rouges (2-3)" } },
-                                { icon: "fa-rug", text: { de: "1.000x Pelz", en: "1,000x Pelt", es: "1.000x Piel", fr: "1.000x Fourrure" } },
-                                { icon: "fa-scissors", text: { de: "1.000x Wolle", en: "1,000x Wool", es: "1.000x Lana", fr: "1.000x Laine" } },
-                                { icon: "fa-coins", text: { de: "Lebensversicherungs Punkte (Shop)", en: "Life Insurance Points (Shop)", es: "Puntos Seguro (Tienda)", fr: "Points Assurance (Boutique)" } }
-                            ]
-                        }
-                    ],
-                    scorched: [
-                        {
-                            id: "scorpion",
-                            name: "Scorpionking",
-                            loc: { de: "SE - Kolosseum", en: "SE - Colosseum", es: "SE - Coliseo", fr: "SE - Colisée" },
-                            img1: "https://i.postimg.cc/jqnkVjdK/Bild-2024-05-17-200157932.png",
-                            img2: "https://i.postimg.cc/66GwHwk4/Bild-2024-05-17-200418541.png",
-                            preview: { de: ["Wyvernmilch", "1.000x Gammelfleisch", "Lebensversicherungs Punkte"], en: ["Wyvern Milk", "1,000x Spoiled Meat", "Life Insurance Points"], es: ["Leche Wyvern", "1.000x Carne Podrida", "Puntos Seguro"], fr: ["Lait Wyverne", "1.000x Viande Avariée", "Points Assurance"] },
-                            drops: [
-                                { icon: "fa-star", text: { de: "Massig XP", en: "Massive XP", es: "Mucha XP", fr: "Beaucoup d'XP" } },
-                                { icon: "fa-box-open", text: { de: "Rote Lootcrates (2-3 Stück)", en: "Red Lootcrates (2-3 pcs)", es: "Cajas Rojas (2-3)", fr: "Lootcrates Rouges (2-3)" } },
-                                { icon: "fa-flask", text: { de: "Wyvernmilch", en: "Wyvern Milk", es: "Leche Wyvern", fr: "Lait Wyverne" } },
-                                { icon: "fa-drumstick-bite", text: { de: "1.000x Gammelfleisch", en: "1,000x Spoiled Meat", es: "1.000x Carne Podrida", fr: "1.000x Viande Avariée" } },
-                                { icon: "fa-coins", text: { de: "Lebensversicherungs Punkte", en: "Life Insurance Points", es: "Puntos Seguro", fr: "Points Assurance" } }
-                            ]
-                        },
-                        {
-                            id: "mantis",
-                            name: "Mantisqueen",
-                            loc: { de: "SE - Kolosseum", en: "SE - Colosseum", es: "SE - Coliseo", fr: "SE - Colisée" },
-                            img1: "https://i.postimg.cc/Gt2xLqvH/Bild-2024-05-17-200952189.png",
-                            img2: "https://i.postimg.cc/SNgfPFFC/Bild-2024-05-17-200839471.png",
-                            preview: { de: ["Wyvernmilch", "1.000x Org. Polymer", "Lebensversicherungs Punkte"], en: ["Wyvern Milk", "1,000x Org. Polymer", "Life Insurance Points"], es: ["Leche Wyvern", "1.000x Polímero Org.", "Puntos Seguro"], fr: ["Lait Wyverne", "1.000x Polymère Org.", "Points Assurance"] },
-                            drops: [
-                                { icon: "fa-star", text: { de: "Massig XP", en: "Massive XP", es: "Mucha XP", fr: "Beaucoup d'XP" } },
-                                { icon: "fa-box-open", text: { de: "Rote Lootcrates (2-3 Stück)", en: "Red Lootcrates (2-3 pcs)", es: "Cajas Rojas (2-3)", fr: "Lootcrates Rouges (2-3)" } },
-                                { icon: "fa-flask", text: { de: "Wyvernmilch", en: "Wyvern Milk", es: "Leche Wyvern", fr: "Lait Wyverne" } },
-                                { icon: "fa-soap", text: { de: "1.000x Org. Polymer", en: "1,000x Org. Polymer", es: "1.000x Polímero Org.", fr: "1.000x Polymère Org." } },
-                                { icon: "fa-coins", text: { de: "Lebensversicherungs Punkte", en: "Life Insurance Points", es: "Puntos Seguro", fr: "Points Assurance" } }
-                            ]
-                        }
-                    ]
+                warnTitle: { de: "Kuppel-Mechanik & Anti-Cheese", en: "Dome Mechanics & Anti-Cheese", es: "Mecánica de Cúpula", fr: "Mécanique du Dôme" },
+                warnText: { de: "Jeder Boss spawnt in seiner eigenen Kuppel.", en: "Each boss spawns within its own dome.", es: "Cada jefe aparece en su propia cúpula.", fr: "Chaque boss a son propre dôme." },
+                warnList: {
+                    de: ["Boss ist außerhalb unverwundbar.", "Teleportiert zurück, falls er rausgelockt wird.", "Jeder Boss hat eigene Minions."],
+                    en: ["Boss is invulnerable outside.", "Teleports back if kited out.", "Each boss has its own minions."],
+                    es: ["El jefe es invulnerable fuera.", "Teletransporta si sale.", "Esbirros propios."],
+                    fr: ["Boss invulnérable dehors.", "Téléporté si éloigné.", "Sbires propres."]
                 }
             }
         };
 
-        // =========================================================================
-        // 2. LOGIC
-        // =========================================================================
+        const bossData = {
+            island: [
+                {
+                    id: "beelzebufo",
+                    name: "Beelzebufoking",
+                    loc: { de: "The Island - Eisgebiet", en: "The Island - Ice Area", es: "The Island - Hielo", fr: "The Island - Glace" },
+                    img1: "https://i.postimg.cc/gkJmzr1f/Bild-2024-05-17-180231359.png",
+                    img2: "https://i.postimg.cc/gr9bFM7P/Bild-2024-05-17-201338540.png",
+                    preview: { de: ["5.000x Zement", "Shop Punkte", "XP"], en: ["5,000x Cement", "Shop Points", "XP"], es: ["5.000x Cemento", "Puntos", "XP"], fr: ["5.000x Ciment", "Points", "XP"] },
+                    drops: [
+                        { icon: "fa-star", text: { de: "Massig XP", en: "Massive XP", es: "Mucha XP", fr: "Beaucoup d'XP" } },
+                        { icon: "fa-box-open", text: { de: "Rote Lootcrates (2-3 Stück)", en: "Red Lootcrates (2-3 pcs)", es: "Cajas Rojas (2-3)", fr: "Lootcrates Rouges (2-3)" } },
+                        { icon: "fa-cubes", text: { de: "5.000x Zement", en: "5,000x Cementing Paste", es: "5.000x Cemento", fr: "5.000x Ciment" } },
+                        { icon: "fa-coins", text: { de: "Lebensversicherungs Punkte (Shop)", en: "Life Insurance Points (Shop)", es: "Puntos Seguro (Tienda)", fr: "Points Assurance (Boutique)" } }
+                    ]
+                },
+                {
+                    id: "rhino",
+                    name: "WoollyrhinoBeast",
+                    loc: { de: "The Island - Eisgebiet", en: "The Island - Ice Area", es: "The Island - Hielo", fr: "The Island - Glace" },
+                    img1: "https://i.postimg.cc/JzfytPCG/Bild-2024-05-17-195751193.png",
+                    img2: "https://i.postimg.cc/ZYs64Pny/Bild-2024-05-17-195933010.png",
+                    preview: { de: ["1.000x Pelz & Wolle", "Shop Punkte", "XP"], en: ["1,000x Fur & Wool", "Shop Points", "XP"], es: ["1.000x Piel/Lana", "Puntos", "XP"], fr: ["1.000x Fourrure/Laine", "Points", "XP"] },
+                    drops: [
+                        { icon: "fa-star", text: { de: "Massig XP", en: "Massive XP", es: "Mucha XP", fr: "Beaucoup d'XP" } },
+                        { icon: "fa-box-open", text: { de: "Rote Lootcrates", en: "Red Lootcrates", es: "Cajas Rojas", fr: "Lootcrates" } },
+                        { icon: "fa-rug", text: { de: "1.000x Pelz", en: "1,000x Pelt", es: "1.000x Piel", fr: "1.000x Fourrure" } },
+                        { icon: "fa-coins", text: { de: "Lebensversicherungs Punkte", en: "Life Insurance Points", es: "Puntos Seguro", fr: "Points Assurance" } }
+                    ]
+                }
+            ],
+            scorched: [
+                {
+                    id: "scorpion",
+                    name: "Scorpionking",
+                    loc: { de: "SE - Kolosseum", en: "SE - Colosseum", es: "SE - Coliseo", fr: "SE - Colisée" },
+                    img1: "https://i.postimg.cc/jqnkVjdK/Bild-2024-05-17-200157932.png",
+                    img2: "https://i.postimg.cc/66GwHwk4/Bild-2024-05-17-200418541.png",
+                    preview: { de: ["Wyvernmilch", "1.000x Gammelfleisch", "Punkte"], en: ["Wyvern Milk", "1,000x Spoiled Meat", "Points"], es: ["Leche Wyvern", "Carne Podrida", "Puntos"], fr: ["Lait Wyverne", "Viande Avariée", "Points"] },
+                    drops: [
+                        { icon: "fa-flask", text: { de: "Wyvernmilch", en: "Wyvern Milk", es: "Leche Wyvern", fr: "Lait Wyverne" } },
+                        { icon: "fa-drumstick-bite", text: { de: "1.000x Gammelfleisch", en: "1,000x Spoiled Meat", es: "1.000x Carne Podrida", fr: "1.000x Viande Avariée" } },
+                        { icon: "fa-box-open", text: { de: "Rote Lootcrates", en: "Red Lootcrates", es: "Cajas Rojas", fr: "Lootcrates" } }
+                    ]
+                },
+                {
+                    id: "mantis",
+                    name: "Mantisqueen",
+                    loc: { de: "SE - Kolosseum", en: "SE - Colosseum", es: "SE - Coliseo", fr: "SE - Colisée" },
+                    img1: "https://i.postimg.cc/Gt2xLqvH/Bild-2024-05-17-200952189.png",
+                    img2: "https://i.postimg.cc/SNgfPFFC/Bild-2024-05-17-200839471.png",
+                    preview: { de: ["Wyvernmilch", "1.000x Org. Polymer", "Punkte"], en: ["Wyvern Milk", "1,000x Org. Polymer", "Points"], es: ["Leche Wyvern", "Polímero", "Puntos"], fr: ["Lait Wyverne", "Polymère", "Points"] },
+                    drops: [
+                        { icon: "fa-flask", text: { de: "Wyvernmilch", en: "Wyvern Milk", es: "Leche Wyvern", fr: "Lait Wyverne" } },
+                        { icon: "fa-soap", text: { de: "1.000x Org. Polymer", en: "1,000x Org. Polymer", es: "1.000x Polímero Org.", fr: "1.000x Polymère Org." } },
+                        { icon: "fa-coins", text: { de: "Lebensversicherungs Punkte", en: "Life Insurance Points", es: "Puntos Seguro", fr: "Points Assurance" } }
+                    ]
+                }
+            ]
+        };
+
         let currentLang = 'de';
-        let currentTab = 'info';
+        let activeTab = 'info';
 
         function setLang(lang) {
             currentLang = lang;
-            
-            // UI Buttons
+            const l = translations;
             document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
             document.getElementById('btn-' + lang).classList.add('active');
-
-            // Static Text
-            document.getElementById('uiSubtitle').innerText = translations.subtitle[lang];
-            document.getElementById('searchInput').placeholder = translations.search_ph[lang];
             
-            // Nav
-            document.getElementById('navInfo').innerHTML = `<i class="fa-solid fa-circle-info"></i> ${translations.nav.info[lang]}`;
-            document.getElementById('navIsland').innerHTML = `<i class="fa-solid fa-tree"></i> ${translations.nav.island[lang]}`;
-            document.getElementById('navScorched').innerHTML = `<i class="fa-solid fa-sun"></i> ${translations.nav.scorched[lang]}`;
+            document.getElementById('uiSubtitle').innerText = l.subtitle[lang];
+            document.getElementById('searchInput').placeholder = l.search_ph[lang];
 
+            renderNav();
             renderContent();
         }
 
-        function showTab(tabId, btn) {
-            currentTab = tabId;
-            document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            
-            // Reset Search
-            document.getElementById('searchInput').value = '';
-            document.getElementById('contentArea').classList.remove('searching');
-            document.querySelectorAll('.boss-card').forEach(c => c.classList.remove('hidden'));
-
-            renderContent();
+        function renderNav() {
+            const nav = document.getElementById('navContainer');
+            nav.innerHTML = '';
+            const sections = ['info', 'island', 'scorched'];
+            const icons = ['fa-circle-info', 'fa-tree', 'fa-sun'];
+            sections.forEach((s, i) => {
+                const tab = document.createElement('div');
+                tab.className = `nav-tab ${s === activeTab ? 'active' : ''}`;
+                tab.innerHTML = `<i class="fa-solid ${icons[i]}"></i> ${translations.nav[s][currentLang]}`;
+                tab.onclick = () => { activeTab = s; renderNav(); renderContent(); };
+                nav.appendChild(tab);
+            });
         }
 
         function renderContent() {
             const container = document.getElementById('contentArea');
             container.innerHTML = '';
-            const data = translations.sections;
+            const l = currentLang;
+            const filter = document.getElementById('searchInput').value.toLowerCase();
+            const sectionWrapper = document.createElement('div');
+            sectionWrapper.className = 'section active';
 
-            if (currentTab === 'info') {
-                container.innerHTML = `
-                    <div class="section active">
-                        <div class="info-box">
-                            <h3><i class="fa-solid fa-skull"></i> ${data.info.title[currentLang]}</h3>
+            if (activeTab === 'info') {
+                const info = translations.info;
+                sectionWrapper.innerHTML = `
+                    <div class="info-block searchable">
+                        <div class="block-header"><i class="fa-solid fa-skull"></i><h3 class="block-title">${info.header[l]}</h3></div>
+                        <div class="block-body">
                             <div class="text-content">
-                                ${data.info.text[currentLang]}
-                                <ul>${data.info.list[currentLang].map(li => `<li>${li}</li>`).join('')}</ul>
+                                ${info.intro[l]}
+                                <ul class="feature-list">${info.list[l].map(li => `<li>${li}</li>`).join('')}</ul>
                             </div>
                         </div>
-                        <div class="warning-box">
-                            <i class="fa-solid fa-shield-halved"></i>
-                            <div class="text-content">
-                                <strong>${data.info.warnTitle[currentLang]}</strong><br>
-                                ${data.info.warnText[currentLang]}<br>
-                                <ul>${data.info.warnList[currentLang].map(li => `<li>${li}</li>`).join('')}</ul>
-                            </div>
+                    </div>
+                    <div class="warning-box searchable">
+                        <i class="fa-solid fa-shield-halved"></i>
+                        <div class="text-content">
+                            <strong style="color:var(--color-red)">${info.warnTitle[l]}</strong><br>
+                            ${info.warnText[l]}
+                            <ul class="feature-list">${info.warnList[l].map(li => `<li>${li}</li>`).join('')}</ul>
                         </div>
                     </div>
                 `;
             } else {
-                const bosses = currentTab === 'island' ? data.bosses.island : data.bosses.scorched;
+                const bosses = bossData[activeTab];
                 const grid = document.createElement('div');
                 grid.className = 'boss-grid';
-
+                
                 bosses.forEach(b => {
-                    const card = document.createElement('div');
-                    card.className = 'boss-card';
-                    card.onclick = () => openModal(b);
-                    
-                    const dropsPreview = b.preview[currentLang].map(d => `<li>${d}</li>`).join('');
+                    if (filter && !b.name.toLowerCase().includes(filter)) return;
 
+                    const card = document.createElement('div');
+                    card.className = 'boss-card searchable';
+                    card.onclick = () => openModal(b);
                     card.innerHTML = `
                         <img src="${b.img1}" class="boss-img" alt="${b.name}">
                         <div class="boss-content">
                             <h3 class="boss-title">${b.name}</h3>
-                            <div class="boss-location"><i class="fa-solid fa-map-marker-alt"></i> ${b.loc[currentLang]}</div>
+                            <div class="boss-location"><i class="fa-solid fa-map-marker-alt"></i> ${b.loc[l]}</div>
                             <div class="boss-drops-preview">
-                                <strong>${translations.main_drops[currentLang]}</strong>
-                                <ul>${dropsPreview}</ul>
+                                <strong>${translations.main_drops[l]}</strong>
+                                <ul>${b.preview[l].map(p => `<li>${p}</li>`).join('')}</ul>
                             </div>
                         </div>
                     `;
                     grid.appendChild(card);
                 });
-                container.appendChild(grid);
+                sectionWrapper.appendChild(grid);
+            }
+
+            container.appendChild(sectionWrapper);
+            if (filter) {
+                document.querySelectorAll('.searchable').forEach(el => {
+                    const text = el.innerText.toLowerCase();
+                    el.style.display = text.includes(filter) ? '' : 'none';
+                });
             }
         }
 
-        // --- SEARCH LOGIC ---
-        const searchInput = document.getElementById('searchInput');
-        searchInput.addEventListener('keyup', (e) => {
-            const term = e.target.value.toLowerCase();
-            
-            if (term.length > 0) {
-                // Temporarily show all boss sections if searching
-                if(currentTab === 'info') {
-                    // Logic for search in info tab? Maybe switch to Island first for results
-                    // For simplicity, search only filters current view or we combine views.
-                    // Given the structure, let's keep search simple: filter visible cards.
-                    // If user is on Info, maybe highlight text? Complex.
-                    // Let's force switch to a boss tab if they search? 
-                    // No, let's just filter the current view if it has cards.
-                }
-
-                const cards = document.querySelectorAll('.boss-card');
-                cards.forEach(card => {
-                    const title = card.querySelector('.boss-title').innerText.toLowerCase();
-                    card.style.display = title.includes(term) ? 'flex' : 'none';
-                });
-            } else {
-                document.querySelectorAll('.boss-card').forEach(c => c.style.display = 'flex');
-            }
-        });
+        function filterContent() { renderContent(); }
 
         // --- MODAL LOGIC ---
         const modal = document.getElementById('bossModal');
-        let currentBossObj = null;
+        let currentBoss = null;
 
-        function openModal(bossData) {
-            currentBossObj = bossData;
-            document.getElementById('modalTitle').innerText = bossData.name;
-            document.getElementById('uiDrops').innerText = translations.drops_title[currentLang];
+        function openModal(data) {
+            currentBoss = data;
+            document.getElementById('modalTitle').innerText = data.name;
+            document.getElementById('uiDropsLabel').innerText = translations.drops_label[currentLang];
+            document.getElementById('modalImg1').src = data.img1;
+            document.getElementById('modalImg2').src = data.img2;
             
-            // Images
-            document.getElementById('modalImg1').src = bossData.img1;
-            document.getElementById('modalImg2').src = bossData.img2;
-            switchImage(1); // Reset to first image
-
-            // Drops
             const list = document.getElementById('modalDrops');
-            list.innerHTML = bossData.drops.map(d => 
-                `<li><i class="fa-solid ${d.icon}"></i> ${d.text[currentLang]}</li>`
-            ).join('');
-
+            list.innerHTML = data.drops.map(d => `<li><i class="fa-solid ${d.icon}"></i> ${d.text[currentLang]}</li>`).join('');
+            
+            switchImage(1);
             modal.classList.add('active');
         }
 
-        function closeModal() {
-            modal.classList.remove('active');
-        }
+        function closeModal() { modal.classList.remove('active'); }
 
         function switchImage(index) {
             document.getElementById('modalImg1').classList.toggle('active', index === 1);
@@ -840,15 +646,9 @@
             document.querySelectorAll('.gallery-dot')[1].classList.toggle('active', index === 2);
         }
 
-        modal.addEventListener('click', (e) => {
-            if(e.target === modal) closeModal();
-        });
+        modal.addEventListener('click', (e) => { if(e.target === modal) closeModal(); });
 
-        // Init
-        window.onload = function() {
-            setLang('de');
-        };
-
+        window.onload = () => setLang('de');
     </script>
 </body>
 </html>
