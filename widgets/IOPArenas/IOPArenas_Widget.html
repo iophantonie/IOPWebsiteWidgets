@@ -4,258 +4,230 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IOP Arenas</title>
-    <link href="https://fonts.googleapis.com/css2?family=Acme&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Acme&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* --- VARIABLES --- */
+        /* Farbschema: Feuerrot, Schwarz und Goldgelb */
         :root {
-            --c-fire: #ff3300;
-            --c-bg: #050505;
-            --c-panel: #121212;
-            --c-content: #1a1a1a;
-            --c-text: #e0e0e0;
-            --c-dim: #888;
-            --c-border: #333;
-            
-            --f-head: 'Acme', sans-serif;
-            --f-body: 'Roboto', sans-serif;
+            --color-red: #E53935;
+            --color-black: #000000;
+            --color-dark: #0a0a0a;
+            --color-light-dark: #161616;
+            --color-text: #f7f7f7;
+            --color-gold: #FFD700; /* Goldgelb für Akzente */
+            --color-border: #333;
+            --font-header: 'Acme', sans-serif;
+            --font-body: 'Roboto', sans-serif;
         }
 
-        * { box-sizing: border-box; }
+        * { box-sizing: border-box; margin: 0; padding: 0; scroll-behavior: smooth; }
 
         body {
-            margin: 0; padding: 0;
-            background-color: transparent; 
-            color: var(--c-text);
-            font-family: var(--f-body);
+            background-color: transparent;
+            font-family: var(--font-body);
+            color: var(--color-text);
             height: 100vh;
             width: 100vw;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
             overflow: hidden;
         }
 
-        /* Animationen */
-        @keyframes fire-border-pulse {
-            0% { box-shadow: 0 0 10px rgba(255, 51, 0, 0.2); border-color: rgba(255, 51, 0, 0.5); }
-            50% { box-shadow: 0 0 25px rgba(255, 51, 0, 0.5); border-color: rgba(255, 51, 0, 1); }
-            100% { box-shadow: 0 0 10px rgba(255, 51, 0, 0.2); border-color: rgba(255, 51, 0, 0.5); }
-        }
-
-        @keyframes fire-text {
-            0% { background-position: 0% 50%; }
-            100% { background-position: 200% 50%; }
-        }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* --- WIDGET CONTAINER --- */
-        .widget-container {
+        /* Widget Container */
+        .start-container {
+            background-color: var(--color-dark);
+            border-radius: 8px; 
+            border: 2px solid var(--color-red);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+            width: 98%;
+            height: 96vh;
             display: flex;
             flex-direction: column;
-            width: 99%; 
-            height: 98vh; 
-            background-color: var(--c-bg);
-            border: 2px solid var(--c-fire);
-            border-radius: 12px;
-            animation: fire-border-pulse 4s infinite ease-in-out;
             overflow: hidden;
+            margin-top: 2vh;
             position: relative;
-            box-shadow: 0 0 50px rgba(0,0,0,0.9);
         }
 
-        /* --- HEADER --- */
+        /* Schlichter schwarzer Header */
         .header {
-            background-color: #080808;
-            padding: 15px 30px;
-            border-bottom: 1px solid var(--c-border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            background-color: var(--color-black);
+            padding: 25px 20px;
+            text-align: center;
+            border-bottom: 2px solid var(--color-red);
             flex-shrink: 0;
-            background-image: radial-gradient(circle at 50% -100%, rgba(255,51,0,0.15) 0%, transparent 60%);
-            position: relative;
         }
 
-        /* FLAGGEN SWITCHER */
+        .header-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Flaggen oben rechts */
         .lang-switch {
-            display: flex;
-            gap: 8px;
             position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 20;
+            top: 15px;
+            right: 15px;
+            display: flex;
+            gap: 10px;
+            z-index: 100;
         }
         .lang-btn {
             width: 25px; height: 16px;
             cursor: pointer;
             border-radius: 2px;
             border: 1px solid #fff;
-            opacity: 0.5;
-            transition: transform 0.2s, opacity 0.2s;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
-            padding: 0;
-            display: block;
+            opacity: 0.6;
+            transition: 0.2s;
+            object-fit: cover;
         }
-        .lang-btn:hover, .lang-btn.active {
-            opacity: 1; transform: scale(1.15);
-            border-color: var(--c-fire);
-            z-index: 10;
+        .lang-btn.active, .lang-btn:hover {
+            opacity: 1;
+            transform: scale(1.15);
+            border-color: var(--color-gold);
         }
 
         .title {
-            font-family: var(--f-head);
-            font-size: 2rem;
+            font-family: var(--font-header);
+            font-size: 2.4rem; 
+            color: var(--color-red);
             text-transform: uppercase;
             margin: 0;
             letter-spacing: 2px;
-            background: linear-gradient(90deg, #ff0000, #ff4d00, #ff9900, #ffcc00, #ff9900, #ff4d00, #ff0000);
-            background-size: 200% auto;
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            animation: fire-text 4s linear infinite;
-            filter: drop-shadow(0 0 5px rgba(255,69,0,0.3));
-            line-height: 1;
         }
 
         .subtitle {
-            font-size: 0.8rem;
-            color: var(--c-dim);
+            color: var(--color-gold);
+            font-size: 1rem;
             text-transform: uppercase;
             letter-spacing: 1px;
-            margin-top: 5px;
-            display: block;
+            font-weight: 500;
         }
 
-        /* SEARCH BAR */
+        /* Suchleiste */
         .search-container {
+            padding: 10px 20px;
+            background: rgba(0,0,0,0.5);
+            border-bottom: 1px solid #333;
+        }
+        .search-box {
             position: relative;
-            width: 300px;
+            max-width: 400px;
+            margin: 0 auto;
         }
-
-        .search-input {
+        .search-box input {
             width: 100%;
-            padding: 10px 15px 10px 40px;
+            padding: 8px 15px 8px 35px;
             border-radius: 20px;
-            border: 1px solid var(--c-border);
-            background-color: rgba(30, 30, 30, 0.5);
+            border: 1px solid #444;
+            background: #111;
             color: #fff;
-            font-family: var(--f-body);
-            font-size: 0.95rem;
             outline: none;
-            transition: border 0.3s, box-shadow 0.3s;
+            font-size: 0.9rem;
         }
-
-        .search-input:focus {
-            border-color: var(--c-fire);
-            box-shadow: 0 0 10px rgba(255, 51, 0, 0.2);
-        }
-
-        .search-icon {
+        .search-box i {
             position: absolute;
-            left: 15px;
+            left: 12px;
             top: 50%;
             transform: translateY(-50%);
-            color: var(--c-dim);
+            color: #888;
         }
 
-        /* --- NAVIGATION TABS --- */
+        /* Navigation Tabs */
         .nav-tabs {
             display: flex;
-            background-color: var(--c-panel);
+            background-color: #050505;
             padding: 0 10px;
             overflow-x: auto;
             flex-shrink: 0;
-            border-bottom: 1px solid var(--c-border);
+            border-bottom: 1px solid #333;
         }
-
         .nav-tab {
             padding: 15px 25px;
             cursor: pointer;
-            font-family: var(--f-head);
+            font-family: var(--font-header);
             text-transform: uppercase;
-            color: var(--c-dim);
+            color: #888;
             border-bottom: 3px solid transparent;
             transition: all 0.2s;
-            white-space: nowrap;
-            flex-grow: 1;
+            flex-grow: 1; 
             text-align: center;
-            font-size: 1.1rem;
+            font-size: 1rem;
+            white-space: nowrap;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
+            gap: 8px;
         }
-
-        .nav-tab:hover {
-            color: #fff;
-            background-color: rgba(255,255,255,0.02);
-        }
-
+        .nav-tab:hover { color: #fff; background-color: rgba(255,255,255,0.05); }
         .nav-tab.active {
-            background-color: rgba(255,51,0,0.05);
-            border-bottom-color: var(--c-fire);
-            color: var(--c-fire);
-            text-shadow: 0 0 10px rgba(255, 51, 0, 0.3);
+            color: var(--color-gold);
+            border-bottom-color: var(--color-gold);
+            background-color: rgba(255, 215, 0, 0.05);
         }
 
-        /* --- CONTENT AREA --- */
+        /* Content Area */
         .content-area {
             flex-grow: 1;
             overflow-y: auto;
-            padding: 30px 40px;
-            scroll-behavior: smooth;
-            background-color: var(--c-bg);
-            background-image: radial-gradient(circle at 50% 50%, rgba(255,51,0,0.02) 0%, transparent 40%);
+            padding: 30px;
+            scrollbar-width: thin;
+            scrollbar-color: var(--color-red) #111;
         }
-        .content-area::-webkit-scrollbar { width: 10px; }
-        .content-area::-webkit-scrollbar-thumb { background-color: #333; border-radius: 5px; border: 2px solid var(--c-bg); }
-        .content-area::-webkit-scrollbar-track { background-color: #080808; }
+        .content-area::-webkit-scrollbar { width: 8px; }
+        .content-area::-webkit-scrollbar-thumb { background-color: var(--color-red); border-radius: 4px; }
 
-        /* Sections */
-        .section { display: none; animation: fadeIn 0.3s ease; max-width: 1400px; margin: 0 auto; }
-        .section.active { display: block; }
+        @keyframes slideUpFade {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
-        /* --- STYLES --- */
+        .section { display: none; max-width: 1200px; margin: 0 auto; }
+        .section.active { 
+            display: block; 
+            animation: slideUpFade 0.4s ease-out forwards;
+        }
+
+        /* Info Blocks */
         .info-block {
-            background-color: var(--c-content);
-            border: 1px solid var(--c-border);
-            border-radius: 6px;
+            background-color: var(--color-light-dark);
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            margin-bottom: 30px;
             padding: 25px;
-            margin-bottom: 25px;
-            color: #ccc;
             text-align: center;
+            border-left: 4px solid var(--color-red);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
         }
-        
+
         .info-block h3 {
-            font-family: var(--f-head);
-            font-size: 1.5rem;
-            color: var(--c-fire);
-            margin-top: 0;
-            margin-bottom: 20px;
+            font-family: var(--font-header);
+            font-size: 1.8rem;
+            color: #fff;
+            margin: 0 0 15px 0;
+            text-transform: uppercase;
         }
 
         .banner-img {
             width: 100%;
-            max-height: 300px;
+            max-height: 350px;
             object-fit: cover;
             border-radius: 6px;
             border: 1px solid #333;
             margin-bottom: 20px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.8);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
         }
 
         .video-container {
             position: relative;
-            padding-bottom: 56.25%; /* 16:9 */
+            padding-bottom: 56.25%;
             height: 0;
             overflow: hidden;
-            border-radius: 6px;
-            border: 1px solid var(--c-border);
+            border-radius: 8px;
+            border: 1px solid var(--color-border);
             margin-bottom: 20px;
+            background: #000;
         }
         .video-container iframe {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
@@ -264,243 +236,235 @@
         /* Arena Grid */
         .arena-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
             gap: 20px;
+            width: 100%;
         }
 
         .arena-card {
-            background-color: #151515;
-            border: 1px solid var(--c-border);
+            background-color: var(--color-light-dark);
+            border: 1px solid var(--color-border);
             border-radius: 8px;
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: 0.2s;
         }
-
         .arena-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.6);
-            border-color: var(--c-fire);
+            border-color: var(--color-red);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.6);
         }
 
-        .arena-img {
+        .arena-img-wrapper {
             width: 100%;
             height: 220px;
-            object-fit: cover;
+            overflow: hidden;
             cursor: pointer;
+        }
+        .arena-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
             transition: transform 0.3s;
         }
         .arena-card:hover .arena-img { transform: scale(1.05); }
 
         .arena-body {
-            padding: 15px;
+            padding: 20px;
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            background: linear-gradient(90deg, #1a1a1a 0%, #111 100%);
+            background: #000;
+            border-top: 1px solid #333;
         }
 
         .arena-num {
-            font-family: var(--f-head);
-            font-size: 2.5rem;
-            color: var(--c-fire);
-            text-shadow: 0 0 10px rgba(255, 51, 0, 0.4);
-            margin-right: 15px;
+            font-family: var(--font-header);
+            font-size: 2.4rem;
+            color: var(--color-red);
+            margin-right: 20px;
             line-height: 1;
+            text-shadow: 0 0 10px rgba(229, 57, 53, 0.3);
         }
 
         .arena-title {
-            font-family: var(--f-head);
-            font-size: 1.5rem;
+            font-family: var(--font-header);
+            font-size: 1.4rem;
             color: #fff;
-            margin: 0;
             text-transform: uppercase;
         }
 
         /* Modal */
         .modal {
-            display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.95); z-index: 100; justify-content: center; align-items: center;
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95); z-index: 1000; align-items: center; justify-content: center;
         }
-        .modal.open { display: flex; }
-        .modal img { max-width: 90%; max-height: 90%; border: 2px solid var(--c-fire); border-radius: 6px; box-shadow: 0 0 50px rgba(255,51,0,0.3); }
-        .close-btn { position: absolute; top: 20px; right: 20px; color: #fff; font-size: 3rem; cursor: pointer; }
+        .modal.active { display: flex; }
+        .modal img { max-width: 95%; max-height: 90vh; border: 2px solid var(--color-red); border-radius: 6px; }
 
-        @media (max-width: 900px) { 
-            .widget-container { width: 100%; height: 100vh; border: none; border-radius: 0; }
-            .header { flex-direction: column; gap: 15px; text-align: center; }
-            .lang-switch { position: static; margin-bottom: 10px; transform: none; }
+        @media (max-width: 850px) {
+            .title { font-size: 1.8rem; }
+            .nav-tab { padding: 10px; font-size: 0.85rem; }
             .arena-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
 
-    <div class="widget-container">
-        
-        <!-- HEADER -->
-        <div class="header">
+    <div class="start-container">
+        <!-- GLOBAL FLAGS (Top Right) -->
+        <div class="lang-switch">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/b/ba/Flag_of_Germany.svg" class="lang-btn active" id="btn-de" onclick="setLang('de')" title="Deutsch">
+            <img src="https://upload.wikimedia.org/wikipedia/en/a/ae/Flag_of_the_United_Kingdom.svg" class="lang-btn" id="btn-en" onclick="setLang('en')" title="English">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/9/9a/Flag_of_Spain.svg" class="lang-btn" id="btn-es" onclick="setLang('es')" title="Español">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/c/c3/Flag_of_France.svg" class="lang-btn" id="btn-fr" onclick="setLang('fr')" title="Français">
+        </div>
+
+        <header class="header">
             <div class="header-content">
                 <h1 class="title" id="uiTitle">IOP Arenas</h1>
-                <span class="subtitle" id="uiSubtitle">Informationen, Ablauf & Belohnungen</span>
+                <div class="subtitle" id="uiSubtitle">Informationen, Ablauf & Belohnungen</div>
             </div>
-            
-            <!-- Flaggen -->
-            <div class="lang-switch">
-                <svg class="lang-btn active" id="btn-de" onclick="setLang('de')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 5 3">
-                    <rect width="5" height="3" fill="#000"/><rect width="5" height="2" y="1" fill="#D00"/><rect width="5" height="1" y="2" fill="#FFCE00"/>
-                </svg>
-                <svg class="lang-btn" id="btn-en" onclick="setLang('en')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 30">
-                    <clipPath id="s"><path d="M0,0 v30 h60 v-30 z"/></clipPath>
-                    <clipPath id="t"><path d="M30,15 h30 v15 z v15 h-30 z h-30 v-15 z v-15 h30 z"/></clipPath>
-                    <g clip-path="url(#s)">
-                        <path d="M0,0 v30 h60 v-30 z" fill="#012169"/>
-                        <path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/>
-                        <path d="M0,0 L60,30 M60,0 L0,30" clip-path="url(#t)" stroke="#C8102E" stroke-width="4"/>
-                        <path d="M30,0 v30 M0,15 h60" stroke="#fff" stroke-width="10"/>
-                        <path d="M30,0 v30 M0,15 h60" stroke="#C8102E" stroke-width="6"/>
-                    </g>
-                </svg>
-                <svg class="lang-btn" id="btn-es" onclick="setLang('es')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 750 500">
-                    <rect width="750" height="500" fill="#AA151B"/>
-                    <rect width="750" height="250" y="125" fill="#F1BF00"/>
-                </svg>
-                <svg class="lang-btn" id="btn-fr" onclick="setLang('fr')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600">
-                    <rect width="900" height="600" fill="#ED2939"/>
-                    <rect width="600" height="600" fill="#fff"/>
-                    <rect width="300" height="600" fill="#002395"/>
-                </svg>
-            </div>
+        </header>
 
-            <div class="search-container">
-                <i class="fa-solid fa-search search-icon"></i>
-                <input type="text" id="searchInput" class="search-input" placeholder="Suche Arena...">
+        <div class="search-container">
+            <div class="search-box">
+                <i class="fa fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Suche Arena..." onkeyup="handleSearch()">
             </div>
         </div>
 
-        <!-- TABS -->
-        <div class="nav-tabs">
-            <div class="nav-tab active" onclick="showTab('overview', this)" id="tabOverview">
-                <i class="fa-solid fa-info-circle"></i> Übersicht
-            </div>
-            <div class="nav-tab" onclick="showTab('list', this)" id="tabList">
-                <i class="fa-solid fa-list-ol"></i> Arenen Liste
-            </div>
-        </div>
+        <nav class="nav-tabs" id="navContainer">
+            <!-- JS Injected -->
+        </nav>
 
-        <!-- CONTENT -->
-        <div class="content-area">
-
+        <main class="content-area" id="contentContainer">
             <!-- TAB 1: OVERVIEW -->
             <div id="overview" class="section active">
-                <div class="info-block">
-                    <h3 id="overviewTitle">Arenen Vorstellung & Sneak Peak</h3>
+                <div class="info-block searchable">
+                    <h3 id="txtOverviewTitle">Arenen Vorstellung & Sneak Peak</h3>
                     <img src="https://i.postimg.cc/4dGpvnxr/Bild-2025-04-30-215611532.png" class="banner-img" style="cursor:default;">
                     
                     <div class="video-container">
                         <iframe src="https://www.youtube.com/embed/4dPjKiQV7Bo?rel=0&showinfo=0" frameborder="0" allowfullscreen></iframe>
                     </div>
 
-                    <p style="margin-top:20px; color:#bbb;" id="overviewText">
-                        Willkommen beim IOP Arena Showcase. Hier findest du eine Übersicht über alle verfügbaren Arenen, deren Layouts und Besonderheiten. Klicke dich durch die Liste, um Details zu den einzelnen Kampfzonen zu erfahren.
-                    </p>
-                    <img src="https://i.postimg.cc/g2H7mKpX/Bild-2025-04-30-213456532.png" class="banner-img" onclick="openModal(this.src)" style="margin-top:20px;">
+                    <p id="txtOverviewContent" style="color:#ccc; font-size: 1.1rem; line-height: 1.6;"></p>
+                    <img src="https://i.postimg.cc/g2H7mKpX/Bild-2025-04-30-213456532.png" class="banner-img" onclick="openModal(this.src)" style="margin-top:20px; cursor:zoom-in;">
                 </div>
             </div>
 
-            <!-- TAB 2: ARENA LIST -->
+            <!-- TAB 2: LIST -->
             <div id="list" class="section">
                 <div class="arena-grid" id="arenaGrid">
                     <!-- JS Injected -->
                 </div>
             </div>
-
-        </div>
+        </main>
     </div>
 
-    <!-- Modal -->
-    <div id="imgModal" class="modal">
-        <span class="close-btn" onclick="closeModal()">&times;</span>
-        <img id="modalImage" src="">
+    <div id="imgModal" class="modal" onclick="closeModal()">
+        <img id="modalImg" src="">
     </div>
 
     <script>
-        // =========================================================================
-        // 1. DATENBANK (ÜBERSETZUNGEN)
-        // =========================================================================
         const translations = {
-            meta: {
-                title: { de: "IOP Arenas", en: "IOP Arenas", es: "Arenas IOP", fr: "Arènes IOP" },
-                subtitle: { de: "Informationen, Ablauf & Belohnungen", en: "Information, Process & Rewards", es: "Información, Proceso y Recompensas", fr: "Informations, Processus et Récompenses" },
-                search: { de: "Suche Arena...", en: "Search Arena...", es: "Buscar Arena...", fr: "Rechercher Arène..." }
+            de: {
+                title: "IOP Arenas", subtitle: "Informationen, Ablauf & Belohnungen", search: "Suche Arena...",
+                nav: ["Übersicht", "Arenen Liste"],
+                ovTitle: "Arenen Vorstellung & Sneak Peak",
+                ovContent: "Willkommen beim IOP Arena Showcase. Hier findest du eine Übersicht über alle verfügbaren Arenen, deren Layouts und Besonderheiten. Klicke dich durch die Liste, um Details zu den einzelnen Kampfzonen zu erfahren.",
+                noMatch: "Keine Arena gefunden."
             },
-            nav: {
-                overview: { de: "Übersicht", en: "Overview", es: "Resumen", fr: "Aperçu" },
-                list: { de: "Arenen Liste", en: "Arena List", es: "Lista de Arenas", fr: "Liste des Arènes" }
+            en: {
+                title: "IOP Arenas", subtitle: "Information, Process & Rewards", search: "Search Arena...",
+                nav: ["Overview", "Arena List"],
+                ovTitle: "Arena Showcase & Sneak Peak",
+                ovContent: "Welcome to the IOP Arena Showcase. Here you will find an overview of all available arenas, their layouts, and special features. Explore the list to learn more about the individual combat zones.",
+                noMatch: "No arena found."
             },
-            overview: {
-                title: { de: "Arenen Vorstellung & Sneak Peak", en: "Arena Showcase & Sneak Peak", es: "Presentación de Arenas", fr: "Présentation des Arènes" },
-                text: { 
-                    de: "Willkommen beim IOP Arena Showcase. Hier findest du eine Übersicht über alle verfügbaren Arenen, deren Layouts und Besonderheiten. Klicke dich durch die Liste, um Details zu den einzelnen Kampfzonen zu erfahren.",
-                    en: "Welcome to the IOP Arena Showcase. Here you will find an overview of all available arenas, their layouts, and special features. Check the list to learn details about the individual combat zones.",
-                    es: "Bienvenido a la presentación de Arenas IOP. Aquí encontrarás un resumen de todas las arenas disponibles, sus diseños y características. Revisa la lista para más detalles.",
-                    fr: "Bienvenue à la présentation des Arènes IOP. Vous trouverez ici un aperçu de toutes les arènes disponibles, leurs dispositions et particularités. Consultez la liste pour plus de détails."
-                }
+            es: {
+                title: "Arenas IOP", subtitle: "Información, Proceso y Recompensas", search: "Buscar Arena...",
+                nav: ["Resumen", "Lista de Arenas"],
+                ovTitle: "Presentación de Arenas",
+                ovContent: "Bienvenido a la presentación de Arenas IOP. Aquí encontrarás un resumen de todas las arenas disponibles, sus diseños y características. Revisa la lista para más detalles.",
+                noMatch: "No se encontró ninguna arena."
             },
-            arenas: [
-                { id: 1, img: "https://i.postimg.cc/43ZT1dft/Bild-2025-04-30-213542086.png", name: { de: "Aberration Arena", en: "Aberration Arena", es: "Arena Aberration", fr: "Arène Aberration" } },
-                { id: 2, img: "https://i.postimg.cc/8580NX3S/Bild-2025-04-30-213304294.png", name: { de: "Honig Arena", en: "Honey Arena", es: "Arena de Miel", fr: "Arène de Miel" } },
-                { id: 3, img: "https://i.postimg.cc/mrRy2xjB/Bild-2025-04-30-213814321.png", name: { de: "Lava Arena", en: "Lava Arena", es: "Arena de Lava", fr: "Arène de Lave" } },
-                { id: 4, img: "https://i.postimg.cc/HW42Rk93/Bild-2025-04-30-214041915.png", name: { de: "Eis Arena", en: "Ice Arena", es: "Arena de Hielo", fr: "Arène de Glace" } },
-                { id: 5, img: "https://i.postimg.cc/c4bRYgc9/Bild-2025-04-30-213707938.png", name: { de: "Sumpf Arena", en: "Swamp Arena", es: "Arena de Pantano", fr: "Arène de Marais" } },
-                { id: 6, img: "https://i.postimg.cc/ryfJqFKJ/Bild-2025-04-30-214651686.png", name: { de: "Kristall Arena", en: "Crystal Arena", es: "Arena de Cristal", fr: "Arène de Cristal" } },
-                { id: 7, img: "https://i.postimg.cc/x8jVMT25/Bild-2025-04-30-214751020.png", name: { de: "Wald Arena", en: "Forest Arena", es: "Arena de Bosque", fr: "Arène de Forêt" } },
-                { id: 8, img: "https://i.postimg.cc/4y8vNwPP/Bild-2025-04-30-215020988.png", name: { de: "Jungle Arena", en: "Jungle Arena", es: "Arena de Jungla", fr: "Arène de Jungle" } },
-                { id: 9, img: "https://i.postimg.cc/LsqkTrRM/Bild-2025-04-30-215334252.png", name: { de: "Wasser Arena", en: "Water Arena", es: "Arena de Agua", fr: "Arène Aquatique" } },
-                { id: 10, img: "https://i.postimg.cc/rwYyTH4s/Bild-2025-04-30-215427360.png", name: { de: "Wüsten Arena", en: "Desert Arena", es: "Arena de Desierto", fr: "Arène du Désert" } }
-            ]
+            fr: {
+                title: "Arènes IOP", subtitle: "Informations, Processus et Récompenses", search: "Rechercher Arène...",
+                nav: ["Aperçu", "Liste des Arènes"],
+                ovTitle: "Présentation des Arènes",
+                ovContent: "Bienvenue à la présentation des Arènes IOP. Vous trouverez ici un aperçu de toutes les arènes disponibles, leurs dispositions et particularités. Consultez la liste pour plus de détails.",
+                noMatch: "Aucune arène trouvée."
+            }
         };
 
-        // =========================================================================
-        // 2. LOGIC
-        // =========================================================================
+        const arenaData = [
+            { id: 1, img: "https://i.postimg.cc/43ZT1dft/Bild-2025-04-30-213542086.png", name: { de: "Aberration Arena", en: "Aberration Arena", es: "Arena Aberration", fr: "Arène Aberration" } },
+            { id: 2, img: "https://i.postimg.cc/8580NX3S/Bild-2025-04-30-213304294.png", name: { de: "Honig Arena", en: "Honey Arena", es: "Arena de Miel", fr: "Arène de Miel" } },
+            { id: 3, img: "https://i.postimg.cc/mrRy2xjB/Bild-2025-04-30-213814321.png", name: { de: "Lava Arena", en: "Lava Arena", es: "Arena de Lava", fr: "Arène de Lave" } },
+            { id: 4, img: "https://i.postimg.cc/HW42Rk93/Bild-2025-04-30-214041915.png", name: { de: "Eis Arena", en: "Ice Arena", es: "Arena de Hielo", fr: "Arène de Glace" } },
+            { id: 5, img: "https://i.postimg.cc/c4bRYgc9/Bild-2025-04-30-213707938.png", name: { de: "Sumpf Arena", en: "Swamp Arena", es: "Arena de Pantano", fr: "Arène de Marais" } },
+            { id: 6, img: "https://i.postimg.cc/ryfJqFKJ/Bild-2025-04-30-214651686.png", name: { de: "Kristall Arena", en: "Crystal Arena", es: "Arena de Cristal", fr: "Arène de Cristal" } },
+            { id: 7, img: "https://i.postimg.cc/x8jVMT25/Bild-2025-04-30-214751020.png", name: { de: "Wald Arena", en: "Forest Arena", es: "Arena de Bosque", fr: "Arène de Forêt" } },
+            { id: 8, img: "https://i.postimg.cc/4y8vNwPP/Bild-2025-04-30-215020988.png", name: { de: "Jungle Arena", en: "Jungle Arena", es: "Arena de Jungla", fr: "Arène de Jungle" } },
+            { id: 9, img: "https://i.postimg.cc/LsqkTrRM/Bild-2025-04-30-215334252.png", name: { de: "Wasser Arena", en: "Water Arena", es: "Arena de Agua", fr: "Arène Aquatique" } },
+            { id: 10, img: "https://i.postimg.cc/rwYyTH4s/Bild-2025-04-30-215427360.png", name: { de: "Wüsten Arena", en: "Desert Arena", es: "Arena de Desierto", fr: "Arène du Désert" } }
+        ];
+
         let currentLang = 'de';
+        let activeTab = 'overview';
 
         function setLang(lang) {
             currentLang = lang;
+            const l = translations[lang];
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('btn-' + lang).classList.add('active');
             
-            // Buttons
-            document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById('btn-'+lang).classList.add('active');
+            document.getElementById('uiTitle').innerText = l.title;
+            document.getElementById('uiSubtitle').innerText = l.subtitle;
+            document.getElementById('searchInput').placeholder = l.search;
+            document.getElementById('txtOverviewTitle').innerText = l.ovTitle;
+            document.getElementById('txtOverviewContent').innerText = l.ovContent;
 
-            // Static Text
-            document.getElementById('uiTitle').innerText = translations.meta.title[lang];
-            document.getElementById('uiSubtitle').innerText = translations.meta.subtitle[lang];
-            document.getElementById('searchInput').placeholder = translations.meta.search[lang];
-            
-            // Nav
-            document.getElementById('tabOverview').innerHTML = `<i class="fa-solid fa-info-circle"></i> ${translations.nav.overview[lang]}`;
-            document.getElementById('tabList').innerHTML = `<i class="fa-solid fa-list-ol"></i> ${translations.nav.list[lang]}`;
-
-            // Content Overview
-            document.getElementById('overviewTitle').innerText = translations.overview.title[lang];
-            document.getElementById('overviewText').innerText = translations.overview.text[lang];
-
-            // Re-render List (to update names)
-            const searchVal = document.getElementById('searchInput').value;
-            renderArenas(searchVal);
+            renderNav();
+            renderContent();
         }
 
-        function renderArenas(search) {
+        function renderNav() {
+            const nav = document.getElementById('navContainer');
+            nav.innerHTML = '';
+            const sections = ['overview', 'list'];
+            const icons = ['fa-info-circle', 'fa-list-ol'];
+
+            sections.forEach((s, i) => {
+                const tab = document.createElement('div');
+                tab.className = `nav-tab ${s === activeTab ? 'active' : ''}`;
+                tab.innerHTML = `<i class="fa-solid ${icons[i]}"></i> ${translations[currentLang].nav[i]}`;
+                tab.onclick = () => { activeTab = s; renderNav(); renderContent(); };
+                nav.appendChild(tab);
+            });
+        }
+
+        function renderContent() {
+            document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+            document.getElementById(activeTab).classList.add('active');
+
+            if (activeTab === 'list') {
+                renderArenas();
+            }
+        }
+
+        function renderArenas() {
             const container = document.getElementById('arenaGrid');
             container.innerHTML = '';
-            
-            const term = search.toLowerCase();
-            const filtered = translations.arenas.filter(a => a.name[currentLang].toLowerCase().includes(term));
+            const filter = document.getElementById('searchInput').value.toLowerCase();
+            const l = currentLang;
 
-            if(filtered.length === 0) {
-                container.innerHTML = '<div style="grid-column:1/-1; text-align:center; color:#666; margin-top:50px;">Keine Arena gefunden.</div>';
+            const filtered = arenaData.filter(a => a.name[l].toLowerCase().includes(filter));
+
+            if (filtered.length === 0) {
+                container.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:50px; color:#666;">${translations[l].noMatch}</div>`;
                 return;
             }
 
@@ -508,50 +472,36 @@
                 const card = document.createElement('div');
                 card.className = 'arena-card';
                 card.innerHTML = `
-                    <div style="overflow:hidden; height:220px;">
-                        <img src="${a.img}" class="arena-img" onclick="openModal('${a.img}')">
+                    <div class="arena-img-wrapper" onclick="openModal('${a.img}')">
+                        <img src="${a.img}" class="arena-img" alt="${a.name[l]}">
                     </div>
                     <div class="arena-body">
                         <div class="arena-num">${a.id}</div>
-                        <h3 class="arena-title">${a.name[currentLang]}</h3>
+                        <h3 class="arena-title">${a.name[l]}</h3>
                     </div>
                 `;
                 container.appendChild(card);
             });
         }
 
-        // TABS
-        function showTab(id, btn) {
-            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-            document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            btn.classList.add('active');
-        }
-
-        // SEARCH
-        document.getElementById('searchInput').addEventListener('input', (e) => {
-            if(e.target.value.length > 0 && !document.getElementById('list').classList.contains('active')) {
-                showTab('list', document.querySelectorAll('.nav-tab')[1]);
+        function handleSearch() {
+            if (activeTab !== 'list') {
+                activeTab = 'list';
+                renderNav();
             }
-            renderArenas(e.target.value);
-        });
-
-        // MODAL
-        const modal = document.getElementById('imgModal');
-        const modalImg = document.getElementById('modalImage');
+            renderArenas();
+        }
 
         function openModal(src) {
-            modalImg.src = src;
-            modal.classList.add('open');
+            document.getElementById('modalImg').src = src;
+            document.getElementById('imgModal').classList.add('active');
         }
-        function closeModal() { modal.classList.remove('open'); }
-        modal.addEventListener('click', (e) => { if(e.target === modal) closeModal(); });
 
-        // INIT
-        window.onload = function() {
-            setLang('de');
-        };
+        function closeModal() {
+            document.getElementById('imgModal').classList.remove('active');
+        }
 
+        window.onload = () => setLang('de');
     </script>
 </body>
 </html>
