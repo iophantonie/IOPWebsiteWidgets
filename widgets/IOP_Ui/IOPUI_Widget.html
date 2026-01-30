@@ -4,866 +4,665 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IOP Ui Mod & QoL</title>
-    <link href="https://fonts.googleapis.com/css2?family=Acme&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Acme&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* IOP Style Variables */
+        /* Farbschema: Feuerrot, Schwarz und Goldgelb */
         :root {
-            --color-dark: rgba(20, 20, 20, 0.95);
-            --color-light-dark: rgba(40, 40, 40, 0.9);
+            --color-red: #E53935;
+            --color-black: #000000;
+            --color-dark: #0a0a0a;
+            --color-light-dark: #161616;
             --color-text: #f7f7f7;
-            
-            /* UI Mod Colors */
-            --color-ui-orange: #f7ad6b; 
-            --color-ui-tech: #00bcd4;   
-            --color-ui-glow: rgba(247, 173, 107, 0.4);
-            
-            --font-main: sans-serif;
+            --color-gold: #FFEB3B;
+            --color-ui-gold: #FFD700; /* Goldgelb für Fokus-Elemente */
+            --color-success: #4CAF50;
+            --color-ui-tech: #00bcd4;
             --font-header: 'Acme', sans-serif;
+            --font-body: 'Roboto', sans-serif;
         }
 
-        * { box-sizing: border-box; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
             background-color: transparent;
-            font-family: var(--font-main);
+            font-family: var(--font-body);
             color: var(--color-text);
-            margin: 0;
-            padding: 0; 
+            height: 100vh;
+            width: 100vw;
             display: flex;
             flex-direction: column;
             align-items: center;
-            height: 100vh;
-            width: 100vw;
-            overflow: hidden; 
+            overflow: hidden;
         }
 
         /* Container */
-        .ui-container {
+        .start-container {
             background-color: var(--color-dark);
             border-radius: 8px; 
-            border: 2px solid var(--color-ui-orange);
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.8);
-            width: 100%;
-            height: 100%;
+            border: 2px solid var(--color-red);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+            width: 98%;
+            height: 96vh;
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            position: relative;
+            margin-top: 2vh;
         }
 
-        /* Header */
+        /* Schlichter schwarzer Header */
         .header {
-            background: linear-gradient(135deg, rgba(40,30,20,0.9), rgba(20,20,20,0.95));
-            padding: 20px;
+            background-color: var(--color-black);
+            padding: 25px 20px;
             text-align: center;
-            border-bottom: 2px solid var(--color-ui-orange);
+            border-bottom: 2px solid var(--color-red);
             flex-shrink: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 5px;
             position: relative;
-            overflow: hidden;
-        }
-        
-        /* Tech Grid Background im Header */
-        .header::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-image: 
-                linear-gradient(rgba(247, 173, 107, 0.1) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(247, 173, 107, 0.1) 1px, transparent 1px);
-            background-size: 20px 20px;
-            opacity: 0.3;
-            pointer-events: none;
         }
 
-        .title {
-            font-family: var(--font-header);
-            font-size: 2.2rem; 
-            text-transform: uppercase;
-            margin: 0;
-            z-index: 1;
-            color: var(--color-ui-orange);
-            text-shadow: 0 0 15px var(--color-ui-glow);
-            letter-spacing: 2px;
+        .header-content {
+            position: relative;
+            z-index: 2;
         }
 
-        .subtitle {
-            color: var(--color-ui-tech);
-            font-size: 1rem;
-            font-style: italic;
-            z-index: 1;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        /* FLAGGEN SWITCHER */
         .lang-switch {
             position: absolute;
             top: 15px;
             right: 15px;
             display: flex;
-            gap: 5px;
+            gap: 10px;
             z-index: 10;
         }
         .lang-btn {
-            width: 30px; height: 20px;
+            width: 25px; height: 16px;
             cursor: pointer;
-            border-radius: 3px;
+            border-radius: 2px;
             border: 1px solid #fff;
-            opacity: 0.5;
-            transition: transform 0.2s, opacity 0.2s;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
-            padding: 0;
-            display: block;
+            opacity: 0.6;
+            transition: 0.2s;
+            object-fit: cover;
         }
-        .lang-btn:hover, .lang-btn.active {
-            opacity: 1; transform: scale(1.15);
-            border-color: var(--color-ui-orange);
-            z-index: 10;
+        .lang-btn.active, .lang-btn:hover {
+            opacity: 1;
+            transform: scale(1.15);
+            border-color: var(--color-ui-gold);
         }
 
-        @media (max-width: 600px) {
-            .lang-switch {
-                position: static;
-                justify-content: center;
-                margin-bottom: 10px;
-                order: -1;
-            }
+        .title {
+            font-family: var(--font-header);
+            font-size: 2.4rem; 
+            color: var(--color-red);
+            text-transform: uppercase;
+            margin: 0;
+            letter-spacing: 2px;
+        }
+
+        .subtitle {
+            color: var(--color-ui-gold);
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 500;
+        }
+
+        /* Suchleiste */
+        .search-container {
+            padding: 10px 20px;
+            background: rgba(0,0,0,0.5);
+            border-bottom: 1px solid #333;
+        }
+        .search-box {
+            position: relative;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        .search-box input {
+            width: 100%;
+            padding: 8px 15px 8px 35px;
+            border-radius: 20px;
+            border: 1px solid #444;
+            background: #111;
+            color: #fff;
+            outline: none;
+            font-size: 0.9rem;
+        }
+        .search-box i {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #888;
         }
 
         /* Navigation Tabs */
         .nav-tabs {
             display: flex;
-            background-color: rgba(255,255,255,0.05);
+            background-color: #050505;
             padding: 0 10px;
             overflow-x: auto;
             flex-shrink: 0;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+            border-bottom: 1px solid #333;
         }
-
         .nav-tab {
             padding: 15px 20px;
             cursor: pointer;
             font-family: var(--font-header);
             text-transform: uppercase;
-            color: #aaa;
+            color: #888;
             border-bottom: 3px solid transparent;
             transition: all 0.2s;
             flex-grow: 1; 
             text-align: center;
-            font-size: 1.1rem;
+            font-size: 1rem;
             white-space: nowrap;
         }
-
         .nav-tab:hover { color: #fff; background-color: rgba(255,255,255,0.05); }
-        
         .nav-tab.active {
-            color: var(--color-ui-orange);
-            border-bottom-color: var(--color-ui-orange);
-            background-color: rgba(247, 173, 107, 0.1);
+            color: var(--color-ui-gold); /* Aktivierter Reiter in Goldgelb */
+            border-bottom-color: var(--color-ui-gold);
+            background-color: rgba(255, 215, 0, 0.05);
         }
 
         /* Content Area */
         .content-area {
             flex-grow: 1;
             overflow-y: auto;
-            padding: 20px;
+            padding: 30px;
             scrollbar-width: thin;
-            scrollbar-color: var(--color-ui-orange) transparent;
+            scrollbar-color: var(--color-red) #111;
         }
         .content-area::-webkit-scrollbar { width: 8px; }
-        .content-area::-webkit-scrollbar-thumb { background-color: var(--color-ui-orange); border-radius: 4px; }
+        .content-area::-webkit-scrollbar-thumb { background-color: var(--color-red); border-radius: 4px; }
 
-        /* Feature Cards (Grid Layout) */
+        /* Animationen für Content-Wechsel */
+        @keyframes slideUpFade {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section { 
+            display: none; 
+            max-width: 1000px; 
+            margin: 0 auto; 
+        }
+        .section.active { 
+            display: block; 
+            animation: slideUpFade 0.4s ease-out forwards; /* Smoother Übergang */
+        }
+
+        /* Feature Cards */
         .feature-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); 
             gap: 20px;
-            animation: fadeIn 0.4s ease;
+            justify-content: center;
         }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
+        
         .feature-card {
             background-color: var(--color-light-dark);
+            border: 1px solid #333;
             border-radius: 8px;
-            border: 1px solid rgba(255,255,255,0.1);
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: 0.2s;
+            height: 100%;
         }
-
         .feature-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-            border-color: var(--color-ui-orange);
-        }
-
-        .card-header-row {
-            padding: 15px;
-            background-color: rgba(0,0,0,0.2);
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .card-title {
-            margin: 0;
-            color: var(--color-ui-orange);
-            font-family: var(--font-header);
-            font-size: 1.3rem;
-        }
-
-        .card-icon {
-            color: var(--color-ui-tech);
-            font-size: 1.2rem;
-        }
-
-        .card-body {
-            padding: 15px;
-            color: #ddd;
-            line-height: 1.6;
-            font-size: 0.95rem;
+            transform: translateY(-5px);
+            border-color: var(--color-red);
         }
 
         .card-img-container {
             width: 100%;
-            height: 200px;
+            height: 180px;
             background-color: #000;
             overflow: hidden;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
             cursor: pointer;
-            position: relative;
         }
-
         .card-img-container img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transition: transform 0.3s;
-        }
-        
-        .card-img-container:hover img {
-            transform: scale(1.05);
-        }
-        
-        /* Placeholder Icon Style for Potions */
-        .card-img-placeholder {
-            width: 100%;
-            height: 200px;
-            background-color: rgba(0, 188, 212, 0.1); /* Light Cyan Tint */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            cursor: pointer;
-            color: var(--color-ui-tech);
-            font-size: 4rem;
-            transition: color 0.3s;
-        }
-        .feature-card:hover .card-img-placeholder {
-            color: var(--color-ui-orange);
-        }
-        
-        .zoom-hint {
-            position: absolute;
-            bottom: 10px;
-            right: 10px;
-            background-color: rgba(0,0,0,0.7);
-            color: #fff;
-            padding: 5px 10px;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            pointer-events: none;
         }
 
-        /* List Styling inside Cards */
+        .card-content { padding: 15px; flex-grow: 1; }
+        .card-title-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 8px;
+        }
+        .card-title {
+            font-family: var(--font-header);
+            color: var(--color-red);
+            font-size: 1.2rem;
+            text-transform: uppercase;
+        }
+        .card-title-row i {
+            color: var(--color-ui-gold); /* Icons in Goldgelb */
+        }
         .feature-list {
             list-style: none;
-            padding: 0;
-            margin: 0;
+            font-size: 0.95rem;
+            color: #ccc;
         }
         .feature-list li {
-            margin-bottom: 8px;
-            padding-left: 20px;
             position: relative;
+            padding-left: 20px;
+            margin-bottom: 5px;
         }
         .feature-list li::before {
-            content: '>';
-            color: var(--color-ui-tech);
+            content: "\f105";
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
             position: absolute;
             left: 0;
-            font-weight: bold;
+            color: var(--color-ui-gold); /* Pfeile in Goldgelb */
         }
 
-        /* Highlight Box */
         .highlight-box {
-            background: linear-gradient(90deg, rgba(0, 188, 212, 0.1), transparent);
-            border-left: 4px solid var(--color-ui-tech);
+            border-left: 4px solid var(--color-red);
+            background-color: rgba(229, 57, 53, 0.1);
             padding: 15px;
-            margin-bottom: 20px;
-            border-radius: 4px;
+            margin-bottom: 25px;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.95rem;
         }
 
-        /* === MODAL STYLING (Image Gallery Popup) === */
+        /* Modal */
         .modal {
-            display: none;
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.9);
-            z-index: 1000;
-            backdrop-filter: blur(5px);
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            opacity: 0;
-            transition: opacity 0.3s ease;
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); z-index: 1000; align-items: center; justify-content: center;
         }
+        .modal.active { display: flex; }
+        .modal img { max-width: 90%; max-height: 90%; border: 2px solid var(--color-red); border-radius: 4px; }
 
-        .modal.active { display: flex; opacity: 1; }
-
-        .modal-content {
-            max-width: 95%;
-            max-height: 95%;
-            position: relative;
-            box-shadow: 0 0 30px rgba(0,0,0,0.8);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .modal-img-wrapper {
-            position: relative;
-            max-height: 90vh;
-            border: 2px solid var(--color-ui-orange);
-            border-radius: 8px;
-            overflow: hidden;
-        }
-
-        .modal-img-wrapper img {
-            max-width: 100%;
-            max-height: 85vh;
-            display: none;
-        }
-        
-        .modal-img-wrapper img.active {
-            display: block;
-        }
-
-        .gallery-controls {
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
-            background-color: rgba(0,0,0,0.5);
-            padding: 8px 15px;
-            border-radius: 20px;
-        }
-
-        .gallery-dot {
-            width: 12px;
-            height: 12px;
-            background-color: #fff;
-            border-radius: 50%;
-            opacity: 0.5;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .gallery-dot:hover { opacity: 0.8; }
-        .gallery-dot.active { opacity: 1; background-color: var(--color-ui-orange); transform: scale(1.2); }
-
-        .close-btn {
-            position: absolute;
-            top: -40px;
-            right: 0;
-            color: #fff;
-            font-size: 2rem;
-            cursor: pointer;
-            z-index: 10;
-            text-shadow: 0 0 5px #000;
-        }
-        .close-btn:hover { color: var(--color-ui-orange); }
-
-        @media (max-width: 700px) {
+        @media (max-width: 600px) {
             .title { font-size: 1.8rem; }
+            .nav-tab { padding: 10px; font-size: 0.8rem; }
             .feature-grid { grid-template-columns: 1fr; }
-            .nav-tab { padding: 12px; font-size: 0.9rem; }
         }
     </style>
 </head>
 <body>
 
-    <div class="ui-container">
-        
-        <div class="header">
-            <!-- 4 Flaggen -->
+    <div class="start-container">
+        <!-- Schlichter schwarzer Header -->
+        <header class="header">
             <div class="lang-switch">
-                <svg class="lang-btn active" id="btn-de" onclick="setLang('de')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 5 3">
-                    <rect width="5" height="3" fill="#000"/><rect width="5" height="2" y="1" fill="#D00"/><rect width="5" height="1" y="2" fill="#FFCE00"/>
-                </svg>
-                <svg class="lang-btn" id="btn-en" onclick="setLang('en')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 30">
-                    <clipPath id="s"><path d="M0,0 v30 h60 v-30 z"/></clipPath>
-                    <clipPath id="t"><path d="M30,15 h30 v15 z v15 h-30 z h-30 v-15 z v-15 h30 z"/></clipPath>
-                    <g clip-path="url(#s)">
-                        <path d="M0,0 v30 h60 v-30 z" fill="#012169"/>
-                        <path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/>
-                        <path d="M0,0 L60,30 M60,0 L0,30" clip-path="url(#t)" stroke="#C8102E" stroke-width="4"/>
-                        <path d="M30,0 v30 M0,15 h60" stroke="#fff" stroke-width="10"/>
-                        <path d="M30,0 v30 M0,15 h60" stroke="#C8102E" stroke-width="6"/>
-                    </g>
-                </svg>
-                <svg class="lang-btn" id="btn-es" onclick="setLang('es')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 750 500">
-                    <rect width="750" height="500" fill="#AA151B"/>
-                    <rect width="750" height="250" y="125" fill="#F1BF00"/>
-                </svg>
-                <svg class="lang-btn" id="btn-fr" onclick="setLang('fr')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600">
-                    <rect width="900" height="600" fill="#ED2939"/>
-                    <rect width="600" height="600" fill="#fff"/>
-                    <rect width="300" height="600" fill="#002395"/>
-                </svg>
+                <img src="https://upload.wikimedia.org/wikipedia/commons/b/ba/Flag_of_Germany.svg" class="lang-btn active" id="btn-de" onclick="setLang('de')" title="Deutsch">
+                <!-- Korrigierte Englische Flagge URL -->
+                <img src="https://upload.wikimedia.org/wikipedia/en/a/ae/Flag_of_the_United_Kingdom.svg" class="lang-btn" id="btn-en" onclick="setLang('en')" title="English">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/9/9a/Flag_of_Spain.svg" class="lang-btn" id="btn-es" onclick="setLang('es')" title="Español">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/c/c3/Flag_of_France.svg" class="lang-btn" id="btn-fr" onclick="setLang('fr')" title="Français">
             </div>
+            <div class="header-content">
+                <h1 class="title">IOP Ui Mod & QoL</h1>
+                <div class="subtitle" id="uiSubtitle">Ingame Shop & Tools</div>
+            </div>
+        </header>
 
-            <h1 class="title">IOP Ui Mod & QoL</h1>
-            <div class="subtitle" id="uiSubtitle">Ingame Shop, Radial Menü & Tools</div>
-        </div>
-
-        <!-- Navigation -->
-        <div class="nav-tabs" id="navContainer">
-            <!-- Nav buttons generated via JS -->
-        </div>
-
-        <div class="content-area" id="contentContainer">
-            <!-- Content generated via JS -->
-        </div>
-
-        <!-- MODAL (Image Gallery Popup) -->
-        <div id="imgModal" class="modal">
-            <div class="modal-content">
-                <span class="close-btn" onclick="closeModal()">&times;</span>
-                <div class="modal-img-wrapper" id="modalImgWrapper">
-                    <!-- Images will be injected here -->
-                </div>
-                <div class="gallery-controls" id="galleryControls">
-                    <!-- Dots will be injected here -->
-                </div>
+        <!-- Suchleiste -->
+        <div class="search-container">
+            <div class="search-box">
+                <i class="fa fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Suchen..." onkeyup="filterContent()">
             </div>
         </div>
 
+        <!-- Navigation Tabs Oben -->
+        <nav class="nav-tabs" id="navContainer">
+            <!-- JS generiert Tabs -->
+        </nav>
+
+        <!-- Hauptinhaltsbereich -->
+        <main class="content-area" id="contentContainer">
+            <!-- JS generiert Inhalt -->
+        </main>
+    </div>
+
+    <!-- Modal für Bild-Vorschau -->
+    <div id="imgModal" class="modal" onclick="closeModal()">
+        <img id="modalImg" src="">
     </div>
 
     <script>
-        // =========================================================================
-        // 1. DATENBANK & ÜBERSETZUNGEN
-        // =========================================================================
         const translations = {
-            subtitle: { de: "Ingame Shop, Radial Menü & Tools", en: "Ingame Shop, Radial Menu & Tools", es: "Tienda, Menú Radial y Herramientas", fr: "Boutique, Menu Radial et Outils" },
-            view_imgs: { de: "Bilder ansehen", en: "View Images", es: "Ver Imágenes", fr: "Voir Images" },
-            zoom: { de: "Vergrößern", en: "Zoom", es: "Ampliar", fr: "Agrandir" },
-            
-            nav: {
-                shop: { de: "Ingame Shop", en: "Ingame Shop", es: "Tienda", fr: "Boutique" },
-                iopui: { de: "IOP UI", en: "IOP UI", es: "Interfaz IOP", fr: "IOP UI" },
-                radial: { de: "Radial Menü", en: "Radial Menu", es: "Menú Radial", fr: "Menu Radial" },
-                system: { de: "System & HUD", en: "System & HUD", es: "Sistema y HUD", fr: "Système et HUD" },
-                items: { de: "IOP QoL+ Items", en: "IOP QoL+ Items", es: "Items IOP QoL+", fr: "Objets IOP QoL+" }
+            de: {
+                subtitle: "Ingame Shop, Radial Menü & Tools",
+                search: "Suchen...",
+                nav: ["Shop", "IOP UI", "Radial Menü", "System & HUD", "QoL+ Items"],
+                shopHighlight: "Crossplay Ready! Diese Mod & Shop UI sind 100% konform mit den ToS und für alle Plattformen optimiert."
             },
-
-            sections: {
-                shop: {
-                    highlight: { de: "Crossplay Ready! Diese Mod & Shop UI sind 100% konform mit den Terms of Service und für alle Plattformen optimiert.", en: "Crossplay Ready! This Mod & Shop UI are 100% ToS compliant and optimized for all platforms.", es: "¡Crossplay Listo! Este Mod y UI cumplen 100% con los ToS y están optimizados.", fr: "Prêt pour Crossplay ! Ce Mod et UI respectent à 100% les conditions d'utilisation." },
-                    cards: [
-                        {
-                            title: { de: "Ingame Token Shop", en: "Ingame Token Shop", es: "Tienda de Fichas", fr: "Boutique de Jetons" },
-                            icon: "fa-store",
-                            images: ['https://i.postimg.cc/0jwZ41BR/image.png', 'https://i.postimg.cc/8k6HNDZk/image.png'],
-                            body_p: "",
-                            list: {
-                                de: ["Vollständig integriert: Nutze den Token Shop direkt im Spiel.", "Synchronisiert: Profilbezogene Daten werden live angezeigt.", "Zugriff: Öffnen über F3 oder das Radial-Menü."],
-                                en: ["Fully integrated: Use the Token Shop directly in-game.", "Synced: Profile data is displayed live.", "Access: Open via F3 or the Radial Menu."],
-                                es: ["Totalmente integrado: Usa la tienda directamente en el juego.", "Sincronizado: Datos de perfil en vivo.", "Acceso: Abre con F3 o el Menú Radial."],
-                                fr: ["Entièrement intégré : Utilisez la boutique directement en jeu.", "Synchronisé : Données de profil affichées en direct.", "Accès : Ouvrir via F3 ou le Menu Radial."]
-                            }
-                        }
-                    ]
-                },
-                iopui: {
-                    cards: [
-                        {
-                            title: { de: "IOP User Interface", en: "IOP User Interface", es: "Interfaz de Usuario IOP", fr: "Interface Utilisateur IOP" },
-                            icon: "fa-sliders",
-                            images: ['https://i.postimg.cc/vmXXMc9t/image.png'],
-                            body_p: "",
-                            list: {
-                                de: ["Live Server Raten: Anzeige der aktuellen Multiplikatoren.", "Quick-Links: Vote-Seiten, Discord, Dododex & Website direkt öffnen.", "Performance: Schalte Nebel/Wolken aus (FPS Boost).", "Auto-Run: Speichere deine Einstellungen (z.B. 'Kein Nebel') für jeden Join.", "Solo Farm: Spezielle Buttons für Solo-Farming.", "Regelwerk: Ingame-Ansicht der Serverregeln."],
-                                en: ["Live Server Rates: Display of current multipliers.", "Quick-Links: Open Vote sites, Discord, Dododex & Website directly.", "Performance: Toggle Fog/Clouds off (FPS Boost).", "Auto-Run: Save your settings (e.g., 'No Fog') for every join.", "Solo Farm: Special buttons for solo farming.", "Rules: In-game view of server rules."],
-                                es: ["Tasas en Vivo: Muestra multiplicadores actuales.", "Enlaces Rápidos: Abre Votación, Discord, Dododex y Web.", "Rendimiento: Desactiva Niebla/Nubes (FPS Boost).", "Auto-Run: Guarda ajustes (ej. 'Sin Niebla').", "Solo Farm: Botones para farmeo solitario.", "Reglas: Ver reglas del servidor."],
-                                fr: ["Taux Serveur : Affichage des multiplicateurs actuels.", "Liens Rapides : Ouvrir Vote, Discord, Dododex & Site.", "Performance : Désactiver Brouillard/Nuages (Boost FPS).", "Auto-Run : Sauvegarder paramètres (ex. 'Sans Brouillard').", "Solo Farm : Boutons pour farm solo.", "Règles : Voir les règles du serveur."]
-                            }
-                        },
-                        {
-                            title: { de: "Wegweiser & Navigation", en: "Waypoints & Navigation", es: "Puntos de Ruta y Navegación", fr: "Points de Repère et Navigation" },
-                            icon: "fa-map-location-dot",
-                            images: ['https://i.postimg.cc/dtbsM8ps/image.png'],
-                            body_p: "",
-                            list: {
-                                de: ["Auto-Marker: Setze automatisch passende Wegweiser für die aktuelle Karte.", "Marktplatz: Finde Händler und Community-Orte.", "Abenteuer: Zeigt Cave-Eingänge, Artefakte und öffentliche Orte auf ASA Karten an."],
-                                en: ["Auto-Marker: Automatically set suitable waypoints for the current map.", "Marketplace: Find traders and community spots.", "Adventure: Shows cave entrances, artifacts, and public spots on ASA maps."],
-                                es: ["Auto-Marcador: Pone puntos de ruta automáticos.", "Mercado: Encuentra comerciantes y lugares comunitarios.", "Aventura: Muestra entradas a cuevas y artefactos."],
-                                fr: ["Auto-Marqueur : Placez automatiquement des points de repère.", "Marché : Trouvez commerçants et lieux communautaires.", "Aventure : Affiche entrées de grottes et artéfacts."]
-                            }
-                        },
-                        {
-                            title: { de: "Custom Rüstungsanzeige", en: "Custom Armor HUD", es: "HUD de Armadura Personalizado", fr: "HUD d'Armure Personnalisé" },
-                            icon: "fa-shield-halved",
-                            images: ['https://i.postimg.cc/KzmTZXqD/image-1.webp'],
-                            body_p: { de: "Wir haben die Standard Tek-Anzeige ersetzt!", en: "We replaced the standard Tek display!", es: "¡Reemplazamos la pantalla Tek estándar!", fr: "Nous avons remplacé l'affichage Tek standard !" },
-                            list: {
-                                de: ["Sichtbare Haltbarkeitsanzeige.", "Dynamische Rot-Färbung bei Beschädigung.", "Unterstützung für Schilde und Tek-Aufladungen.", "Kann über das Radial-Menü ein-/ausgeblendet werden."],
-                                en: ["Visible durability indicator.", "Dynamic red coloring when damaged.", "Support for shields and Tek charges.", "Can be toggled via Radial Menu."],
-                                es: ["Indicador de durabilidad visible.", "Color rojo dinámico al dañarse.", "Soporte para escudos y cargas Tek.", "Se puede alternar vía Menú Radial."],
-                                fr: ["Indicateur de durabilité visible.", "Coloration rouge dynamique si endommagé.", "Support pour boucliers et charges Tek.", "Peut être basculé via Menu Radial."]
-                            }
-                        },
-                        {
-                            title: { de: "Ingame Regelwerk", en: "Ingame Rules", es: "Reglas del Juego", fr: "Règles en Jeu" },
-                            icon: "fa-book-open",
-                            images: ['https://i.postimg.cc/7ZnnMfKs/image.png'],
-                            body_p: { de: "Keine Ausreden mehr!", en: "No more excuses!", es: "¡No más excusas!", fr: "Plus d'excuses !" },
-                            list: {
-                                de: ["Öffne das komplette Server-Regelwerk direkt im Spiel.", "Über den Button oben links in der IOP UI."],
-                                en: ["Open the complete server rules directly in-game.", "Via the button top-left in the IOP UI."],
-                                es: ["Abre las reglas completas directamente en el juego.", "Botón arriba a la izquierda en la UI."],
-                                fr: ["Ouvrez les règles complètes directement en jeu.", "Via le bouton en haut à gauche de l'UI."]
-                            }
-                        },
-                        {
-                            title: { de: "Lost & Found", en: "Lost & Found", es: "Objetos Perdidos", fr: "Objets Trouvés" },
-                            icon: "fa-magnifying-glass",
-                            images: ['https://i.postimg.cc/fL2H7JRn/image.png'],
-                            body_p: { de: "Etwas verloren oder gefunden? Melde es direkt!", en: "Lost or found something? Report it directly!", es: "¿Perdiste o encontraste algo? ¡Repórtalo!", fr: "Perdu ou trouvé quelque chose ? Signalez-le !" },
-                            list: {
-                                de: ["Klicke auf die Lupe im Radial-Menü.", "Fülle das Formular aus.", "Sendet automatisch Koordinaten an unser Team in den Discord."],
-                                en: ["Click the magnifier in the Radial Menu.", "Fill out the form.", "Automatically sends coordinates to our team in Discord."],
-                                es: ["Clic en la lupa del Menú Radial.", "Llena el formulario.", "Envía coordenadas automáticamente a Discord."],
-                                fr: ["Cliquez sur la loupe du Menu Radial.", "Remplissez le formulaire.", "Envoie automatiquement les coordonnées sur Discord."]
-                            }
-                        },
-                        {
-                            title: { de: "Cluster Bewertung", en: "Cluster Rating", es: "Calificación del Clúster", fr: "Évaluation du Cluster" },
-                            icon: "fa-star",
-                            images: ['https://i.postimg.cc/y84LTqs0/image.png'],
-                            body_p: { de: "Dein Feedback hilft uns!", en: "Your feedback helps us!", es: "¡Tu opinión nos ayuda!", fr: "Vos commentaires nous aident !" },
-                            list: {
-                                de: ["Bewerte verschiedene Aspekte des Servers direkt Ingame.", "Hinterlasse Kommentare.", "Wird direkt in den Discord Server-Review Kanal gesendet."],
-                                en: ["Rate various aspects of the server directly in-game.", "Leave comments.", "Sent directly to the Discord Server-Review channel."],
-                                es: ["Califica aspectos del servidor en el juego.", "Deja comentarios.", "Enviado directo al canal de reseñas de Discord."],
-                                fr: ["Évaluez divers aspects du serveur en jeu.", "Laissez des commentaires.", "Envoyé directement au canal Discord."]
-                            }
-                        }
-                    ]
-                },
-                radial: {
-                    info: { de: "Zugriff auf wichtige Funktionen direkt über das Radial-Menü (langes Drücken der Reload-Taste 'R' / Konsole 'X' oder 'Viereck').", en: "Access important functions via Radial Menu (hold Reload 'R' / Console 'X' or 'Square').", es: "Acceso vía Menú Radial (mantener Recarga 'R' / Consola 'X' o 'Cuadrado').", fr: "Accès via Menu Radial (maintenir Recharger 'R' / Console 'X' ou 'Carré')." },
-                    cards: [
-                        {
-                            title: { de: "Funktions-Paket", en: "Feature Pack", es: "Paquete de Funciones", fr: "Pack de Fonctionnalités" },
-                            icon: "fa-circle-notch",
-                            images: ['https://i.postimg.cc/QdT2gv8D/Radial-Menu-IOP.webp'],
-                            body_p: "",
-                            list: {
-                                de: ["Dead Bodies: Finde deine Leichen und Item-Beutel.", "Note Tracker: Aktiviere 3D-Pfeile, die dich zu Explorer Notes führen.", "Questbook: Direktzugriff auf das Questbuch.", "Favoriten: Markiere Befehle mit einem Stern, um sie ins Hauptmenü zu pinnen."],
-                                en: ["Dead Bodies: Find your corpses and item bags.", "Note Tracker: Activate 3D arrows guiding you to Explorer Notes.", "Questbook: Direct access to the Questbook.", "Favorites: Star commands to pin them to the main menu."],
-                                es: ["Cuerpos: Encuentra tus cadáveres y bolsas.", "Rastreador: Flechas 3D hacia Notas de Explorador.", "Libro de Misiones: Acceso directo.", "Favoritos: Marca comandos para fijarlos."],
-                                fr: ["Corps : Trouvez vos cadavres et sacs.", "Traceur : Flèches 3D vers les Notes d'Explorateur.", "Livre de Quêtes : Accès direct.", "Favoris : Épinglez des commandes au menu principal."]
-                            }
-                        }
-                    ]
-                },
-                system: {
-                    cards: [
-                        {
-                            title: { de: "Überarbeitetes Pause-Menü", en: "Revamped Pause Menu", es: "Menú de Pausa Renovado", fr: "Menu Pause Révisé" },
-                            icon: "fa-pause",
-                            images: ['https://i.postimg.cc/L4GcGbm6/image.png'],
-                            body_p: "",
-                            list: {
-                                de: ["ID-Fenster (Rechts): Zeigt alle wichtigen IDs für Support-Tickets.", "Shortcuts: Buttons für IOP Ui und Support Shop.", "Exit Button: Rot eingefärbt zur besseren Sichtbarkeit.", "QR Codes: Für Konsolenspieler (Website/Discord via Handy öffnen)."],
-                                en: ["ID Window (Right): Shows all important IDs for support tickets.", "Shortcuts: Buttons for IOP UI and Support Shop.", "Exit Button: Colored red for better visibility.", "QR Codes: For console players (open Website/Discord via phone)."],
-                                es: ["Ventana ID (Der.): IDs importantes para soporte.", "Atajos: Botones para UI IOP y Tienda.", "Botón Salir: Rojo para mejor visibilidad.", "Códigos QR: Para jugadores de consola."],
-                                fr: ["Fenêtre ID (Droite) : Affiche les ID pour le support.", "Raccourcis : Boutons pour UI IOP et Boutique.", "Bouton Quitter : Rouge pour visibilité.", "QR Codes : Pour joueurs console."]
-                            }
-                        }
-                    ]
-                },
-                items: {
-                    cards: [
-                        {
-                            title: { de: "IOP Propagator (Beta)", en: "IOP Propagator (Beta)", es: "IOP Propagator (Beta)", fr: "IOP Propagator (Bêta)" },
-                            icon: "fa-dna",
-                            images: ['https://i.postimg.cc/xTBJnq78/1.png', 'https://i.postimg.cc/xd2XNh92/2.png', 'https://i.postimg.cc/HL9VwzL2/3.png', 'https://i.postimg.cc/DZfmBGWx/4.png'],
-                            body_p: { de: "Optimiertes Breeding mit Balancing!", en: "Optimized breeding with balancing!", es: "¡Crianza optimizada y equilibrada!", fr: "Élevage optimisé et équilibré !" },
-                            list: {
-                                de: ["Breeding Impuls: Sofort/Instant, 0 Element Kosten.", "Traits & Stats: Berücksichtigt Gene, Farben und Mutations-Boosts.", "Cooldown: 30 Min. nach Breeding (im Tooltip sichtbar).", "Details: 50 Slots (bis 300), Lvl 100, 1 Ele/h, 1x pro Map.", "Achtung: Keine Reaper/Achatina. Nur PCS Cryos."],
-                                en: ["Breeding Impulse: Instant, 0 Element cost.", "Traits & Stats: Accounts for genes, colors, and mutation boosts.", "Cooldown: 30 min after breeding (visible in tooltip).", "Details: 50 slots (up to 300), Lvl 100, 1 Ele/h, 1x per map.", "Attention: No Reapers/Achatina. PCS Cryos only."],
-                                es: ["Impulso de Crianza: Instantáneo, coste 0 Elemento.", "Rasgos: Considera genes, colores y mutaciones.", "Enfriamiento: 30 min tras criar.", "Detalles: 50 ranuras, Nvl 100, 1 Ele/h, 1x mapa.", "Atención: No Reapers/Achatina. Solo PCS Cryos."],
-                                fr: ["Impulsion d'Élevage : Instantané, coût 0 Élément.", "Traits : Prend en compte gènes, couleurs et mutations.", "Recharge : 30 min après élevage.", "Détails : 50 emplacements, Niv 100, 1 Ele/h, 1x carte.", "Attention : Pas de Reapers/Achatina. Cryos PCS uniquement."]
-                            }
-                        },
-                        {
-                            title: { de: "IOP Kreaturen Schrumpfer", en: "IOP Creature Shrinker", es: "Reductor de Criaturas IOP", fr: "Réducteur de Créatures IOP" },
-                            icon: "fa-compress",
-                            images: ['https://i.postimg.cc/HnqYD8xx/1.png', 'https://i.postimg.cc/4xTfWcq5/2.png'],
-                            body_p: { de: "Mach deine Dinos klein!", en: "Make your dinos small!", es: "¡Haz pequeños a tus dinos!", fr: "Rendez vos dinos petits !" },
-                            list: {
-                                de: ["Effekt: -50% Größe.", "Debuff: 0 Schaden Output, -50% Movement Speed.", "Ausnahmen: Bosse, Titanen, Babies, Oasis, Plattform-Sattel (muss ab).", "Kosten: 1 Stroh (Lvl 1)."],
-                                en: ["Effect: -50% size.", "Debuff: 0 Damage Output, -50% Movement Speed.", "Exceptions: Bosses, Titans, Babies, Oasis, Platform Saddles (must be removed).", "Cost: 1 Thatch (Lvl 1)."],
-                                es: ["Efecto: -50% tamaño.", "Debuff: 0 Daño, -50% Velocidad.", "Excepciones: Jefes, Titanes, Bebés, Oasis, Monturas Plataforma.", "Coste: 1 Paja (Nvl 1)."],
-                                fr: ["Effet : -50% taille.", "Malus : 0 Dégâts, -50% Vitesse.", "Exceptions : Boss, Titans, Bébés, Oasis, Selles Plateforme.", "Coût : 1 Branchage (Niv 1)."]
-                            }
-                        },
-                        {
-                            title: { de: "IOP Potions", en: "IOP Potions", es: "Pociones IOP", fr: "Potions IOP" },
-                            icon: "fa-flask",
-                            isPlaceholder: true,
-                            images: ['https://i.postimg.cc/CKzQDP7H/image.png'],
-                            body_p: { de: "Gaia Vervollständigung: Neue Tränke für Zucht & Crafting.", en: "Gaia Completion: New potions for breeding & crafting.", es: "Nuevas pociones para crianza y fabricación.", fr: "Nouvelles potions pour l'élevage et l'artisanat." },
-                            list: {
-                                de: ["Imprint: 100% Imprint auf dich (Dino Inventar).", "Taming: Setzt Hunger auf 0 (Dino Inventar).", "Wake Up: Setzt Torpor auf 20 (Dino Inventar).", "Crafting: 10 Min. max Crafting Skill (Spieler)."],
-                                en: ["Imprint: 100% Imprint to you (Dino Inventory).", "Taming: Sets hunger to 0 (Dino Inventory).", "Wake Up: Sets torpor to 20 (Dino Inventory).", "Crafting: 10 min max Crafting Skill (Player)."],
-                                es: ["Impronta: 100% Impronta a ti (Inventario Dino).", "Tameo: Hambre a 0.", "Despertar: Torpor a 20.", "Fabricación: 10 min hab. máx (Jugador)."],
-                                fr: ["Empreinte : 100% Empreinte sur vous (Inv. Dino).", "Taming : Faim à 0.", "Réveil : Torpeur à 20.", "Artisanat : 10 min compétence max (Joueur)."]
-                            }
-                        },
-                        {
-                            title: { de: "Live Maps & IOP Flagge", en: "Live Maps & IOP Flag", es: "Mapas en Vivo y Bandera IOP", fr: "Cartes en Direct et Drapeau IOP" },
-                            icon: "fa-map",
-                            images: ['https://i.postimg.cc/MK9M4d0M/image.png', 'https://i.postimg.cc/nzKM1kcr/image.png'],
-                            body_p: "",
-                            list: {
-                                de: ["Live Positionen: Seht die Live-Positionen aller Spieler auf allen Karten.", "Base Finder: IOP Flaggen zeigen Base-Standorte aller Spieler an.", "Nutzen: Perfekt für Admins, zum Finden freier Bauplätze oder Handelspartner.", "Pflicht: Jede Basis (Haupt, Wasser, Spawn) muss mit Flagge und Schild markiert sein!"],
-                                en: ["Live Positions: See live positions of all players on all maps.", "Base Finder: IOP Flags show base locations of all players.", "Usage: Perfect for Admins, finding free building spots, or trading partners.", "Mandatory: Every base (Main, Water, Spawn) must be marked with Flag and Sign!"],
-                                es: ["Posiciones en Vivo: Ver a todos en todos los mapas.", "Buscador de Bases: Banderas IOP muestran ubicaciones.", "Uso: Ideal para Admins y comercio.", "Obligatorio: ¡Marcar cada base con Bandera y Letrero!"],
-                                fr: ["Positions en Direct : Voir tous les joueurs sur toutes les cartes.", "Chercheur de Base : Les drapeaux IOP montrent les bases.", "Usage : Parfait pour Admins et commerce.", "Obligatoire : Chaque base doit être marquée avec Drapeau et Panneau !"]
-                            }
-                        },
-                        {
-                            title: { de: "IOP Offhand Spyglass", en: "IOP Offhand Spyglass", es: "Catalejo IOP (Mano Izq.)", fr: "Longue-vue IOP (Main Gauche)" },
-                            icon: "fa-glasses",
-                            images: ['https://i.postimg.cc/W3zfG97G/2.png', 'https://i.postimg.cc/SsP1DWTx/1.png'],
-                            body_p: { de: "Ein Tek Spyglass, das deine Hände frei lässt! Ab Level 1.", en: "A Tek Spyglass that leaves your hands free! From Level 1.", es: "¡Catalejo Tek manos libres! Desde Nivel 1.", fr: "Une Longue-vue Tek mains libres ! Dès Niv 1." },
-                            list: {
-                                de: ["Offhand: Funktioniert passiv, Hände bleiben frei für Waffen.", "High-Tech: Präziser Mesh-Scan (erkennt auch Schwanz/Hals) & hohe Render-Reichweite.", "Tracking UI: Markiere Ziele (PC: 'N', Konsole: Taschenlampe).", "Crosshair: Punkt an/aus via Radialmenü."],
-                                en: ["Offhand: Works passively, hands remain free for weapons.", "High-Tech: Precise mesh scan (detects tail/neck) & high render range.", "Tracking UI: Mark targets (PC: 'N', Console: Flashlight).", "Crosshair: Toggle dot via Radial Menu."],
-                                es: ["Mano Izq.: Pasivo, manos libres para armas.", "Alta Tecnología: Escaneo preciso y alto alcance.", "Rastreo: Marcar objetivos.", "Mira: Punto on/off vía menú radial."],
-                                fr: ["Main Gauche : Passif, mains libres pour armes.", "High-Tech : Scan précis et longue portée.", "Suivi : Marquer cibles.", "Viseur : Point on/off via menu radial."]
-                            }
-                        },
-                        {
-                            title: { de: "IOP Kreaturen Einfärbung", en: "IOP Creature Coloring", es: "Coloreado de Criaturas IOP", fr: "Coloration de Créatures IOP" },
-                            icon: "fa-palette",
-                            images: ['https://i.postimg.cc/Vkxsyqvw/image.png'],
-                            body_p: { de: "Individuelle Looks für deine Dinos!", en: "Individual looks for your dinos!", es: "¡Looks únicos para tus dinos!", fr: "Looks uniques pour vos dinos !" },
-                            list: {
-                                de: ["Vorschau-Modus: Teste Farben live am Dino, bevor du dich entscheidest.", "Farb-IDs: Direkt integriert für einfaches Finden.", "Timer: Nach Aktivierung hast du 1 Stunde Zeit zum Testen. Bei Anwendung verbraucht sich das Tool."],
-                                en: ["Preview Mode: Test colors live on the dino before deciding.", "Color IDs: Integrated directly for easy finding.", "Timer: 1 hour testing time after activation. Consumed upon application."],
-                                es: ["Modo Vista Previa: Prueba colores en vivo.", "IDs de Color: Integrados.", "Temporizador: 1 hora de prueba. Se consume al aplicar."],
-                                fr: ["Mode Aperçu : Testez les couleurs en direct.", "IDs Couleur : Intégrés.", "Minuteur : 1 heure de test. Consommé à l'application."]
-                            }
-                        },
-                        {
-                            title: { de: "IOP Unzerstörbare Leuchtpistole", en: "IOP Indestructible Flaregun", es: "Pistola de Bengalas IOP", fr: "Pistolet de Détresse IOP" },
-                            icon: "fa-fire-burner",
-                            images: ['https://i.postimg.cc/gJKkh2Ns/image.png'],
-                            body_p: { de: "Verliere nie wieder deine Freunde!", en: "Never lose your friends again!", es: "¡Nunca pierdas a tus amigos!", fr: "Ne perdez plus vos amis !" },
-                            list: {
-                                de: ["Unzerstörbar: Geht niemals kaputt.", "Zweck: Ideal, um sich gegenseitig auf der Karte zu finden oder Signale zu geben."],
-                                en: ["Indestructible: Never breaks.", "Purpose: Ideal for finding each other on the map or signaling."],
-                                es: ["Indestructible: Nunca se rompe.", "Uso: Ideal para encontrarse o dar señales."],
-                                fr: ["Indestructible : Ne casse jamais.", "Usage : Idéal pour se retrouver ou signaler."]
-                            }
-                        },
-                        {
-                            title: { de: "IOP Cave Tribe Tower", en: "IOP Cave Tribe Tower", es: "Torre de Tribu de Cueva IOP", fr: "Tour de Tribu de Grotte IOP" },
-                            icon: "fa-tower-broadcast",
-                            images: ['https://i.postimg.cc/HLhFhDjY/image.png'],
-                            body_p: { de: "Für Höhlen und Spawnbasen optimiert!", en: "Optimized for caves and spawn bases!", es: "¡Optimizado para cuevas!", fr: "Optimisé pour grottes !" },
-                            list: {
-                                de: ["Größe: 50% kleiner als der normale Tribe Tower.", "Indoor: Benötigt keinen freien Himmel, kann in Höhlen aufgestellt werden.", "Austausch: Bitte ersetzt bestehende Türme in Höhlen mit dieser Variante."],
-                                en: ["Size: 50% smaller than the normal Tribe Tower.", "Indoor: Requires no open sky, can be placed in caves.", "Replacement: Please replace existing towers in caves with this variant."],
-                                es: ["Tamaño: 50% más pequeño.", "Interior: No requiere cielo abierto, apto para cuevas.", "Reemplazo: Por favor usen esta variante en cuevas."],
-                                fr: ["Taille : 50% plus petit.", "Intérieur : Pas besoin de ciel ouvert, ok pour grottes.", "Remplacement : Remplacez les tours existantes par celle-ci."]
-                            }
-                        }
-                    ]
-                }
+            en: {
+                subtitle: "In-game Shop, Radial Menu & Tools",
+                search: "Search...",
+                nav: ["Shop", "IOP UI", "Radial Menu", "System & HUD", "QoL+ Items"],
+                shopHighlight: "Crossplay Ready! This Mod & Shop UI are 100% ToS compliant and optimized for all platforms."
+            },
+            es: {
+                subtitle: "Tienda, Menú Radial y Herramientas",
+                search: "Buscar...",
+                nav: ["Tienda", "IOP UI", "Menú Radial", "Sistema y HUD", "Items QoL+"],
+                shopHighlight: "¡Crossplay Listo! Este Mod y UI cumplen 100% con los ToS y están optimizados."
+            },
+            fr: {
+                subtitle: "Boutique, Menu Radial et Outils",
+                search: "Chercher...",
+                nav: ["Boutique", "IOP UI", "Menu Radial", "Système et HUD", "Objets QoL+"],
+                shopHighlight: "Prêt pour le Crossplay ! Ce Mod et l'interface utilisateur sont conformes à 100 % aux ToS."
             }
         };
 
-        // =========================================================================
-        // 2. LOGIC
-        // =========================================================================
-        let currentLang = 'de';
-        let currentSection = 'shop';
+        const features = {
+            shop: [
+                {
+                    title: { de: "Ingame Token Shop", en: "Ingame Token Shop", es: "Tienda de Fichas", fr: "Boutique de Jetons" },
+                    icon: "fa-store",
+                    img: "https://i.postimg.cc/0jwZ41BR/image.png",
+                    list: {
+                        de: ["Direkt im Spiel nutzen über F3 oder Radial Menü.", "Live-Synchronisation mit deinem Web-Profil.", "Sichere Transaktionen nach offiziellen Standards."],
+                        en: ["Use directly in-game via F3 or Radial Menu.", "Live sync with your web profile.", "Secure transactions according to official standards."],
+                        es: ["Uso directo en el juego mediante F3 o menú radial.", "Sincronización en vivo con tu perfil web.", "Transacciones seguras."],
+                        fr: ["Utilisation directe en jeu via F3 ou Menu Radial.", "Synchro en direct avec votre profil web.", "Transactions sécurisées."]
+                    }
+                }
+            ],
+            iopui: [
+                {
+                    title: { de: "IOP User Interface", en: "IOP User Interface", es: "Interfaz de Usuario IOP", fr: "Interface Utilisateur IOP" },
+                    icon: "fa-sliders",
+                    img: "https://i.postimg.cc/vmXXMc9t/image.png",
+                    list: {
+                        de: ["Live Server Raten Anzeige.", "Quick-Links zu Discord, Wiki & Support.", "Performance-Settings (Nebel/Wolken aus).", "Auto-Run & Kamera-Optionen.", "Solo Farm Integration."],
+                        en: ["Live Server Rates display.", "Quick links to Discord, Wiki & Support.", "Performance settings (Fog/Clouds off).", "Auto-Run & Camera options.", "Solo Farm Integration."],
+                        es: ["Visualización de tasas del servidor en vivo.", "Enlaces rápidos a Discord, Wiki y Soporte.", "Ajustes de rendimiento.", "Solo Farm Integración."],
+                        fr: ["Affichage des taux du serveur en direct.", "Liens rapides vers Discord, Wiki et Support.", "Réglages de performance.", "Solo Farm Intégration."]
+                    }
+                },
+                {
+                    title: { de: "Wegweiser & Navigation", en: "Waypoints & Navigation", es: "Puntos de Ruta y Navegación", fr: "Points de Repère" },
+                    icon: "fa-map-location-dot",
+                    img: "https://i.postimg.cc/dtbsM8ps/image.png",
+                    list: {
+                        de: ["Auto-Marker für aktuelle Karten.", "Marktplatz-Finder für Händler.", "Zeigt Cave-Eingänge und Artefakte."],
+                        en: ["Auto-marker for current maps.", "Marketplace finder for traders.", "Shows cave entrances and artifacts."],
+                        es: ["Auto-Marcador para mapas.", "Buscador de mercado.", "Muestra entradas de cuevas."],
+                        fr: ["Auto-marqueur de cartes.", "Chercheur de marché.", "Affiche les entrées de grottes."]
+                    }
+                },
+                {
+                    title: { de: "Custom Rüstungsanzeige", en: "Custom Armor HUD", es: "HUD de Armadura", fr: "HUD d'Armure" },
+                    icon: "fa-shield-halved",
+                    img: "https://i.postimg.cc/KzmTZXqD/image-1.webp",
+                    list: {
+                        de: ["Ersetzt die Standard Tek-Anzeige.", "Haltbarkeitsbalken für alle Teile.", "Farbwarnung bei kritischem Status."],
+                        en: ["Replaces standard Tek display.", "Durability bars for all pieces.", "Color warning for critical status."],
+                        es: ["Reemplaza la pantalla Tek estándar.", "Barras de durabilidad.", "Advertencia de color."],
+                        fr: ["Remplace l'affichage Tek standard.", "Barres de durabilité.", "Alerte de couleur."]
+                    }
+                },
+                {
+                    title: { de: "Ingame Regelwerk", en: "Ingame Rules", es: "Reglas del Juego", fr: "Règles en Jeu" },
+                    icon: "fa-book-open",
+                    img: "https://i.postimg.cc/7ZnnMfKs/image.png",
+                    list: {
+                        de: ["Alle Regeln direkt im Spiel lesen.", "Einfacher Zugriff über die UI."],
+                        en: ["Read all rules directly in-game.", "Easy access via the UI."],
+                        es: ["Lee todas las reglas en el juego.", "Acceso fácil vía UI."],
+                        fr: ["Lire les règles en jeu.", "Accès facile via l'UI."]
+                    }
+                },
+                {
+                    title: { de: "Lost & Found / Support", en: "Lost & Found / Support", es: "Soporte", fr: "Support" },
+                    icon: "fa-magnifying-glass",
+                    img: "https://i.postimg.cc/fL2H7JRn/image.png",
+                    list: {
+                        de: ["Melde verlorene Items oder Dinos.", "Automatische Koordinatenübermittlung."],
+                        en: ["Report lost items or dinos.", "Automatic coordinate transmission."],
+                        es: ["Reporta objetos perdidos.", "Transmisión de coordenadas."],
+                        fr: ["Signaler objets perdus.", "Transmission de coordonnées."]
+                    }
+                },
+                {
+                    title: { de: "Cluster Bewertung", en: "Cluster Rating", es: "Valoración", fr: "Évaluation" },
+                    icon: "fa-star",
+                    img: "https://i.postimg.cc/y84LTqs0/image.png",
+                    list: {
+                        de: ["Bewerte den Server direkt ingame.", "Feedback-System für Spieler."],
+                        en: ["Rate the server in-game.", "Feedback system for players."],
+                        es: ["Valora el servidor en el juego.", "Sistema de feedback."],
+                        fr: ["Évaluez le serveur en jeu.", "Système de feedback."]
+                    }
+                }
+            ],
+            radial: [
+                {
+                    title: { de: "Erweitertes Radial Menü", en: "Enhanced Radial Menu", es: "Menú Radial Mejorado", fr: "Menu Radial Amélioré" },
+                    icon: "fa-circle-notch",
+                    img: "https://i.postimg.cc/QdT2gv8D/Radial-Menu-IOP.webp",
+                    list: {
+                        de: ["Schnellzugriff auf alle Mod-Funktionen.", "Leichen-Finder & Bag-Tracker.", "Explorer Note Tracker (3D Pfeile).", "Favoriten-System für eigene Befehle."],
+                        en: ["Quick access to all mod functions.", "Corpse Finder & Bag Tracker.", "Explorer Note Tracker (3D arrows).", "Favorite system for custom commands."],
+                        es: ["Acceso rápido a funciones del mod.", "Buscador de cadáveres.", "Rastreador de notas.", "Sistema de favoritos."],
+                        fr: ["Accès rapide aux fonctions.", "Localisateur de cadavres.", "Traceur de notes.", "Système de favoris."]
+                    }
+                }
+            ],
+            system: [
+                {
+                    title: { de: "Überarbeitetes Pause-Menü", en: "Revamped Pause Menu", es: "Menú de Pausa Renovado", fr: "Menu Pause Révisé" },
+                    icon: "fa-pause",
+                    img: "https://i.postimg.cc/L4GcGbm6/image.png",
+                    list: {
+                        de: ["Server-IDs für Support direkt sichtbar.", "QR-Codes für Discord & Wiki.", "Integrierte News-Übersicht.", "Button zum Ticket-System."],
+                        en: ["Server IDs for support visible directly.", "QR codes for Discord & Wiki.", "Integrated news overview.", "Button to ticket system."],
+                        es: ["IDs de servidor para soporte.", "Códigos QR para Discord y Wiki.", "Botón directo a tickets."],
+                        fr: ["ID du serveur visibles.", "Codes QR pour Discord.", "Bouton vers tickets."]
+                    }
+                }
+            ],
+            items: [
+                {
+                    title: { de: "IOP Propagator", en: "IOP Propagator", es: "Propagator IOP", fr: "Propagator IOP" },
+                    icon: "fa-dna",
+                    img: "https://i.postimg.cc/xTBJnq78/1.png",
+                    list: {
+                        de: ["Optimiertes Instant-Breeding.", "Übernimmt Mutationen, Gene & Farben.", "Cooldown-Management im UI.", "1x pro Map pro Tribe."],
+                        en: ["Optimized instant breeding.", "Inherits mutations, genes & colors.", "Cooldown management in UI.", "1x per map per tribe."],
+                        es: ["Crianza instantánea.", "Hereda mutaciones y genes.", "Gestión de enfriamiento."],
+                        fr: ["Élevage instantané.", "Hérite des mutations et gènes.", "Gestion du temps de recharge."]
+                    }
+                },
+                {
+                    title: { de: "IOP Kreaturen Schrumpfer", en: "IOP Creature Shrinker", es: "Reductor de Criaturas", fr: "Réducteur de Créatures" },
+                    icon: "fa-compress",
+                    img: "https://i.postimg.cc/HnqYD8xx/1.png",
+                    list: {
+                        de: ["Dinos um 50% verkleinern.", "Kein Schadenoutput in Miniform.", "Ideal für Basen mit wenig Platz."],
+                        en: ["Shrink dinos by 50%.", "No damage output in mini-form.", "Ideal for compact bases."],
+                        es: ["Dinos 50% más pequeños.", "Sin daño en forma mini.", "Ideal para bases pequeñas."],
+                        fr: ["Dinos 50% plus petits.", "Pas de dégâts en mode mini.", "Idéal pour petites bases."]
+                    }
+                },
+                {
+                    title: { de: "IOP Potions", en: "IOP Potions", es: "Pociones IOP", fr: "Potions IOP" },
+                    icon: "fa-flask",
+                    img: "https://i.postimg.cc/CKzQDP7H/image.png",
+                    list: {
+                        de: ["Imprint, Taming, Wake-Up & Crafting Potions.", "Unterstützt durch die Gaia-Mod.", "Direkt im Inventar anwendbar."],
+                        en: ["Imprint, Taming, Wake-Up & Crafting Potions.", "Supported by Gaia mod.", "Usable directly in inventory."],
+                        es: ["Pociones de impronta, tameo, etc.", "Soporte para mod Gaia.", "Uso en inventario."],
+                        fr: ["Potions d'empreinte, taming, etc.", "Support pour mod Gaia.", "Utilisation en inventaire."]
+                    }
+                },
+                {
+                    title: { de: "Live Maps & Flaggen", en: "Live Maps & Flags", es: "Mapas y Banderas", fr: "Cartes et Drapeaux" },
+                    icon: "fa-map",
+                    img: "https://i.postimg.cc/MK9M4d0M/image.png",
+                    list: {
+                        de: ["Live Positionen aller Spieler (Web & Ingame).", "IOP Flaggen zeigen Basen-Standorte.", "Wichtig: Jede Basis muss markiert sein."],
+                        en: ["Live positions of all players.", "IOP Flags show base locations.", "Note: Every base must be marked."],
+                        es: ["Posiciones en vivo de jugadores.", "Banderas muestran bases.", "Toda base debe marcarse."],
+                        fr: ["Positions en direct.", "Drapeaux montrent les bases.", "Chaque base doit être marquée."]
+                    }
+                },
+                {
+                    title: { de: "Offhand Spyglass", en: "Offhand Spyglass", es: "Catalejo de Mano", fr: "Longue-vue de Main" },
+                    icon: "fa-glasses",
+                    img: "https://i.postimg.cc/W3zfG97G/2.png",
+                    list: {
+                        de: ["Passives Spyglass (Hände frei).", "Detaillierte Stat- & Gen-Analyse.", "Integrierter Target-Tracker.", "Punkt-Visier optional."],
+                        en: ["Passive spyglass (hands free).", "Detailed stat & gene analysis.", "Integrated target tracker.", "Optional crosshair dot."],
+                        es: ["Catalejo pasivo.", "Análisis de stats y genes.", "Rastreador de objetivos.", "Mira opcional."],
+                        fr: ["Longue-vue passive.", "Analyse des stats et gènes.", "Traceur de cible.", "Viseur optionnel."]
+                    }
+                },
+                {
+                    title: { de: "Kreaturen Einfärbung", en: "Creature Coloring", es: "Color de Criatura", fr: "Couleur Créature" },
+                    icon: "fa-palette",
+                    img: "https://i.postimg.cc/Vkxsyqvw/image.png",
+                    list: {
+                        de: ["Individuelle Farben für Dinos.", "Vorschau-Modus vor Anwendung.", "Nutzt Standard Ark Farb-IDs."],
+                        en: ["Individual colors for dinos.", "Preview mode before applying.", "Uses standard Ark color IDs."],
+                        es: ["Colores únicos.", "Modo vista previa.", "Usa IDs de color de Ark."],
+                        fr: ["Couleurs uniques.", "Mode aperçu.", "Utilise les ID couleur d'Ark."]
+                    }
+                },
+                {
+                    title: { de: "Unzerstörbare Leuchtpistole", en: "Indestructible Flaregun", es: "Pistola de Bengalas", fr: "Pistolet de Détresse" },
+                    icon: "fa-fire-burner",
+                    img: "https://i.postimg.cc/gJKkh2Ns/image.png",
+                    list: {
+                        de: ["Geht niemals kaputt.", "Ideal zum Markieren von Orten oder Signalisieren an Freunde."],
+                        en: ["Never breaks.", "Ideal for marking locations or signaling friends."],
+                        es: ["Nunca se rompe.", "Ideal para marcar lugares."],
+                        fr: ["Ne casse jamais.", "Idéal pour marquer des lieux."]
+                    }
+                },
+                {
+                    title: { de: "IOP Cave Tribe Tower", en: "IOP Cave Tribe Tower", es: "Torre de Tribu", fr: "Tour de Tribu" },
+                    icon: "fa-tower-broadcast",
+                    img: "https://i.postimg.cc/HLhFhDjY/image.png",
+                    list: {
+                        de: ["50% kleiner als das Original.", "Benötigt keinen freien Himmel (Indoors nutzbar).", "Ideal für Höhlen-Basen."],
+                        en: ["50% smaller than the original.", "Requires no open sky (Indoor use).", "Ideal for cave bases."],
+                        es: ["50% más pequeña.", "Uso en interiores.", "Ideal para bases en cuevas."],
+                        fr: ["50% plus petite.", "Utilisation en intérieur.", "Idéal pour les grottes."]
+                    }
+                }
+            ]
+        };
+
+        let currentLanguage = 'de';
+        let activeTab = 'shop';
 
         function setLang(lang) {
-            currentLang = lang;
+            currentLanguage = lang;
+            const l = translations[lang];
+            
             document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
             document.getElementById('btn-' + lang).classList.add('active');
-            
-            renderUI();
+            document.getElementById('uiSubtitle').innerText = l.subtitle;
+            document.getElementById('searchInput').placeholder = l.search;
+
+            renderNav();
+            renderContent();
         }
 
-        function renderUI() {
-            // Static Header
-            document.getElementById('uiSubtitle').innerText = translations.subtitle[currentLang];
-
-            // Nav Tabs
+        function renderNav() {
             const navContainer = document.getElementById('navContainer');
             navContainer.innerHTML = '';
-            
-            const tabs = ['shop', 'iopui', 'radial', 'system', 'items'];
+            const keys = ['shop', 'iopui', 'radial', 'system', 'items'];
             const icons = ['fa-cart-shopping', 'fa-sliders', 'fa-circle-notch', 'fa-desktop', 'fa-box-open'];
             
-            tabs.forEach((tab, index) => {
+            keys.forEach((key, index) => {
                 const div = document.createElement('div');
-                div.className = `nav-tab ${tab === currentSection ? 'active' : ''}`;
-                div.innerHTML = `<i class="fa-solid ${icons[index]}"></i> ${translations.nav[tab][currentLang]}`;
-                div.onclick = () => { currentSection = tab; renderUI(); };
+                div.className = `nav-tab ${activeTab === key ? 'active' : ''}`;
+                div.innerHTML = `<i class="fa-solid ${icons[index]}"></i> ${translations[currentLanguage].nav[index]}`;
+                div.onclick = () => { activeTab = key; renderNav(); renderContent(); };
                 navContainer.appendChild(div);
             });
+        }
 
-            // Content
-            const contentContainer = document.getElementById('contentContainer');
-            contentContainer.innerHTML = '';
-            
-            const sectionData = translations.sections[currentSection];
-            
-            // Highlight Box (Shop Only)
-            if (sectionData.highlight) {
+        function renderContent() {
+            const container = document.getElementById('contentContainer');
+            const lang = currentLanguage;
+            const l = translations[lang];
+            container.innerHTML = '';
+
+            const sectionData = features[activeTab];
+
+            // Haupt-Wrapper für Animation
+            const sectionWrapper = document.createElement('div');
+            sectionWrapper.className = 'section active';
+
+            if (activeTab === 'shop') {
                 const hb = document.createElement('div');
-                hb.className = 'highlight-box';
-                hb.innerHTML = sectionData.highlight[currentLang];
-                contentContainer.appendChild(hb);
+                hb.className = 'highlight-box searchable';
+                hb.innerHTML = `<strong>INFO:</strong> ${l.shopHighlight}`;
+                sectionWrapper.appendChild(hb);
             }
 
-            // Info Box (Radial Only)
-            if (sectionData.info) {
-                const ib = document.createElement('div');
-                ib.style.cssText = "margin-bottom: 20px; text-align: center; background-color: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px;";
-                ib.innerHTML = `<p style="color: #ccc;">${sectionData.info[currentLang]}</p>`;
-                contentContainer.appendChild(ib);
-            }
-
-            // Cards Grid
             const grid = document.createElement('div');
             grid.className = 'feature-grid';
-            
-            sectionData.cards.forEach(card => {
-                const cDiv = document.createElement('div');
-                cDiv.className = 'feature-card';
+
+            sectionData.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'feature-card searchable';
                 
-                // Image or Placeholder
-                let imgHTML = '';
-                if (card.isPlaceholder) {
-                    imgHTML = `
-                    <div class="card-img-placeholder" onclick="openGallery(['${card.images.join("','")}'])">
-                        <i class="fa-solid ${card.icon}"></i>
-                    </div>`;
-                } else {
-                    const imgCount = card.images.length;
-                    const hintIcon = imgCount > 1 ? 'fa-images' : (card.title.en === "IOP User Interface" ? 'fa-magnifying-glass-plus' : 'fa-magnifying-glass-plus');
-                    const hintText = imgCount > 1 ? `${imgCount} ${translations.view_imgs[currentLang]}` : translations.zoom[currentLang];
-                    
-                    imgHTML = `
-                    <div class="card-img-container" onclick="openGallery(['${card.images.join("','")}'])">
-                        <img src="${card.images[0]}" alt="${card.title.en}">
-                        <div class="zoom-hint"><i class="fa-solid ${hintIcon}"></i> ${hintText}</div>
-                    </div>`;
-                }
-
-                // Body Text (Optional)
-                let bodyP = "";
-                if(card.body_p && typeof card.body_p === 'object') {
-                    bodyP = `<p>${card.body_p[currentLang]}</p>`;
-                }
-
-                // List
-                const listItems = card.list[currentLang].map(li => `<li>${li}</li>`).join('');
-
-                cDiv.innerHTML = `
-                    ${imgHTML}
-                    <div class="card-header-row">
-                        <i class="fa-solid ${card.icon} card-icon"></i>
-                        <h3 class="card-title">${card.title[currentLang]}</h3>
+                card.innerHTML = `
+                    <div class="card-img-container" onclick="openModal('${item.img}')">
+                        <img src="${item.img}" alt="Image">
                     </div>
-                    <div class="card-body">
-                        ${bodyP}
-                        <ul class="feature-list">${listItems}</ul>
+                    <div class="card-content">
+                        <div class="card-title-row">
+                            <i class="fa-solid ${item.icon}"></i>
+                            <h3 class="card-title">${item.title[lang]}</h3>
+                        </div>
+                        <div class="card-body">
+                            <ul class="feature-list">
+                                ${item.list[lang].map(point => `<li>${point}</li>`).join('')}
+                            </ul>
+                        </div>
                     </div>
                 `;
-                grid.appendChild(cDiv);
-            });
-            contentContainer.appendChild(grid);
-        }
-
-        // --- MODAL LOGIC (Gallery Support) ---
-        const modal = document.getElementById('imgModal');
-        const modalImgWrapper = document.getElementById('modalImgWrapper');
-        const galleryControls = document.getElementById('galleryControls');
-        let currentImages = [];
-
-        function openGallery(imgSrcArray) {
-            currentImages = imgSrcArray;
-            renderGallery(0);
-            modal.classList.add('active');
-        }
-
-        function renderGallery(activeIndex) {
-            modalImgWrapper.innerHTML = '';
-            galleryControls.innerHTML = '';
-
-            // Render Images
-            currentImages.forEach((src, index) => {
-                const img = document.createElement('img');
-                img.src = src;
-                if (index === activeIndex) img.classList.add('active');
-                modalImgWrapper.appendChild(img);
+                grid.appendChild(card);
             });
 
-            // Render Controls (only if more than 1 image)
-            if (currentImages.length > 1) {
-                galleryControls.style.display = 'flex';
-                currentImages.forEach((_, index) => {
-                    const dot = document.createElement('div');
-                    dot.className = `gallery-dot ${index === activeIndex ? 'active' : ''}`;
-                    dot.onclick = () => renderGallery(index);
-                    galleryControls.appendChild(dot);
-                });
-            } else {
-                galleryControls.style.display = 'none';
-            }
+            sectionWrapper.appendChild(grid);
+            container.appendChild(sectionWrapper);
+        }
+
+        function filterContent() {
+            const input = document.getElementById('searchInput').value.toLowerCase();
+            const items = document.querySelectorAll('.searchable');
+            items.forEach(item => {
+                const text = item.innerText.toLowerCase();
+                item.style.display = text.includes(input) ? '' : 'none';
+            });
+        }
+
+        function openModal(src) {
+            document.getElementById('modalImg').src = src;
+            document.getElementById('imgModal').classList.add('active');
         }
 
         function closeModal() {
-            modal.classList.remove('active');
+            document.getElementById('imgModal').classList.remove('active');
         }
 
-        modal.addEventListener('click', (e) => {
-            if(e.target === modal) closeModal();
-        });
-
-        // Init
-        window.onload = function() {
-            setLang('de');
-        };
+        window.onload = () => setLang('de');
     </script>
 </body>
 </html>
