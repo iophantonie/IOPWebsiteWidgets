@@ -70,6 +70,33 @@
             flex-direction: column;
             align-items: center;
             gap: 10px;
+            position: relative;
+        }
+
+        /* FLAGGEN SWITCHER */
+        .lang-switch {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 5px;
+            z-index: 10;
+        }
+        .lang-btn {
+            width: 25px; height: 16px;
+            cursor: pointer;
+            border-radius: 2px;
+            border: 1px solid #fff;
+            opacity: 0.5;
+            transition: transform 0.2s, opacity 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+            padding: 0;
+            display: block;
+        }
+        .lang-btn:hover, .lang-btn.active {
+            opacity: 1; transform: scale(1.15);
+            border-color: var(--c-gold);
+            z-index: 10;
         }
 
         .title {
@@ -84,6 +111,8 @@
             margin: 0;
             letter-spacing: 2px;
             filter: drop-shadow(0 0 5px rgba(255, 51, 0, 0.5));
+            padding-right: 40px; /* Space for Lang Switch */
+            padding-left: 40px;
         }
 
         .subtitle {
@@ -350,6 +379,12 @@
             .modal-box { flex-direction: column; height: 90vh; }
             .modal-img-wrapper { flex: none; height: 40%; }
         }
+        
+        @media (max-width: 600px) {
+             .title { padding-left: 0; padding-right: 0; font-size: 1.6rem; }
+             .lang-switch { position: relative; top: 0; right: 0; justify-content: center; margin-bottom: 10px; }
+             .nav-tab { padding: 12px 10px; font-size: 0.85rem; }
+        }
     </style>
 </head>
 <body>
@@ -357,23 +392,49 @@
     <div class="paleo-container">
         
         <div class="header">
+            <div class="lang-switch">
+                <svg class="lang-btn active" id="btn-de" onclick="setLang('de')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 5 3">
+                    <rect width="5" height="3" fill="#000"/><rect width="5" height="2" y="1" fill="#D00"/><rect width="5" height="1" y="2" fill="#FFCE00"/>
+                </svg>
+                <svg class="lang-btn" id="btn-en" onclick="setLang('en')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 30">
+                    <clipPath id="s"><path d="M0,0 v30 h60 v-30 z"/></clipPath>
+                    <clipPath id="t"><path d="M30,15 h30 v15 z v15 h-30 z h-30 v-15 z v-15 h30 z"/></clipPath>
+                    <g clip-path="url(#s)">
+                        <path d="M0,0 v30 h60 v-30 z" fill="#012169"/>
+                        <path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/>
+                        <path d="M0,0 L60,30 M60,0 L0,30" clip-path="url(#t)" stroke="#C8102E" stroke-width="4"/>
+                        <path d="M30,0 v30 M0,15 h60" stroke="#fff" stroke-width="10"/>
+                        <path d="M30,0 v30 M0,15 h60" stroke="#C8102E" stroke-width="6"/>
+                    </g>
+                </svg>
+                <svg class="lang-btn" id="btn-es" onclick="setLang('es')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 750 500">
+                    <rect width="750" height="500" fill="#AA151B"/>
+                    <rect width="750" height="250" y="125" fill="#F1BF00"/>
+                </svg>
+                <svg class="lang-btn" id="btn-fr" onclick="setLang('fr')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600">
+                    <rect width="900" height="600" fill="#ED2939"/>
+                    <rect width="600" height="600" fill="#fff"/>
+                    <rect width="300" height="600" fill="#002395"/>
+                </svg>
+            </div>
+
             <h1 class="title">Paleo Ark Guide</h1>
-            <div class="subtitle">Mod-Guide & Kreaturen Übersicht</div>
+            <div class="subtitle" data-lang-key="header_subtitle">Mod-Guide & Kreaturen Übersicht</div>
             
             <div class="search-container">
                 <i class="fa-solid fa-search search-icon"></i>
-                <input type="text" id="searchInput" class="search-input" placeholder="Suche (z.B. Rex, Mosa, Stego)...">
+                <input type="text" id="searchInput" class="search-input" data-lang-key="search_placeholder" placeholder="Suche (z.B. Rex, Mosa, Stego)...">
             </div>
         </div>
 
         <!-- Navigation Tabs -->
         <div class="nav-tabs" id="navTabs">
-            <div class="nav-tab active-info" onclick="showSection('faq', this)"><i class="fa-solid fa-circle-question"></i> Info & FAQ</div>
-            <div class="nav-tab" onclick="showSection('apex', this)"><i class="fa-solid fa-dragon"></i> Apex Predators</div>
-            <div class="nav-tab" onclick="showSection('depths', this)"><i class="fa-solid fa-water"></i> Dangerous Depths</div>
-            <div class="nav-tab" onclick="showSection('herbis', this)"><i class="fa-solid fa-leaf"></i> Hard Hitting Herbis</div>
-            <div class="nav-tab" onclick="showSection('ascension', this)"><i class="fa-solid fa-dna"></i> Ascensions</div>
-            <div class="nav-tab" onclick="showSection('taming', this)"><i class="fa-solid fa-drumstick-bite"></i> Taming</div>
+            <div class="nav-tab active active-info" onclick="showSection('faq', this)" data-lang-key="nav_faq"><i class="fa-solid fa-circle-question"></i> Info & FAQ</div>
+            <div class="nav-tab" onclick="showSection('apex', this)" data-lang-key="nav_apex"><i class="fa-solid fa-dragon"></i> Apex Predators</div>
+            <div class="nav-tab" onclick="showSection('depths', this)" data-lang-key="nav_depths"><i class="fa-solid fa-water"></i> Dangerous Depths</div>
+            <div class="nav-tab" onclick="showSection('herbis', this)" data-lang-key="nav_herbi"><i class="fa-solid fa-leaf"></i> Hard Hitting Herbis</div>
+            <div class="nav-tab" onclick="showSection('ascension', this)" data-lang-key="nav_ascension"><i class="fa-solid fa-dna"></i> Ascensions</div>
+            <div class="nav-tab" onclick="showSection('taming', this)" data-lang-key="nav_taming"><i class="fa-solid fa-drumstick-bite"></i> Taming</div>
         </div>
 
         <div class="content-area" id="contentArea">
@@ -382,24 +443,24 @@
             <div id="faq" class="section non-creature-section active">
                 
                 <div class="info-box">
-                    <h3><i class="fa-solid fa-info-circle"></i> Willkommen bei Paleo Ark</h3>
-                    <p style="color: #ddd; line-height: 1.5;">
+                    <h3><i class="fa-solid fa-info-circle"></i> <span data-lang-key="faq_welcome_title">Willkommen bei Paleo Ark</span></h3>
+                    <p style="color: #ddd; line-height: 1.5;" data-lang-key="faq_welcome_text">
                         Auf Infinity of Phoenix nutzen wir ein spezielles System, um diverse Paleo Mods nahtlos zu integrieren. 
                         Vanilla Varianten werden teilweise ersetzt, aber durch unsere Systeme bleiben alle Optionen spielbar.
                     </p>
                     <div style="margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap;">
-                        <div class="badge badge-boss">
+                        <div class="badge badge-boss" data-lang-key="badge_boss_ready">
                             <i class="fa-solid fa-check"></i> Paleo Rexe: Boss Ready
                         </div>
-                        <div class="badge badge-noboss">
+                        <div class="badge badge-noboss" data-lang-key="badge_no_boss">
                             <i class="fa-solid fa-xmark"></i> Paleo Gigas: Keine Bosse
                         </div>
                     </div>
                 </div>
 
                 <div class="info-box">
-                    <h3><i class="fa-solid fa-gear"></i> Wichtige Mechaniken</h3>
-                    <ul style="line-height: 1.6;">
+                    <h3><i class="fa-solid fa-gear"></i> <span data-lang-key="faq_mechanics_title">Wichtige Mechaniken</span></h3>
+                    <ul style="line-height: 1.6;" data-lang-key="faq_mechanics_list">
                         <li><strong>Tek Cave (Gigas):</strong> Paleo Gigas können "geduckt" den Eingang passieren!</li>
                         <li><strong>Zucht & Taming:</strong> Alle Varianten sind züchtbar und haben eigene Zähmmechaniken.</li>
                         <li><strong>Sattel-Konvertierung:</strong> Paleo & Vanilla Sättel sind im Inventar der Kreatur beliebig umwandelbar.</li>
@@ -410,10 +471,10 @@
                 <!-- Accordion Style Questions -->
                 <div class="faq-item">
                     <div class="faq-question" onclick="toggleFaq(this)">
-                        <span><i class="fa-solid fa-layer-group"></i> Welche Mods sind aktiv?</span>
+                        <span data-lang-key="faq_q1"><i class="fa-solid fa-layer-group"></i> Welche Mods sind aktiv?</span>
                         <i class="fa-solid fa-chevron-down faq-icon"></i>
                     </div>
-                    <div class="faq-answer">
+                    <div class="faq-answer" data-lang-key="faq_a1">
                         <ul style="margin: 0; padding-left: 20px; padding-top: 10px;">
                             <li><strong>Evolution: Apex Predators:</strong> (Rexe, Gigas)</li>
                             <li><strong>Evolution: Dangerous Depths:</strong> (Mosa, Plesio)</li>
@@ -425,10 +486,10 @@
 
                 <div class="faq-item">
                     <div class="faq-question" onclick="toggleFaq(this)">
-                        <span><i class="fa-solid fa-chart-pie"></i> Wie sind die Spawn-Raten verteilt?</span>
+                        <span data-lang-key="faq_q2"><i class="fa-solid fa-chart-pie"></i> Wie sind die Spawn-Raten verteilt?</span>
                         <i class="fa-solid fa-chevron-down faq-icon"></i>
                     </div>
-                    <div class="faq-answer">
+                    <div class="faq-answer" data-lang-key="faq_a2">
                         <p style="margin-top:0;">Die Spawns sind fein abgestimmt, um Abwechslung zu bieten:</p>
                         <ul>
                             <li><strong>10%</strong> der Rexe sind <strong>S-Rexe</strong>.</li>
@@ -443,11 +504,11 @@
 
                 <div class="faq-item">
                     <div class="faq-question" onclick="toggleFaq(this)">
-                        <span><i class="fa-solid fa-dna"></i> Was sind TLCs überhaupt?</span>
+                        <span data-lang-key="faq_q3"><i class="fa-solid fa-dna"></i> Was sind TLCs überhaupt?</span>
                         <i class="fa-solid fa-chevron-down faq-icon"></i>
                     </div>
                     <div class="faq-answer">
-                        <p style="margin:0;">TLCs (Total Learning Conversions) sind komplett überarbeitete Kreaturen, die die Vanilla-Varianten ersetzen. Sie bieten neue Modelle (Meshes), Texturen, Sounds, Animationen und komplett neue Fähigkeiten.</p>
+                        <p style="margin:0;" data-lang-key="faq_a3">TLCs (Total Learning Conversions) sind komplett überarbeitete Kreaturen, die die Vanilla-Varianten ersetzen. Sie bieten neue Modelle (Meshes), Texturen, Sounds, Animationen und komplett neue Fähigkeiten.</p>
                     </div>
                 </div>
 
@@ -455,15 +516,15 @@
 
             <!-- 2. APEX PREDATORS (Rex & Giga) -->
             <div id="apex" class="section creature-section">
-                <div class="group-header" style="color: var(--c-apex);"><i class="fa-solid fa-crown"></i> Tyrannosaurus Arten</div>
+                <div class="group-header" style="color: var(--c-apex);"><i class="fa-solid fa-crown"></i> <span data-lang-key="apex_rex_title">Tyrannosaurus Arten</span></div>
                 <div class="creature-grid">
                     <div class="creature-card type-apex" onclick="openModal(this)">
                         <div class="creature-img-container"><img src="https://i.postimg.cc/vBCYBLcS/rex.png" class="creature-img"></div>
                         <div class="creature-content">
                             <h4 class="creature-name">Evo Tyrannosaurus</h4>
                             <span class="creature-badge badge-apex">Apex Mod</span>
-                            <p class="creature-desc">Das Standard-Upgrade für den Rex. Schneller und gefährlicher als Vanilla.</p>
-                            <ul class="specials-list"><li>Boss Ready</li><li>Friendship Taming</li></ul>
+                            <p class="creature-desc" data-lang-key="desc_evo_rex">Das Standard-Upgrade für den Rex. Schneller und gefährlicher als Vanilla.</p>
+                            <ul class="specials-list" data-lang-key="spec_evo_rex"><li>Boss Ready</li><li>Friendship Taming</li></ul>
                         </div>
                     </div>
                     <div class="creature-card type-apex" onclick="openModal(this)">
@@ -471,8 +532,8 @@
                         <div class="creature-content">
                             <h4 class="creature-name">Paleo Tyrannosaurus</h4>
                             <span class="creature-badge badge-apex">Apex Mod</span>
-                            <p class="creature-desc">Akkurate Urzeit-Darstellung mit Lippen und Federn.</p>
-                            <ul class="specials-list"><li>Boss Ready</li><li>Friendship Taming</li></ul>
+                            <p class="creature-desc" data-lang-key="desc_paleo_rex">Akkurate Urzeit-Darstellung mit Lippen und Federn.</p>
+                            <ul class="specials-list" data-lang-key="spec_paleo_rex"><li>Boss Ready</li><li>Friendship Taming</li></ul>
                         </div>
                     </div>
                     <div class="creature-card type-apex" onclick="openModal(this)">
@@ -480,8 +541,8 @@
                         <div class="creature-content">
                             <h4 class="creature-name">Tarbosaurus</h4>
                             <span class="creature-badge badge-apex">Apex Mod</span>
-                            <p class="creature-desc">Der Wüsten-Cousin des Rex. Immun gegen Hitze und Sandstürme.</p>
-                            <ul class="specials-list"><li>Wüsten-Spawn</li><li>Friendship Taming</li></ul>
+                            <p class="creature-desc" data-lang-key="desc_tarbo">Der Wüsten-Cousin des Rex. Immun gegen Hitze und Sandstürme.</p>
+                            <ul class="specials-list" data-lang-key="spec_tarbo"><li>Wüsten-Spawn</li><li>Friendship Taming</li></ul>
                         </div>
                     </div>
                     <!-- Legacy Rex -->
@@ -490,21 +551,21 @@
                         <div class="creature-content">
                             <h4 class="creature-name">Legacy Rex</h4>
                             <span class="creature-badge badge-apex">Apex Mod</span>
-                            <p class="creature-desc">Eine seltene und mächtige Variante (5% Spawnchance).</p>
-                            <ul class="specials-list"><li>+20% Dmg vs Corrupted</li><li>Sehr schnell & aggressiv</li></ul>
+                            <p class="creature-desc" data-lang-key="desc_legacy_rex">Eine seltene und mächtige Variante (5% Spawnchance).</p>
+                            <ul class="specials-list" data-lang-key="spec_legacy_rex"><li>+20% Dmg vs Corrupted</li><li>Sehr schnell & aggressiv</li></ul>
                         </div>
                     </div>
                 </div>
 
-                <div class="group-header" style="color: var(--c-apex); margin-top: 40px;"><i class="fa-solid fa-skull"></i> Giganotosaurus Arten</div>
+                <div class="group-header" style="color: var(--c-apex); margin-top: 40px;"><i class="fa-solid fa-skull"></i> <span data-lang-key="apex_giga_title">Giganotosaurus Arten</span></div>
                 <div class="creature-grid">
                     <div class="creature-card type-apex" onclick="openModal(this)">
                         <div class="creature-img-container"><img src="https://i.postimg.cc/CKLL6x3J/paleo-ark-evolution-evo-giganotosaurus-by-dracaavis-dh2ce9f-fullview.jpg" class="creature-img"></div>
                         <div class="creature-content">
                             <h4 class="creature-name">Evo Giganotosaurus</h4>
                             <span class="creature-badge badge-apex">Apex Mod</span>
-                            <p class="creature-desc">Rudel-Jäger mit Rage-Mechanik bei Gruppenbildung.</p>
-                            <ul class="specials-list"><li>Passt in Tek Cave</li><li>Challenge Taming</li></ul>
+                            <p class="creature-desc" data-lang-key="desc_evo_giga">Rudel-Jäger mit Rage-Mechanik bei Gruppenbildung.</p>
+                            <ul class="specials-list" data-lang-key="spec_evo_giga"><li>Passt in Tek Cave</li><li>Challenge Taming</li></ul>
                         </div>
                     </div>
                     <div class="creature-card type-apex" onclick="openModal(this)">
@@ -512,8 +573,8 @@
                         <div class="creature-content">
                             <h4 class="creature-name">Wasteland Giga</h4>
                             <span class="creature-badge badge-apex">Apex Mod</span>
-                            <p class="creature-desc">Extinction Exklusiv. Bonus gegen Corrupted Kreaturen.</p>
-                            <ul class="specials-list"><li>Sehr selten</li><li>Challenge Taming</li></ul>
+                            <p class="creature-desc" data-lang-key="desc_waste_giga">Extinction Exklusiv. Bonus gegen Corrupted Kreaturen.</p>
+                            <ul class="specials-list" data-lang-key="spec_waste_giga"><li>Sehr selten</li><li>Challenge Taming</li></ul>
                         </div>
                     </div>
                 </div>
@@ -521,30 +582,30 @@
 
             <!-- 3. DANGEROUS DEPTHS -->
             <div id="depths" class="section creature-section">
-                <div class="group-header" style="color: var(--c-depths);"><i class="fa-solid fa-water"></i> Tiefsee Schrecken</div>
+                <div class="group-header" style="color: var(--c-depths);"><i class="fa-solid fa-water"></i> <span data-lang-key="depths_title">Tiefsee Schrecken</span></div>
                 <div class="creature-grid">
                     <div class="creature-card type-depths" onclick="openModal(this)">
                         <div class="creature-img-container"><img src="https://i.postimg.cc/FKxtFQmH/mosa-2-png.png" class="creature-img"></div>
                         <div class="creature-content">
                             <h4 class="creature-name">Evo Mosasaurus</h4>
                             <span class="creature-badge badge-depths">Depths Mod</span>
-                            <p class="creature-desc">Der wahre Herrscher der Meere. Immun gegen Quallen. Apex Buff gilt auch für Tuso & Shasta.</p>
-                            <ul class="specials-list"><li>Kurzer Landgang</li><li>Knockout Tame</li></ul>
+                            <p class="creature-desc" data-lang-key="desc_evo_mosa">Der wahre Herrscher der Meere. Immun gegen Quallen. Apex Buff gilt auch für Tuso & Shasta.</p>
+                            <ul class="specials-list" data-lang-key="spec_evo_mosa"><li>Kurzer Landgang</li><li>Knockout Tame</li></ul>
                         </div>
                     </div>
                     
                     <!-- Upcoming Info Card -->
                      <div class="info-box" style="grid-column: 1 / -1; border-color: var(--c-depths); margin-top: 10px;">
-                        <h4 style="color: var(--c-depths); margin-top:0;">Zukunftsmusik <i class="fa-solid fa-hourglass-half"></i></h4>
-                        <p style="color: #aaa; margin-bottom: 10px;">Geplante Updates für Dangerous Depths:</p>
+                        <h4 style="color: var(--c-depths); margin-top:0;"><span data-lang-key="upcoming_title">Zukunftsmusik</span> <i class="fa-solid fa-hourglass-half"></i></h4>
+                        <p style="color: #aaa; margin-bottom: 10px;" data-lang-key="upcoming_intro">Geplante Updates für Dangerous Depths:</p>
                         
                         <div style="margin-bottom: 15px;">
-                            <strong style="color: #fff; display:block; margin-bottom:5px;">April 2025:</strong>
+                            <strong style="color: #fff; display:block; margin-bottom:5px;" data-lang-key="upcoming_april">April 2025:</strong>
                             <span class="badge badge-upcoming" style="border-color: var(--c-depths); color: var(--c-depths);">Elasmosaurus (Plesio TLC)</span>
                         </div>
 
                         <div style="margin-bottom: 15px;">
-                            <strong style="color: #fff; display:block; margin-bottom:5px;">Weitere TLCs:</strong>
+                            <strong style="color: #fff; display:block; margin-bottom:5px;" data-lang-key="upcoming_tlcs">Weitere TLCs:</strong>
                             <div style="display: flex; gap: 10px; flex-wrap: wrap; color: #fff;">
                                 <span class="badge badge-upcoming">Megalodon</span>
                                 <span class="badge badge-upcoming">Liopleurodon</span>
@@ -554,11 +615,11 @@
                         </div>
 
                         <div>
-                            <strong style="color: #fff; display:block; margin-bottom:5px;">Features:</strong>
+                            <strong style="color: #fff; display:block; margin-bottom:5px;" data-lang-key="upcoming_features">Features:</strong>
                             <div style="display: flex; gap: 10px; flex-wrap: wrap; color: #fff;">
                                 <span class="badge badge-upcoming">Mosa Tek Saddle</span>
                                 <span class="badge badge-upcoming">Mosa Platform Saddle</span>
-                                <span class="badge badge-upcoming">New Taming Method (Mosa)</span>
+                                <span class="badge badge-upcoming" data-lang-key="badge_new_taming">New Taming Method (Mosa)</span>
                             </div>
                         </div>
                     </div>
@@ -567,7 +628,7 @@
 
             <!-- 4. HARD HITTING HERBIVORES -->
             <div id="herbis" class="section creature-section">
-                <div class="group-header" style="color: var(--c-herbi);"><i class="fa-solid fa-shield-halved"></i> Wehrhafte Pflanzenfresser</div>
+                <div class="group-header" style="color: var(--c-herbi);"><i class="fa-solid fa-shield-halved"></i> <span data-lang-key="herbi_title">Wehrhafte Pflanzenfresser</span></div>
                 <div class="creature-grid">
                     <!-- Paleo Therizino -->
                     <div class="creature-card type-herbi" onclick="openModal(this)">
@@ -577,8 +638,8 @@
                         <div class="creature-content">
                             <h4 class="creature-name">Evo Therizinosaurus</h4>
                             <span class="creature-badge badge-herbi">HHH Mod</span>
-                            <p class="creature-desc">Größer und gefährlicher. Paleo-akkurater Look mit ARK-Flair.</p>
-                            <ul class="specials-list">
+                            <p class="creature-desc" data-lang-key="desc_evo_theri">Größer und gefährlicher. Paleo-akkurater Look mit ARK-Flair.</p>
+                            <ul class="specials-list" data-lang-key="spec_evo_theri">
                                 <li><strong>Sharpen Claws:</strong> 2x Armor Pen (Buff).</li>
                                 <li><strong>Combos:</strong> 180° Swipe & Double Claw.</li>
                                 <li><strong>Utility:</strong> Sitzen & Turn-in-Place.</li>
@@ -588,8 +649,8 @@
                     
                     <!-- Upcoming Info Card -->
                      <div class="info-box" style="grid-column: 1 / -1; border-color: var(--c-herbi); margin-top: 10px;">
-                        <h4 style="color: var(--c-herbi); margin-top:0;">Zukunftsmusik <i class="fa-solid fa-hourglass-half"></i></h4>
-                        <p style="color: #aaa; margin-bottom: 5px;">Folgende Kreaturen wurden für die HHH Mod angekündigt:</p>
+                        <h4 style="color: var(--c-herbi); margin-top:0;"><span data-lang-key="upcoming_title">Zukunftsmusik</span> <i class="fa-solid fa-hourglass-half"></i></h4>
+                        <p style="color: #aaa; margin-bottom: 5px;" data-lang-key="upcoming_intro_herbi">Folgende Kreaturen wurden für die HHH Mod angekündigt:</p>
                         <div style="display: flex; gap: 10px; flex-wrap: wrap; color: #fff;">
                             <span class="badge badge-upcoming">Parasaurolophus</span>
                             <span class="badge badge-upcoming">Ankylosaurus</span>
@@ -604,8 +665,8 @@
 
             <!-- 5. ASCENSIONS -->
             <div id="ascension" class="section creature-section">
-                <div class="group-header" style="color: var(--c-ascension);"><i class="fa-solid fa-dna"></i> Varianten & Sub-Spezies</div>
-                <p style="color: #bbb; margin-bottom: 20px; background: rgba(171, 71, 188, 0.1); padding: 15px; border-radius: 6px; border-left: 3px solid var(--c-ascension);">
+                <div class="group-header" style="color: var(--c-ascension);"><i class="fa-solid fa-dna"></i> <span data-lang-key="asc_title">Varianten & Sub-Spezies</span></div>
+                <p style="color: #bbb; margin-bottom: 20px; background: rgba(171, 71, 188, 0.1); padding: 15px; border-radius: 6px; border-left: 3px solid var(--c-ascension);" data-lang-key="asc_info">
                     <strong>Info:</strong> Paleo Varianten haben <strong>+5% HP</strong> und <strong>+5% Schaden</strong>. Sie spawnen mit einer Chance von 25% anstelle der Vanilla-Dinos.
                 </p>
                 
@@ -617,7 +678,7 @@
                         <div class="creature-content">
                             <h4 class="creature-name">Paleo Stegosaurus</h4>
                             <span class="creature-badge badge-ascension">Ascension</span>
-                            <p class="creature-desc">Visuelle Variante (Skin & Pattern) mit Bonus Stats.</p>
+                            <p class="creature-desc" data-lang-key="desc_paleo_stego">Visuelle Variante (Skin & Pattern) mit Bonus Stats.</p>
                         </div>
                     </div>
 
@@ -627,7 +688,7 @@
                         <div class="creature-content">
                             <h4 class="creature-name">Paleo Fasolasuchus</h4>
                             <span class="creature-badge badge-ascension">Ascension</span>
-                            <p class="creature-desc">Einzigartige Musterung für den Sandhai.</p>
+                            <p class="creature-desc" data-lang-key="desc_paleo_fasola">Einzigartige Musterung für den Sandhai.</p>
                         </div>
                     </div>
 
@@ -637,7 +698,7 @@
                         <div class="creature-content">
                             <h4 class="creature-name">Paleo Thylacoleo</h4>
                             <span class="creature-badge badge-ascension">Ascension</span>
-                            <p class="creature-desc">Der Marsupial-Löwe im neuen Gewand.</p>
+                            <p class="creature-desc" data-lang-key="desc_paleo_thyla">Der Marsupial-Löwe im neuen Gewand.</p>
                         </div>
                     </div>
 
@@ -647,7 +708,7 @@
                         <div class="creature-content">
                             <h4 class="creature-name">Paleo Purlovia</h4>
                             <span class="creature-badge badge-ascension">Ascension</span>
-                            <p class="creature-desc">Versteckter Jäger mit neuem Anstrich.</p>
+                            <p class="creature-desc" data-lang-key="desc_paleo_purlovia">Versteckter Jäger mit neuem Anstrich.</p>
                         </div>
                     </div>
 
@@ -657,7 +718,7 @@
                         <div class="creature-content">
                             <h4 class="creature-name">Paleo Yutyrannus</h4>
                             <span class="creature-badge badge-ascension">Ascension</span>
-                            <p class="creature-desc">Der gefiederte Brüller mit +5% Power.</p>
+                            <p class="creature-desc" data-lang-key="desc_paleo_yuty">Der gefiederte Brüller mit +5% Power.</p>
                         </div>
                     </div>
 
@@ -667,27 +728,27 @@
                         <div class="creature-content">
                             <h4 class="creature-name">Paleo Carcharodontosaurus</h4>
                             <span class="creature-badge badge-ascension">Ascension</span>
-                            <p class="creature-desc">Gigantischer Jäger, noch tödlicher.</p>
+                            <p class="creature-desc" data-lang-key="desc_paleo_carcha">Gigantischer Jäger, noch tödlicher.</p>
                         </div>
                     </div>
 
-                     <!-- Gigantoraptor -->
+                      <!-- Gigantoraptor -->
                     <div class="creature-card type-ascension" onclick="openModal(this)">
                         <div class="creature-img-container"><img src="https://83374.media.forgecdn.net/attachments/1065/502/gigantoraptor.png" class="creature-img"></div>
                         <div class="creature-content">
                             <h4 class="creature-name">Paleo Gigantoraptor</h4>
                             <span class="creature-badge badge-ascension">Ascension</span>
-                            <p class="creature-desc">Bunter und stärker als das Original.</p>
+                            <p class="creature-desc" data-lang-key="desc_paleo_giganto">Bunter und stärker als das Original.</p>
                         </div>
                     </div>
 
-                     <!-- Sarco -->
+                      <!-- Sarco -->
                     <div class="creature-card type-ascension" onclick="openModal(this)">
                         <div class="creature-img-container"><img src="https://83374.media.forgecdn.net/attachments/1065/506/sarco.png" class="creature-img"></div>
                         <div class="creature-content">
                             <h4 class="creature-name">Paleo Sarcosuchus</h4>
                             <span class="creature-badge badge-ascension">Ascension</span>
-                            <p class="creature-desc">Sumpf-Schrecken mit +5% Stats.</p>
+                            <p class="creature-desc" data-lang-key="desc_paleo_sarco">Sumpf-Schrecken mit +5% Stats.</p>
                         </div>
                     </div>
 
@@ -700,18 +761,18 @@
                 <!-- Rex Guide -->
                 <div class="tame-card" style="border-left-color: var(--c-apex);">
                     <span class="tame-title" style="color: var(--c-apex);">
-                        <i class="fa-solid fa-dragon"></i> Tyrannosaurus / Tarbo Guide (Passiv)
+                        <i class="fa-solid fa-dragon"></i> <span data-lang-key="tame_rex_title">Tyrannosaurus / Tarbo Guide (Passiv)</span>
                     </span>
-                    <p style="color:#ccc;">Der Paleo Rex kann <strong>nicht</strong> per K.O. gezähmt werden! Er muss "angefreundet" werden.</p>
+                    <p style="color:#ccc;" data-lang-key="tame_rex_desc">Der Paleo Rex kann <strong>nicht</strong> per K.O. gezähmt werden! Er muss "angefreundet" werden.</p>
                     
-                    <ol style="margin-left: 20px; line-height: 1.6; color: #ddd; margin-bottom: 20px;">
+                    <ol style="margin-left: 20px; line-height: 1.6; color: #ddd; margin-bottom: 20px;" data-lang-key="tame_rex_steps">
                         <li>Ziehe eine Leiche (min. 150 Drag Weight) zu einem wilden Rex.</li>
                         <li>Warte, bis er frisst (er wird neutral gegenüber dir). Ein Vertrauens-Symbol erscheint.</li>
                         <li>Er wandert umher, brüllt und wirft den Kopf hoch -> <strong>Nicht bewegen!</strong></li>
                         <li>Er fordert nun Futter. Halte es im Inventar (keine Schnellleiste nötig).</li>
                     </ol>
 
-                    <div class="tame-req-list">
+                    <div class="tame-req-list" data-lang-key="tame_rex_req">
                         <div class="tame-req-item"><i class="fa-solid fa-drumstick-bite"></i> Rohes Fleisch / Premium</div>
                         <div class="tame-req-item"><i class="fa-solid fa-bone"></i> Rohes Hammelfleisch</div>
                         <div class="tame-req-item"><i class="fa-solid fa-egg"></i> Gelbes (Special) Kibble</div>
@@ -721,39 +782,39 @@
                 <!-- Giga Guide -->
                 <div class="tame-card" style="border-left-color: var(--c-apex);">
                     <span class="tame-title" style="color: var(--c-apex);">
-                        <i class="fa-solid fa-teeth"></i> Giganotosaurus Guide (Challenge)
+                        <i class="fa-solid fa-teeth"></i> <span data-lang-key="tame_giga_title">Giganotosaurus Guide (Challenge)</span>
                     </span>
-                    <p style="color:#ccc;">Muss im Kampf erschöpft werden, bis er umfällt. K.O. Schlagen funktioniert nicht!</p>
+                    <p style="color:#ccc;" data-lang-key="tame_giga_desc">Muss im Kampf erschöpft werden, bis er umfällt. K.O. Schlagen funktioniert nicht!</p>
                     
-                    <ol style="margin-left: 20px; line-height: 1.6; color: #ddd; margin-bottom: 20px;">
+                    <ol style="margin-left: 20px; line-height: 1.6; color: #ddd; margin-bottom: 20px;" data-lang-key="tame_giga_steps">
                         <li>Nähere dich mit einem <strong>Giganotosaurus-Herz</strong> in der Hand.</li>
                         <li>Er schnuppert und brüllt -> Du wurdest herausgefordert!</li>
                         <li>Lass ihn nun deine Tank-Dinos (z.B. Brontos mit viel HP) beißen.</li>
                         <li>Jeder erfolgreiche Biss gibt dem Giga Torpor (Ausdauerkosten * 10).</li>
                         <li><strong>Tipp:</strong> Wenn er wütend ist (Enrage), bekommt er doppelt so viel Torpor!</li>
                     </ol>
-                    <p style="font-size: 0.9rem; color: #aaa;">Sobald er schläft: Ganz normal füttern.</p>
+                    <p style="font-size: 0.9rem; color: #aaa;" data-lang-key="tame_giga_note">Sobald er schläft: Ganz normal füttern.</p>
                 </div>
 
                 <!-- Mosa/Theri Guide -->
                 <div class="tame-card" style="border-left-color: var(--c-depths);">
                     <span class="tame-title" style="color: #fff;">
-                        <i class="fa-solid fa-bullseye"></i> Standard Knockout (Mosa & Theri)
+                        <i class="fa-solid fa-bullseye"></i> <span data-lang-key="tame_std_title">Standard Knockout (Mosa & Theri)</span>
                     </span>
-                    <p style="color:#ccc;">Sowohl der Evo Mosa als auch der Evo Therizinosaurus werden wie im Vanilla-Spiel gezähmt.</p>
+                    <p style="color:#ccc;" data-lang-key="tame_std_desc">Sowohl der Evo Mosa als auch der Evo Therizinosaurus werden wie im Vanilla-Spiel gezähmt.</p>
                     
                     <div style="margin-top: 15px; border-top: 1px solid #444; padding-top: 10px;">
                         <strong style="color: var(--c-depths);">Mosa (Dangerous Depths):</strong>
-                        <div class="tame-req-list" style="margin-top: 5px;">
+                        <div class="tame-req-list" style="margin-top: 5px;" data-lang-key="tame_mosa_req">
                             <div class="tame-req-item"><i class="fa-solid fa-syringe"></i> Narkosemittel / Bio-Toxin</div>
                             <div class="tame-req-item"><i class="fa-solid fa-bow-arrow"></i> Harpunen</div>
                             <div class="tame-req-item"><i class="fa-solid fa-egg"></i> Exceptional (Gelb) / Extraordinary (Cyan) Kibble</div>
                         </div>
                     </div>
 
-                     <div style="margin-top: 15px; border-top: 1px solid #444; padding-top: 10px;">
+                      <div style="margin-top: 15px; border-top: 1px solid #444; padding-top: 10px;">
                         <strong style="color: var(--c-herbi);">Therizinosaurus (HHH):</strong>
-                        <div class="tame-req-list" style="margin-top: 5px;">
+                        <div class="tame-req-list" style="margin-top: 5px;" data-lang-key="tame_theri_req">
                             <div class="tame-req-item"><i class="fa-solid fa-syringe"></i> Viele Narkosemittel (Wacht schnell auf!)</div>
                             <div class="tame-req-item"><i class="fa-solid fa-bow-arrow"></i> Armbrust / Flinte</div>
                             <div class="tame-req-item"><i class="fa-solid fa-egg"></i> Exceptional (Gelb) Kibble / Gemüse</div>
@@ -781,98 +842,258 @@
 
     <script>
         // Initials
-        let activeSection = 'faq';
+        var activeSection = 'faq';
+        var currentLang = 'de';
+
+        var translations = {
+            header_title: { de: "IOP Paleo Ark Guide", en: "IOP Paleo Ark Guide", es: "Guía Paleo Ark", fr: "Guide Paleo Ark" },
+            header_subtitle: { de: "Mod-Guide & Kreaturen Übersicht", en: "Mod Guide & Creature Overview", es: "Guía de Mods y Resumen de Criaturas", fr: "Guide Mod & Aperçu des Créatures" },
+            search_placeholder: { de: "Suche (z.B. Rex, Mosa, Stego)...", en: "Search (e.g. Rex, Mosa, Stego)...", es: "Buscar...", fr: "Rechercher..." },
+            
+            nav_faq: { de: '<i class="fa-solid fa-circle-question"></i> Info & FAQ', en: '<i class="fa-solid fa-circle-question"></i> Info & FAQ', es: 'Info y FAQ', fr: 'Infos et FAQ' },
+            nav_apex: { de: '<i class="fa-solid fa-dragon"></i> Apex Predators', en: '<i class="fa-solid fa-dragon"></i> Apex Predators', es: 'Depredadores Apex', fr: 'Prédateurs Apex' },
+            nav_depths: { de: '<i class="fa-solid fa-water"></i> Dangerous Depths', en: '<i class="fa-solid fa-water"></i> Dangerous Depths', es: 'Profundidades Peligrosas', fr: 'Profondeurs Dangereuses' },
+            nav_herbi: { de: '<i class="fa-solid fa-leaf"></i> Hard Hitting Herbis', en: '<i class="fa-solid fa-leaf"></i> Hard Hitting Herbis', es: 'Herbívoros Fuertes', fr: 'Herbivores Puissants' },
+            nav_ascension: { de: '<i class="fa-solid fa-dna"></i> Ascensions', en: '<i class="fa-solid fa-dna"></i> Ascensions', es: 'Ascensiones', fr: 'Ascensions' },
+            nav_taming: { de: '<i class="fa-solid fa-drumstick-bite"></i> Taming', en: '<i class="fa-solid fa-drumstick-bite"></i> Taming', es: 'Taming', fr: 'Taming' },
+
+            faq_welcome_title: { de: "Willkommen bei Paleo Ark", en: "Welcome to Paleo Ark", es: "Bienvenido a Paleo Ark", fr: "Bienvenue sur Paleo Ark" },
+            faq_welcome_text: { 
+                de: "Auf Infinity of Phoenix nutzen wir ein spezielles System, um diverse Paleo Mods nahtlos zu integrieren. Vanilla Varianten werden teilweise ersetzt, aber durch unsere Systeme bleiben alle Optionen spielbar.",
+                en: "On Infinity of Phoenix we use a special system to seamlessly integrate various Paleo Mods. Vanilla variants are partially replaced, but our systems keep all options playable.",
+                es: "En IOP usamos un sistema especial para integrar mods Paleo. Las variantes Vanilla se reemplazan parcialmente, pero todo sigue siendo jugable.",
+                fr: "Sur IOP, nous utilisons un système spécial pour intégrer divers mods Paleo. Les variantes Vanilla sont partiellement remplacées, mais tout reste jouable."
+            },
+            badge_boss_ready: { de: '<i class="fa-solid fa-check"></i> Paleo Rexe: Boss Ready', en: '<i class="fa-solid fa-check"></i> Paleo Rexes: Boss Ready', es: 'Paleo Rexes: Boss Ready', fr: 'Paleo Rex : Boss Ready' },
+            badge_no_boss: { de: '<i class="fa-solid fa-xmark"></i> Paleo Gigas: Keine Bosse', en: '<i class="fa-solid fa-xmark"></i> Paleo Gigas: No Bosses', es: 'Paleo Gigas: No Bosses', fr: 'Paleo Gigas : Pas de Boss' },
+            
+            faq_mechanics_title: { de: "Wichtige Mechaniken", en: "Important Mechanics", es: "Mecánicas Importantes", fr: "Mécaniques Importantes" },
+            faq_mechanics_list: {
+                de: "<li><strong>Tek Cave (Gigas):</strong> Paleo Gigas können 'geduckt' den Eingang passieren!</li><li><strong>Zucht & Taming:</strong> Alle Varianten sind züchtbar und haben eigene Zähmmechaniken.</li><li><strong>Sattel-Konvertierung:</strong> Paleo & Vanilla Sättel sind im Inventar der Kreatur beliebig umwandelbar.</li><li><strong>Dino-Konvertierung:</strong> Evo/Vanilla Gigas & Rexe können im Radialmenü dynamisch umgewandelt werden.</li>",
+                en: "<li><strong>Tek Cave (Gigas):</strong> Paleo Gigas can pass the entrance 'crouched'!</li><li><strong>Breeding & Taming:</strong> All variants are breedable and have own taming mechanics.</li><li><strong>Saddle Conversion:</strong> Paleo & Vanilla saddles can be converted in the creature's inventory.</li><li><strong>Dino Conversion:</strong> Evo/Vanilla Gigas & Rexes can be converted via radial menu.</li>",
+                es: "<li><strong>Tek Cave (Gigas):</strong> ¡Pueden pasar agachados!</li><li><strong>Crianza:</strong> Todos criables.</li><li><strong>Monturas:</strong> Convertibles en inventario.</li><li><strong>Conversión Dino:</strong> Vía menú radial.</li>",
+                fr: "<li><strong>Grotte Tek (Gigas):</strong> Peuvent passer accroupis !</li><li><strong>Élevage :</strong> Tous reproductibles.</li><li><strong>Selles :</strong> Convertibles dans l'inventaire.</li><li><strong>Conversion Dino :</strong> Via menu radial.</li>"
+            },
+            
+            faq_q1: { de: '<i class="fa-solid fa-layer-group"></i> Welche Mods sind aktiv?', en: '<i class="fa-solid fa-layer-group"></i> Which mods are active?', es: '¿Qué mods están activos?', fr: 'Quels mods sont actifs ?' },
+            faq_a1: { 
+                de: '<ul style="margin: 0; padding-left: 20px; padding-top: 10px;"><li><strong>Evolution: Apex Predators:</strong> (Rexe, Gigas)</li><li><strong>Evolution: Dangerous Depths:</strong> (Mosa, Plesio)</li><li><strong>Evolution: Hard Hitting Herbivores:</strong> (Therizino)</li><li><strong>Ascensions:</strong> (Visuelle Varianten, keine TLCs)</li></ul>',
+                en: '<ul style="margin: 0; padding-left: 20px; padding-top: 10px;"><li><strong>Apex Predators:</strong> (Rexes, Gigas)</li><li><strong>Dangerous Depths:</strong> (Mosa, Plesio)</li><li><strong>Hard Hitting Herbivores:</strong> (Therizino)</li><li><strong>Ascensions:</strong> (Visual variants)</li></ul>',
+                es: '<ul><li>Apex Predators</li><li>Dangerous Depths</li><li>Hard Hitting Herbivores</li><li>Ascensions</li></ul>',
+                fr: '<ul><li>Apex Predators</li><li>Dangerous Depths</li><li>Hard Hitting Herbivores</li><li>Ascensions</li></ul>'
+            },
+            
+            faq_q2: { de: '<i class="fa-solid fa-chart-pie"></i> Wie sind die Spawn-Raten verteilt?', en: '<i class="fa-solid fa-chart-pie"></i> How are spawn rates distributed?', es: 'Tasas de aparición', fr: 'Taux d\'apparition' },
+            faq_a2: {
+                de: '<p style="margin-top:0;">Die Spawns sind fein abgestimmt, um Abwechslung zu bieten:</p><ul><li><strong>10%</strong> S-Rexe.</li><li><strong>50%</strong> Evo Rexe.</li><li><strong>5%</strong> Legacy Rexe (Rare).</li><li><strong>25%</strong> Paleo Rexe.</li><li><strong>Ascensions:</strong> 25% Chance.</li><li><strong>Wüsten:</strong> Alle Rexe = Tarbosauren.</li></ul>',
+                en: '<p style="margin-top:0;">Spawns are fine-tuned:</p><ul><li><strong>10%</strong> S-Rexes.</li><li><strong>50%</strong> Evo Rexes.</li><li><strong>5%</strong> Legacy Rexes (Rare).</li><li><strong>25%</strong> Paleo Rexes.</li><li><strong>Ascensions:</strong> 25% Chance.</li><li><strong>Deserts:</strong> All Rexes = Tarbosaurus.</li></ul>',
+                es: '<ul><li>10% S-Rex</li><li>50% Evo Rex</li><li>5% Legacy</li><li>25% Paleo</li><li>25% Ascension</li></ul>',
+                fr: '<ul><li>10% S-Rex</li><li>50% Evo Rex</li><li>5% Legacy</li><li>25% Paleo</li><li>25% Ascension</li></ul>'
+            },
+
+            faq_q3: { de: '<i class="fa-solid fa-dna"></i> Was sind TLCs überhaupt?', en: '<i class="fa-solid fa-dna"></i> What are TLCs?', es: '¿Qué son TLCs?', fr: 'C\'est quoi un TLC ?' },
+            faq_a3: { de: '<p style="margin:0;">TLCs (Total Learning Conversions) sind komplett überarbeitete Kreaturen, die die Vanilla-Varianten ersetzen. Sie bieten neue Modelle, Texturen, Sounds und Fähigkeiten.</p>', en: '<p style="margin:0;">TLCs are completely overhauled creatures replacing vanilla variants with new models, textures, sounds, and abilities.</p>', es: 'Revisiones completas de criaturas.', fr: 'Refontes complètes des créatures.' },
+
+            // APEX
+            apex_rex_title: { de: '<i class="fa-solid fa-crown"></i> Tyrannosaurus Arten', en: '<i class="fa-solid fa-crown"></i> Tyrannosaurus Types', es: 'Tipos de Tiranosaurio', fr: 'Types de Tyrannosaures' },
+            desc_evo_rex: { de: 'Das Standard-Upgrade für den Rex. Schneller und gefährlicher als Vanilla.', en: 'Standard upgrade for the Rex. Faster and more dangerous than vanilla.', es: 'Mejora estándar del Rex.', fr: 'Amélioration standard du Rex.' },
+            spec_evo_rex: { de: '<li>Boss Ready</li><li>Friendship Taming</li>', en: '<li>Boss Ready</li><li>Friendship Taming</li>', es: '<li>Listo para Jefe</li><li>Taming Amistad</li>', fr: '<li>Prêt pour Boss</li><li>Taming Amitié</li>' },
+            
+            desc_paleo_rex: { de: 'Akkurate Urzeit-Darstellung mit Lippen und Federn.', en: 'Accurate prehistoric representation with lips and feathers.', es: 'Representación precisa.', fr: 'Représentation précise.' },
+            spec_paleo_rex: { de: '<li>Boss Ready</li><li>Friendship Taming</li>', en: '<li>Boss Ready</li><li>Friendship Taming</li>', es: '<li>Listo para Jefe</li><li>Taming Amistad</li>', fr: '<li>Prêt pour Boss</li><li>Taming Amitié</li>' },
+
+            desc_tarbo: { de: 'Der Wüsten-Cousin des Rex. Immun gegen Hitze und Sandstürme.', en: 'Desert cousin of the Rex. Immune to heat and sandstorms.', es: 'Primo del desierto.', fr: 'Cousin du désert.' },
+            spec_tarbo: { de: '<li>Wüsten-Spawn</li><li>Friendship Taming</li>', en: '<li>Desert Spawn</li><li>Friendship Taming</li>', es: '<li>Desierto</li>', fr: '<li>Désert</li>' },
+
+            desc_legacy_rex: { de: 'Eine seltene und mächtige Variante (5% Spawnchance).', en: 'Rare and powerful variant (5% chance).', es: 'Variante rara y poderosa.', fr: 'Variante rare et puissante.' },
+            spec_legacy_rex: { de: '<li>+20% Dmg vs Corrupted</li><li>Sehr schnell & aggressiv</li>', en: '<li>+20% Dmg vs Corrupted</li><li>Very fast & aggressive</li>', es: '<li>+20% Daño Corrupto</li>', fr: '<li>+20% Dégâts Corrompu</li>' },
+
+            apex_giga_title: { de: '<i class="fa-solid fa-skull"></i> Giganotosaurus Arten', en: '<i class="fa-solid fa-skull"></i> Giganotosaurus Types', es: 'Tipos de Giga', fr: 'Types de Giga' },
+            desc_evo_giga: { de: 'Rudel-Jäger mit Rage-Mechanik bei Gruppenbildung.', en: 'Pack hunter with rage mechanics.', es: 'Cazador en manada.', fr: 'Chasseur en meute.' },
+            spec_evo_giga: { de: '<li>Passt in Tek Cave</li><li>Challenge Taming</li>', en: '<li>Fits in Tek Cave</li><li>Challenge Taming</li>', es: '<li>Entra en Cueva Tek</li>', fr: '<li>Rentre Grotte Tek</li>' },
+
+            desc_waste_giga: { de: 'Extinction Exklusiv. Bonus gegen Corrupted Kreaturen.', en: 'Extinction Exclusive. Bonus vs Corrupted.', es: 'Exclusivo Extinction.', fr: 'Exclusif Extinction.' },
+            spec_waste_giga: { de: '<li>Sehr selten</li><li>Challenge Taming</li>', en: '<li>Very rare</li><li>Challenge Taming</li>', es: '<li>Muy raro</li>', fr: '<li>Très rare</li>' },
+
+            // DEPTHS
+            depths_title: { de: '<i class="fa-solid fa-water"></i> Tiefsee Schrecken', en: '<i class="fa-solid fa-water"></i> Deep Sea Horrors', es: 'Horrores Profundos', fr: 'Horreurs des Profondeurs' },
+            desc_evo_mosa: { de: 'Der wahre Herrscher der Meere. Immun gegen Quallen. Apex Buff gilt auch für Tuso & Shasta.', en: 'True ruler of the seas. Immune to jellys.', es: 'Gobernante de los mares.', fr: 'Souverain des mers.' },
+            spec_evo_mosa: { de: '<li>Kurzer Landgang</li><li>Knockout Tame</li>', en: '<li>Short land walk</li><li>Knockout Tame</li>', es: '<li>Caminar tierra breve</li>', fr: '<li>Marche terre brève</li>' },
+
+            upcoming_title: { de: 'Zukunftsmusik', en: 'Upcoming', es: 'Próximamente', fr: 'À venir' },
+            upcoming_intro: { de: 'Geplante Updates für Dangerous Depths:', en: 'Planned updates for Dangerous Depths:', es: 'Actualizaciones planeadas:', fr: 'Mises à jour prévues :' },
+            upcoming_intro_herbi: { de: 'Folgende Kreaturen wurden für die HHH Mod angekündigt:', en: 'Creatures announced for HHH Mod:', es: 'Criaturas anunciadas:', fr: 'Créatures annoncées :' },
+
+            // HERBIS
+            herbi_title: { de: 'Wehrhafte Pflanzenfresser', en: 'Hard Hitting Herbivores', es: 'Herbívoros Fuertes', fr: 'Herbivores Puissants' },
+            desc_evo_theri: { de: 'Größer und gefährlicher. Paleo-akkurater Look mit ARK-Flair.', en: 'Bigger and more dangerous. Paleo-accurate look.', es: 'Más grande y peligroso.', fr: 'Plus grand et dangereux.' },
+            spec_evo_theri: { de: '<li><strong>Sharpen Claws:</strong> 2x Armor Pen (Buff).</li><li><strong>Combos:</strong> 180° Swipe & Double Claw.</li><li><strong>Utility:</strong> Sitzen & Turn-in-Place.</li>', en: '<li><strong>Sharpen Claws:</strong> 2x Armor Pen.</li><li><strong>Combos:</strong> 180° Swipe.</li><li><strong>Utility:</strong> Sit & Turn-in-Place.</li>', es: '<li>Garras afiladas</li><li>Combos</li>', fr: '<li>Griffes aiguisées</li><li>Combos</li>' },
+
+            // ASCENSION
+            asc_title: { de: 'Varianten & Sub-Spezies', en: 'Variants & Sub-Species', es: 'Variantes y Subespecies', fr: 'Variantes et Sous-espèces' },
+            asc_info: { de: '<strong>Info:</strong> Paleo Varianten haben <strong>+5% HP</strong> und <strong>+5% Schaden</strong>. Sie spawnen mit einer Chance von 25% anstelle der Vanilla-Dinos.', en: '<strong>Info:</strong> Paleo Variants have <strong>+5% HP</strong> and <strong>+5% Dmg</strong>. 25% spawn chance replacing vanilla.', es: 'Info: +5% HP/Daño. 25% probabilidad.', fr: 'Info: +5% PV/Dégâts. 25% chance.' },
+            
+            desc_paleo_stego: { de: 'Visuelle Variante (Skin & Pattern) mit Bonus Stats.', en: 'Visual variant with bonus stats.', es: 'Variante visual con bonos.', fr: 'Variante visuelle avec bonus.' },
+            desc_paleo_fasola: { de: 'Einzigartige Musterung für den Sandhai.', en: 'Unique pattern for the sand shark.', es: 'Patrón único.', fr: 'Motif unique.' },
+            desc_paleo_thyla: { de: 'Der Marsupial-Löwe im neuen Gewand.', en: 'The Marsupial Lion in new guise.', es: 'Nuevo aspecto.', fr: 'Nouvelle apparence.' },
+            desc_paleo_purlovia: { de: 'Versteckter Jäger mit neuem Anstrich.', en: 'Hidden hunter with new paint.', es: 'Cazador oculto.', fr: 'Chasseur caché.' },
+            desc_paleo_yuty: { de: 'Der gefiederte Brüller mit +5% Power.', en: 'The feathered roarer with +5% power.', es: 'Gritón emplumado.', fr: 'Hurleur à plumes.' },
+            desc_paleo_carcha: { de: 'Gigantischer Jäger, noch tödlicher.', en: 'Gigantic hunter, even deadlier.', es: 'Cazador gigante.', fr: 'Chasseur géant.' },
+            desc_paleo_giganto: { de: 'Bunter und stärker als das Original.', en: 'More colorful and stronger than original.', es: 'Más colorido y fuerte.', fr: 'Plus coloré et fort.' },
+            desc_paleo_sarco: { de: 'Sumpf-Schrecken mit +5% Stats.', en: 'Swamp terror with +5% stats.', es: 'Terror del pantano.', fr: 'Terreur des marais.' },
+
+            // TAMING
+            tame_rex_title: { de: 'Tyrannosaurus / Tarbo Guide (Passiv)', en: 'Rex / Tarbo Guide (Passive)', es: 'Guía Rex (Pasivo)', fr: 'Guide Rex (Passif)' },
+            tame_rex_desc: { de: 'Der Paleo Rex kann <strong>nicht</strong> per K.O. gezähmt werden! Er muss "angefreundet" werden.', en: 'Paleo Rex can <strong>not</strong> be KO tamed! It must be befriended.', es: '¡No se puede noquear!', fr: 'Ne peut pas être assommé !' },
+            tame_rex_steps: { 
+                de: '<li>Ziehe eine Leiche (min. 150 Drag Weight) zu einem wilden Rex.</li><li>Warte, bis er frisst (er wird neutral gegenüber dir). Ein Vertrauens-Symbol erscheint.</li><li>Er wandert umher, brüllt und wirft den Kopf hoch -> <strong>Nicht bewegen!</strong></li><li>Er fordert nun Futter. Halte es im Inventar (keine Schnellleiste nötig).</li>',
+                en: '<li>Drag a corpse (min 150 weight) to wild Rex.</li><li>Wait for it to eat (becomes neutral). Trust icon appears.</li><li>It roars -> <strong>Do not move!</strong></li><li>It requests food. Have it in inventory.</li>',
+                es: '<li>Arrastra cadáver.</li><li>Espera a que coma.</li><li>No te muevas cuando ruja.</li><li>Alimenta.</li>',
+                fr: '<li>Traînez un cadavre.</li><li>Attendez qu\'il mange.</li><li>Ne bougez pas quand il rugit.</li><li>Nourrissez.</li>'
+            },
+            tame_rex_req: { de: '<div class="tame-req-item"><i class="fa-solid fa-drumstick-bite"></i> Rohes Fleisch / Premium</div><div class="tame-req-item"><i class="fa-solid fa-bone"></i> Rohes Hammelfleisch</div><div class="tame-req-item"><i class="fa-solid fa-egg"></i> Gelbes (Special) Kibble</div>', en: '<div>Raw Meat</div><div>Mutton</div><div>Yellow Kibble</div>', es: '<div>Carne</div><div>Cordero</div><div>Kibble Amarillo</div>', fr: '<div>Viande</div><div>Mouton</div><div>Kibble Jaune</div>' },
+
+            tame_giga_title: { de: 'Giganotosaurus Guide (Challenge)', en: 'Giganotosaurus Guide (Challenge)', es: 'Guía Giga', fr: 'Guide Giga' },
+            tame_giga_desc: { de: 'Muss im Kampf erschöpft werden, bis er umfällt. K.O. Schlagen funktioniert nicht!', en: 'Must be exhausted in combat. KO does not work!', es: 'Agotar en combate.', fr: 'Épuiser au combat.' },
+            tame_giga_steps: {
+                de: '<li>Nähere dich mit einem <strong>Giganotosaurus-Herz</strong> in der Hand.</li><li>Er schnuppert und brüllt -> Du wurdest herausgefordert!</li><li>Lass ihn nun deine Tank-Dinos (z.B. Brontos mit viel HP) beißen.</li><li>Jeder erfolgreiche Biss gibt dem Giga Torpor (Ausdauerkosten * 10).</li><li><strong>Tipp:</strong> Wenn er wütend ist (Enrage), bekommt er doppelt so viel Torpor!</li>',
+                en: '<li>Approach with Giga Heart.</li><li>Challenge accepted!</li><li>Let him bite tank dinos.</li><li>Bites give him torpor.</li><li>Enrage = double torpor.</li>',
+                es: '<li>Acércate con Corazón Giga.</li><li>Deja que muerda tanques.</li>',
+                fr: '<li>Approchez avec Cœur Giga.</li><li>Laissez-le mordre des tanks.</li>'
+            },
+            tame_giga_note: { de: 'Sobald er schläft: Ganz normal füttern.', en: 'Once asleep: Feed normally.', es: 'Una vez dormido: alimentar.', fr: 'Une fois endormi : nourrir.' },
+
+            tame_std_title: { de: 'Standard Knockout (Mosa & Theri)', en: 'Standard Knockout (Mosa & Theri)', es: 'Noqueo Estándar', fr: 'KO Standard' },
+            tame_std_desc: { de: 'Sowohl der Evo Mosa als auch der Evo Therizinosaurus werden wie im Vanilla-Spiel gezähmt.', en: 'Both Evo Mosa and Theri are tamed like vanilla.', es: 'Como en Vanilla.', fr: 'Comme en Vanilla.' },
+            tame_mosa_req: { de: '<div class="tame-req-item"><i class="fa-solid fa-syringe"></i> Narkosemittel / Bio-Toxin</div><div class="tame-req-item"><i class="fa-solid fa-bow-arrow"></i> Harpunen</div><div class="tame-req-item"><i class="fa-solid fa-egg"></i> Exceptional (Gelb) / Extraordinary (Cyan) Kibble</div>', en: '<div>Narcotics</div><div>Harpoons</div><div>Kibble</div>', es: '<div>Narcóticos</div>', fr: '<div>Narcotiques</div>' },
+            tame_theri_req: { de: '<div class="tame-req-item"><i class="fa-solid fa-syringe"></i> Viele Narkosemittel (Wacht schnell auf!)</div><div class="tame-req-item"><i class="fa-solid fa-bow-arrow"></i> Armbrust / Flinte</div><div class="tame-req-item"><i class="fa-solid fa-egg"></i> Exceptional (Gelb) Kibble / Gemüse</div>', en: '<div>Many Narcotics</div><div>Crossbow/Rifle</div><div>Kibble/Crops</div>', es: '<div>Muchos Narcóticos</div>', fr: '<div>Beaucoup Narcotiques</div>' }
+        };
+        
+        // Use 'var' to be robust against re-declaration in simple script contexts
+        var currentLang = 'de';
+        
+        function setLang(lang) {
+            currentLang = lang;
+            
+            // Buttons
+            var btns = document.querySelectorAll('.lang-btn');
+            for(var i=0; i<btns.length; i++) {
+                btns[i].classList.remove('active');
+            }
+            var activeBtn = document.getElementById('btn-'+lang);
+            if(activeBtn) activeBtn.classList.add('active');
+
+            // Static Text via data-attributes
+            var elements = document.querySelectorAll('[data-lang-key]');
+            for(var i=0; i<elements.length; i++) {
+                var el = elements[i];
+                var key = el.getAttribute('data-lang-key');
+                if(translations[key] && translations[key][lang]) {
+                    if (el.tagName === 'INPUT') el.placeholder = translations[key][lang];
+                    else el.innerHTML = translations[key][lang];
+                }
+            }
+        }
         
         function showSection(id, tabEl) {
-            // Reset UI
-            document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.nav-tab').forEach(el => {
-                // Remove all color-specific active classes
-                el.classList.remove('active-info', 'active-apex', 'active-depths', 'active-herbi', 'active-ascension');
-            });
-
-            // Set content active
-            document.getElementById(id).classList.add('active');
+            // Hide all sections
+            var sections = document.querySelectorAll('.section');
+            for(var i=0; i<sections.length; i++) {
+                sections[i].classList.remove('active');
+            }
             
-            // Set tab active with correct color class
-            if(id === 'faq' || id === 'taming') tabEl.classList.add('active-info');
-            if(id === 'apex') tabEl.classList.add('active-apex');
-            if(id === 'depths') tabEl.classList.add('active-depths');
-            if(id === 'herbis') tabEl.classList.add('active-herbi');
-            if(id === 'ascension') tabEl.classList.add('active-ascension');
+            // Deactivate tabs
+            var tabs = document.querySelectorAll('.nav-tab');
+            for(var i=0; i<tabs.length; i++) {
+                tabs[i].classList.remove('active');
+                tabs[i].classList.remove('active-info', 'active-apex', 'active-depths', 'active-herbi', 'active-ascension');
+            }
 
-            // Reset Search Logic if switching tabs manually
-            const searchInput = document.getElementById('searchInput');
-            if(searchInput.value !== '') {
-                searchInput.value = '';
-                document.getElementById('contentArea').classList.remove('searching');
-                document.querySelectorAll('.creature-card').forEach(c => c.classList.remove('hidden'));
+            // Show active
+            var target = document.getElementById(id);
+            if(target) target.classList.add('active');
+            
+            // Activate tab style
+            if(tabEl) {
+                tabEl.classList.add('active');
+                if(id === 'faq' || id === 'taming') tabEl.classList.add('active-info');
+                if(id === 'apex') tabEl.classList.add('active-apex');
+                if(id === 'depths') tabEl.classList.add('active-depths');
+                if(id === 'herbis') tabEl.classList.add('active-herbi');
+                if(id === 'ascension') tabEl.classList.add('active-ascension');
             }
         }
 
         function toggleFaq(element) {
-            const parent = element.parentElement;
+            var parent = element.parentElement;
             parent.classList.toggle('open');
         }
 
         // Search Logic
-        document.getElementById('searchInput').addEventListener('input', function(e) {
-            const term = e.target.value.toLowerCase();
-            const contentArea = document.getElementById('contentArea');
-            const cards = document.querySelectorAll('.creature-card');
-            
-            if(term.length > 0) {
-                contentArea.classList.add('searching');
-                cards.forEach(card => {
-                    const text = card.innerText.toLowerCase();
-                    if(text.includes(term)) card.classList.remove('hidden');
-                    else card.classList.add('hidden');
-                });
-            } else {
-                contentArea.classList.remove('searching');
-                cards.forEach(card => card.classList.remove('hidden'));
+        var searchInput = document.getElementById('searchInput');
+        if(searchInput) {
+            searchInput.addEventListener('input', function(e) {
+                var term = e.target.value.toLowerCase();
+                var contentArea = document.getElementById('contentArea');
+                var cards = document.querySelectorAll('.creature-card');
                 
-                // Return to currently active tab view logic
-                document.querySelectorAll('.section').forEach(el => {
-                    if(el.id !== document.querySelector('.section.active').id) {
-                        el.style.display = ''; 
+                if(term.length > 0) {
+                    contentArea.classList.add('searching');
+                    for(var i=0; i<cards.length; i++) {
+                        var card = cards[i];
+                        var text = card.innerText.toLowerCase();
+                        if(text.includes(term)) card.classList.remove('hidden');
+                        else card.classList.add('hidden');
                     }
-                });
-            }
-        });
-
-        // Modal Logic
-        const modal = document.getElementById('modal');
-        
-        function openModal(card) {
-            const imgSource = card.querySelector('.creature-img-container').innerHTML;
-            const title = card.querySelector('.creature-name').innerText;
-            const badge = card.querySelector('.creature-badge').innerText;
-            const colorClass = card.querySelector('.creature-badge').classList[1]; // e.g. badge-apex
-            
-            // Get content (description, lists)
-            let content = '';
-            const contentDiv = card.querySelector('.creature-content');
-            Array.from(contentDiv.children).forEach(child => {
-                if(!child.classList.contains('creature-name') && !child.classList.contains('creature-badge')) {
-                    content += child.outerHTML;
+                } else {
+                    contentArea.classList.remove('searching');
+                    for(var i=0; i<cards.length; i++) {
+                        cards[i].classList.remove('hidden');
+                    }
                 }
             });
+        }
 
+        // Modal Logic
+        var modal = document.getElementById('modal');
+        function openModal(card) {
+            var imgContainer = card.querySelector('.creature-img-container');
+            var nameEl = card.querySelector('.creature-name');
+            var badgeEl = card.querySelector('.creature-badge');
+            var contentDiv = card.querySelector('.creature-content');
+            
+            if(!imgContainer || !nameEl || !badgeEl || !contentDiv) return;
+
+            var imgSource = imgContainer.innerHTML;
+            var title = nameEl.innerText;
+            var badgeText = badgeEl.innerText;
+            var badgeClass = badgeEl.className; // Get full class string for color
+            
+            // Clone content to avoid moving it
+            var contentHTML = "";
+            var children = contentDiv.children;
+            for(var i=0; i<children.length; i++) {
+                var child = children[i];
+                if(!child.classList.contains('creature-name') && !child.classList.contains('creature-badge')) {
+                    contentHTML += child.outerHTML;
+                }
+            }
+
+            // Update Modal
             document.getElementById('modalImgWrapper').innerHTML = imgSource;
             document.getElementById('modalTitle').innerText = title;
             
-            const subTitle = document.getElementById('modalSubtitle');
-            subTitle.innerText = badge;
+            var subTitle = document.getElementById('modalSubtitle');
+            subTitle.innerText = badgeText;
             
-            // Set Subtitle color based on badge class
-            if(colorClass.includes('apex')) subTitle.style.color = 'var(--c-apex)';
-            else if(colorClass.includes('depths')) subTitle.style.color = 'var(--c-depths)';
-            else if(colorClass.includes('herbi')) subTitle.style.color = 'var(--c-herbi)';
-            else if(colorClass.includes('ascension')) subTitle.style.color = 'var(--c-ascension)';
-            else subTitle.style.color = '#fff';
+            // Apply color to subtitle
+            subTitle.style.color = '#fff';
+            if(badgeClass.indexOf('apex') > -1) subTitle.style.color = 'var(--c-apex)';
+            else if(badgeClass.indexOf('depths') > -1) subTitle.style.color = 'var(--c-depths)';
+            else if(badgeClass.indexOf('herbi') > -1) subTitle.style.color = 'var(--c-herbi)';
+            else if(badgeClass.indexOf('ascension') > -1) subTitle.style.color = 'var(--c-ascension)';
 
-            document.getElementById('modalContent').innerHTML = content;
+            document.getElementById('modalContent').innerHTML = contentHTML;
             
             modal.classList.add('active');
         }
@@ -881,9 +1102,14 @@
             modal.classList.remove('active');
         }
 
-        modal.addEventListener('click', e => {
+        modal.addEventListener('click', function(e) {
             if(e.target === modal) closeModal();
         });
+        
+        // Init
+        window.onload = function() {
+            setLang('de');
+        };
 
     </script>
 </body>
