@@ -4,225 +4,259 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IOP Edelsteine System</title>
-    <link href="https://fonts.googleapis.com/css2?family=Acme&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Acme&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* --- VARIABLES --- */
+        /* Farbschema: Feuerrot, Schwarz und Goldgelb */
         :root {
-            --c-fire: #ff3300;
-            --c-bg: #050505;
-            --c-panel: #121212;
-            --c-content: #1a1a1a;
-            --c-text: #e0e0e0;
-            --c-dim: #888;
-            --c-border: #333;
-            
-            --f-head: 'Acme', sans-serif;
-            --f-body: 'Roboto', sans-serif;
+            --color-red: #E53935;
+            --color-black: #000000;
+            --color-dark: #0a0a0a;
+            --color-light-dark: #161616;
+            --color-text: #f7f7f7;
+            --color-gold: #FFD700; /* Goldgelb für Akzente */
+            --color-ui-gold: #FFD700;
+            --color-border: #333;
+            --font-header: 'Acme', sans-serif;
+            --font-body: 'Roboto', sans-serif;
         }
 
-        * { box-sizing: border-box; }
+        * { box-sizing: border-box; margin: 0; padding: 0; scroll-behavior: smooth; }
 
         body {
-            margin: 0; padding: 0;
-            background-color: transparent; 
-            color: var(--c-text);
-            font-family: var(--f-body);
+            background-color: transparent;
+            font-family: var(--font-body);
+            color: var(--color-text);
             height: 100vh;
             width: 100vw;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
             overflow: hidden;
         }
 
-        /* Animationen */
-        @keyframes fire-border-pulse {
-            0% { box-shadow: 0 0 10px rgba(255, 51, 0, 0.2); border-color: rgba(255, 51, 0, 0.5); }
-            50% { box-shadow: 0 0 25px rgba(255, 51, 0, 0.5); border-color: rgba(255, 51, 0, 1); }
-            100% { box-shadow: 0 0 10px rgba(255, 51, 0, 0.2); border-color: rgba(255, 51, 0, 0.5); }
-        }
-        
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* --- WIDGET CONTAINER --- */
-        .widget-container {
-            display: flex;
-            width: 98%; 
-            height: 95vh;
-            background-color: var(--c-bg);
-            border: 2px solid var(--c-fire);
-            border-radius: 12px;
-            animation: fire-border-pulse 4s infinite ease-in-out;
-            overflow: hidden;
-            position: relative;
-            box-shadow: 0 0 50px rgba(0,0,0,0.9);
-        }
-
-        /* --- SIDEBAR --- */
-        .sidebar {
-            width: 280px;
-            background-color: var(--c-panel);
-            border-right: 1px solid var(--c-border);
+        /* Widget Container - Einheitliche Breite */
+        .start-container {
+            background-color: var(--color-dark);
+            border-radius: 8px; 
+            border: 2px solid var(--color-red);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+            width: 98%;
+            height: 96vh;
             display: flex;
             flex-direction: column;
-            flex-shrink: 0;
-            z-index: 10;
-        }
-
-        .header-area {
-            padding: 30px 20px;
-            text-align: center;
-            border-bottom: 1px solid var(--c-border);
-            background: linear-gradient(180deg, rgba(255,51,0,0.1) 0%, transparent 100%);
+            overflow: hidden;
+            margin-top: 2vh;
             position: relative;
         }
 
-        .title {
-            font-family: var(--f-head);
-            font-size: 2rem;
-            color: var(--c-fire);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin: 0;
-            line-height: 1.1;
-            text-shadow: 0 0 10px rgba(255, 51, 0, 0.4);
+        /* Schlichter schwarzer Header */
+        .header {
+            background-color: var(--color-black);
+            padding: 25px 20px;
+            text-align: center;
+            border-bottom: 2px solid var(--color-red);
+            flex-shrink: 0;
         }
 
-        .subtitle {
-            font-size: 0.8rem;
-            color: var(--c-dim);
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-top: 8px;
-            display: block;
+        .header-content {
+            position: relative;
+            z-index: 2;
         }
 
-        /* FLAGGEN SWITCHER */
+        /* Flaggen oben rechts */
         .lang-switch {
+            position: absolute;
+            top: 15px;
+            right: 15px;
             display: flex;
-            gap: 5px;
-            justify-content: center;
-            margin-top: 15px;
+            gap: 10px;
+            z-index: 100;
         }
         .lang-btn {
             width: 25px; height: 16px;
             cursor: pointer;
             border-radius: 2px;
             border: 1px solid #fff;
-            opacity: 0.5;
-            transition: transform 0.2s, opacity 0.2s;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
-            padding: 0;
-            display: block;
+            opacity: 0.6;
+            transition: 0.2s;
+            object-fit: cover;
         }
-        .lang-btn:hover, .lang-btn.active {
-            opacity: 1; transform: scale(1.15);
-            border-color: var(--c-fire);
-            z-index: 10;
+        .lang-btn.active, .lang-btn:hover {
+            opacity: 1;
+            transform: scale(1.15);
+            border-color: var(--color-ui-gold);
         }
 
-        .nav-menu {
-            list-style: none;
-            padding: 0;
-            margin: 20px 0;
-            flex-grow: 1;
+        .title {
+            font-family: var(--font-header);
+            font-size: 2.4rem; 
+            color: var(--color-red);
+            text-transform: uppercase;
+            margin: 0;
+            letter-spacing: 2px;
         }
 
-        .nav-btn {
+        .subtitle {
+            color: var(--color-ui-gold);
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 500;
+        }
+
+        /* Suchleiste */
+        .search-container {
+            padding: 10px 20px;
+            background: rgba(0,0,0,0.5);
+            border-bottom: 1px solid #333;
+        }
+        .search-box {
+            position: relative;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        .search-box input {
             width: 100%;
-            padding: 18px 25px;
-            background: transparent;
-            border: none;
-            border-left: 4px solid transparent;
-            color: var(--c-dim);
-            font-family: var(--f-head);
-            font-size: 1.2rem;
-            text-align: left;
+            padding: 8px 15px 8px 35px;
+            border-radius: 20px;
+            border: 1px solid #444;
+            background: #111;
+            color: #fff;
+            outline: none;
+            font-size: 0.9rem;
+        }
+        .search-box i {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #888;
+        }
+
+        /* Navigation Tabs */
+        .nav-tabs {
+            display: flex;
+            background-color: #050505;
+            padding: 0 10px;
+            overflow-x: auto;
+            flex-shrink: 0;
+            border-bottom: 1px solid #333;
+        }
+        .nav-tab {
+            padding: 15px 25px;
             cursor: pointer;
+            font-family: var(--font-header);
+            text-transform: uppercase;
+            color: #888;
+            border-bottom: 3px solid transparent;
             transition: all 0.2s;
+            flex-grow: 1; 
+            text-align: center;
+            font-size: 1rem;
+            white-space: nowrap;
             display: flex;
             align-items: center;
-            gap: 15px;
+            justify-content: center;
+            gap: 8px;
+        }
+        .nav-tab:hover { color: #fff; background-color: rgba(255,255,255,0.05); }
+        .nav-tab.active {
+            color: var(--color-ui-gold);
+            border-bottom-color: var(--color-ui-gold);
+            background-color: rgba(255, 215, 0, 0.05);
         }
 
-        .nav-btn:hover { background-color: rgba(255,255,255,0.03); color: #fff; }
-
-        .nav-btn.active {
-            background: linear-gradient(90deg, rgba(255,51,0,0.15) 0%, transparent 100%);
-            border-left-color: var(--c-fire);
-            color: #fff;
-            text-shadow: 0 0 10px rgba(255,51,0,0.5);
-        }
-
-        /* --- CONTENT AREA --- */
+        /* Content Area */
         .content-area {
             flex-grow: 1;
             overflow-y: auto;
-            padding: 40px;
-            background-color: var(--c-bg);
-            background-image: radial-gradient(circle at 50% 50%, rgba(255,51,0,0.02) 0%, transparent 40%);
+            padding: 30px;
+            scrollbar-width: thin;
+            scrollbar-color: var(--color-red) #111;
         }
         .content-area::-webkit-scrollbar { width: 8px; }
-        .content-area::-webkit-scrollbar-thumb { background-color: #333; border-radius: 4px; }
+        .content-area::-webkit-scrollbar-thumb { background-color: var(--color-red); border-radius: 4px; }
 
-        /* Sections */
-        .section { display: none; animation: fadeIn 0.4s ease; max-width: 1200px; margin: 0 auto; }
-        .section.active { display: block; }
-
-        .section-header {
-            border-bottom: 1px solid var(--c-border);
-            padding-bottom: 15px;
-            margin-bottom: 25px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
+        @keyframes slideUpFade {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        .section-title {
-            font-family: var(--f-head);
-            font-size: 2.2rem;
-            color: #fff;
-            margin: 0;
+        .section { display: none; max-width: 1200px; margin: 0 auto; }
+        .section.active { 
+            display: block; 
+            animation: slideUpFade 0.4s ease-out forwards;
         }
-
-        .section-icon { color: var(--c-fire); font-size: 2rem; opacity: 0.8; }
 
         /* Info Blocks */
         .info-block {
-            background-color: var(--c-content);
-            border: 1px solid var(--c-border);
-            border-radius: 6px;
+            background-color: var(--color-light-dark);
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            margin-bottom: 30px;
+            overflow: hidden;
+            transition: 0.2s;
+        }
+        .info-block:hover { border-color: var(--color-red); }
+
+        .block-header {
+            padding: 15px 20px;
+            background: #000;
+            border-bottom: 1px solid var(--color-border);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .block-title {
+            font-family: var(--font-header);
+            font-size: 1.4rem;
+            color: var(--color-red);
+            margin: 0;
+            text-transform: uppercase;
+        }
+        .block-header i { color: var(--color-ui-gold); }
+
+        .block-body {
             padding: 25px;
-            margin-bottom: 25px;
             line-height: 1.6;
             color: #ccc;
             font-size: 1rem;
         }
+        .block-body h3 { color: var(--color-gold); margin-bottom: 10px; font-family: var(--font-header); }
+        .block-body strong { color: #fff; }
 
-        .info-block h3 { color: var(--c-fire); font-family: var(--f-head); margin-top: 0; }
-        .info-block strong { color: #fff; }
-        .info-block ul { padding-left: 20px; margin: 15px 0; }
-        .info-block li { margin-bottom: 8px; }
+        .feature-list { list-style: none; margin: 15px 0; }
+        .feature-list li { margin-bottom: 10px; padding-left: 25px; position: relative; }
+        .feature-list li::before {
+            content: "\f105";
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            position: absolute;
+            left: 0;
+            color: var(--color-ui-gold); /* Pfeile in Goldgelb */
+        }
 
         /* Gem Grid */
         .gem-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            /* auto-fill statt auto-fit verhindert das Strecken einzelner Karten */
+            grid-template-columns: repeat(auto-fill, minmax(350px, 400px)); 
             gap: 20px;
+            justify-content: center;
         }
 
         .gem-card {
-            background: #181818;
-            border: 1px solid var(--c-border);
+            background: var(--color-light-dark);
+            border: 1px solid var(--color-border);
             border-radius: 8px;
             overflow: hidden;
             display: flex;
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: 0.2s;
             position: relative;
+            height: 100%;
         }
-        
         .gem-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 5px 20px rgba(0,0,0,0.5);
@@ -235,12 +269,11 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            border-right: 1px solid var(--c-border);
+            border-right: 1px solid var(--color-border);
             padding: 10px;
             position: relative;
+            flex-shrink: 0;
         }
-        
-        /* Glow behind image */
         .gem-img-container::after {
             content: '';
             position: absolute;
@@ -248,140 +281,73 @@
             background: radial-gradient(circle, var(--gem-color) 0%, transparent 70%);
             opacity: 0.2;
         }
-
         .gem-img {
-            width: 80px;
-            height: 80px;
+            width: 80px; height: 80px;
             object-fit: contain;
             z-index: 1;
             transition: transform 0.3s;
         }
         .gem-card:hover .gem-img { transform: scale(1.1); }
 
-        .gem-content {
-            flex: 1;
-            padding: 15px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
+        .gem-content { flex: 1; padding: 15px; display: flex; flex-direction: column; justify-content: center; }
+        .gem-title { font-family: var(--font-header); font-size: 1.4rem; margin: 0 0 5px 0; color: var(--gem-color); text-transform: uppercase; }
+        .gem-desc { font-size: 0.9rem; color: #bbb; margin-bottom: 10px; line-height: 1.3; }
+        .gem-source { font-size: 0.8rem; color: var(--color-gold); background: rgba(255,255,255,0.03); padding: 5px 10px; border-radius: 4px; border-left: 2px solid var(--gem-color); }
 
-        .gem-title {
-            font-family: var(--f-head);
-            font-size: 1.4rem;
-            margin: 0 0 5px 0;
-            color: var(--gem-color);
-        }
-
-        .gem-desc {
-            font-size: 0.9rem;
-            color: #bbb;
-            margin-bottom: 10px;
-            line-height: 1.3;
-        }
-
-        .gem-source {
-            font-size: 0.8rem;
-            color: #888;
-            background: rgba(255,255,255,0.05);
-            padding: 4px 8px;
-            border-radius: 4px;
-            display: inline-block;
-        }
-
-        @media (max-width: 900px) {
-            .widget-container { flex-direction: column; width: 100%; height: 100vh; border: none; border-radius: 0; }
-            .sidebar { width: 100%; height: auto; border-right: none; border-bottom: 2px solid var(--c-fire); }
-            .nav-menu { display: flex; margin: 15px 0; flex-wrap: wrap; justify-content: center; }
-            .nav-btn { justify-content: center; padding: 12px; font-size: 1rem; width: auto; border-left: none; border-bottom: 3px solid transparent; }
-            .nav-btn.active { background: transparent; border-bottom-color: var(--c-fire); }
-            .content-area { padding: 20px; }
+        @media (max-width: 850px) {
+            .title { font-size: 1.8rem; }
+            .nav-tab { padding: 10px; font-size: 0.85rem; }
+            .gem-grid { grid-template-columns: 1fr; }
             .gem-card { flex-direction: column; }
-            .gem-img-container { width: 100%; height: 100px; border-right: none; border-bottom: 1px solid var(--c-border); }
+            .gem-img-container { width: 100%; height: 120px; border-right: none; border-bottom: 1px solid var(--color-border); }
         }
     </style>
 </head>
 <body>
 
-    <div class="widget-container">
-        
-        <!-- SIDEBAR -->
-        <div class="sidebar">
-            <div class="header-area">
+    <div class="start-container">
+        <!-- GLOBAL FLAGS (Top Right) -->
+        <div class="lang-switch">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/b/ba/Flag_of_Germany.svg" class="lang-btn active" id="btn-de" onclick="setLang('de')" title="Deutsch">
+            <img src="https://upload.wikimedia.org/wikipedia/en/a/ae/Flag_of_the_United_Kingdom.svg" class="lang-btn" id="btn-en" onclick="setLang('en')" title="English">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/9/9a/Flag_of_Spain.svg" class="lang-btn" id="btn-es" onclick="setLang('es')" title="Español">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/c/c3/Flag_of_France.svg" class="lang-btn" id="btn-fr" onclick="setLang('fr')" title="Français">
+        </div>
+
+        <header class="header">
+            <div class="header-content">
                 <h1 class="title">Edelsteine</h1>
-                <span class="subtitle" id="uiSubtitle">Währung & Loot</span>
-                
-                <!-- Flaggen -->
-                <div class="lang-switch">
-                    <svg class="lang-btn active" id="btn-de" onclick="setLang('de')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 5 3">
-                        <rect width="5" height="3" fill="#000"/><rect width="5" height="2" y="1" fill="#D00"/><rect width="5" height="1" y="2" fill="#FFCE00"/>
-                    </svg>
-                    <svg class="lang-btn" id="btn-en" onclick="setLang('en')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 30">
-                        <clipPath id="s"><path d="M0,0 v30 h60 v-30 z"/></clipPath>
-                        <clipPath id="t"><path d="M30,15 h30 v15 z v15 h-30 z h-30 v-15 z v-15 h30 z"/></clipPath>
-                        <g clip-path="url(#s)">
-                            <path d="M0,0 v30 h60 v-30 z" fill="#012169"/>
-                            <path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/>
-                            <path d="M0,0 L60,30 M60,0 L0,30" clip-path="url(#t)" stroke="#C8102E" stroke-width="4"/>
-                            <path d="M30,0 v30 M0,15 h60" stroke="#fff" stroke-width="10"/>
-                            <path d="M30,0 v30 M0,15 h60" stroke="#C8102E" stroke-width="6"/>
-                        </g>
-                    </svg>
-                    <svg class="lang-btn" id="btn-es" onclick="setLang('es')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 750 500">
-                        <rect width="750" height="500" fill="#AA151B"/>
-                        <rect width="750" height="250" y="125" fill="#F1BF00"/>
-                    </svg>
-                    <svg class="lang-btn" id="btn-fr" onclick="setLang('fr')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600">
-                        <rect width="900" height="600" fill="#ED2939"/>
-                        <rect width="600" height="600" fill="#fff"/>
-                        <rect width="300" height="600" fill="#002395"/>
-                    </svg>
-                </div>
+                <div class="subtitle" id="uiSubtitle">Währung & Loot</div>
             </div>
-            
-            <ul class="nav-menu">
-                <li>
-                    <button class="nav-btn active" onclick="showTab('info', this)" id="navInfo">
-                        <i class="fa-solid fa-info-circle"></i> Übersicht
-                    </button>
-                </li>
-                <li>
-                    <button class="nav-btn" onclick="showTab('standard', this)" id="navStandard">
-                        <i class="fa-solid fa-coins"></i> Standard Gems
-                    </button>
-                </li>
-                <li>
-                    <button class="nav-btn" onclick="showTab('boss', this)" id="navBoss">
-                        <i class="fa-solid fa-skull"></i> Boss & Spezial
-                    </button>
-                </li>
-            </ul>
+        </header>
+
+        <div class="search-container">
+            <div class="search-box">
+                <i class="fa fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Suche..." onkeyup="filterContent()">
+            </div>
         </div>
 
-        <!-- CONTENT -->
-        <div class="content-area" id="contentContainer">
-             <!-- Content injected via JS -->
-        </div>
+        <nav class="nav-tabs" id="navContainer">
+            <!-- JS Injection -->
+        </nav>
 
+        <main class="content-area" id="contentContainer">
+            <!-- Dynamic Injection -->
+        </main>
     </div>
 
     <script>
-        // =========================================================================
-        // 1. DATENBANK (ÜBERSETZUNGEN)
-        // =========================================================================
         const translations = {
             subtitle: { de: "Währung & Loot", en: "Currency & Loot", es: "Moneda y Botín", fr: "Devise et Butin" },
-            
             nav: {
                 info: { de: "Übersicht", en: "Overview", es: "Resumen", fr: "Aperçu" },
                 standard: { de: "Standard Gems", en: "Standard Gems", es: "Gemas Estándar", fr: "Gemmes Standard" },
                 boss: { de: "Boss & Spezial", en: "Boss & Special", es: "Jefe y Especial", fr: "Boss et Spécial" }
             },
-
             sections: {
                 info: {
                     header: { de: "Das Währungssystem", en: "The Currency System", es: "Sistema de Moneda", fr: "Le Système de Devises" },
-                    
                     intro_title: { de: "Allgemeines", en: "General Information", es: "Información General", fr: "Informations Générales" },
                     intro_text: { 
                         de: "<p>Ihr könnt bei uns verschiedene Edelsteine, Kreaturen-Seelen und Tokens erhalten. Diese dienen als Währung auf dem <strong>Schwarzmarkt</strong>.</p><p><strong>Verwendungszweck:</strong></p>",
@@ -395,7 +361,6 @@
                         es: ["Compra armas, herramientas y armaduras mejoradas.", "Adquiere skins, mascotas y pociones míticas.", "Compra criaturas legendarias."],
                         fr: ["Achetez des armes, outils et armures améliorés.", "Acquérez des skins, animaux et potions mythiques.", "Achetez des créatures légendaires."]
                     },
-                    
                     source_title: { de: "Wie erhalte ich Edelsteine?", en: "How to get Gems?", es: "¿Cómo obtener Gemas?", fr: "Comment obtenir des Gemmes ?" },
                     source_text: { de: "<p>Edelsteine können auf verschiedenste Weisen verdient werden:</p>", en: "<p>Gems can be earned in various ways:</p>", es: "<p>Las gemas se obtienen de varias formas:</p>", fr: "<p>Les gemmes peuvent être gagnées de diverses manières :</p>" },
                     source_list: {
@@ -405,188 +370,111 @@
                         fr: ["Combats de Boss (Ark & Miniboss)", "Récompenses de Quêtes", "Événements", "Grottes Tek", "Vente de Tributs"]
                     }
                 },
-                standard: {
-                    header: { de: "Standard Edelsteine", en: "Standard Gems", es: "Gemas Estándar", fr: "Gemmes Standard" },
-                    gems: [
-                        {
-                            color: "#f7ad6b",
-                            img: "https://i.postimg.cc/T3g6Qq3q/Bernstein.png",
-                            title: { de: "Bernsteine", en: "Amber", es: "Ámbar", fr: "Ambre" },
-                            desc: { de: "Die niedrigste Währung. Wird für kleinere Händler und erste Markt-Strukturen benötigt.", en: "Lowest currency. Used for small traders and basic market structures.", es: "Moneda más baja. Para comerciantes pequeños.", fr: "Devise la plus basse. Pour petits commerçants." },
-                            source_label: { de: "Quelle:", en: "Source:", es: "Fuente:", fr: "Source :" },
-                            source: { de: "Spielerbank (Tribute-Verkauf), Alpha Drops", en: "Player Bank, Alpha Drops", es: "Banco, Alpha Drops", fr: "Banque, Alpha Drops" }
-                        },
-                        {
-                            color: "#ff0000",
-                            img: "https://i.postimg.cc/xdm3X8gd/Rubin.png",
-                            title: { de: "Rubine", en: "Rubies", es: "Rubíes", fr: "Rubis" },
-                            desc: { de: "Verdient durch Aktivität und Aufgaben.", en: "Earned through activity and tasks.", es: "Ganado por actividad y tareas.", fr: "Gagné par activité et tâches." },
-                            source_label: { de: "Quellen:", en: "Sources:", es: "Fuentes:", fr: "Sources :" },
-                            source: { 
-                                de: "Daily Quest: 5x | Weekly Quest: 15x | Vote: 5x", 
-                                en: "Daily Quest: 5x | Weekly Quest: 15x | Vote: 5x",
-                                es: "Misión Diaria: 5x | Semanal: 15x | Voto: 5x",
-                                fr: "Quête Jour: 5x | Hebdo: 15x | Vote: 5x"
-                            }
-                        },
-                        {
-                            color: "#9966cc",
-                            img: "https://i.postimg.cc/YCMHnLG5/Anesthyt.png",
-                            title: { de: "Amethyste", en: "Amethysts", es: "Amatistas", fr: "Améthystes" },
-                            desc: { de: "Eine mittlere Währung für diverse Händler.", en: "Medium currency for various traders.", es: "Moneda media para comerciantes.", fr: "Devise moyenne pour divers marchands." },
-                            source_label: { de: "Quelle:", en: "Source:", es: "Fuente:", fr: "Source :" },
-                            source: { de: "Diverse Quellen & Händler", en: "Various sources & traders", es: "Varias fuentes", fr: "Diverses sources" }
-                        }
-                    ]
-                },
-                boss: {
-                    header: { de: "Boss & Spezial Edelsteine", en: "Boss & Special Gems", es: "Jefe y Gemas Especiales", fr: "Boss et Gemmes Spéciales" },
-                    gems: [
-                        {
-                            color: "#00ff00",
-                            img: "https://i.postimg.cc/X7ZGjhsj/Smaragd.png",
-                            title: { de: "Smaragde", en: "Emeralds", es: "Esmeraldas", fr: "Émeraudes" },
-                            desc: { de: "Von Open World Bossen. Wichtig für bessere Ausrüstung.", en: "From Open World Bosses. Important for better gear.", es: "De Jefes de Mundo. Para mejor equipo.", fr: "Des Boss Open World. Pour meilleur équipement." },
-                            source_label: { de: "Drops von:", en: "Drops from:", es: "Botín de:", fr: "Butin de :" },
-                            source: { de: "Mantisqueen, Scorpionking, Beelzebufo King, Rhinobeast", en: "Mantisqueen, Scorpionking, Beelzebufo King, Rhinobeast", es: "Mantisqueen, Scorpionking...", fr: "Mantisqueen, Scorpionking..." }
-                        },
-                        {
-                            color: "#0055ff",
-                            img: "https://i.postimg.cc/sXvQMN34/Saphir.png",
-                            title: { de: "Saphire", en: "Sapphires", es: "Zafiros", fr: "Saphirs" },
-                            desc: { de: "Tauschbar gegen Teleportsteine beim Magier.", en: "Exchangeable for Teleport Stones at the Mage.", es: "Canjeable por Piedras de Teletransporte.", fr: "Échangeable contre Pierres de Téléportation." },
-                            source_label: { de: "Drops:", en: "Drops:", es: "Botín:", fr: "Butin :" },
-                            source: { de: "Rare Kill: 1x | Legendary Kill: 3x", en: "Rare Kill: 1x | Legendary Kill: 3x", es: "Rare Kill: 1x | Legendary Kill: 3x", fr: "Rare Kill: 1x | Legendary Kill: 3x" }
-                        },
-                        {
-                            color: "#00ffff",
-                            img: "https://i.postimg.cc/0QqFQLYL/Diamant.png",
-                            title: { de: "Diamanten", en: "Diamonds", es: "Diamantes", fr: "Diamants" },
-                            desc: { de: "Der höchste Wert. Nur durch Ark Bosskämpfe zu erhalten.", en: "Highest value. Only obtainable from Ark Boss fights.", es: "Valor más alto. Solo de Jefes Ark.", fr: "Valeur la plus élevée. Uniquement sur Boss Ark." },
-                            source_label: { de: "Boss Drops:", en: "Boss Drops:", es: "Botín de Jefe:", fr: "Butin de Boss :" },
-                            source: { de: "Gamma: 1x | Beta: 2x | Alpha: 5x", en: "Gamma: 1x | Beta: 2x | Alpha: 5x", es: "Gamma: 1x | Beta: 2x | Alpha: 5x", fr: "Gamma: 1x | Bêta: 2x | Alpha: 5x" }
-                        },
-                        {
-                            color: "#ff00ff",
-                            img: "https://i.postimg.cc/DwTx1qJX/15.png",
-                            title: { de: "Arkensteine", en: "Arkenstones", es: "Piedras del Arca", fr: "Pierres d'Arche" },
-                            desc: { de: "Mächtiges Artefakt. Löst bei Erhalt sofortige Server-Boosts aus.", en: "Powerful artifact. Triggers immediate server boosts upon receipt.", es: "Artefacto poderoso. Activa boosts al obtenerlo.", fr: "Artefact puissant. Active des boosts immédiats." },
-                            source_label: { de: "Quelle:", en: "Source:", es: "Fuente:", fr: "Source :" },
-                            source: { de: "Tek Cave Abschluss (Gamma/Beta/Alpha)", en: "Tek Cave Completion", es: "Completar Cueva Tek", fr: "Fin de Grotte Tek" }
-                        }
-                    ]
-                }
+                standard: [
+                    { color: "#f7ad6b", img: "https://i.postimg.cc/T3g6Qq3q/Bernstein.png", title: { de: "Bernsteine", en: "Amber", es: "Ámbar", fr: "Ambre" }, desc: { de: "Die niedrigste Währung. Wird für kleinere Händler und erste Markt-Strukturen benötigt.", en: "Lowest currency. Used for small traders and basic market structures.", es: "Moneda más baja. Para comerciantes pequeños.", fr: "Devise la plus basse. Pour petits commerçants." }, source: { de: "Spielerbank (Tribute-Verkauf), Alpha Drops", en: "Player Bank, Alpha Drops", es: "Banco, Alpha Drops", fr: "Banque, Alpha Drops" } },
+                    { color: "#ff0000", img: "https://i.postimg.cc/xdm3X8gd/Rubin.png", title: { de: "Rubine", en: "Rubies", es: "Rubíes", fr: "Rubis" }, desc: { de: "Verdient durch Aktivität und Aufgaben.", en: "Earned through activity and tasks.", es: "Ganado por actividad y tareas.", fr: "Gagné par activité et tâches." }, source: { de: "Daily Quest: 5x | Weekly Quest: 15x | Vote: 5x", en: "Daily Quest: 5x | Weekly Quest: 15x | Vote: 5x", es: "Misión Diaria: 5x | Semanal: 15x | Voto: 5x", fr: "Quête Jour: 5x | Hebdo: 15x | Vote: 5x" } },
+                    { color: "#9966cc", img: "https://i.postimg.cc/YCMHnLG5/Anesthyt.png", title: { de: "Amethyste", en: "Amethysts", es: "Amatistas", fr: "Améthystes" }, desc: { de: "Eine mittlere Währung für diverse Händler.", en: "Medium currency for various traders.", es: "Moneda media para comerciantes.", fr: "Devise moyenne pour divers marchands." }, source: { de: "Diverse Quellen & Händler", en: "Various sources & traders", es: "Varias fuentes", fr: "Diverses sources" } }
+                ],
+                boss: [
+                    { color: "#00ff00", img: "https://i.postimg.cc/X7ZGjhsj/Smaragd.png", title: { de: "Smaragde", en: "Emeralds", es: "Esmeraldas", fr: "Émeraudes" }, desc: { de: "Von Open World Bossen. Wichtig für bessere Ausrüstung.", en: "From Open World Bosses. Important for better gear.", es: "De Jefes de Mundo. Para mejor equipo.", fr: "Des Boss Open World. Pour meilleur équipement." }, source: { de: "Mantisqueen, Scorpionking, Beelzebufo King, Rhinobeast", en: "Mantisqueen, Scorpionking, Beelzebufo King, Rhinobeast", es: "Mantisqueen, Scorpionking...", fr: "Mantisqueen, Scorpionking..." } },
+                    { color: "#0055ff", img: "https://i.postimg.cc/sXvQMN34/Saphir.png", title: { de: "Saphire", en: "Sapphires", es: "Zafiros", fr: "Saphirs" }, desc: { de: "Tauschbar gegen Teleportsteine beim Magier.", en: "Exchangeable for Teleport Stones at the Mage.", es: "Canjeable por Piedras de Teletransporte.", fr: "Échangeable contre Pierres de Téléportation." }, source: { de: "Rare Kill: 1x | Legendary Kill: 3x", en: "Rare Kill: 1x | Legendary Kill: 3x", es: "Rare Kill: 1x | Legendary Kill: 3x", fr: "Rare Kill: 1x | Legendary Kill: 3x" } },
+                    { color: "#00ffff", img: "https://i.postimg.cc/0QqFQLYL/Diamant.png", title: { de: "Diamanten", en: "Diamonds", es: "Diamantes", fr: "Diamants" }, desc: { de: "Der höchste Wert. Nur durch Ark Bosskämpfe zu erhalten.", en: "Highest value. Only obtainable from Ark Boss fights.", es: "Valor más alto. Solo de Jefes Ark.", fr: "Valeur la plus élevée. Uniquement sur Boss Ark." }, source: { de: "Gamma: 1x | Beta: 2x | Alpha: 5x", en: "Gamma: 1x | Beta: 2x | Alpha: 5x", es: "Gamma: 1x | Beta: 2x | Alpha: 5x", fr: "Gamma: 1x | Bêta: 2x | Alpha: 5x" } },
+                    { color: "#ff00ff", img: "https://i.postimg.cc/DwTx1qJX/15.png", title: { de: "Arkensteine", en: "Arkenstones", es: "Piedras del Arca", fr: "Pierres d'Arche" }, desc: { de: "Mächtiges Artefakt. Löst bei Erhalt sofortige Server-Boosts aus.", en: "Powerful artifact. Triggers immediate server boosts upon receipt.", es: "Artefacto poderoso. Activa boosts al obtenerlo.", fr: "Artefact puissant. Active des boosts immédiats." }, source: { de: "Tek Cave Abschluss (Gamma/Beta/Alpha)", en: "Tek Cave Completion", es: "Completar Cueva Tek", fr: "Fin de Grotte Tek" } }
+                ]
             }
         };
 
-        // =========================================================================
-        // 2. LOGIC
-        // =========================================================================
         let currentLang = 'de';
-        let currentTab = 'info';
+        let activeTab = 'info';
 
         function setLang(lang) {
             currentLang = lang;
-            
-            // Buttons
             document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
             document.getElementById('btn-' + lang).classList.add('active');
-
-            // Static Text
-            document.getElementById('uiSubtitle').innerText = translations.subtitle[lang];
             
-            // Nav Text
-            document.getElementById('navInfo').innerHTML = `<i class="fa-solid fa-info-circle"></i> ${translations.nav.info[lang]}`;
-            document.getElementById('navStandard').innerHTML = `<i class="fa-solid fa-coins"></i> ${translations.nav.standard[lang]}`;
-            document.getElementById('navBoss').innerHTML = `<i class="fa-solid fa-skull"></i> ${translations.nav.boss[lang]}`;
-
-            // Re-render Content
+            document.getElementById('uiSubtitle').innerText = translations.subtitle[lang];
+            document.getElementById('searchInput').placeholder = lang === 'de' ? 'Suchen...' : 'Search...';
+            renderNav();
             renderContent();
         }
 
-        function showTab(tabId, btn) {
-            currentTab = tabId;
-            
-            // Buttons UI
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-
-            renderContent();
+        function renderNav() {
+            const nav = document.getElementById('navContainer');
+            nav.innerHTML = '';
+            const sections = ['info', 'standard', 'boss'];
+            const icons = ['fa-info-circle', 'fa-coins', 'fa-skull'];
+            sections.forEach((s, i) => {
+                const tab = document.createElement('div');
+                tab.className = `nav-tab ${s === activeTab ? 'active' : ''}`;
+                tab.innerHTML = `<i class="fa-solid ${icons[i]}"></i> ${translations.nav[s][currentLang]}`;
+                tab.onclick = () => { activeTab = s; renderNav(); renderContent(); };
+                nav.appendChild(tab);
+            });
         }
 
         function renderContent() {
             const container = document.getElementById('contentContainer');
             container.innerHTML = '';
-            
-            const data = translations.sections;
+            const l = currentLang;
+            const filter = document.getElementById('searchInput').value.toLowerCase();
+            const sectionWrapper = document.createElement('div');
+            sectionWrapper.className = 'section active';
 
-            if (currentTab === 'info') {
-                container.innerHTML = `
-                    <div class="section active">
-                        <div class="section-header">
-                            <i class="fa-solid fa-info-circle section-icon"></i>
-                            <h2 class="section-title">${data.info.header[currentLang]}</h2>
+            if (activeTab === 'info') {
+                const data = translations.sections.info;
+                sectionWrapper.innerHTML = `
+                    <div class="info-block searchable">
+                        <div class="block-header"><i class="fa-solid fa-info-circle"></i><h3 class="block-title">${data.header[l]}</h3></div>
+                        <div class="block-body">
+                            <h3>${data.intro_title[l]}</h3>
+                            ${data.intro_text[l]}
+                            <ul class="feature-list">${data.usage_list[l].map(li => `<li>${li}</li>`).join('')}</ul>
                         </div>
-                        
-                        <div class="info-block">
-                            <h3>${data.info.intro_title[currentLang]}</h3>
-                            ${data.info.intro_text[currentLang]}
-                            <ul>${data.info.usage_list[currentLang].map(li => `<li>${li}</li>`).join('')}</ul>
-                        </div>
-
-                        <div class="info-block">
-                            <h3>${data.info.source_title[currentLang]}</h3>
-                            ${data.info.source_text[currentLang]}
-                            <ul>${data.info.source_list[currentLang].map(li => `<li>${li}</li>`).join('')}</ul>
+                    </div>
+                    <div class="info-block searchable">
+                        <div class="block-header"><i class="fa-solid fa-gem"></i><h3 class="block-title">${data.source_title[l]}</h3></div>
+                        <div class="block-body">
+                            ${data.source_text[l]}
+                            <ul class="feature-list">${data.source_list[l].map(li => `<li>${li}</li>`).join('')}</ul>
                         </div>
                     </div>
                 `;
-            } else if (currentTab === 'standard') {
-                const header = `
-                    <div class="section-header">
-                        <i class="fa-solid fa-coins section-icon"></i>
-                        <h2 class="section-title">${data.standard.header[currentLang]}</h2>
-                    </div>`;
+            } else {
+                const gems = translations.sections[activeTab];
+                const grid = document.createElement('div');
+                grid.className = 'gem-grid';
                 
-                const grid = `<div class="gem-grid">` + data.standard.gems.map(g => `
-                    <div class="gem-card" style="--gem-color: ${g.color};">
+                gems.forEach(g => {
+                    const title = g.title[l].toLowerCase();
+                    if (filter && !title.includes(filter)) return;
+
+                    const card = document.createElement('div');
+                    card.className = 'gem-card searchable';
+                    card.style.setProperty('--gem-color', g.color);
+                    card.innerHTML = `
                         <div class="gem-img-container"><img src="${g.img}" class="gem-img"></div>
                         <div class="gem-content">
-                            <h3 class="gem-title">${g.title[currentLang]}</h3>
-                            <div class="gem-desc">${g.desc[currentLang]}</div>
-                            <div class="gem-source"><strong>${g.source_label[currentLang]}</strong> ${g.source[currentLang]}</div>
+                            <h3 class="gem-title">${g.title[l]}</h3>
+                            <p class="gem-desc">${g.desc[l]}</p>
+                            <div class="gem-source"><strong>Quelle:</strong> ${g.source[l]}</div>
                         </div>
-                    </div>
-                `).join('') + `</div>`;
+                    `;
+                    grid.appendChild(card);
+                });
+                sectionWrapper.appendChild(grid);
+            }
 
-                container.innerHTML = `<div class="section active">${header}${grid}</div>`;
-            } else if (currentTab === 'boss') {
-                const header = `
-                    <div class="section-header">
-                        <i class="fa-solid fa-skull section-icon"></i>
-                        <h2 class="section-title">${data.boss.header[currentLang]}</h2>
-                    </div>`;
-
-                const grid = `<div class="gem-grid">` + data.boss.gems.map(g => `
-                    <div class="gem-card" style="--gem-color: ${g.color};">
-                        <div class="gem-img-container"><img src="${g.img}" class="gem-img"></div>
-                        <div class="gem-content">
-                            <h3 class="gem-title">${g.title[currentLang]}</h3>
-                            <div class="gem-desc">${g.desc[currentLang]}</div>
-                            <div class="gem-source"><strong>${g.source_label[currentLang]}</strong> ${g.source[currentLang]}</div>
-                        </div>
-                    </div>
-                `).join('') + `</div>`;
-
-                container.innerHTML = `<div class="section active">${header}${grid}</div>`;
+            container.appendChild(sectionWrapper);
+            if (filter) {
+                document.querySelectorAll('.searchable').forEach(el => {
+                    const text = el.innerText.toLowerCase();
+                    el.style.display = text.includes(filter) ? '' : 'none';
+                });
             }
         }
 
-        // Init
-        window.onload = function() {
-            setLang('de');
-        };
-
+        function filterContent() { renderContent(); }
+        window.onload = () => setLang('de');
     </script>
 </body>
 </html>
