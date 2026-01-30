@@ -4,213 +4,210 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IOP Rare & Legendary Spawns</title>
-    <link href="https://fonts.googleapis.com/css2?family=Acme&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Acme&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* IOP Style Variables */
+        /* Farbschema: Feuerrot, Schwarz und Goldgelb */
         :root {
-            --color-dark: rgba(20, 20, 20, 0.95);
-            --color-light-dark: rgba(40, 40, 40, 0.9);
+            --color-red: #E53935;
+            --color-black: #000000;
+            --color-dark: #0a0a0a;
+            --color-light-dark: #161616;
             --color-text: #f7f7f7;
-            
-            /* Rare Colors (Gold) */
-            --color-rare: #FFD700;
-            --color-rare-glow: rgba(255, 215, 0, 0.6);
-            
-            /* Legendary Colors (Red) */
-            --color-legendary: #FF5252;
-            --color-legendary-glow: rgba(255, 82, 82, 0.6);
-            
+            --color-gold: #FFD700; /* Goldgelb für Akzente */
+            --color-ui-gold: #FFD700;
+            --color-border: #333;
             --color-info: #2196F3;
-            
-            --font-main: sans-serif;
             --font-header: 'Acme', sans-serif;
+            --font-body: 'Roboto', sans-serif;
         }
 
-        * { box-sizing: border-box; }
+        * { box-sizing: border-box; margin: 0; padding: 0; scroll-behavior: smooth; }
 
         body {
             background-color: transparent;
-            font-family: var(--font-main);
+            font-family: var(--font-body);
             color: var(--color-text);
-            margin: 0;
-            padding: 0; 
+            height: 100vh;
+            width: 100vw;
             display: flex;
             flex-direction: column;
             align-items: center;
-            height: 100vh;
-            width: 100vw;
-            overflow: hidden; 
+            overflow: hidden;
         }
 
-        /* Container */
-        .rare-container {
+        /* Widget Container - Einheitliche Breite */
+        .start-container {
             background-color: var(--color-dark);
             border-radius: 8px; 
-            border: 2px solid var(--color-legendary);
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.8);
-            width: 100%;
-            height: 100%;
+            border: 2px solid var(--color-red);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+            width: 98%;
+            height: 96vh;
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            margin-top: 2vh;
             position: relative;
         }
 
-        /* Header */
+        /* Schlichter schwarzer Header */
         .header {
-            background: linear-gradient(135deg, rgba(60,50,0,0.8), rgba(50,0,0,0.8));
-            padding: 20px;
+            background-color: var(--color-black);
+            padding: 25px 20px;
             text-align: center;
-            border-bottom: 2px solid var(--color-legendary);
+            border-bottom: 2px solid var(--color-red);
             flex-shrink: 0;
-            display: flex;
-            justify-content: center; /* Zentriert Title */
-            align-items: center;
-            position: relative;
-            overflow: visible; /* Für Flaggen */
         }
-        
-        /* Animierter Hintergrund-Effekt */
-        .header::after {
-            content: '';
-            position: absolute;
-            top: -50%; left: -50%; width: 200%; height: 200%;
-            background: radial-gradient(circle, rgba(255,82,82,0.1) 0%, transparent 70%); /* Roter Glow */
-            animation: rotate-glow 10s linear infinite;
-            z-index: 0;
-            pointer-events: none;
-        }
-
-        @keyframes rotate-glow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
         .header-content {
-            z-index: 1;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Flaggen oben rechts */
+        .lang-switch {
+            position: absolute;
+            top: 15px;
+            right: 15px;
             display: flex;
-            flex-direction: column;
+            gap: 10px;
+            z-index: 100;
+        }
+        .lang-btn {
+            width: 25px; height: 16px;
+            cursor: pointer;
+            border-radius: 2px;
+            border: 1px solid #fff;
+            opacity: 0.6;
+            transition: 0.2s;
+            object-fit: cover;
+        }
+        .lang-btn.active, .lang-btn:hover {
+            opacity: 1;
+            transform: scale(1.15);
+            border-color: var(--color-ui-gold);
         }
 
         .title {
             font-family: var(--font-header);
-            font-size: 2.2rem; 
+            font-size: 2.4rem; 
+            color: var(--color-red);
             text-transform: uppercase;
             margin: 0;
-            background: linear-gradient(to right, var(--color-rare), var(--color-legendary));
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            text-shadow: 0 0 20px rgba(255,215,0,0.3);
             letter-spacing: 2px;
-            line-height: 1.1;
         }
 
         .subtitle {
-            color: #ddd;
+            color: var(--color-ui-gold);
             font-size: 1rem;
-            font-style: italic;
-        }
-
-        /* FLAGGEN SWITCHER */
-        .lang-switch {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            display: flex;
-            gap: 5px;
-            z-index: 10;
-        }
-        .lang-btn {
-            width: 30px; height: 20px;
-            cursor: pointer;
-            border-radius: 3px;
-            border: 1px solid #fff;
-            opacity: 0.5;
-            transition: transform 0.2s, opacity 0.2s;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
-            padding: 0;
-            display: block;
-        }
-        .lang-btn:hover, .lang-btn.active {
-            opacity: 1; transform: scale(1.15);
-            border-color: var(--color-rare);
-            z-index: 10;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 500;
         }
 
         /* Navigation Tabs */
         .nav-tabs {
             display: flex;
-            background-color: rgba(255,255,255,0.05);
+            background-color: #050505;
             padding: 0 10px;
             overflow-x: auto;
             flex-shrink: 0;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            z-index: 2;
+            border-bottom: 1px solid #333;
         }
-
         .nav-tab {
-            padding: 15px 20px;
+            padding: 15px 25px;
             cursor: pointer;
             font-family: var(--font-header);
             text-transform: uppercase;
-            color: #aaa;
+            color: #888;
             border-bottom: 3px solid transparent;
             transition: all 0.2s;
             flex-grow: 1; 
             text-align: center;
-            font-size: 1.1rem;
+            font-size: 1rem;
             white-space: nowrap;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
-
         .nav-tab:hover { color: #fff; background-color: rgba(255,255,255,0.05); }
-        
-        .nav-tab.active-info { color: var(--color-info); border-bottom-color: var(--color-info); }
-        .nav-tab.active-rare { color: var(--color-rare); border-bottom-color: var(--color-rare); }
-        .nav-tab.active-legendary { color: var(--color-legendary); border-bottom-color: var(--color-legendary); }
+        .nav-tab.active {
+            color: var(--color-ui-gold); /* Aktiver Reiter in Goldgelb */
+            border-bottom-color: var(--color-ui-gold);
+            background-color: rgba(255, 215, 0, 0.05);
+        }
 
         /* Content Area */
         .content-area {
             flex-grow: 1;
             overflow-y: auto;
-            padding: 20px;
+            padding: 30px;
             scrollbar-width: thin;
-            scrollbar-color: var(--color-legendary) transparent;
+            scrollbar-color: var(--color-red) #111;
         }
         .content-area::-webkit-scrollbar { width: 8px; }
-        .content-area::-webkit-scrollbar-thumb { background-color: var(--color-legendary); border-radius: 4px; }
+        .content-area::-webkit-scrollbar-thumb { background-color: var(--color-red); border-radius: 4px; }
 
-        /* Sections */
-        .section { display: none; animation: fadeIn 0.4s ease; }
-        .section.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* Info Cards */
-        .info-card {
-            background-color: var(--color-light-dark);
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            border: 1px solid rgba(255,255,255,0.05);
-            border-left: 4px solid #fff; /* Default override by inline style */
+        @keyframes slideUpFade {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        .info-card h3 {
-            margin-top: 0;
-            font-family: var(--font-header);
-            font-size: 1.4rem;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            padding-bottom: 10px;
-            margin-bottom: 15px;
+        .section { display: none; max-width: 1000px; margin: 0 auto; }
+        .section.active { 
+            display: block; 
+            animation: slideUpFade 0.4s ease-out forwards;
+        }
+
+        /* Info Blocks */
+        .info-block {
+            background-color: var(--color-light-dark);
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            margin-bottom: 30px;
+            overflow: hidden;
+            transition: 0.2s;
+        }
+        .info-block:hover { border-color: var(--color-red); }
+
+        .block-header {
+            padding: 15px 20px;
+            background: #000;
+            border-bottom: 1px solid var(--color-border);
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
         }
+        .block-title {
+            font-family: var(--font-header);
+            font-size: 1.4rem;
+            color: var(--color-red);
+            margin: 0;
+            text-transform: uppercase;
+        }
+        .block-header i { color: var(--color-ui-gold); } /* Icons in Goldgelb */
 
-        .text-content { color: #ccc; line-height: 1.6; font-size: 0.95rem; }
-        .text-content strong { color: #fff; }
-        .text-content ul { padding-left: 20px; margin-top: 5px; }
-        .text-content li { margin-bottom: 8px; }
+        .block-body {
+            padding: 25px;
+            line-height: 1.6;
+            color: #ccc;
+            font-size: 1rem;
+        }
+        .block-body strong { color: #fff; }
+
+        .feature-list { list-style: none; margin: 15px 0; }
+        .feature-list li { margin-bottom: 10px; padding-left: 25px; position: relative; }
+        .feature-list li::before {
+            content: "\f105";
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            position: absolute;
+            left: 0;
+            color: var(--color-ui-gold); /* Pfeile in Goldgelb */
+        }
 
         /* Visual Style Cards (Rare vs Legendary) */
         .visual-card {
@@ -218,390 +215,277 @@
             align-items: center;
             background-color: rgba(0,0,0,0.3);
             border-radius: 8px;
-            padding: 15px;
+            padding: 20px;
             margin-top: 15px;
             border-left: 5px solid #fff;
         }
+        .rare-style { border-left-color: var(--color-gold); }
+        .legendary-style { border-left-color: var(--color-red); }
+
+        .visual-icon { font-size: 2rem; margin-right: 20px; width: 50px; text-align: center; }
         
-        .rare-style { border-left-color: var(--color-rare); }
-        .legendary-style { border-left-color: var(--color-legendary); }
+        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
 
-        .visual-icon {
-            font-size: 2rem;
-            margin-right: 15px;
-            width: 50px;
-            text-align: center;
-        }
-
-        /* Loot Table Styles */
+        /* Loot Table */
         .loot-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 10px;
+            margin-top: 20px;
+            background-color: rgba(0,0,0,0.2);
+            border-radius: 8px;
+            overflow: hidden;
         }
         .loot-table th, .loot-table td {
-            padding: 12px;
+            padding: 15px;
             text-align: left;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+            border-bottom: 1px solid #222;
         }
         .loot-table th {
-            background-color: rgba(255,255,255,0.05);
-            color: var(--color-gold); /* Header bleibt Gold/Neutral */
+            background-color: #000;
+            color: var(--color-ui-gold);
             font-family: var(--font-header);
             text-transform: uppercase;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
+            letter-spacing: 1px;
         }
         .loot-table tr:last-child td { border-bottom: none; }
-        .loot-icon { color: #aaa; width: 25px; text-align: center; display: inline-block; }
+        .loot-icon { color: var(--color-ui-gold); margin-right: 10px; width: 20px; text-align: center; }
         
         .loot-chance {
             font-weight: bold;
-            color: #fff;
-            background-color: rgba(255,255,255,0.1);
-            padding: 3px 8px;
+            padding: 4px 10px;
             border-radius: 4px;
             font-size: 0.85rem;
+            display: inline-block;
         }
 
         /* Warning Box */
         .warning-box {
-            background-color: rgba(255, 87, 34, 0.1);
-            border: 1px solid #FF5722;
-            color: #ffccbc;
-            padding: 15px;
-            border-radius: 6px;
+            background-color: rgba(229, 57, 53, 0.1);
+            border: 1px solid var(--color-red);
+            color: #ffcccc;
+            padding: 20px;
+            border-radius: 8px;
             margin-top: 20px;
             display: flex;
-            gap: 15px;
+            gap: 20px;
             align-items: flex-start;
         }
-        .warning-box i { font-size: 1.5rem; color: #FF5722; margin-top: 3px; }
+        .warning-box i { font-size: 1.8rem; color: var(--color-red); margin-top: 2px; }
 
-        /* Discord Link Style */
         .discord-link {
             display: inline-block;
             background-color: #5865F2;
             color: white;
-            padding: 5px 10px;
+            padding: 2px 8px;
             border-radius: 4px;
-            text-decoration: none;
             font-weight: bold;
-            font-size: 0.8rem;
-            margin-left: 5px;
+            font-size: 0.85rem;
+            text-decoration: none;
         }
-        .discord-link:hover { background-color: #4752C4; }
 
-        @media (max-width: 600px) {
-            .title { font-size: 1.6rem; }
-            .nav-tab { padding: 10px; font-size: 0.9rem; }
-            .loot-table { font-size: 0.85rem; }
-            
-            .header { flex-direction: column; gap: 10px; }
-            .lang-switch { position: static; margin-bottom: 5px; }
+        @media (max-width: 850px) {
+            .title { font-size: 1.8rem; }
+            .nav-tab { padding: 10px; font-size: 0.85rem; }
+            .loot-table th, .loot-table td { padding: 10px; font-size: 0.85rem; }
+            .visual-card { flex-direction: column; text-align: center; }
+            .visual-icon { margin-right: 0; margin-bottom: 10px; }
         }
     </style>
 </head>
 <body>
 
-    <div class="rare-container">
-        
-        <div class="header">
-            <!-- 4 Flaggen -->
-            <div class="lang-switch">
-                <svg class="lang-btn active" id="btn-de" onclick="setLang('de')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 5 3">
-                    <rect width="5" height="3" fill="#000"/><rect width="5" height="2" y="1" fill="#D00"/><rect width="5" height="1" y="2" fill="#FFCE00"/>
-                </svg>
-                <svg class="lang-btn" id="btn-en" onclick="setLang('en')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 30">
-                    <clipPath id="s"><path d="M0,0 v30 h60 v-30 z"/></clipPath>
-                    <clipPath id="t"><path d="M30,15 h30 v15 z v15 h-30 z h-30 v-15 z v-15 h30 z"/></clipPath>
-                    <g clip-path="url(#s)">
-                        <path d="M0,0 v30 h60 v-30 z" fill="#012169"/>
-                        <path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/>
-                        <path d="M0,0 L60,30 M60,0 L0,30" clip-path="url(#t)" stroke="#C8102E" stroke-width="4"/>
-                        <path d="M30,0 v30 M0,15 h60" stroke="#fff" stroke-width="10"/>
-                        <path d="M30,0 v30 M0,15 h60" stroke="#C8102E" stroke-width="6"/>
-                    </g>
-                </svg>
-                <svg class="lang-btn" id="btn-es" onclick="setLang('es')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 750 500">
-                    <rect width="750" height="500" fill="#AA151B"/>
-                    <rect width="750" height="250" y="125" fill="#F1BF00"/>
-                </svg>
-                <svg class="lang-btn" id="btn-fr" onclick="setLang('fr')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600">
-                    <rect width="900" height="600" fill="#ED2939"/>
-                    <rect width="600" height="600" fill="#fff"/>
-                    <rect width="300" height="600" fill="#002395"/>
-                </svg>
-            </div>
+    <div class="start-container">
+        <!-- GLOBAL FLAGS (Top Right) -->
+        <div class="lang-switch">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/b/ba/Flag_of_Germany.svg" class="lang-btn active" id="btn-de" onclick="setLang('de')" title="Deutsch">
+            <img src="https://upload.wikimedia.org/wikipedia/en/a/ae/Flag_of_the_United_Kingdom.svg" class="lang-btn" id="btn-en" onclick="setLang('en')" title="English">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/9/9a/Flag_of_Spain.svg" class="lang-btn" id="btn-es" onclick="setLang('es')" title="Español">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/c/c3/Flag_of_France.svg" class="lang-btn" id="btn-fr" onclick="setLang('fr')" title="Français">
+        </div>
 
+        <header class="header">
             <div class="header-content">
-                <h1 class="title">Legendary & Rare Spawns</h1>
+                <h1 class="title">Rare & Legendary Spawns</h1>
                 <div class="subtitle" id="uiSubtitle">Seltene Kreaturen, Alphas & Tötungs-Loot</div>
             </div>
-        </div>
+        </header>
 
-        <!-- Navigation -->
-        <div class="nav-tabs">
-            <div class="nav-tab active-info active" onclick="showSection('info', this)" id="navInfo">
-                <i class="fa-solid fa-circle-info"></i> Info & Regeln
-            </div>
-            <div class="nav-tab" onclick="showSection('rare', this)" id="navRare">
-                <i class="fa-solid fa-dragon"></i> Rare Spawns
-            </div>
-            <div class="nav-tab" onclick="showSection('legendary', this)" id="navLegendary">
-                <i class="fa-solid fa-crown"></i> Legendary Alphas
-            </div>
-        </div>
+        <!-- Navigation Tabs Oben -->
+        <nav class="nav-tabs" id="navContainer">
+            <!-- JS generiert Tabs -->
+        </nav>
 
-        <div class="content-area" id="contentArea">
-             <!-- Content injected via JS -->
-        </div>
-
+        <main class="content-area" id="contentContainer">
+            <!-- Dynamic Injection -->
+        </main>
     </div>
 
     <script>
-        // =========================================================================
-        // 1. DATENBANK (ÜBERSETZUNGEN)
-        // =========================================================================
         const translations = {
             subtitle: { de: "Seltene Kreaturen, Alphas & Tötungs-Loot", en: "Rare Creatures, Alphas & Kill Loot", es: "Criaturas Raras, Alphas y Botín", fr: "Créatures Rares, Alphas et Butin" },
-            
             nav: {
                 info: { de: "Info & Regeln", en: "Info & Rules", es: "Info y Reglas", fr: "Infos et Règles" },
                 rare: { de: "Rare Spawns", en: "Rare Spawns", es: "Spawns Raros", fr: "Spawns Rares" },
                 legendary: { de: "Legendary Alphas", en: "Legendary Alphas", es: "Alphas Legendarios", fr: "Alphas Légendaires" }
             },
-
-            // SHARED LABELS
             labels: {
                 item: { de: "Item / Belohnung", en: "Item / Reward", es: "Objeto / Recompensa", fr: "Objet / Récompense" },
                 amount: { de: "Menge", en: "Amount", es: "Cantidad", fr: "Quantité" },
                 chance: { de: "Chance", en: "Chance", es: "Prob.", fr: "Chance" }
             },
-
-            // SECTIONS CONTENT
             sections: {
                 info: {
-                    spawn_title: { de: "Spawn & Frequenz", en: "Spawn & Frequency", es: "Aparición y Frecuencia", fr: "Spawn et Fréquence" },
-                    spawn_list: [
-                        { de: "<strong>Rare Spawns:</strong> Alle 2 Stunden (50% Chance) auf jeder Map.", en: "<strong>Rare Spawns:</strong> Every 2 hours (50% chance) on every map.", es: "<strong>Raros:</strong> Cada 2 horas (50% prob.) en cada mapa.", fr: "<strong>Rares :</strong> Toutes les 2 heures (50% chance) sur chaque carte." },
-                        { de: "<strong>Legendary Chance:</strong> Wenn eine Kreatur spawnt, besteht eine zusätzliche 25% Chance, dass es eine Legendary ist.", en: "<strong>Legendary Chance:</strong> When a creature spawns, there is an additional 25% chance it is Legendary.", es: "<strong>Legendario:</strong> 25% extra de probabilidad al aparecer.", fr: "<strong>Légendaire :</strong> 25% de chance supplémentaire lors du spawn." },
-                        { de: "<strong>Limit:</strong> Maximal <u>ein</u> Rare Spawn gleichzeitig pro Map.", en: "<strong>Limit:</strong> Maximum <u>one</u> Rare Spawn per map at a time.", es: "<strong>Límite:</strong> Máximo <u>un</u> Spawn Raro por mapa a la vez.", fr: "<strong>Limite :</strong> Maximum <u>un</u> Spawn Rare par carte à la fois." }
-                    ],
-                    detection_title: { de: "Erkennung & Discord", en: "Detection & Discord", es: "Detección y Discord", fr: "Détection et Discord" },
+                    spawn_title: { de: "Spawn & Frequenz", en: "Spawn & Frequency", es: "Aparición", fr: "Spawn" },
+                    spawn_list: {
+                        de: ["<strong>Rare Spawns:</strong> Alle 2 Stunden (50% Chance) auf jeder Map.", "<strong>Legendary Chance:</strong> Zusätzliche 25% Chance bei jedem Spawn.", "<strong>Limit:</strong> Maximal ein Rare Spawn gleichzeitig pro Map."],
+                        en: ["<strong>Rare Spawns:</strong> Every 2 hours (50% chance) on every map.", "<strong>Legendary Chance:</strong> Additional 25% chance per spawn.", "<strong>Limit:</strong> Maximum one Rare Spawn per map at a time."],
+                        es: ["<strong>Raros:</strong> Cada 2 horas (50% prob.) por mapa.", "<strong>Legendario:</strong> 25% extra al aparecer.", "<strong>Límite:</strong> Máximo un Spawn Raro a la vez."],
+                        fr: ["<strong>Rares :</strong> Toutes les 2 heures (50% chance) par carte.", "<strong>Légendaire :</strong> 25% de chance en plus par spawn.", "<strong>Limite :</strong> Maximum un Spawn Rare par carte."]
+                    },
+                    detection_title: { de: "Erkennung & Discord", en: "Detection & Discord", es: "Detección", fr: "Détection" },
                     detection_text: { 
-                        de: "Rare Spawns und Legendarys werden im Discord-Kanal <span class='discord-link'><i class='fa-brands fa-discord'></i> ✨│Rare-Spawns</span> angekündigt (mit ungefähren Koordinaten).",
-                        en: "Rare Spawns and Legendaries are announced in the Discord channel <span class='discord-link'><i class='fa-brands fa-discord'></i> ✨│Rare-Spawns</span> (with approx. coords).",
-                        es: "Anuncios en el canal de Discord <span class='discord-link'><i class='fa-brands fa-discord'></i> ✨│Rare-Spawns</span>.",
-                        fr: "Annoncé sur le canal Discord <span class='discord-link'><i class='fa-brands fa-discord'></i> ✨│Rare-Spawns</span>."
+                        de: "Spawns werden im Discord-Kanal <span class='discord-link'><i class='fa-brands fa-discord'></i> ✨│Rare-Spawns</span> mit ungefähren Koordinaten angekündigt.",
+                        en: "Spawns are announced in Discord <span class='discord-link'><i class='fa-brands fa-discord'></i> ✨│Rare-Spawns</span> with coordinates.",
+                        es: "Anuncios en Discord <span class='discord-link'><i class='fa-brands fa-discord'></i> ✨│Rare-Spawns</span> con coordenadas.",
+                        fr: "Annonces sur Discord <span class='discord-link'><i class='fa-brands fa-discord'></i> ✨│Rare-Spawns</span> avec coordonnées."
                     },
-                    visual_rare: {
-                        title: { de: "Rare Spawn (Selten)", en: "Rare Spawn", es: "Spawn Raro", fr: "Spawn Rare" },
-                        text: { de: "Optische Hervorhebung: <strong>Alpha Glow</strong> (Leuchten).", en: "Visual highlight: <strong>Alpha Glow</strong>.", es: "Resaltado: <strong>Brillo Alpha</strong>.", fr: "Mise en évidence : <strong>Lueur Alpha</strong>." }
-                    },
-                    visual_legendary: {
-                        title: { de: "Legendary Alpha", en: "Legendary Alpha", es: "Alpha Legendario", fr: "Alpha Légendaire" },
-                        text: { 
-                            de: "Optische Hervorhebung: <strong>Blinkender roter Kreis</strong>.<br>Größe: 25% größer als normale Alphas.",
-                            en: "Visual highlight: <strong>Blinking red ring</strong>.<br>Size: 25% larger than normal Alphas.",
-                            es: "Resaltado: <strong>Círculo rojo parpadeante</strong>.<br>Tamaño: 25% más grande.",
-                            fr: "Mise en évidence : <strong>Cercle rouge clignotant</strong>.<br>Taille : 25% plus grand."
-                        }
-                    },
-                    warn_title: { de: "Wichtig: Server-Neustarts", en: "Important: Server Restarts", es: "Importante: Reinicios", fr: "Important : Redémarrages" },
-                    warn_text: {
-                        de: "Rare Spawns sind 'Custom Spawns' und nicht vor Restarts geschützt! Sie despawnen bei einem Neustart.<br><br><strong>Tipp:</strong> Sobald eine Kreatur <u>betäubt</u> (K.O.) ist, erhält sie eine neue ID und wird nicht mehr als 'Wilde Kreatur' behandelt. So könnt ihr Rare Spawns auch über einen Neustart retten!",
-                        en: "Rare Spawns are 'Custom Spawns' and despawn on restart!<br><br><strong>Tip:</strong> If <u>knocked out</u> (K.O.), they get a new ID and persist through restarts.",
-                        es: "¡Los Spawns Raros desaparecen al reiniciar!<br><br><strong>Consejo:</strong> Si están <u>inconscientes</u> (K.O.), persisten.",
-                        fr: "Les Spawns Rares disparaissent au redémarrage !<br><br><strong>Astuce :</strong> S'ils sont <u>inconscients</u> (K.O.), ils persistent."
+                    visual_rare_title: { de: "Rare Spawn (Selten)", en: "Rare Spawn", es: "Spawn Raro", fr: "Spawn Rare" },
+                    visual_rare_text: { de: "Optische Hervorhebung: <strong>Alpha Glow</strong> (Leuchten).", en: "Visual highlight: <strong>Alpha Glow</strong>.", es: "Resaltado: <strong>Brillo Alpha</strong>.", fr: "Mise en évidence : <strong>Lueur Alpha</strong>." },
+                    visual_legend_title: { de: "Legendary Alpha", en: "Legendary Alpha", es: "Alpha Legendario", fr: "Alpha Légendaire" },
+                    visual_legend_text: { de: "Hervorhebung: <strong>Roter Kreis</strong>. Größe: +25% größer.", en: "Highlight: <strong>Red circle</strong>. Size: +25% larger.", es: "Resaltado: <strong>Círculo rojo</strong>. Tamaño: +25%.", fr: "Mise en évidence : <strong>Cercle rouge</strong>. Taille : +25%." },
+                    warn_title: { de: "Wichtig: Server-Neustarts", en: "Important: Restarts", es: "Importante: Reinicios", fr: "Important : Redémarrages" },
+                    warn_text: { 
+                        de: "Sie despawnen bei Neustart. <strong>Tipp:</strong> Sobald betäubt (K.O.), erhalten sie eine neue ID und bleiben erhalten.",
+                        en: "They despawn on restart. <strong>Tip:</strong> Once knocked out (K.O.), they persist through restarts.",
+                        es: "Desaparecen al reiniciar. <strong>Tip:</strong> Si están K.O., permanecen.",
+                        fr: "Ils disparaissent au reboot. <strong>Astuce :</strong> Une fois K.O., ils persistent."
                     }
                 },
                 rare: {
                     info_title: { de: "Seltene Kreaturen (Rare)", en: "Rare Creatures", es: "Criaturas Raras", fr: "Créatures Rares" },
-                    info_text: {
-                        de: "<p>Rare Spawns sind besondere wilde Kreaturen, die immer auf dem maximalen Level erscheinen.</p><ul><li><strong>Level:</strong> Immer <strong>150</strong> (Max Wild).</li><li><strong>Belohnung Zähmung:</strong> Ihr erhaltet die Max-Level-Kreatur.</li></ul>",
-                        en: "<p>Rare Spawns are special wild creatures that always spawn at max level.</p><ul><li><strong>Level:</strong> Always <strong>150</strong>.</li><li><strong>Reward Taming:</strong> You get a max level creature.</li></ul>",
-                        es: "<p>Criaturas especiales siempre al nivel máximo.</p><ul><li><strong>Nivel:</strong> Siempre <strong>150</strong>.</li><li><strong>Tameo:</strong> Obtienes criatura nivel máx.</li></ul>",
-                        fr: "<p>Créatures spéciales apparaissant toujours au niveau max.</p><ul><li><strong>Niveau :</strong> Toujours <strong>150</strong>.</li><li><strong>Taming :</strong> Vous obtenez la créature niveau max.</li></ul>"
-                    },
-                    loot_title: { de: "Kill-Loot (Rare)", en: "Kill Loot (Rare)", es: "Botín de Muerte (Raro)", fr: "Butin de Kill (Rare)" },
-                    loot_desc: { de: "Belohnungen, wenn du die Kreatur tötest statt sie zu zähmen:", en: "Rewards if you kill instead of tame:", es: "Recompensas por matar:", fr: "Récompenses si vous tuez :" },
+                    info_text: { de: "Immer auf Level <strong>150</strong>. Beim Zähmen erhältst du die Max-Level-Kreatur.", en: "Always level <strong>150</strong>. Taming gives you the max-level creature.", es: "Siempre nivel <strong>150</strong>. Al tamear obtienes el nivel máx.", fr: "Toujours niveau <strong>150</strong>. Le taming donne le niveau max." },
+                    loot_title: { de: "Kill-Loot (Rare)", en: "Kill Loot (Rare)", es: "Botín por Muerte", fr: "Butin de Kill" },
+                    loot_desc: { de: "Belohnungen beim Töten statt Zähmen:", en: "Rewards for killing instead of taming:", es: "Botín si matas a la criatura:", fr: "Butin si vous tuez la créature :" },
                     drops: [
-                        { icon: "fa-paw", name: { de: "Schultertier (Lvl 224)", en: "Shoulder Pet (Lvl 224)", es: "Mascota Hombro", fr: "Animal d'Épaule" }, sub: { de: "Dimorphodon, Vulture, Pego...", en: "Dimorphodon, Vulture, Pego...", es: "Dimorphodon, Vulture...", fr: "Dimorphodon, Vulture..." }, qty: 1, chance: "25%" },
-                        { icon: "fa-star", name: { de: "Erfahrungspunkte (XP)", en: "Experience (XP)", es: "Experiencia (XP)", fr: "Expérience (XP)" }, sub: "", qty: "2.000", chance: "100%" },
-                        { icon: "fa-cube", name: { de: "Konservierungssalz", en: "Preserving Salt", es: "Sal de Conservación", fr: "Sel de Conservation" }, sub: "", qty: 50, chance: "100%" },
-                        { icon: "fa-box-open", name: { de: "Ressourcen-Bundle", en: "Resource Bundle", es: "Paquete de Recursos", fr: "Pack de Ressources" }, sub: { de: "Elektronik, Zement, Harz...", en: "Electronics, Cement, Sap...", es: "Electrónica, Cemento...", fr: "Électronique, Ciment..." }, qty: 250, chance: "100%" }
+                        { icon: "fa-paw", name: { de: "Schultertier (Lvl 224)", en: "Shoulder Pet (Lvl 224)", es: "Mascota Hombro", fr: "Animal d'Épaule" }, sub: "Dimorphodon, Vulture, Pego...", qty: 1, chance: "25%" },
+                        { icon: "fa-star", name: { de: "Erfahrungspunkte (XP)", en: "Experience (XP)", es: "Experiencia", fr: "Expérience" }, sub: "", qty: "2.000", chance: "100%" },
+                        { icon: "fa-cube", name: { de: "Konservierungssalz", en: "Preserving Salt", es: "Sal", fr: "Sel" }, sub: "", qty: 50, chance: "100%" },
+                        { icon: "fa-box-open", name: { de: "Ressourcen-Bundle", en: "Resource Bundle", es: "Recursos", fr: "Pack Ressources" }, sub: "Elektronik, Zement, Harz...", qty: 250, chance: "100%" }
                     ]
                 },
                 legendary: {
                     info_title: { de: "Legendary Alphas", en: "Legendary Alphas", es: "Alphas Legendarios", fr: "Alphas Légendaires" },
-                    info_text: {
-                        de: "<p>Die Königsklasse der Spawns. Riesige, mächtige Alpha-Tiere mit extrem wertvollem Loot.</p><ul><li><strong>Level:</strong> Immer <strong>190</strong> (Alpha).</li><li><strong>Größe:</strong> 25% größer.</li><li><strong>Hervorhebung:</strong> Blinkender roter Kreis.</li></ul>",
-                        en: "<p>Top tier spawns. Huge, powerful Alpha animals with valuable loot.</p><ul><li><strong>Level:</strong> Always <strong>190</strong>.</li><li><strong>Size:</strong> 25% larger.</li><li><strong>Highlight:</strong> Blinking red ring.</li></ul>",
-                        es: "<p>Spawns de élite. Alphas enormes con gran botín.</p><ul><li><strong>Nivel:</strong> Siempre <strong>190</strong>.</li><li><strong>Tamaño:</strong> +25%.</li><li><strong>Resaltado:</strong> Círculo rojo.</li></ul>",
-                        fr: "<p>Spawns d'élite. Alphas énormes avec butin précieux.</p><ul><li><strong>Niveau :</strong> Toujours <strong>190</strong>.</li><li><strong>Taille :</strong> +25%.</li><li><strong>Surbrillance :</strong> Cercle rouge.</li></ul>"
-                    },
+                    info_text: { de: "Level <strong>190</strong>. Königsklasse mit mächtigem Loot.", en: "Level <strong>190</strong>. Top tier with powerful loot.", es: "Nivel <strong>190</strong>. Élite con gran botín.", fr: "Niveau <strong>190</strong>. Élite avec butin puissant." },
                     loot_title: { de: "Kill-Loot (Legendary)", en: "Kill Loot (Legendary)", es: "Botín Legendario", fr: "Butin Légendaire" },
-                    loot_desc: { de: "Legendarys können nicht gezähmt werden. Der Loot ist die Belohnung!", en: "Cannot be tamed. The loot is the reward!", es: "No tameables. ¡El botín es el premio!", fr: "Non-tameables. Le butin est la récompense !" },
+                    loot_desc: { de: "Können nicht gezähmt werden. Der Loot ist die Belohnung!", en: "Cannot be tamed. Loot is the reward!", es: "No tameables. El botín es el premio.", fr: "Non tameables. Le butin est la récompense." },
                     drops: [
-                        { icon: "fa-paw", name: { de: "Schultertier (Lvl 224)", en: "Shoulder Pet (Lvl 224)", es: "Mascota Hombro", fr: "Animal d'Épaule" }, sub: { de: "Garantiert! Pool wie Rare + Otter", en: "Guaranteed! Rare Pool + Otter", es: "¡Garantizado! + Otter", fr: "Garanti ! + Loutre" }, qty: 1, chance: "100%", color: "var(--color-legendary)", textColor: "#000" },
-                        { icon: "fa-otter", name: { de: "Bonus: Otter", en: "Bonus: Otter", es: "Bono: Otter", fr: "Bonus : Loutre" }, sub: "", qty: 1, chance: "10%" },
-                        { icon: "fa-wand-magic-sparkles", name: { de: "Bonus: S-Otter", en: "Bonus: S-Otter", es: "Bono: S-Otter", fr: "Bonus : S-Loutre" }, sub: "", qty: 1, chance: "5%" },
-                        { icon: "fa-star", name: { de: "Erfahrungspunkte (XP)", en: "Experience (XP)", es: "Experiencia (XP)", fr: "Expérience (XP)" }, sub: "", qty: "10.000", chance: "100%" },
-                        { icon: "fa-flask", name: { de: "Rhyniognatha Pheromon", en: "Rhyniognatha Pheromone", es: "Feromona Rhynio", fr: "Phéromone Rhynio" }, sub: "", qty: 1, chance: "100%" },
+                        { icon: "fa-paw", name: { de: "Schultertier (Lvl 224)", en: "Shoulder Pet (Lvl 224)", es: "Mascota Hombro", fr: "Animal d'Épaule" }, sub: "Pool wie Rare + Otter", qty: 1, chance: "100%", hl: true },
+                        { icon: "fa-otter", name: "Otter", sub: "", qty: 1, chance: "10%" },
+                        { icon: "fa-wand-magic-sparkles", name: "S-Otter", sub: "", qty: 1, chance: "5%" },
+                        { icon: "fa-star", name: { de: "Erfahrungspunkte (XP)", en: "Experience (XP)", es: "Experiencia", fr: "Expérience" }, sub: "", qty: "10.000", chance: "100%" },
+                        { icon: "fa-flask", name: "Rhyniognatha Pheromon", sub: "", qty: 1, chance: "100%" },
                         { icon: "fa-gem", name: { de: "Schwarze Perlen", en: "Black Pearls", es: "Perlas Negras", fr: "Perles Noires" }, sub: "", qty: 20, chance: "100%" },
                         { icon: "fa-cube", name: { de: "Konservierungssalz", en: "Preserving Salt", es: "Sal", fr: "Sel" }, sub: "", qty: 150, chance: "100%" },
-                        { icon: "fa-box-open", name: { de: "Alpha Loot & XP", en: "Alpha Loot & XP", es: "Botín Alpha & XP", fr: "Butin Alpha & XP" }, sub: { de: "Standard Alpha Loot zusätzlich", en: "Standard Alpha Loot added", es: "Botín Alpha estándar extra", fr: "Butin Alpha standard ajouté" }, qty: "var.", chance: "100%" }
+                        { icon: "fa-box-open", name: { de: "Alpha Loot & XP", en: "Alpha Loot & XP", es: "Botín Alpha", fr: "Butin Alpha" }, sub: "Standard Alpha Loot zusätzlich", qty: "var.", chance: "100%" }
                     ]
                 }
             }
         };
 
-        // =========================================================================
-        // 2. LOGIC
-        // =========================================================================
         let currentLang = 'de';
-        let currentTab = 'info';
+        let activeTab = 'info';
 
         function setLang(lang) {
             currentLang = lang;
             document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
             document.getElementById('btn-' + lang).classList.add('active');
             
-            // Text Updates
             document.getElementById('uiSubtitle').innerText = translations.subtitle[lang];
-            
-            document.getElementById('navInfo').innerHTML = `<i class="fa-solid fa-circle-info"></i> ${translations.nav.info[lang]}`;
-            document.getElementById('navRare').innerHTML = `<i class="fa-solid fa-dragon"></i> ${translations.nav.rare[lang]}`;
-            document.getElementById('navLegendary').innerHTML = `<i class="fa-solid fa-crown"></i> ${translations.nav.legendary[lang]}`;
-
-            // Re-Render Content
+            renderNav();
             renderContent();
         }
 
-        function showSection(sectionId, btn) {
-            currentTab = sectionId;
-            document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active', 'active-info', 'active-rare', 'active-legendary'));
-            
-            if(sectionId === 'info') btn.classList.add('active', 'active-info');
-            if(sectionId === 'rare') btn.classList.add('active', 'active-rare');
-            if(sectionId === 'legendary') btn.classList.add('active', 'active-legendary');
-
-            renderContent();
+        function renderNav() {
+            const nav = document.getElementById('navContainer');
+            nav.innerHTML = '';
+            const sections = ['info', 'rare', 'legendary'];
+            const icons = ['fa-circle-info', 'fa-dragon', 'fa-crown'];
+            sections.forEach((s, i) => {
+                const tab = document.createElement('div');
+                tab.className = `nav-tab ${s === activeTab ? 'active' : ''}`;
+                tab.innerHTML = `<i class="fa-solid ${icons[i]}"></i> ${translations.nav[s][currentLang]}`;
+                tab.onclick = () => { activeTab = s; renderNav(); renderContent(); };
+                nav.appendChild(tab);
+            });
         }
 
         function renderContent() {
-            const container = document.getElementById('contentArea');
+            const container = document.getElementById('contentContainer');
             container.innerHTML = '';
-            const data = translations.sections;
+            const l = currentLang;
+            const sectionWrapper = document.createElement('div');
+            sectionWrapper.className = 'section active';
 
-            if (currentTab === 'info') {
-                container.innerHTML = `
-                    <div class="section active">
-                        <div class="info-card" style="border-left: 4px solid var(--color-info);">
-                            <h3 style="color: var(--color-info);"><i class="fa-solid fa-clock"></i> ${data.info.spawn_title[currentLang]}</h3>
-                            <div class="text-content">
-                                <ul>${data.info.spawn_list.map(l => `<li>${l[currentLang]}</li>`).join('')}</ul>
+            if (activeTab === 'info') {
+                const info = translations.sections.info;
+                sectionWrapper.innerHTML = `
+                    <div class="info-block">
+                        <div class="block-header"><i class="fa-solid fa-clock"></i><h3 class="block-title">${info.spawn_title[l]}</h3></div>
+                        <div class="block-body"><ul class="feature-list">${info.spawn_list[l].map(li => `<li>${li}</li>`).join('')}</ul></div>
+                    </div>
+                    <div class="info-block">
+                        <div class="block-header"><i class="fa-solid fa-eye"></i><h3 class="block-title">${info.detection_title[l]}</h3></div>
+                        <div class="block-body">
+                            <p>${info.detection_text[l]}</p>
+                            <div class="visual-card rare-style">
+                                <div class="visual-icon" style="color: var(--color-gold);"><i class="fa-solid fa-fire"></i></div>
+                                <div><strong style="color: var(--color-gold);">${info.visual_rare_title[l]}</strong><br>${info.visual_rare_text[l]}</div>
                             </div>
-                        </div>
-
-                        <div class="info-card" style="border-left: 4px solid var(--color-info);">
-                            <h3 style="color: var(--color-info);"><i class="fa-solid fa-eye"></i> ${data.info.detection_title[currentLang]}</h3>
-                            <div class="text-content">
-                                <p>${data.info.detection_text[currentLang]}</p>
-                                
-                                <div class="visual-card rare-style">
-                                    <div class="visual-icon" style="color: var(--color-rare); text-shadow: 0 0 10px var(--color-rare);">
-                                        <i class="fa-solid fa-fire"></i>
-                                    </div>
-                                    <div>
-                                        <strong style="color: var(--color-rare);">${data.info.visual_rare.title[currentLang]}</strong><br>
-                                        ${data.info.visual_rare.text[currentLang]}
-                                    </div>
-                                </div>
-
-                                <div class="visual-card legendary-style">
-                                    <div class="visual-icon" style="color: var(--color-legendary); animation: blink 1s infinite;">
-                                        <i class="fa-solid fa-circle-dot"></i>
-                                    </div>
-                                    <div>
-                                        <strong style="color: var(--color-legendary);">${data.info.visual_legendary.title[currentLang]}</strong><br>
-                                        ${data.info.visual_legendary.text[currentLang]}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="warning-box">
-                            <i class="fa-solid fa-triangle-exclamation"></i>
-                            <div class="text-content">
-                                <strong>${data.info.warn_title[currentLang]}</strong><br>
-                                ${data.info.warn_text[currentLang]}
+                            <div class="visual-card legendary-style">
+                                <div class="visual-icon" style="color: var(--color-red); animation: blink 1s infinite;"><i class="fa-solid fa-circle-dot"></i></div>
+                                <div><strong style="color: var(--color-red);">${info.visual_legend_title[l]}</strong><br>${info.visual_legend_text[l]}</div>
                             </div>
                         </div>
                     </div>
-                `;
-            } else if (currentTab === 'rare') {
-                const dropData = data.rare;
-                let tableRows = dropData.drops.map(d => `
-                    <tr>
-                        <td><i class="fa-solid ${d.icon} loot-icon" style="color: var(--color-rare);"></i> <strong>${d.name[currentLang]}</strong>${d.sub && d.sub[currentLang] ? `<br><span style="font-size:0.8rem; color:#888;">${d.sub[currentLang]}</span>` : ''}</td>
-                        <td>${d.qty}</td>
-                        <td><span class="loot-chance" style="color: var(--color-rare); background: rgba(255, 215, 0, 0.1);">${d.chance}</span></td>
-                    </tr>
-                `).join('');
-
-                container.innerHTML = `
-                    <div class="section active">
-                        <div class="info-card" style="border-left: 4px solid var(--color-rare);">
-                            <h3 style="color: var(--color-rare);"><i class="fa-solid fa-dragon"></i> ${dropData.info_title[currentLang]}</h3>
-                            <div class="text-content">${dropData.info_text[currentLang]}</div>
-                        </div>
-
-                        <div class="info-card" style="border-left: 4px solid var(--color-rare);">
-                            <h3 style="color: var(--color-rare);"><i class="fa-solid fa-skull-crossbones"></i> ${dropData.loot_title[currentLang]}</h3>
-                            <p style="margin-bottom: 10px; color: #aaa; font-size: 0.9rem;">${dropData.loot_desc[currentLang]}</p>
-                            <table class="loot-table">
-                                <thead><tr><th>${translations.labels.item[currentLang]}</th><th style="width: 80px;">${translations.labels.amount[currentLang]}</th><th style="width: 80px;">${translations.labels.chance[currentLang]}</th></tr></thead>
-                                <tbody>${tableRows}</tbody>
-                            </table>
+                    <div class="warning-box">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        <div class="block-body" style="padding:0;">
+                            <strong>${info.warn_title[l]}</strong><br>${info.warn_text[l]}
                         </div>
                     </div>
                 `;
-            } else if (currentTab === 'legendary') {
-                const dropData = data.legendary;
-                let tableRows = dropData.drops.map(d => `
-                    <tr>
-                        <td><i class="fa-solid ${d.icon} loot-icon" style="color: ${d.color || 'var(--color-legendary)'};"></i> <strong>${d.name[currentLang]}</strong>${d.sub && d.sub[currentLang] ? `<br><span style="font-size:0.8rem; color:#888;">${d.sub[currentLang]}</span>` : ''}</td>
-                        <td>${d.qty}</td>
-                        <td><span class="loot-chance" style="background-color: ${d.color || 'rgba(255, 82, 82, 0.1)'}; color: ${d.textColor || '#fff'};">${d.chance}</span></td>
-                    </tr>
-                `).join('');
-
-                container.innerHTML = `
-                    <div class="section active">
-                        <div class="info-card" style="border-left: 4px solid var(--color-legendary);">
-                            <h3 style="color: var(--color-legendary);"><i class="fa-solid fa-crown"></i> ${dropData.info_title[currentLang]}</h3>
-                            <div class="text-content">${dropData.info_text[currentLang]}</div>
-                        </div>
-
-                        <div class="info-card" style="border-left: 4px solid var(--color-legendary);">
-                            <h3 style="color: var(--color-legendary);"><i class="fa-solid fa-sack-dollar"></i> ${dropData.loot_title[currentLang]}</h3>
-                            <p style="margin-bottom: 10px; color: #aaa; font-size: 0.9rem;">${dropData.loot_desc[currentLang]}</p>
+            } else {
+                const data = translations.sections[activeTab];
+                sectionWrapper.innerHTML = `
+                    <div class="info-block">
+                        <div class="block-header"><i class="fa-solid ${activeTab==='rare'?'fa-dragon':'fa-crown'}"></i><h3 class="block-title">${data.info_title[l]}</h3></div>
+                        <div class="block-body">${data.info_text[l]}</div>
+                    </div>
+                    <div class="info-block">
+                        <div class="block-header"><i class="fa-solid fa-sack-dollar"></i><h3 class="block-title">${data.loot_title[l]}</h3></div>
+                        <div class="block-body">
+                            <p style="color:#aaa; font-size:0.9rem; margin-bottom:10px;">${data.loot_desc[l]}</p>
                             <table class="loot-table">
-                                <thead><tr><th>${translations.labels.item[currentLang]}</th><th style="width: 80px;">${translations.labels.amount[currentLang]}</th><th style="width: 80px;">${translations.labels.chance[currentLang]}</th></tr></thead>
-                                <tbody>${tableRows}</tbody>
+                                <thead><tr><th>${translations.labels.item[l]}</th><th style="width:80px;">${translations.labels.amount[l]}</th><th style="width:80px;">${translations.labels.chance[l]}</th></tr></thead>
+                                <tbody>
+                                    ${data.drops.map(d => `
+                                        <tr>
+                                            <td><i class="fa-solid ${d.icon} loot-icon"></i> <strong>${typeof d.name === 'string' ? d.name : d.name[l]}</strong><br><small style="color:#888;">${typeof d.sub === 'string' ? d.sub : (d.sub?d.sub[l]:'')}</small></td>
+                                            <td>${d.qty}</td>
+                                            <td><span class="loot-chance" style="background:${d.hl?'var(--color-red)':'rgba(255,255,255,0.05)'}; color:${d.hl?'#000':'#fff'};">${d.chance}</span></td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
                             </table>
                         </div>
                     </div>
                 `;
             }
+            container.appendChild(sectionWrapper);
         }
 
-        // Init
-        window.onload = function() {
-            setLang('de');
-        };
-
+        window.onload = () => setLang('de');
     </script>
 </body>
 </html>
