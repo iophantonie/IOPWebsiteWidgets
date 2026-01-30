@@ -4,258 +4,262 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IOP Community Center</title>
-    <link href="https://fonts.googleapis.com/css2?family=Acme&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Acme&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* --- VARIABLES --- */
         :root {
-            --c-fire: #ff3300;
-            --c-bg: #050505;
-            --c-panel: #121212;
-            --c-content: #1a1a1a;
-            --c-text: #e0e0e0;
-            --c-dim: #888;
-            --c-border: #333;
-            
-            --f-head: 'Acme', sans-serif;
-            --f-body: 'Roboto', sans-serif;
+            --color-red: #E53935;
+            --color-black: #000000;
+            --color-dark: #0a0a0a;
+            --color-light-dark: #161616;
+            --color-text: #f7f7f7;
+            --color-gold: #FFD700;
+            --color-ui-gold: #FFD700;
+            --color-border: #333;
+            --font-header: 'Acme', sans-serif;
+            --font-body: 'Roboto', sans-serif;
         }
 
-        * { box-sizing: border-box; }
+        * { box-sizing: border-box; margin: 0; padding: 0; scroll-behavior: smooth; }
 
         body {
-            margin: 0; padding: 0;
-            background-color: transparent; 
-            color: var(--c-text);
-            font-family: var(--f-body);
+            background-color: transparent;
+            font-family: var(--font-body);
+            color: var(--color-text);
             height: 100vh;
             width: 100vw;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
             overflow: hidden;
         }
 
-        /* Animationen */
-        @keyframes fire-border-pulse {
-            0% { box-shadow: 0 0 10px rgba(255, 51, 0, 0.2); border-color: rgba(255, 51, 0, 0.5); }
-            50% { box-shadow: 0 0 25px rgba(255, 51, 0, 0.5); border-color: rgba(255, 51, 0, 1); }
-            100% { box-shadow: 0 0 10px rgba(255, 51, 0, 0.2); border-color: rgba(255, 51, 0, 0.5); }
-        }
-        
-        @keyframes fire-text {
-            0% { background-position: 0% 50%; }
-            100% { background-position: 200% 50%; }
-        }
-        
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* --- WIDGET CONTAINER --- */
-        .widget-container {
+        .start-container {
+            background-color: var(--color-dark);
+            border-radius: 8px; 
+            border: 2px solid var(--color-red);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+            width: 98%;
+            height: 96vh;
             display: flex;
             flex-direction: column;
-            width: 98%; 
-            height: 95vh;
-            background-color: var(--c-bg);
-            border: 2px solid var(--c-fire);
-            border-radius: 12px;
-            animation: fire-border-pulse 4s infinite ease-in-out;
             overflow: hidden;
+            margin-top: 2vh;
             position: relative;
-            box-shadow: 0 0 50px rgba(0,0,0,0.9);
         }
 
-        /* --- HEADER --- */
         .header {
-            background-color: #080808;
-            padding: 15px 25px;
-            border-bottom: 1px solid var(--c-border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            background-color: var(--color-black);
+            padding: 25px 20px;
+            text-align: center;
+            border-bottom: 2px solid var(--color-red);
             flex-shrink: 0;
-            background-image: 
-                radial-gradient(circle at 10% 50%, rgba(255,51,0,0.05) 0%, transparent 40%);
-            position: relative;
         }
 
-        .header-content {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .title {
-            font-family: var(--f-head);
-            font-size: 2rem;
-            text-transform: uppercase;
-            margin: 0;
-            letter-spacing: 2px;
-            background: linear-gradient(90deg, #ff0000, #ff4d00, #ff9900, #ffcc00, #ff9900, #ff4d00, #ff0000);
-            background-size: 200% auto;
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            animation: fire-text 4s linear infinite;
-            filter: drop-shadow(0 0 5px rgba(255,69,0,0.3));
-            line-height: 1;
-        }
-
-        .subtitle {
-            font-size: 0.8rem;
-            color: var(--c-dim);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-top: 5px;
-            display: block;
-        }
-
-        /* FLAGGEN SWITCHER */
         .lang-switch {
-            display: flex;
-            gap: 8px;
             position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 20;
+            top: 15px;
+            right: 15px;
+            display: flex;
+            gap: 10px;
+            z-index: 100;
         }
         .lang-btn {
             width: 25px; height: 16px;
             cursor: pointer;
             border-radius: 2px;
             border: 1px solid #fff;
-            opacity: 0.5;
-            transition: transform 0.2s, opacity 0.2s;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
-            padding: 0;
-            display: block;
+            opacity: 0.6;
+            transition: 0.2s;
+            object-fit: cover;
         }
-        .lang-btn:hover, .lang-btn.active {
-            opacity: 1; transform: scale(1.15);
-            border-color: var(--c-fire);
-            z-index: 10;
+        .lang-btn.active, .lang-btn:hover {
+            opacity: 1;
+            transform: scale(1.15);
+            border-color: var(--color-ui-gold);
         }
 
-        /* SEARCH BAR */
+        .title {
+            font-family: var(--font-header);
+            font-size: 2.4rem; 
+            color: var(--color-red);
+            text-transform: uppercase;
+            margin: 0;
+            letter-spacing: 2px;
+        }
+
+        .subtitle {
+            color: var(--color-ui-gold);
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 500;
+        }
+
         .search-container {
+            padding: 10px 20px;
+            background: rgba(0,0,0,0.5);
+            border-bottom: 1px solid #333;
+        }
+        .search-box {
             position: relative;
-            width: 300px;
+            max-width: 400px;
+            margin: 0 auto;
         }
-
-        .search-input {
+        .search-box input {
             width: 100%;
-            padding: 10px 15px 10px 40px;
+            padding: 8px 15px 8px 35px;
             border-radius: 20px;
-            border: 1px solid var(--c-border);
-            background-color: rgba(30, 30, 30, 0.5);
+            border: 1px solid #444;
+            background: #111;
             color: #fff;
-            font-family: var(--f-body);
-            font-size: 0.95rem;
             outline: none;
-            transition: border 0.3s, box-shadow 0.3s;
+            font-size: 0.9rem;
         }
-
-        .search-input:focus {
-            border-color: var(--c-fire);
-            box-shadow: 0 0 10px rgba(255, 51, 0, 0.2);
-        }
-
-        .search-icon {
+        .search-box i {
             position: absolute;
-            left: 15px;
+            left: 12px;
             top: 50%;
             transform: translateY(-50%);
-            color: var(--c-dim);
+            color: #888;
         }
 
-        /* --- NAVIGATION TABS --- */
         .nav-tabs {
             display: flex;
-            background-color: var(--c-panel);
+            background-color: #050505;
             padding: 0 10px;
             overflow-x: auto;
             flex-shrink: 0;
-            border-bottom: 1px solid var(--c-border);
+            border-bottom: 1px solid #333;
         }
-
         .nav-tab {
             padding: 15px 25px;
             cursor: pointer;
-            font-family: var(--f-head);
+            font-family: var(--font-header);
             text-transform: uppercase;
-            color: var(--c-dim);
+            color: #888;
             border-bottom: 3px solid transparent;
             transition: all 0.2s;
-            white-space: nowrap;
-            flex-grow: 1;
+            flex-grow: 1; 
             text-align: center;
-            font-size: 1.1rem;
+            font-size: 1rem;
+            white-space: nowrap;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
+            gap: 8px;
         }
-
-        .nav-tab:hover {
-            color: #fff;
-            background-color: rgba(255,255,255,0.02);
-        }
-
+        .nav-tab:hover { color: #fff; background-color: rgba(255,255,255,0.05); }
         .nav-tab.active {
-            background-color: rgba(255,51,0,0.05);
-            border-bottom-color: var(--c-fire);
-            color: var(--c-fire);
-            text-shadow: 0 0 10px rgba(255, 51, 0, 0.3);
+            color: var(--color-ui-gold);
+            border-bottom-color: var(--color-ui-gold);
+            background-color: rgba(255, 215, 0, 0.05);
         }
 
-        /* --- CONTENT AREA --- */
         .content-area {
             flex-grow: 1;
             overflow-y: auto;
-            padding: 30px 40px;
-            scroll-behavior: smooth;
-            background-color: var(--c-bg);
-            background-image: radial-gradient(circle at 50% 50%, rgba(255,51,0,0.02) 0%, transparent 40%);
+            padding: 30px;
+            scrollbar-width: thin;
+            scrollbar-color: var(--color-red) #111;
         }
         .content-area::-webkit-scrollbar { width: 8px; }
-        .content-area::-webkit-scrollbar-thumb { background-color: #333; border-radius: 4px; }
-        .content-area::-webkit-scrollbar-track { background-color: #080808; }
+        .content-area::-webkit-scrollbar-thumb { background-color: var(--color-red); border-radius: 4px; }
 
-        /* Sections */
-        .section { display: none; animation: fadeIn 0.4s ease; max-width: 1200px; margin: 0 auto; }
-        .section.active { display: block; }
+        @keyframes slideUpFade {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
-        /* Headers */
-        .section-header {
-            border-bottom: 1px solid var(--c-border);
-            padding-bottom: 15px;
-            margin-bottom: 25px;
+        .section { display: none; max-width: 1200px; margin: 0 auto; }
+        .section.active { 
+            display: block; 
+            animation: slideUpFade 0.4s ease-out forwards;
+        }
+
+        .info-block {
+            background-color: var(--color-light-dark);
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            margin-bottom: 30px;
+            overflow: hidden;
+            transition: 0.2s;
+        }
+        .info-block:hover { border-color: var(--color-red); }
+
+        .block-header {
+            padding: 15px 20px;
+            background: #000;
+            border-bottom: 1px solid var(--color-border);
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 12px;
         }
-        .section-title { font-family: var(--f-head); font-size: 2.2rem; color: #fff; margin: 0; }
-        .section-icon { color: var(--c-fire); font-size: 2rem; opacity: 0.8; }
+        .block-title {
+            font-family: var(--font-header);
+            font-size: 1.4rem;
+            color: var(--color-red);
+            margin: 0;
+            text-transform: uppercase;
+        }
+        .block-header i { color: var(--color-ui-gold); }
 
-        /* Info Blocks */
-        .info-block {
-            background-color: var(--c-content);
-            border: 1px solid var(--c-border);
-            border-radius: 6px;
+        .block-body {
             padding: 25px;
-            margin-bottom: 25px;
             line-height: 1.6;
             color: #ccc;
             font-size: 1rem;
         }
-        .info-block.searchable { transition: transform 0.2s; }
-        
-        .info-block h3 { color: var(--c-fire); font-family: var(--f-head); margin-top: 0; font-size: 1.5rem; }
-        .info-block strong { color: #fff; }
-        .info-block ul { padding-left: 20px; margin: 15px 0; }
-        .info-block li { margin-bottom: 8px; }
+        .block-body h3 { color: var(--color-ui-gold); margin-bottom: 10px; font-family: var(--font-header); }
+        .block-body strong { color: #fff; }
 
-        /* Locations List (Showcase) */
+        .feature-list { list-style: none; margin: 15px 0; }
+        .feature-list li { margin-bottom: 10px; padding-left: 25px; position: relative; }
+        .feature-list li::before {
+            content: "\f105";
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            position: absolute;
+            left: 0;
+            color: var(--color-ui-gold);
+        }
+
+        .banner-img {
+            width: 100%;
+            max-height: 350px;
+            object-fit: cover;
+            border-radius: 6px;
+            border: 1px solid var(--color-border);
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+        }
+
+        .big-img {
+            width: 100%;
+            border-radius: 6px;
+            border: 1px solid var(--color-border);
+            margin-top: 15px;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+        }
+        .big-img:hover { transform: scale(1.01); border-color: var(--color-red); }
+
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            border-radius: 8px;
+            border: 1px solid var(--color-border);
+            margin-bottom: 20px;
+            background: #000;
+        }
+        .video-container iframe {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+        }
+
         .location-list {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -263,432 +267,283 @@
             margin-top: 15px;
         }
         .location-item {
-            background: #252525;
+            background: #111;
             padding: 15px;
             border-radius: 4px;
-            border-left: 3px solid var(--c-fire);
+            border-left: 3px solid var(--color-red);
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
         .location-item span { font-weight: bold; color: #fff; }
-        .location-item small { color: #888; }
+        .location-item small { color: var(--color-ui-gold); }
 
-        /* Card Grid (Traders/Casino) */
         .card-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 20px;
+            justify-content: center;
         }
         .card {
-            background-color: #202020;
-            border: 1px solid var(--c-border);
+            background-color: var(--color-light-dark);
+            border: 1px solid var(--color-border);
             border-radius: 6px;
             overflow: hidden;
-            transition: transform 0.2s;
+            transition: 0.2s;
             display: flex;
             flex-direction: column;
+            height: 100%;
         }
-        .card:hover { transform: translateY(-5px); border-color: var(--c-fire); }
+        .card:hover { transform: translateY(-5px); border-color: var(--color-red); }
         .card-img-container {
             width: 100%; height: 180px; background-color: #000;
-            overflow: hidden; display: flex; align-items: center; justify-content: center;
-            border-bottom: 1px solid #333;
+            overflow: hidden; border-bottom: 1px solid #333;
         }
         .card-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s; cursor: pointer; }
-        .card:hover .card-img { transform: scale(1.05); }
         .card-body { padding: 15px; flex-grow: 1; }
-        .card-title { font-family: var(--f-head); color: var(--c-fire); font-size: 1.3rem; margin: 0 0 5px 0; }
-        .card-text { font-size: 0.9rem; color: #bbb; line-height: 1.4; }
+        .card-title { font-family: var(--font-header); color: var(--color-red); font-size: 1.2rem; margin: 0 0 5px 0; text-transform: uppercase; }
+        .card-text { font-size: 0.9rem; color: #bbb; }
 
-        /* Creature Details (List Style) */
         .creature-detail {
             display: flex;
             gap: 30px;
             margin-bottom: 30px;
-            background: #151515;
+            background: var(--color-light-dark);
             padding: 20px;
             border-radius: 8px;
             border: 1px solid #333;
+            transition: 0.2s;
         }
+        .creature-detail:hover { border-color: var(--color-red); }
         .cd-img-col { width: 35%; flex-shrink: 0; }
-        .cd-img { width: 100%; border-radius: 4px; cursor: pointer; border: 1px solid #444; }
+        .cd-img { width: 100%; border-radius: 4px; cursor: pointer; border: 1px solid #444; transition: 0.2s; }
+        .cd-img:hover { border-color: var(--color-red); }
         .cd-text-col { flex-grow: 1; }
-        .cd-title { font-family: var(--f-head); font-size: 1.6rem; color: var(--c-fire); margin-top: 0; }
-        .cd-text-col p { color: #ccc; margin-bottom: 10px; line-height: 1.5; }
+        .cd-title { font-family: var(--font-header); font-size: 1.6rem; color: var(--color-red); margin-top: 0; text-transform: uppercase; border-bottom: 1px solid #333; padding-bottom: 8px; margin-bottom: 12px; }
+        .cd-text-col p { color: #ccc; margin-bottom: 10px; font-size: 1rem; line-height: 1.4; }
 
-        /* Big Images */
-        .big-img {
-            width: 100%; border-radius: 6px; border: 1px solid #333;
-            margin-top: 15px; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-        }
-
-        /* Modal */
         .modal {
-            display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.95); z-index: 100; justify-content: center; align-items: center;
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95); z-index: 1000; align-items: center; justify-content: center;
         }
-        .modal.open { display: flex; }
-        .modal img { max-width: 95%; max-height: 90%; border: 2px solid var(--c-fire); border-radius: 6px; box-shadow: 0 0 50px rgba(255,51,0,0.2); }
-        .close-btn { position: absolute; top: 20px; right: 20px; color: #fff; font-size: 3rem; cursor: pointer; line-height: 1; }
+        .modal.active { display: flex; }
+        .modal img { max-width: 90%; max-height: 90%; border: 2px solid var(--color-red); border-radius: 4px; }
 
-        @media (max-width: 900px) {
-            .widget-container { flex-direction: column; width: 100%; height: 100vh; border: none; border-radius: 0; }
-            .header { flex-direction: column; gap: 15px; text-align: center; }
-            .lang-switch { position: static; margin-bottom: 10px; transform: none; }
+        @media (max-width: 850px) {
+            .title { font-size: 1.8rem; }
+            .nav-tab { padding: 10px; font-size: 0.85rem; }
             .card-grid { grid-template-columns: 1fr; }
-            .creature-detail { flex-direction: column; }
+            .creature-detail { flex-direction: column; gap: 15px; }
             .cd-img-col { width: 100%; }
         }
     </style>
 </head>
 <body>
 
-    <div class="widget-container">
-        
-        <!-- HEADER -->
-        <div class="header">
+    <div class="start-container">
+        <div class="lang-switch">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/b/ba/Flag_of_Germany.svg" class="lang-btn active" id="btn-de" onclick="setLang('de')" title="Deutsch">
+            <img src="https://upload.wikimedia.org/wikipedia/en/a/ae/Flag_of_the_United_Kingdom.svg" class="lang-btn" id="btn-en" onclick="setLang('en')" title="English">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/9/9a/Flag_of_Spain.svg" class="lang-btn" id="btn-es" onclick="setLang('es')" title="Español">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/c/c3/Flag_of_France.svg" class="lang-btn" id="btn-fr" onclick="setLang('fr')" title="Français">
+        </div>
+
+        <header class="header">
             <div class="header-content">
-                <h1 class="title" id="uiTitle">Community Center</h1>
-                <span class="subtitle" id="uiSubtitle">Eigene Exklusive Karte & Schwarzmarkt</span>
+                <h1 class="title">Community Center</h1>
+                <div class="subtitle" id="uiSubtitle">Eigene Exklusive Karte & Schwarzmarkt</div>
             </div>
-            
-            <!-- Flaggen -->
-            <div class="lang-switch">
-                <svg class="lang-btn active" id="btn-de" onclick="setLang('de')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 5 3">
-                    <rect width="5" height="3" fill="#000"/><rect width="5" height="2" y="1" fill="#D00"/><rect width="5" height="1" y="2" fill="#FFCE00"/>
-                </svg>
-                <svg class="lang-btn" id="btn-en" onclick="setLang('en')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 30">
-                    <clipPath id="s"><path d="M0,0 v30 h60 v-30 z"/></clipPath>
-                    <clipPath id="t"><path d="M30,15 h30 v15 z v15 h-30 z h-30 v-15 z v-15 h30 z"/></clipPath>
-                    <g clip-path="url(#s)">
-                        <path d="M0,0 v30 h60 v-30 z" fill="#012169"/>
-                        <path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/>
-                        <path d="M0,0 L60,30 M60,0 L0,30" clip-path="url(#t)" stroke="#C8102E" stroke-width="4"/>
-                        <path d="M30,0 v30 M0,15 h60" stroke="#fff" stroke-width="10"/>
-                        <path d="M30,0 v30 M0,15 h60" stroke="#C8102E" stroke-width="6"/>
-                    </g>
-                </svg>
-                <svg class="lang-btn" id="btn-es" onclick="setLang('es')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 750 500">
-                    <rect width="750" height="500" fill="#AA151B"/>
-                    <rect width="750" height="250" y="125" fill="#F1BF00"/>
-                </svg>
-                <svg class="lang-btn" id="btn-fr" onclick="setLang('fr')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600">
-                    <rect width="900" height="600" fill="#ED2939"/>
-                    <rect width="600" height="600" fill="#fff"/>
-                    <rect width="300" height="600" fill="#002395"/>
-                </svg>
-            </div>
+        </header>
 
-            <div class="search-container">
-                <i class="fa-solid fa-search search-icon"></i>
-                <input type="text" id="searchInput" class="search-input" placeholder="Suche...">
+        <div class="search-container">
+            <div class="search-box">
+                <i class="fa fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Suche..." onkeyup="filterContent()">
             </div>
         </div>
 
-        <!-- NAVIGATION -->
-        <div class="nav-tabs">
-            <div class="nav-tab active" onclick="showTab('showcase', this)" id="navShowcase">
-                <i class="fa-solid fa-map-location-dot"></i> Showcase
-            </div>
-            <div class="nav-tab" onclick="showTab('traders', this)" id="navTraders">
-                <i class="fa-solid fa-store"></i> Schwarzmarkt Händler
-            </div>
-            <div class="nav-tab" onclick="showTab('mounts', this)" id="navMounts">
-                <i class="fa-solid fa-dragon"></i> Exklusive Reittiere
-            </div>
-            <div class="nav-tab" onclick="showTab('casino', this)" id="navCasino">
-                <i class="fa-solid fa-dice"></i> Casino
-            </div>
-        </div>
+        <nav class="nav-tabs" id="navContainer">
+            <!-- JS Injection -->
+        </nav>
 
-        <!-- CONTENT -->
-        <div class="content-area" id="contentContainer">
-             <!-- Content injected via JS -->
-        </div>
-
+        <main class="content-area" id="contentContainer">
+            <!-- Dynamic Injection -->
+        </main>
     </div>
 
-    <!-- Modal -->
-    <div id="imgModal" class="modal">
-        <span class="close-btn" onclick="closeModal()">&times;</span>
-        <img id="modalImage" src="">
+    <div id="imgModal" class="modal" onclick="closeModal()">
+        <img id="modalImg" src="">
     </div>
 
     <script>
-        // =========================================================================
-        // 1. DATENBANK (ÜBERSETZUNGEN)
-        // =========================================================================
         const translations = {
             subtitle: { de: "Eigene Exklusive Karte & Schwarzmarkt", en: "Own Exclusive Map & Black Market", es: "Mapa Exclusivo y Mercado Negro", fr: "Carte Exclusive et Marché Noir" },
             search: { de: "Suche (z.B. Drache, Lizenz)...", en: "Search (e.g. Dragon, License)...", es: "Buscar...", fr: "Rechercher..." },
-            
             nav: {
                 showcase: { de: "Showcase", en: "Showcase", es: "Exhibición", fr: "Vitrine" },
-                traders: { de: "Schwarzmarkt Händler", en: "Black Market Traders", es: "Comerciantes Mercado Negro", fr: "Marchands Marché Noir" },
-                mounts: { de: "Exklusive Reittiere", en: "Exclusive Mounts", es: "Monturas Exclusivas", fr: "Montures Exclusives" },
+                traders: { de: "Schwarzmarkt Händler", en: "Black Market Traders", es: "Comerciantes", fr: "Marchands" },
+                mounts: { de: "Exklusive Reittiere", en: "Exclusive Mounts", es: "Monturas", fr: "Montures" },
                 casino: { de: "Casino", en: "Casino", es: "Casino", fr: "Casino" }
             },
-
             sections: {
                 showcase: [
-                    {
-                        type: "header", icon: "fa-map",
-                        title: { de: "Übersicht & Erklärung", en: "Overview & Explanation", es: "Resumen y Explicación", fr: "Aperçu et Explication" }
-                    },
-                    {
-                        type: "info",
-                        title: { de: "Willkommen im Zentrum", en: "Welcome to the Center", es: "Bienvenido al Centro", fr: "Bienvenue au Centre" },
-                        content: { 
-                            de: "Diese Modkarte wurde speziell für die Community von Infinity of Phoenix erstellt. Sie bietet auf die Community zugeschnittene Inhalte wie Logos, besondere Orte und Custom-Inhalte. Die Karte ist als ultimative Markt- und Event-Karte im Mittelalter-Fantasy-Stil geplant. Sie befindet sich in einem Tal mit viel Vegetation, Felsen und speziellen Nacht-Leuchteffekten.", 
-                            en: "This mod map was created specifically for the Infinity of Phoenix community. It offers community-tailored content like logos, special places, and custom content. The map is planned as the ultimate market and event map in medieval fantasy style, located in a valley with lush vegetation, rocks, and special night lighting effects.",
-                            es: "Este mapa mod fue creado para la comunidad de IOP. Ofrece contenido personalizado como logotipos, lugares especiales y contenido único. Es un mapa de mercado y eventos de fantasía medieval en un valle iluminado por la noche.",
-                            fr: "Cette carte mod a été créée pour la communauté IOP. Elle offre du contenu personnalisé comme des logos, des lieux spéciaux et du contenu unique. C'est une carte de marché et d'événements de style médiéval fantastique dans une vallée illuminée la nuit."
-                        },
-                        img: "https://i.postimg.cc/sgN2Zvv5/40.png"
-                    },
-                    {
-                        type: "locations",
-                        title: { de: "Wichtige Orte", en: "Important Places", es: "Lugares Importantes", fr: "Lieux Importants" },
-                        list: [
-                            { name: { de: "Land-Arena", en: "Land Arena", es: "Arena Terrestre", fr: "Arène Terrestre" }, sub: { de: "Mit Tribünen & Schutz-Cube", en: "With stands & protection cube", es: "Con gradas y cubo protector", fr: "Avec tribunes et cube de protection" } },
-                            { name: { de: "Wasser-Arena", en: "Water Arena", es: "Arena Acuática", fr: "Arène Aquatique" }, sub: { de: "Mit Unterwasser-Tribüne", en: "With underwater stand", es: "Con grada submarina", fr: "Avec tribune sous-marine" } },
-                            { name: { de: "Dynamische Event-Orte", en: "Dynamic Event Spots", es: "Lugares de Eventos Dinámicos", fr: "Lieux d'Événements Dynamiques" }, sub: { de: "Land & Wasser", en: "Land & Water", es: "Tierra y Agua", fr: "Terre et Eau" } },
-                            { name: { de: "Spielermarkt", en: "Player Market", es: "Mercado de Jugadores", fr: "Marché des Joueurs" }, sub: { de: "61 nummerierte Häuser", en: "61 numbered houses", es: "61 casas numeradas", fr: "61 maisons numérotées" } },
-                            { name: { de: "Spielerbank", en: "Player Bank", es: "Banco de Jugadores", fr: "Banque des Joueurs" }, sub: { de: "Im Adelsviertel", en: "In the Noble District", es: "En el Barrio Noble", fr: "Dans le Quartier Noble" } },
-                            { name: { de: "Phoenix Tempel", en: "Phoenix Temple", es: "Templo Fénix", fr: "Temple Phénix" }, sub: { de: "Zentraler Treffpunkt", en: "Central meeting point", es: "Punto de encuentro central", fr: "Point de rencontre central" } },
-                            { name: { de: "Fußballplatz", en: "Soccer Field", es: "Campo de Fútbol", fr: "Terrain de Football" }, sub: { de: "Football Ark Mod", en: "Football Ark Mod", es: "Football Ark Mod", fr: "Football Ark Mod" } },
-                            { name: { de: "Hall of Thunder", en: "Hall of Thunder", es: "Salón del Trueno", fr: "Hall du Tonnerre" }, sub: { de: "Mjölnirs Heilung", en: "Mjölnirs Healing", es: "Curación de Mjölnir", fr: "Guérison de Mjölnir" } },
-                            { name: { de: "Phoenix Brauerei", en: "Phoenix Brewery", es: "Cervecería Fénix", fr: "Brasserie Phénix" }, sub: { de: "Getränkelager", en: "Drink storage", es: "Almacén de bebidas", fr: "Entrepôt de boissons" } },
-                            { name: { de: "Kirche", en: "Church", es: "Iglesia", fr: "Église" }, sub: { de: "Zur Anbetung", en: "For worship", es: "Para adoración", fr: "Pour le culte" } }
-                        ]
-                    },
-                    {
-                        type: "info",
-                        title: { de: "Marktlizenz", en: "Market License", es: "Licencia de Mercado", fr: "Licence de Marché" },
-                        content: { de: "Möchtest du auf dem Schwarzmarkt ein Haus mieten? Hol dir die Marktlizenz!", en: "Want to rent a house on the black market? Get the market license!", es: "¿Quieres alquilar una casa en el mercado negro? ¡Obtén la licencia!", fr: "Vous voulez louer une maison au marché noir ? Obtenez la licence !" },
-                        list: [
-                            { de: "<strong>Dauer:</strong> Unbegrenzt (Muss jährlich erneuert werden).", en: "<strong>Duration:</strong> Unlimited (Must be renewed annually).", es: "<strong>Duración:</strong> Ilimitada (Renovar anualmente).", fr: "<strong>Durée :</strong> Illimitée (Renouvellement annuel)." },
-                            { de: "<strong>Berechtigung:</strong> 50 Strukturen, Unlimited Weight auf dem Schwarzmarkt.", en: "<strong>Permission:</strong> 50 Structures, Unlimited Weight on Black Market.", es: "<strong>Permiso:</strong> 50 Estructuras, Peso Ilimitado.", fr: "<strong>Permission :</strong> 50 Structures, Poids Illimité." },
-                            { de: "<strong>Regeln:</strong> Nur 1 Haus pro Stamm. Dekoration nur im Haus/Garten.", en: "<strong>Rules:</strong> 1 House per Tribe. Decoration only in house/garden.", es: "<strong>Reglas:</strong> 1 Casa por Tribu. Decoración solo casa/jardín.", fr: "<strong>Règles :</strong> 1 Maison par Tribu. Décoration maison/jardin uniquement." },
-                            { de: "<strong>Stände:</strong> Bis zu 4 Verkaufsstände erlaubt.", en: "<strong>Stands:</strong> Up to 4 sales stands allowed.", es: "<strong>Puestos:</strong> Hasta 4 puestos permitidos.", fr: "<strong>Stands :</strong> Jusqu'à 4 stands autorisés." }
-                        ],
-                        img: "https://i.postimg.cc/1trv8yzZ/gy-H8-Rd-QZJw-AL5-R33-IYOkx-Xriuq1-ENIbvs-Wlze-DA2.webp"
-                    }
+                    { type: "header", icon: "fa-map", title: { de: "Übersicht & Erklärung", en: "Overview & Explanation", es: "Resumen", fr: "Aperçu" } },
+                    { type: "info", title: { de: "Willkommen im Zentrum", en: "Welcome to the Center", es: "Bienvenido", fr: "Bienvenue" }, content: { de: "Diese Modkarte wurde speziell für die Community erstellt. Sie bietet auf die Community zugeschnittene Inhalte wie Logos, besondere Orte und Custom-Inhalte im Mittelalter-Fantasy-Stil. Die Karte ist als ultimative Markt- und Event-Karte geplant.", en: "This mod map was created specifically for the community. It offers community-tailored content like logos and special places in medieval fantasy style.", es: "Este mapa mod fue creado para la comunidad. Ofrece contenido personalizado en un estilo de fantasía medieval.", fr: "Cette carte mod a été créée pour la communauté dans un style médiéval fantastique." }, img: "https://i.postimg.cc/sgN2Zvv5/40.png" },
+                    { type: "video", title: { de: "Arena Vorschau", en: "Arena Preview", es: "Vista previa", fr: "Aperçu" }, videoId: "4dPjKiQV7Bo" },
+                    { type: "locations", title: { de: "Wichtige Orte", en: "Important Places", es: "Lugares Importantes", fr: "Lieux Importants" }, list: [
+                        { name: { de: "Land-Arena", en: "Land Arena", es: "Arena Terrestre", fr: "Arène Terrestre" }, sub: { de: "Tribünen & Schutz-Cube", en: "Stands & protection cube", es: "Con gradas", fr: "Avec tribunes" } },
+                        { name: { de: "Wasser-Arena", en: "Water Arena", es: "Arena Acuática", fr: "Arène Aquatique" }, sub: { de: "Unterwasser-Tribüne", en: "Underwater stand", es: "Subacuática", fr: "Sous-marine" } },
+                        { name: { de: "Spielermarkt", en: "Player Market", es: "Mercado", fr: "Marché" }, sub: { de: "61 Häuser", en: "61 houses", es: "61 casas", fr: "61 maisons" } },
+                        { name: { de: "Spielerbank", en: "Player Bank", es: "Banco", fr: "Banque" }, sub: { de: "Adelsviertel", en: "Noble district", es: "Barrio Noble", fr: "Quartier Noble" } },
+                        { name: { de: "Phoenix Tempel", en: "Phoenix Temple", es: "Templo", fr: "Temple" }, sub: { de: "Zentrum", en: "Center", es: "Centro", fr: "Centre" } },
+                        { name: { de: "Fußballplatz", en: "Soccer Field", es: "Fútbol", fr: "Football" }, sub: { de: "Mod", en: "Mod", es: "Mod", fr: "Mod" } },
+                        { name: { de: "Hall of Thunder", en: "Hall of Thunder", es: "Salón", fr: "Hall" }, sub: { de: "Mjölnir", en: "Mjölnir", es: "Mjölnir", fr: "Mjölnir" } },
+                        { name: { de: "Phoenix Brauerei", en: "Brewery", es: "Cervecería", fr: "Brasserie" }, sub: { de: "Getränke", en: "Drinks", es: "Bebidas", fr: "Boissons" } },
+                        { name: { de: "Kirche", en: "Church", es: "Iglesia", fr: "Église" }, sub: { de: "Anbetung", en: "Worship", es: "Adoración", fr: "Culte" } }
+                    ] },
+                    { type: "info", title: { de: "Marktlizenz", en: "Market License", es: "Licencia de Mercado", fr: "Licence de Marché" }, content: { de: "Hol dir die Lizenz für den Schwarzmarkt!", en: "Get the license for the black market!", es: "¡Obtén la licencia!", fr: "Obtenez la licence !" }, list: [
+                        { de: "<strong>Dauer:</strong> Jährlich erneuerbar.", en: "<strong>Duration:</strong> Renewed annually.", es: "<strong>Duración:</strong> Anual.", fr: "<strong>Durée :</strong> Annuelle." },
+                        { de: "<strong>Berechtigung:</strong> 50 Strukturen, Unlimited Weight.", en: "<strong>Permission:</strong> 50 structures, Unlimited Weight.", es: "<strong>Permiso:</strong> 50 estructuras.", fr: "<strong>Permission :</strong> 50 structures." }
+                    ], img: "https://i.postimg.cc/1trv8yzZ/gy-H8-Rd-QZJw-AL5-R33-IYOkx-Xriuq1-ENIbvs-Wlze-DA2.webp" }
                 ],
                 traders: [
-                    {
-                        type: "header", icon: "fa-shop",
-                        title: { de: "Schwarzmarkt Händler", en: "Black Market Traders", es: "Comerciantes Mercado Negro", fr: "Marchands Marché Noir" }
-                    },
-                    {
-                        type: "info",
-                        content: { de: "<p>Der Schwarzmarkt befindet sich in der Mitte der Karte (nördlich vom Spawn). In der Burg auf dem Berg findet ihr diverse Händler. Bezahlt wird mit Edelsteinen oder Gold.</p>", en: "<p>The Black Market is in the middle of the map (north of spawn). In the castle on the hill you will find various traders. Payment is made with gems or gold.</p>", es: "<p>El Mercado Negro está en el centro. Castillo en la colina. Pago con gemas u oro.</p>", fr: "<p>Le Marché Noir est au centre. Château sur la colline. Paiement en gemmes ou or.</p>" }
-                    },
-                    {
-                        type: "cardGrid",
-                        cards: [
-                            { title: { de: "Reittierhändler", en: "Mount Trader", es: "Comerciante de Monturas", fr: "Marchand de Montures" }, text: { de: "Verkauft einzigartige Mod-Reittiere.", en: "Sells unique mod mounts.", es: "Vende monturas únicas.", fr: "Vend des montures uniques." }, img: "https://i.postimg.cc/Ss3SrdGL/Bild-2025-01-07-204538284.png" },
-                            { title: { de: "Schultertiere", en: "Shoulder Pets", es: "Mascotas de Hombro", fr: "Animaux d'Épaule" }, text: { de: "Besondere Begleiter.", en: "Special companions.", es: "Compañeros especiales.", fr: "Compagnons spéciaux." }, img: "https://i.postimg.cc/hGQ3m0fR/Bild-2025-01-07-204624283.png" },
-                            { title: { de: "Alchemist", en: "Alchemist", es: "Alquimista", fr: "Alchimiste" }, text: { de: "Magische Waren, Potions.", en: "Magical goods, potions.", es: "Bienes mágicos, pociones.", fr: "Biens magiques, potions." }, img: "https://i.postimg.cc/50WrBkYW/Bild-2025-01-07-211521912.png" },
-                            { title: { de: "Gemischtwaren", en: "General Goods", es: "Bienes Generales", fr: "Marchandises Générales" }, text: { de: "Deko & Strukturen.", en: "Decor & structures.", es: "Decoración y estructuras.", fr: "Déco et structures." }, img: "https://i.postimg.cc/ncpkRrm9/Bild-2025-01-07-202102408.png" },
-                            { title: { de: "Rüstungshändler", en: "Armor Trader", es: "Armero", fr: "Armurier" }, text: { de: "Verbesserte Rüstungen.", en: "Improved armor.", es: "Armaduras mejoradas.", fr: "Armures améliorées." }, img: "https://i.postimg.cc/x1XG440B/Bild-2025-01-07-203733522.png" },
-                            { title: { de: "Waffenhändler", en: "Weapon Trader", es: "Vendedor de Armas", fr: "Marchand d'Armes" }, text: { de: "Verbesserte Waffen.", en: "Improved weapons.", es: "Armas mejoradas.", fr: "Armes améliorées." }, img: "https://i.postimg.cc/6QNk6R16/Bild-2025-01-07-204010173.png" },
-                            { title: { de: "Tribute Ankäufer", en: "Tribute Buyer", es: "Comprador de Tributos", fr: "Acheteur de Tributs" }, text: { de: "Kauft Tribute gegen Gold.", en: "Buys tributes for gold.", es: "Compra tributos por oro.", fr: "Achète tributs contre or." }, img: "https://i.postimg.cc/fL9kSk4R/Bild-2025-01-07-210123829.png" },
-                            { title: { de: "Der Hehler", en: "The Fence", es: "El Perista", fr: "Le Receleur" }, text: { de: "Geheime Waren.", en: "Secret goods.", es: "Bienes secretos.", fr: "Marchandises secrètes." }, img: "https://i.postimg.cc/1RbfSGqV/Bild-2025-01-07-205944692.png" },
-                            { title: { de: "Teleportation", en: "Teleportation", es: "Teletransportación", fr: "Téléportation" }, text: { de: "Teleport-Steine.", en: "Teleport stones.", es: "Piedras de teletransporte.", fr: "Pierres de téléportation." }, img: "https://i.postimg.cc/50dtWD02/Bild-2025-05-20-232903234.png" },
-                            { title: { de: "Chibi Händler", en: "Chibi Trader", es: "Vendedor Chibi", fr: "Marchand Chibi" }, text: { de: "Normale Chibis.", en: "Normal Chibis.", es: "Chibis normales.", fr: "Chibis normaux." }, img: "https://i.postimg.cc/ZnSChZWs/Bild-2025-01-07-205603129.png" },
-                            { title: { de: "Skin Händler", en: "Skin Trader", es: "Vendedor de Skins", fr: "Marchand de Skins" }, text: { de: "Skins für Gear.", en: "Skins for gear.", es: "Skins para equipo.", fr: "Skins pour équipement." }, img: "https://i.postimg.cc/NMYcs0xX/Bild-2025-01-07-205703117.png" },
-                            { title: { de: "Pferdehändler", en: "Horse Trader", es: "Vendedor de Caballos", fr: "Marchand de Chevaux" }, text: { de: "Verkauft Pferde.", en: "Sells horses.", es: "Vende caballos.", fr: "Vend des chevaux." }, img: "https://i.postimg.cc/dtCnQ0k4/Bild-2025-01-07-204257313.png" }
-                        ]
-                    }
+                    { type: "header", icon: "fa-shop", title: { de: "Schwarzmarkt Händler", en: "Black Market Traders", es: "Comerciantes", fr: "Marchands" } },
+                    { type: "cardGrid", cards: [
+                        { title: { de: "Reittiere", en: "Mounts", es: "Monturas", fr: "Montures" }, text: { de: "Mod-Reittiere.", en: "Mod mounts.", es: "Dinos.", fr: "Dinos." }, img: "https://i.postimg.cc/Ss3SrdGL/Bild-2025-01-07-204538284.png" },
+                        { title: { de: "Schultertiere", en: "Shoulder Pets", es: "Mascotas", fr: "Compagnons" }, text: { de: "Kleine Begleiter.", en: "Small pets.", es: "Pequeños.", fr: "Petits." }, img: "https://i.postimg.cc/hGQ3m0fR/Bild-2025-01-07-204624283.png" },
+                        { title: { de: "Alchemist", en: "Alchemist", es: "Alquimista", fr: "Alchimiste" }, text: { de: "Magie & Tränke.", en: "Potions.", es: "Pociones.", fr: "Potions." }, img: "https://i.postimg.cc/50WrBkYW/Bild-2025-01-07-211521912.png" },
+                        { title: { de: "Gemischtwaren", en: "General Goods", es: "Bienes", fr: "Marchandises" }, text: { de: "Deko & Bau.", en: "Decor.", es: "Decoración.", fr: "Déco." }, img: "https://i.postimg.cc/ncpkRrm9/Bild-2025-01-07-202102408.png" },
+                        { title: { de: "Rüstung", en: "Armor", es: "Armas", fr: "Armure" }, text: { de: "Schutz.", en: "Protection.", es: "Protección.", fr: "Protection." }, img: "https://i.postimg.cc/x1XG440B/Bild-2025-01-07-203733522.png" },
+                        { title: { de: "Waffen", en: "Weapons", es: "Armas", fr: "Armes" }, text: { de: "Angriff.", en: "Attack.", es: "Ataque.", fr: "Attaque." }, img: "https://i.postimg.cc/6QNk6R16/Bild-2025-01-07-204010173.png" },
+                        { title: { de: "Tribute", en: "Tributes", es: "Tributos", fr: "Tributs" }, text: { de: "Goldankauf.", en: "Buy gold.", es: "Oro.", fr: "Or." }, img: "https://i.postimg.cc/fL9kSk4R/Bild-2025-01-07-210123829.png" },
+                        { title: { de: "Hehler", en: "Fence", es: "Perista", fr: "Receleur" }, text: { de: "Geheime Waren.", en: "Secret items.", es: "Secreto.", fr: "Secret." }, img: "https://i.postimg.cc/1RbfSGqV/Bild-2025-01-07-205944692.png" },
+                        { title: { de: "Teleport", en: "Teleport", es: "Teletrans.", fr: "Téléport" }, text: { de: "Steine.", en: "Stones.", es: "Piedras.", fr: "Pierres." }, img: "https://i.postimg.cc/50dtWD02/Bild-2025-05-20-232903234.png" },
+                        { title: { de: "Chibis", en: "Chibis", es: "Chibis", fr: "Chibis" }, text: { de: "Normal.", en: "Normal.", es: "Normal.", fr: "Normal." }, img: "https://i.postimg.cc/ZnSChZWs/Bild-2025-01-07-205603129.png" },
+                        { title: { de: "Skins", en: "Skins", es: "Skins", fr: "Skins" }, text: { de: "Optik.", en: "Look.", es: "Visual.", fr: "Visual." }, img: "https://i.postimg.cc/NMYcs0xX/Bild-2025-01-07-205703117.png" },
+                        { title: { de: "Pferde", en: "Horses", es: "Caballos", fr: "Chevaux" }, text: { de: "Zucht.", en: "Breeding.", es: "Crianza.", fr: "Élevage." }, img: "https://i.postimg.cc/dtCnQ0k4/Bild-2025-01-07-204257313.png" }
+                    ]}
                 ],
                 mounts: [
-                    {
-                        type: "header", icon: "fa-dragon",
-                        title: { de: "Exklusive Reittiere", en: "Exclusive Mounts", es: "Monturas Exclusivas", fr: "Montures Exclusives" }
-                    },
-                    {
-                        type: "info",
-                        title: { de: "Infos zur Zucht & Herkunft", en: "Breeding & Origin Info", es: "Info de Crianza y Origen", fr: "Infos Élevage et Origine" },
-                        content: { de: "<p>Diese Kreaturen sind (außer Shiny/S-Varianten) nur auf dem Schwarzmarkt erhältlich. Sie werden <strong>kastriert</strong> verkauft (Level 140-160).</p><p><strong>Master Breeding:</strong> Über 'IOP Fertility Injektoren' (erspielbar) könnt ihr diese Tiere 1x paaren lassen.</p>", en: "<p>These creatures are only available on the Black Market (except Shiny/S). Sold <strong>neutered</strong> (Lvl 140-160).</p><p><strong>Master Breeding:</strong> Use 'IOP Fertility Injectors' to breed them once.</p>", es: "<p>Solo en Mercado Negro. Vendidos <strong>castrados</strong>.</p><p><strong>Master Breeding:</strong> Usa inyectores para criar una vez.</p>", fr: "<p>Uniquement au Marché Noir. Vendus <strong>castrés</strong>.</p><p><strong>Master Breeding :</strong> Utilisez des injecteurs pour élever une fois.</p>" }
-                    },
-                    {
-                        type: "creatures",
-                        items: [
-                            { title: "Dragon's Kingdom Drachen", specs: { de: "Sturzflug, verschiedene Atmen-Arten.", en: "Dive, various breath types.", es: "Picado, varios alientos.", fr: "Piqué, divers souffles." }, img: "https://i.postimg.cc/wjQF1fMS/Bild-2025-01-26-175759173.png" },
-                            { title: "Marnii's Owlgriffins", specs: { de: "Sturzflug, Waffen beim Reiten.", en: "Dive, weapons while riding.", es: "Picado, armas al montar.", fr: "Piqué, armes en selle." }, img: "https://i.postimg.cc/zBPwY4v1/GUke7-Dc-WUAIBUz-B.jpg" },
-                            { title: "Cyrus' Jumping Spider", specs: { de: "Klettern, Weitsprung.", en: "Climbing, long jump.", es: "Escalar, salto largo.", fr: "Escalade, saut en longueur." }, img: "https://i.postimg.cc/3JZFw1Ky/arkascended-4-22-2024-12-06-11-pm-min.png" },
-                            { title: "Draconis Glaucus", specs: { de: "Elektro-Angriffe, Amphibisch.", en: "Electric attacks, amphibious.", es: "Ataques eléctricos, anfibio.", fr: "Attaques électriques, amphibie." }, img: "https://i.postimg.cc/v8VYr2jK/t0jtr199j17d1.png" },
-                            { title: "Colossusscorpius", specs: { de: "Hoher Torpor, Greifen.", en: "High torpor, grabbing.", es: "Alto torpor, agarre.", fr: "Haute torpeur, saisie." }, img: "https://i.postimg.cc/4d53rWkG/scorched-earth-2.jpg" },
-                            { title: "Moro's Nothosaurus", specs: { de: "Elektro, Regeneration.", en: "Electric, regeneration.", es: "Eléctrico, regeneración.", fr: "Électrique, régénération." }, img: "https://i.postimg.cc/C17w5dKp/image-2024-07-09-230915146.png" },
-                            { title: "Moro's Tylosaurus", specs: { de: "Todesrolle, Gifte.", en: "Death roll, poisons.", es: "Giro mortal, venenos.", fr: "Roulement mortel, poisons." }, img: "https://i.postimg.cc/TwHQGMDq/13244164-Tylosaurus-mosasaur-and-prey-illustration.jpg" },
-                            { title: "Skyshroud Drakara", specs: { de: "Avatar Ikran Stil.", en: "Avatar Ikran style.", es: "Estilo Avatar Ikran.", fr: "Style Avatar Ikran." }, img: "https://i.postimg.cc/JhXLjLVc/Bild-2025-05-20-214815786.png" },
-                            { title: "Dracotheutis", specs: { de: "Saugt Ladelicht.", en: "Absorbs charge light.", es: "Absorbe luz de carga.", fr: "Absorbe lumière de charge." }, img: "https://i.postimg.cc/cJRH7YfJ/arkascended-12-8-2024-5-56-29-pm.jpg" },
-                            { title: "Moro's Indomitable", specs: { de: "Ultimative Jäger.", en: "Ultimate hunters.", es: "Cazadores definitivos.", fr: "Chasseurs ultimes." }, img: "https://i.postimg.cc/J0sHvLp7/after-sacrificing-many-many-kairukus-and-collecting-v0-xibrkyltvrac1.jpg" }
-                        ]
-                    }
+                    { type: "header", icon: "fa-dragon", title: { de: "Exklusive Reittiere", en: "Exclusive Mounts", es: "Monturas", fr: "Montures" } },
+                    { type: "info", title: { de: "Zucht & Herkunft", en: "Breeding Info", es: "Crianza", fr: "Élevage" }, content: { de: "Diese Kreaturen sind nur hier erhältlich. Verkauf erfolgt kastriert. Zucht via Fertility Injektoren möglich.", en: "Available only here. Sold neutered. Breeding via injectors.", es: "Dinos castrados. Crianza con inyectores.", fr: "Dinos castrés. Élevage via injecteurs." } },
+                    { type: "creatures", items: [
+                        { title: "Dragon's Kingdom Drachen", specs: { de: "Sturzflug, verschiedene Atmen-Arten.", en: "Dive, various breath types.", es: "Picado.", fr: "Piqué." }, img: "https://i.postimg.cc/wjQF1fMS/Bild-2025-01-26-175759173.png" },
+                        { title: "Marnii's Owlgriffins", specs: { de: "Sturzflug, Waffen beim Reiten.", en: "Dive, weapons while riding.", es: "Armas al montar.", fr: "Armes en selle." }, img: "https://i.postimg.cc/zBPwY4v1/GUke7-Dc-WUAIBUz-B.jpg" },
+                        { title: "Cyrus' Jumping Spider", specs: { de: "Klettern, Weitsprung.", en: "Climbing, long jump.", es: "Escalada, salto.", fr: "Escalade, saut." }, img: "https://i.postimg.cc/3JZFw1Ky/arkascended-4-22-2024-12-06-11-pm-min.png" },
+                        { title: "Draconis Glaucus", specs: { de: "Elektro-Angriffe, Amphibisch.", en: "Electric, amphibious.", es: "Eléctrico.", fr: "Électrique." }, img: "https://i.postimg.cc/v8VYr2jK/t0jtr199j17d1.png" },
+                        { title: "Colossusscorpius", specs: { de: "Hoher Torpor, Greifen.", en: "High torpor, grabbing.", es: "Mucho torpor.", fr: "Beaucoup de torpeur." }, img: "https://i.postimg.cc/4d53rWkG/scorched-earth-2.jpg" },
+                        { title: "Moro's Nothosaurus", specs: { de: "Elektro, Regeneration.", en: "Electric, regeneration.", es: "Regeneración.", fr: "Régénération." }, img: "https://i.postimg.cc/C17w5dKp/image-2024-07-09-230915146.png" },
+                        { title: "Moro's Tylosaurus", specs: { de: "Todesrolle, Gifte.", en: "Death roll, poisons.", es: "Giro mortal.", fr: "Roulement mortel." }, img: "https://i.postimg.cc/TwHQGMDq/13244164-Tylosaurus-mosasaur-and-prey-illustration.jpg" },
+                        { title: "Skyshroud Drakara", specs: { de: "Avatar Ikran Stil.", en: "Avatar Ikran style.", es: "Estilo Avatar.", fr: "Style Avatar." }, img: "https://i.postimg.cc/JhXLjLVc/Bild-2025-05-20-214815786.png" },
+                        { title: "Dracotheutis", specs: { de: "Saugt Ladelicht.", en: "Absorbs charge light.", es: "Absorbe luz.", fr: "Absorbe lumière." }, img: "https://i.postimg.cc/cJRH7YfJ/arkascended-12-8-2024-5-56-29-pm.jpg" },
+                        { title: "Moro's Indomitable", specs: { de: "Ultimative Jäger.", en: "Ultimate hunters.", es: "Cazadores.", fr: "Chasseurs." }, img: "https://i.postimg.cc/J0sHvLp7/after-sacrificing-many-many-kairukus-and-collecting-v0-xibrkyltvrac1.jpg" }
+                    ]}
                 ],
                 casino: [
-                    {
-                        type: "header", icon: "fa-dice",
-                        title: { de: "Das Casino", en: "The Casino", es: "El Casino", fr: "Le Casino" }
-                    },
-                    {
-                        type: "info",
-                        title: { de: "Spielspaß & Gewinne", en: "Fun & Wins", es: "Diversión y Ganancias", fr: "Plaisir et Gains" },
-                        content: { de: "<p>Tausche Gold in Casino Coins. Spiele Blackjack, Slots, Poker uvm.</p>", en: "<p>Exchange gold for casino coins. Play Blackjack, Slots, Poker etc.</p>", es: "<p>Cambia oro por fichas. Blackjack, Tragaperras, Póker.</p>", fr: "<p>Échangez de l'or contre des jetons. Blackjack, Machines à sous, Poker.</p>" }
-                    },
-                    {
-                        type: "cardGrid",
-                        cards: [
-                            { title: { de: "Eingang", en: "Entrance", es: "Entrada", fr: "Entrée" }, text: { de: "", en: "", es: "", fr: "" }, img: "https://i.postimg.cc/k45LvpwD/Bild-2025-01-07-225546162.png" },
-                            { title: { de: "Coin Raum", en: "Coin Room", es: "Sala de Fichas", fr: "Salle des Jetons" }, text: { de: "", en: "", es: "", fr: "" }, img: "https://i.postimg.cc/FRq7C3vv/Bild-2025-01-07-211636787.png" },
-                            { title: { de: "Spielautomaten", en: "Slot Machines", es: "Tragaperras", fr: "Machines à Sous" }, text: { de: "", en: "", es: "", fr: "" }, img: "https://i.postimg.cc/W4zg1M2R/Bild-2025-01-07-211721957.png" },
-                            { title: { de: "Pokertisch", en: "Poker Table", es: "Mesa de Póker", fr: "Table de Poker" }, text: { de: "", en: "", es: "", fr: "" }, img: "https://i.postimg.cc/t4MsRJ27/Bild-2025-01-07-212655107.png" },
-                            { title: { de: "Raptorenrennen", en: "Raptor Race", es: "Carrera de Raptores", fr: "Course de Raptors" }, text: { de: "", en: "", es: "", fr: "" }, img: "https://i.postimg.cc/y8qGMyzN/Bild-2025-01-07-212821396.png" },
-                            { title: { de: "Glücksrad", en: "Wheel of Fortune", es: "Rueda de la Fortuna", fr: "Roue de la Fortune" }, text: { de: "", en: "", es: "", fr: "" }, img: "https://i.postimg.cc/FR2qhyJG/Bild-2025-01-07-212905779.png" }
-                        ]
-                    }
+                    { type: "header", icon: "fa-dice", title: { de: "Casino", en: "Casino", es: "Casino", fr: "Casino" } },
+                    { type: "cardGrid", cards: [
+                        { title: { de: "Eingang", en: "Entrance", es: "Entrada", fr: "Entrée" }, text: { de: "Startbereich.", en: "Start area.", es: "Inicio.", fr: "Début." }, img: "https://i.postimg.cc/k45LvpwD/Bild-2025-01-07-225546162.png" },
+                        { title: { de: "Coin Raum", en: "Coin Room", es: "Sala Monedas", fr: "Jetons" }, text: { de: "Tausch Gold.", en: "Exchange gold.", es: "Cambio.", fr: "Échange." }, img: "https://i.postimg.cc/FRq7C3vv/Bild-2025-01-07-211636787.png" },
+                        { title: { de: "Spielautomaten", en: "Slots", es: "Tragaperras", fr: "Machines" }, text: { de: "Slotmachines.", en: "Slot machines.", es: "Juego.", fr: "Jeu." }, img: "https://i.postimg.cc/W4zg1M2R/Bild-2025-01-07-211721957.png" },
+                        { title: { de: "Pokertisch", en: "Poker", es: "Póker", fr: "Poker" }, text: { de: "Strategie.", en: "Strategy.", es: "Estrategia.", fr: "Stratégie." }, img: "https://i.postimg.cc/t4MsRJ27/Bild-2025-01-07-212655107.png" },
+                        { title: { de: "Rennbahn", en: "Races", es: "Carreras", fr: "Courses" }, text: { de: "Raptoren.", en: "Raptors.", es: "Raptores.", fr: "Raptors." }, img: "https://i.postimg.cc/y8qGMyzN/Bild-2025-01-07-212821396.png" },
+                        { title: { de: "Glücksrad", en: "Wheel", es: "Rueda", fr: "Roue" }, text: { de: "Große Gewinne.", en: "Big wins.", es: "Gana.", fr: "Gagne." }, img: "https://i.postimg.cc/FR2qhyJG/Bild-2025-01-07-212905779.png" }
+                    ]}
                 ]
             }
         };
 
-        // =========================================================================
-        // 2. LOGIC
-        // =========================================================================
         let currentLang = 'de';
-        let currentTab = 'showcase';
+        let activeTab = 'showcase';
 
         function setLang(lang) {
             currentLang = lang;
             document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
             document.getElementById('btn-' + lang).classList.add('active');
-            
-            // Statics
             document.getElementById('uiSubtitle').innerText = translations.subtitle[lang];
             document.getElementById('searchInput').placeholder = translations.search[lang];
-            
-            // Nav
-            document.getElementById('navShowcase').innerHTML = `<i class="fa-solid fa-map-location-dot"></i> ${translations.nav.showcase[lang]}`;
-            document.getElementById('navTraders').innerHTML = `<i class="fa-solid fa-store"></i> ${translations.nav.traders[lang]}`;
-            document.getElementById('navMounts').innerHTML = `<i class="fa-solid fa-dragon"></i> ${translations.nav.mounts[lang]}`;
-            document.getElementById('navCasino').innerHTML = `<i class="fa-solid fa-dice"></i> ${translations.nav.casino[lang]}`;
-
+            renderNav();
             renderContent();
         }
 
-        function showTab(tab, btn) {
-            currentTab = tab;
-            document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            renderContent();
+        function renderNav() {
+            const nav = document.getElementById('navContainer');
+            nav.innerHTML = '';
+            const sections = ['showcase', 'traders', 'mounts', 'casino'];
+            const icons = ['fa-map-location-dot', 'fa-store', 'fa-dragon', 'fa-dice'];
+            sections.forEach((s, i) => {
+                const tab = document.createElement('div');
+                tab.className = `nav-tab ${s === activeTab ? 'active' : ''}`;
+                tab.innerHTML = `<i class="fa-solid ${icons[i]}"></i> ${translations.nav[s][currentLang]}`;
+                tab.onclick = () => { activeTab = s; renderNav(); renderContent(); };
+                nav.appendChild(tab);
+            });
         }
 
         function renderContent() {
             const container = document.getElementById('contentContainer');
             container.innerHTML = '';
-            
-            const data = translations.sections[currentTab];
-            const searchVal = document.getElementById('searchInput').value.toLowerCase();
+            const l = currentLang;
+            const data = translations.sections[activeTab];
+            const filter = document.getElementById('searchInput').value.toLowerCase();
+            const sectionWrapper = document.createElement('div');
+            sectionWrapper.className = 'section active';
 
             data.forEach(block => {
-                // Check Search (Title, Content, List Items)
-                let textContent = "";
-                if(block.title) textContent += block.title[currentLang];
-                if(block.content) textContent += block.content[currentLang];
-                
-                if(block.list) {
-                    textContent += block.list.map(l => {
-                        if(l.name && l.name[currentLang]) return l.name[currentLang];
-                        if(l[currentLang]) return l[currentLang];
-                        return "";
-                    }).join(" ");
-                }
-                
-                if(block.cards) textContent += block.cards.map(c => c.title && c.title[currentLang] ? c.title[currentLang] : "").join(" ");
-                if(block.items) textContent += block.items.map(i => i.title || "").join(" "); 
-
-                if(searchVal && !textContent.toLowerCase().includes(searchVal)) return;
-
                 const div = document.createElement('div');
-                div.className = 'searchable';
-                
                 let html = "";
-                
                 if (block.type === 'header') {
-                    html = `<div class="section-header"><i class="fa-solid ${block.icon} section-icon"></i><h2 class="section-title">${block.title[currentLang]}</h2></div>`;
-                }
-                else if (block.type === 'info') {
+                    html = `<div class="section-header"><i class="fa-solid ${block.icon} section-icon"></i><h2 class="section-title">${block.title[l]}</h2></div>`;
+                } else if (block.type === 'info') {
                     div.className = "info-block searchable";
-                    html = "";
-                    if (block.title) {
-                        html += `<h3>${block.title[currentLang]}</h3>`;
-                    }
-                    if(block.content) html += block.content[currentLang];
-                    if(block.list) {
-                        html += `<ul>` + block.list.map(l => {
-                            if (typeof l === 'object' && l[currentLang]) return `<li>${l[currentLang]}</li>`;
-                            if (typeof l === 'object' && l.name && l.name[currentLang]) return `<li><strong>${l.name[currentLang]}</strong>: ${l.sub[currentLang]}</li>`; // Fallback for list style
-                            return `<li>${l}</li>`;
-                        }).join('') + `</ul>`;
-                    }
-                    if(block.img) html += `<img src="${block.img}" class="big-img" onclick="openModal(this.src)">`;
-                }
-                else if (block.type === 'locations') {
-                    div.className = "info-block searchable";
-                    html = `<h3>${block.title[currentLang]}</h3><div class="location-list">`;
-                    block.list.forEach(loc => {
-                        html += `<div class="location-item"><span>${loc.name[currentLang]}</span> <small>${loc.sub[currentLang]}</small></div>`;
-                    });
+                    if (block.title) html += `<div class="block-header"><i class="fa-solid fa-circle-info"></i><h3 class="block-title">${block.title[l]}</h3></div>`;
+                    html += `<div class="block-body">`;
+                    if (block.content) html += `<p>${block.content[l]}</p>`;
+                    if (block.list) html += `<ul class="feature-list">` + block.list.map(li => `<li>${li[l] || li}</li>`).join('') + `</ul>`;
+                    if (block.img) html += `<img src="${block.img}" class="big-img" onclick="openModal('${block.img}')">`;
                     html += `</div>`;
-                }
-                else if (block.type === 'cardGrid') {
+                } else if (block.type === 'video') {
+                    div.className = "info-block searchable";
+                    html += `<div class="block-header"><i class="fa-solid fa-play"></i><h3 class="block-title">${block.title[l]}</h3></div>`;
+                    html += `<div class="block-body"><div class="video-container"><iframe src="https://www.youtube.com/embed/${block.videoId}" frameborder="0" allowfullscreen></iframe></div></div>`;
+                } else if (block.type === 'locations') {
+                    div.className = "info-block searchable";
+                    html = `<div class="block-header"><i class="fa-solid fa-location-dot"></i><h3 class="block-title">${block.title[l]}</h3></div><div class="block-body"><div class="location-list">`;
+                    block.list.forEach(loc => html += `<div class="location-item"><span>${loc.name[l]}</span> <small>${loc.sub[l]}</small></div>`);
+                    html += `</div></div>`;
+                } else if (block.type === 'cardGrid') {
                     html = `<div class="card-grid">`;
-                    block.cards.forEach(card => {
-                        html += `
+                    block.cards.forEach(card => html += `
                         <div class="card searchable">
-                            <div class="card-img-container"><img src="${card.img}" class="card-img" onclick="openModal(this.src)"></div>
-                            <div class="card-body"><h4 class="card-title">${card.title[currentLang]}</h4><p class="card-text">${card.text[currentLang]}</p></div>
-                        </div>`;
-                    });
+                            <div class="card-img-container"><img src="${card.img}" class="card-img" onclick="openModal('${card.img}')"></div>
+                            <div class="card-body"><h4 class="card-title">${card.title[l]}</h4><p class="card-text">${card.text[l]}</p></div>
+                        </div>`);
                     html += `</div>`;
-                }
-                else if (block.type === 'creatures') {
-                    html = `<div style="display:flex; flex-direction:column;">`;
-                    block.items.forEach(c => {
-                        html += `
+                } else if (block.type === 'creatures') {
+                    html = `<div>`;
+                    block.items.forEach(c => html += `
                         <div class="creature-detail searchable">
-                            <div class="cd-img-col"><img src="${c.img}" class="cd-img" onclick="openModal(this.src)"></div>
-                            <div class="cd-text-col"><h3 class="cd-title">${c.title}</h3><p>${c.specs[currentLang]}</p></div>
-                        </div>`;
-                    });
+                            <div class="cd-img-col"><img src="${c.img}" class="cd-img" onclick="openModal('${c.img}')"></div>
+                            <div class="cd-text-col"><h3 class="cd-title">${c.title}</h3><p>${c.specs[l]}</p></div>
+                        </div>`);
                     html += `</div>`;
                 }
-
                 div.innerHTML = html;
-                container.appendChild(div);
+                sectionWrapper.appendChild(div);
             });
+            container.appendChild(sectionWrapper);
+            if (filter) {
+                document.querySelectorAll('.searchable').forEach(el => {
+                    const text = el.innerText.toLowerCase();
+                    el.style.display = text.includes(filter) ? '' : 'none';
+                });
+            }
         }
 
-        // Search Event
-        document.getElementById('searchInput').addEventListener('input', renderContent);
-
-        // Modal
-        const modal = document.getElementById('imgModal');
-        const modalImg = document.getElementById('modalImage');
-
-        function openModal(src) {
-            modalImg.src = src;
-            modal.classList.add('open');
-        }
-        function closeModal() { modal.classList.remove('open'); }
-        modal.addEventListener('click', (e) => { if(e.target === modal) closeModal(); });
-
-        // Init
-        window.onload = function() {
-            setLang('de');
-        };
+        function filterContent() { renderContent(); }
+        function openModal(src) { document.getElementById('modalImg').src = src; document.getElementById('imgModal').classList.add('active'); }
+        function closeModal() { document.getElementById('imgModal').classList.remove('active'); }
+        window.onload = () => setLang('de');
     </script>
 </body>
 </html>
