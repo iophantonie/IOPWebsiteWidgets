@@ -4,257 +4,218 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IOP Quest System</title>
-    <link href="https://fonts.googleapis.com/css2?family=Acme&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Acme&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* --- VARIABLES --- */
+        /* Farbschema: Feuerrot, Schwarz und Goldgelb */
         :root {
-            --c-fire: #ff3300;
-            --c-fire-dark: #cc2900;
-            --c-bg: #050505;
-            --c-panel: #121212;
-            --c-content: #1a1a1a;
-            --c-text: #e0e0e0;
-            --c-dim: #888;
-            --c-border: #333;
-            
-            --f-head: 'Acme', sans-serif;
-            --f-body: 'Roboto', sans-serif;
+            --color-red: #E53935;
+            --color-black: #000000;
+            --color-dark: #0a0a0a;
+            --color-light-dark: #161616;
+            --color-text: #f7f7f7;
+            --color-gold: #FFEB3B;
+            --color-ui-gold: #FFD700; /* Goldgelb für Fokus-Elemente */
+            --color-ui-tech: #00bcd4;
+            --font-header: 'Acme', sans-serif;
+            --font-body: 'Roboto', sans-serif;
         }
 
-        * { box-sizing: border-box; }
+        * { box-sizing: border-box; margin: 0; padding: 0; scroll-behavior: smooth; }
 
         body {
-            margin: 0; padding: 0;
-            /* Transparenter Hintergrund für Widget-Effekt */
-            background-color: rgba(0, 0, 0, 0.2); 
-            color: var(--c-text);
-            font-family: var(--f-body);
+            background-color: transparent;
+            font-family: var(--font-body);
+            color: var(--color-text);
             height: 100vh;
             width: 100vw;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
             overflow: hidden;
         }
 
-        /* Animationen */
-        @keyframes fire-border-pulse {
-            0% { box-shadow: 0 0 10px rgba(255, 51, 0, 0.2); border-color: rgba(255, 51, 0, 0.5); }
-            50% { box-shadow: 0 0 25px rgba(255, 51, 0, 0.5); border-color: rgba(255, 51, 0, 1); }
-            100% { box-shadow: 0 0 10px rgba(255, 51, 0, 0.2); border-color: rgba(255, 51, 0, 0.5); }
-        }
-        
-        @keyframes fire-text {
-            0% { background-position: 0% 50%; }
-            100% { background-position: 200% 50%; }
-        }
-        
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* --- WIDGET CONTAINER --- */
-        .interface-container {
+        /* Container */
+        .start-container {
+            background-color: var(--color-dark);
+            border-radius: 8px; 
+            border: 2px solid var(--color-red);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+            width: 98%;
+            height: 96vh;
             display: flex;
             flex-direction: column;
-            width: 98%; 
-            height: 95vh; 
-            background-color: var(--c-bg);
-            border: 2px solid var(--c-fire);
-            border-radius: 12px;
-            animation: fire-border-pulse 4s infinite ease-in-out;
             overflow: hidden;
-            position: relative;
-            box-shadow: 0 0 50px rgba(0,0,0,0.8);
+            margin-top: 2vh;
         }
 
-        /* --- HEADER --- */
+        /* Schlichter schwarzer Header */
         .header {
-            background-color: #080808;
-            padding: 15px 25px;
-            border-bottom: 1px solid var(--c-border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            background-color: var(--color-black);
+            padding: 25px 20px;
+            text-align: center;
+            border-bottom: 2px solid var(--color-red);
             flex-shrink: 0;
-            background-image: 
-                radial-gradient(circle at 10% 50%, rgba(255,51,0,0.05) 0%, transparent 40%);
             position: relative;
         }
 
         .header-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .lang-switch {
+            position: absolute;
+            top: 15px;
+            right: 15px;
             display: flex;
-            flex-direction: column;
+            gap: 10px;
+            z-index: 10;
+        }
+        .lang-btn {
+            width: 25px; height: 16px;
+            cursor: pointer;
+            border-radius: 2px;
+            border: 1px solid #fff;
+            opacity: 0.6;
+            transition: 0.2s;
+            object-fit: cover;
+        }
+        .lang-btn.active, .lang-btn:hover {
+            opacity: 1;
+            transform: scale(1.15);
+            border-color: var(--color-ui-gold);
         }
 
         .title {
-            font-family: var(--f-head);
-            font-size: 2rem;
+            font-family: var(--font-header);
+            font-size: 2.4rem; 
+            color: var(--color-red);
             text-transform: uppercase;
             margin: 0;
             letter-spacing: 2px;
-            background: linear-gradient(90deg, #ff0000, #ff4d00, #ff9900, #ffcc00, #ff9900, #ff4d00, #ff0000);
-            background-size: 200% auto;
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            animation: fire-text 4s linear infinite;
-            filter: drop-shadow(0 0 5px rgba(255,69,0,0.3));
-            line-height: 1;
         }
 
         .subtitle {
-            color: var(--c-dim);
-            font-size: 0.85rem;
-            margin-top: 5px;
-            letter-spacing: 1px;
+            color: var(--color-ui-gold);
+            font-size: 1rem;
             text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 500;
         }
 
-        /* FLAGGEN SWITCHER */
-        .lang-switch {
-            display: flex;
-            gap: 8px;
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-        }
-        .lang-btn {
-            width: 30px; height: 20px;
-            cursor: pointer;
-            border-radius: 3px;
-            border: 1px solid #fff;
-            opacity: 0.5;
-            transition: transform 0.2s, opacity 0.2s;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
-            padding: 0;
-            display: block;
-        }
-        .lang-btn:hover, .lang-btn.active {
-            opacity: 1; transform: scale(1.15);
-            border-color: var(--c-fire);
-            z-index: 10;
-        }
-
-        /* SEARCH BAR */
+        /* Suchleiste */
         .search-container {
+            padding: 10px 20px;
+            background: rgba(0,0,0,0.5);
+            border-bottom: 1px solid #333;
+        }
+        .search-box {
             position: relative;
-            width: 300px;
+            max-width: 400px;
+            margin: 0 auto;
         }
-
-        .search-input {
+        .search-box input {
             width: 100%;
-            padding: 10px 15px 10px 40px;
+            padding: 8px 15px 8px 35px;
             border-radius: 20px;
-            border: 1px solid var(--c-border);
-            background-color: rgba(30, 30, 30, 0.5);
+            border: 1px solid #444;
+            background: #111;
             color: #fff;
-            font-family: var(--f-body);
-            font-size: 0.95rem;
             outline: none;
-            transition: border 0.3s, box-shadow 0.3s;
+            font-size: 0.9rem;
         }
-
-        .search-input:focus {
-            border-color: var(--c-fire);
-            box-shadow: 0 0 10px rgba(255, 51, 0, 0.2);
-        }
-
-        .search-icon {
+        .search-box i {
             position: absolute;
-            left: 15px;
+            left: 12px;
             top: 50%;
             transform: translateY(-50%);
-            color: var(--c-dim);
+            color: #888;
         }
 
-        /* --- NAVIGATION TABS (TOP) --- */
+        /* Navigation Tabs */
         .nav-tabs {
             display: flex;
-            background-color: var(--c-panel);
+            background-color: #050505;
             padding: 0 10px;
             overflow-x: auto;
             flex-shrink: 0;
-            border-bottom: 1px solid var(--c-border);
+            border-bottom: 1px solid #333;
         }
-
         .nav-tab {
             padding: 15px 25px;
             cursor: pointer;
-            font-family: var(--f-head);
+            font-family: var(--font-header);
             text-transform: uppercase;
-            color: var(--c-dim);
+            color: #888;
             border-bottom: 3px solid transparent;
             transition: all 0.2s;
-            white-space: nowrap;
-            flex-grow: 1;
+            flex-grow: 1; 
             text-align: center;
-            font-size: 1.1rem;
+            font-size: 1rem;
+            white-space: nowrap;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
+            gap: 8px;
         }
-
-        .nav-tab:hover {
-            color: #fff;
-            background-color: rgba(255,255,255,0.02);
-        }
-
+        .nav-tab:hover { color: #fff; background-color: rgba(255,255,255,0.05); }
         .nav-tab.active {
-            background-color: rgba(255,51,0,0.05);
-            border-bottom-color: var(--c-fire);
-            color: var(--c-fire);
-            text-shadow: 0 0 10px rgba(255, 51, 0, 0.3);
+            color: var(--color-ui-gold);
+            border-bottom-color: var(--color-ui-gold);
+            background-color: rgba(255, 215, 0, 0.05);
         }
 
-        /* --- CONTENT AREA --- */
+        /* Content Area */
         .content-area {
             flex-grow: 1;
             overflow-y: auto;
-            padding: 30px 40px;
-            scroll-behavior: smooth;
-            background-color: var(--c-bg);
-            background-image: 
-                radial-gradient(circle at 50% 50%, rgba(255,51,0,0.03) 0%, transparent 50%);
+            padding: 30px;
+            scrollbar-width: thin;
+            scrollbar-color: var(--color-red) #111;
         }
         .content-area::-webkit-scrollbar { width: 8px; }
-        .content-area::-webkit-scrollbar-thumb { background-color: #333; border-radius: 4px; }
-        .content-area::-webkit-scrollbar-track { background-color: #080808; }
+        .content-area::-webkit-scrollbar-thumb { background-color: var(--color-red); border-radius: 4px; }
 
-        /* Sections */
-        .section { display: none; animation: fadeIn 0.3s ease; }
-        .section.active { display: block; }
+        @keyframes slideUpFade {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
-        /* Content Blocks */
+        .section { display: none; max-width: 1000px; margin: 0 auto; }
+        .section.active { 
+            display: block; 
+            animation: slideUpFade 0.4s ease-out forwards;
+        }
+
+        /* Info Blocks */
         .info-block {
-            background-color: var(--c-content);
-            border: 1px solid var(--c-border);
-            border-radius: 6px;
-            margin-bottom: 30px;
+            background-color: var(--color-light-dark);
+            border: 1px solid #333;
+            border-radius: 8px;
+            margin-bottom: 25px;
             overflow: hidden;
-            transition: transform 0.2s;
+            transition: 0.2s;
         }
-        
-        .info-block:hover {
-            border-color: #444;
-        }
+        .info-block:hover { border-color: var(--color-red); }
 
         .block-header {
             padding: 12px 20px;
-            background: #202020;
-            border-bottom: 1px solid var(--c-border);
+            background: #000;
+            border-bottom: 1px solid #333;
             display: flex;
             align-items: center;
             gap: 12px;
         }
-
         .block-title {
-            font-family: var(--f-head);
+            font-family: var(--font-header);
             font-size: 1.3rem;
-            color: var(--c-fire);
+            color: var(--color-red);
             margin: 0;
+            text-transform: uppercase;
         }
+        .block-header i { color: var(--color-ui-gold); }
 
         .block-body {
             padding: 20px;
@@ -262,27 +223,30 @@
             color: #ccc;
             font-size: 0.95rem;
         }
-
         .block-body img {
             max-width: 100%;
             border-radius: 4px;
             border: 1px solid #333;
             margin-top: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
             cursor: pointer;
-            transition: opacity 0.2s;
+            transition: 0.2s;
         }
-        
-        .block-body img:hover { opacity: 0.9; }
+        .block-body img:hover { border-color: var(--color-red); }
 
-        /* Listen & Commands */
-        .feature-list { padding: 0; list-style: none; margin: 10px 0; }
-        .feature-list li { margin-bottom: 8px; padding-left: 15px; position: relative; }
-        .feature-list li::before { content: '>'; color: var(--c-fire); position: absolute; left: 0; font-weight: bold; font-size: 0.8rem; top: 4px; }
+        .feature-list { list-style: none; margin: 10px 0; }
+        .feature-list li { margin-bottom: 8px; padding-left: 20px; position: relative; }
+        .feature-list li::before {
+            content: "\f105";
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            position: absolute;
+            left: 0;
+            color: var(--color-ui-gold);
+        }
 
         .cmd-box {
             background: rgba(0,0,0,0.3);
-            border-left: 3px solid var(--c-fire);
+            border-left: 3px solid var(--color-red);
             padding: 12px;
             margin: 15px 0;
             border-radius: 0 4px 4px 0;
@@ -293,458 +257,322 @@
             background: #2a2a2a;
             padding: 2px 6px;
             border-radius: 3px;
-            font-size: 1.05em;
             border: 1px solid #333;
         }
 
-        /* Quest Grid */
+        /* Quest & Scoreboard Grid */
         .quest-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
             gap: 20px;
+            margin-top: 10px;
         }
         .quest-card {
-            background: rgba(255,255,255,0.03);
-            border: 1px solid var(--c-border);
+            background: rgba(255,255,255,0.02);
+            border: 1px solid #333;
             padding: 15px;
-            border-radius: 4px;
+            border-radius: 6px;
+            transition: 0.2s;
         }
-        .quest-head { font-family: var(--f-head); font-size: 1.1rem; color: #fff; margin-bottom: 8px; border-bottom: 1px solid #333; padding-bottom: 4px; }
-        .reward-list { font-size: 0.85rem; color: #aaa; margin: 0; padding-left: 20px; }
+        .quest-card:hover { border-color: var(--color-red); background: rgba(255,255,255,0.04); }
+        .quest-head {
+            font-family: var(--font-header);
+            font-size: 1.2rem;
+            color: #fff;
+            margin-bottom: 8px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 5px;
+        }
+        .reward-list { font-size: 0.85rem; color: #aaa; padding-left: 15px; }
 
-        /* Modal for Images */
+        /* Modal */
         .modal {
-            display: none;
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background-color: rgba(0,0,0,0.95);
-            z-index: 2000;
-            backdrop-filter: blur(5px);
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            opacity: 0;
-            transition: opacity 0.3s;
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); z-index: 1000; align-items: center; justify-content: center;
         }
-        .modal.active { display: flex; opacity: 1; }
-        .modal-content { position: relative; max-width: 95%; max-height: 95%; box-shadow: 0 0 50px rgba(255,51,0,0.3); display: flex; justify-content: center; align-items: center; }
-        .modal-img { max-width: 100%; max-height: 90vh; border-radius: 4px; border: 2px solid var(--c-border); object-fit: contain; }
-        .close-btn { position: absolute; top: -40px; right: 0; color: #fff; font-size: 2.5rem; cursor: pointer; text-shadow: 0 0 10px #000; }
-        .close-btn:hover { color: var(--c-fire); }
+        .modal.active { display: flex; }
+        .modal img { max-width: 90%; max-height: 90%; border: 2px solid var(--color-red); border-radius: 4px; }
 
-        @media (max-width: 900px) { 
-            .quest-grid { grid-template-columns: 1fr; } 
-            .interface-container { flex-direction: column; width: 100%; height: 100vh; border: none; border-radius: 0; }
-            .nav-tab { padding: 12px 15px; font-size: 0.9rem; }
-            .header { flex-direction: column; gap: 15px; text-align: center; }
-            .search-container { width: 100%; }
-            .lang-switch { position: static; transform: none; margin-bottom: 10px; order: -1; }
+        @media (max-width: 700px) {
+            .title { font-size: 1.8rem; }
+            .nav-tab { padding: 10px; font-size: 0.8rem; }
+            .quest-grid { grid-template-columns: 1fr; }
         }
-
     </style>
 </head>
 <body>
 
-    <div class="interface-container">
-        
-        <!-- HEADER -->
-        <div class="header">
+    <div class="start-container">
+        <header class="header">
+            <div class="lang-switch">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/b/ba/Flag_of_Germany.svg" class="lang-btn active" id="btn-de" onclick="setLang('de')" title="Deutsch">
+                <img src="https://upload.wikimedia.org/wikipedia/en/a/ae/Flag_of_the_United_Kingdom.svg" class="lang-btn" id="btn-en" onclick="setLang('en')" title="English">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/9/9a/Flag_of_Spain.svg" class="lang-btn" id="btn-es" onclick="setLang('es')" title="Español">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/c/c3/Flag_of_France.svg" class="lang-btn" id="btn-fr" onclick="setLang('fr')" title="Français">
+            </div>
             <div class="header-content">
                 <h1 class="title">IOP Quest System</h1>
-                <span class="subtitle" id="uiSubtitle">Quests, Tracker, Statistiken & Scoreboards</span>
+                <div class="subtitle" id="uiSubtitle">Quests, Tracker, Statistiken & Scoreboards</div>
             </div>
-            
-            <!-- 4 Flaggen -->
-            <div class="lang-switch">
-                <svg class="lang-btn active" id="btn-de" onclick="setLang('de')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 5 3">
-                    <rect width="5" height="3" fill="#000"/><rect width="5" height="2" y="1" fill="#D00"/><rect width="5" height="1" y="2" fill="#FFCE00"/>
-                </svg>
-                <svg class="lang-btn" id="btn-en" onclick="setLang('en')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 30">
-                    <clipPath id="s"><path d="M0,0 v30 h60 v-30 z"/></clipPath>
-                    <clipPath id="t"><path d="M30,15 h30 v15 z v15 h-30 z h-30 v-15 z v-15 h30 z"/></clipPath>
-                    <g clip-path="url(#s)">
-                        <path d="M0,0 v30 h60 v-30 z" fill="#012169"/>
-                        <path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/>
-                        <path d="M0,0 L60,30 M60,0 L0,30" clip-path="url(#t)" stroke="#C8102E" stroke-width="4"/>
-                        <path d="M30,0 v30 M0,15 h60" stroke="#fff" stroke-width="10"/>
-                        <path d="M30,0 v30 M0,15 h60" stroke="#C8102E" stroke-width="6"/>
-                    </g>
-                </svg>
-                <svg class="lang-btn" id="btn-es" onclick="setLang('es')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 750 500">
-                    <rect width="750" height="500" fill="#AA151B"/>
-                    <rect width="750" height="250" y="125" fill="#F1BF00"/>
-                </svg>
-                <svg class="lang-btn" id="btn-fr" onclick="setLang('fr')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600">
-                    <rect width="900" height="600" fill="#ED2939"/>
-                    <rect width="600" height="600" fill="#fff"/>
-                    <rect width="300" height="600" fill="#002395"/>
-                </svg>
-            </div>
+        </header>
 
-            <div class="search-container">
-                <i class="fa-solid fa-search search-icon"></i>
-                <input type="text" id="searchInput" class="search-input" placeholder="Suche...">
+        <div class="search-container">
+            <div class="search-box">
+                <i class="fa fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Suchen..." onkeyup="filterContent()">
             </div>
         </div>
 
-        <!-- NAVIGATION -->
-        <div class="nav-tabs">
-            <div class="nav-tab active" onclick="showSection('quests')" id="navQuests">
-                <i class="fa-solid fa-scroll"></i> Questsystem
-            </div>
-            <div class="nav-tab" onclick="showSection('tracker')" id="navTracker">
-                <i class="fa-solid fa-chart-pie"></i> Tracker System
-            </div>
-            <div class="nav-tab" onclick="showSection('scoreboards')" id="navScoreboards">
-                <i class="fa-solid fa-trophy"></i> Scoreboards
-            </div>
-        </div>
+        <nav class="nav-tabs" id="navContainer">
+            <!-- JS generiert Tabs -->
+        </nav>
 
-        <!-- CONTENT -->
-        <div class="content-area" id="contentContainer">
-             <!-- Content generated by JS -->
-        </div>
-
+        <main class="content-area" id="contentContainer">
+            <!-- JS generiert Inhalt -->
+        </main>
     </div>
 
-    <!-- Image Modal -->
-    <div id="imgModal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn" onclick="closeModal()">&times;</span>
-            <img id="modalImage" class="modal-img" src="">
-        </div>
+    <div id="imgModal" class="modal" onclick="closeModal()">
+        <img id="modalImg" src="">
     </div>
 
     <script>
-        // =========================================================================
-        // 1. DATENBANK (ÜBERSETZUNGEN)
-        // =========================================================================
         const translations = {
-            subtitle: { de: "Quests, Tracker, Statistiken & Scoreboards", en: "Quests, Tracker, Statistics & Scoreboards", es: "Misiones, Rastreador y Estadísticas", fr: "Quêtes, Suivi et Statistiques" },
-            search: { de: "Suche (z.B. Daily, Kills)...", en: "Search (e.g., Daily, Kills)...", es: "Buscar...", fr: "Rechercher..." },
-            
-            nav: {
-                quests: { de: "Questsystem", en: "Quest System", es: "Sistema de Misiones", fr: "Système de Quêtes" },
-                tracker: { de: "Tracker System", en: "Tracker System", es: "Sistema de Rastreo", fr: "Système de Suivi" },
-                scoreboards: { de: "Scoreboards", en: "Scoreboards", es: "Tablas de Puntuación", fr: "Tableaux des Scores" }
+            de: {
+                subtitle: "Quests, Tracker, Statistiken & Scoreboards",
+                search: "Suche (z.B. Daily, Kills)...",
+                nav: ["Questsystem", "Tracker System", "Scoreboards"],
+                claim: "Belohnung abholen:",
+                claimCmd: "Tippe im Chat: <code>/belohnungen</code>",
+                note: "Hinweis: Wenn eine Quest Aufgaben enthält, die du bereits erledigt hast, wird sie automatisch beendet."
             },
-
-            sections: {
-                quests: [
-                    {
-                        title: { de: "Funktionsweise & Belohnungen", en: "How it Works & Rewards", es: "Cómo Funciona y Recompensas", fr: "Fonctionnement et Récompenses" },
-                        icon: "fa-info-circle",
-                        type: "info",
-                        content: {
-                            de: "<p>Unser System erfasst automatisch deine Aktionen im Spiel. Du musst keine Quests manuell annehmen – erledige einfach die Aufgaben!</p>",
-                            en: "<p>Our system automatically tracks your actions in-game. You don't need to accept quests manually – just complete the tasks!</p>",
-                            es: "<p>Nuestro sistema rastrea automáticamente tus acciones. No necesitas aceptar misiones manualmente.</p>",
-                            fr: "<p>Notre système suit automatiquement vos actions en jeu. Pas besoin d'accepter les quêtes manuellement.</p>"
-                        },
-                        list: {
-                            de: ["<strong>Farmen:</strong> Alles was du selbst oder mit Dinos abbaust.", "<strong>Kampf:</strong> Aktive Kills (Spieler oder Dino).", "<strong>Zähmen:</strong> Erfolgreiche Tames werden gezählt.", "<strong>Handwerk:</strong> Hergestellte Items (Inventar & Strukturen)."],
-                            en: ["<strong>Farming:</strong> Everything you harvest yourself or with dinos.", "<strong>Combat:</strong> Active kills (Player or Dino).", "<strong>Taming:</strong> Successful tames are counted.", "<strong>Crafting:</strong> Crafted items (Inventory & Structures)."],
-                            es: ["<strong>Farmeo:</strong> Cosecha propia o con dinos.", "<strong>Combate:</strong> Bajas activas.", "<strong>Tameo:</strong> Tameos exitosos.", "<strong>Fabricación:</strong> Items creados."],
-                            fr: ["<strong>Récolte :</strong> Tout ce que vous récoltez.", "<strong>Combat :</strong> Éliminations actives.", "<strong>Taming :</strong> Apprivoisements réussis.", "<strong>Artisanat :</strong> Objets fabriqués."]
-                        },
-                        note: {
-                            de: "Hinweis: Wenn eine Quest Aufgaben enthält, die du in der Vergangenheit bereits erledigt hast (z.B. 'Erreiche Level 50'), wird sie automatisch als fertig markiert.",
-                            en: "Note: If a quest includes tasks you completed in the past (e.g. 'Reach Level 50'), it will be marked as done automatically.",
-                            es: "Nota: Tareas pasadas (ej. Nivel 50) se marcan automáticamente.",
-                            fr: "Note : Les tâches passées (ex. Niveau 50) sont marquées automatiquement."
-                        },
-                        cmd: {
-                            title: { de: "Belohnung abholen:", en: "Claim Rewards:", es: "Reclamar Recompensas:", fr: "Réclamer Récompenses :" },
-                            text: { de: "Tippe im Chat: <code>/belohnungen</code>", en: "Type in chat: <code>/rewards</code>", es: "Escribe: <code>/recompensas</code>", fr: "Tapez : <code>/recompenses</code>" }
-                        }
-                    },
-                    {
-                        title: { de: "Quest-Typen", en: "Quest Types", es: "Tipos de Misiones", fr: "Types de Quêtes" },
-                        icon: "fa-calendar-check",
-                        type: "questGrid",
-                        cards: [
-                            {
-                                head: { de: "Daily Quests (Täglich)", en: "Daily Quests", es: "Misiones Diarias", fr: "Quêtes Quotidiennes" },
-                                sub: { de: "Reset alle 24 Stunden.", en: "Reset every 24 hours.", es: "Reinicio cada 24h.", fr: "Reset toutes les 24h." },
-                                rewards_title: { de: "Mögliche Belohnungen:", en: "Possible Rewards:", es: "Recompensas Posibles:", fr: "Récompenses Possibles :" },
-                                rewards: {
-                                    de: ["Lebensversicherungs-Punkte", "Wyvern Milch (mit Glück)", "Lootcrates", "Erfahrungspunkte (XP)"],
-                                    en: ["Life Insurance Points", "Wyvern Milk (with luck)", "Lootcrates", "Experience Points (XP)"],
-                                    es: ["Puntos de Seguro de Vida", "Leche de Wyvern", "Cajas de Botín", "Experiencia (XP)"],
-                                    fr: ["Points d'Assurance Vie", "Lait de Wyverne", "Lootcrates", "Points d'Expérience (XP)"]
-                                },
-                                color: "#4CAF50"
-                            },
-                            {
-                                head: { de: "Weekly Quests (Wöchentlich)", en: "Weekly Quests", es: "Misiones Semanales", fr: "Quêtes Hebdomadaires" },
-                                sub: { de: "Reset alle 7 Tage.", en: "Reset every 7 days.", es: "Reinicio cada 7 días.", fr: "Reset tous les 7 jours." },
-                                rewards_title: { de: "Mögliche Belohnungen:", en: "Possible Rewards:", es: "Recompensas Posibles:", fr: "Récompenses Possibles :" },
-                                rewards: {
-                                    de: ["Höhere Mengen an Punkten", "Seltenere Items", "Hochwertige Lootcrates", "Große XP Pakete"],
-                                    en: ["Higher amount of points", "Rarer items", "High-quality Lootcrates", "Large XP Packs"],
-                                    es: ["Más puntos", "Items raros", "Cajas de botín alta calidad", "Paquetes XP grandes"],
-                                    fr: ["Plus de points", "Objets rares", "Lootcrates haute qualité", "Gros packs XP"]
-                                },
-                                color: "#9C27B0"
-                            }
-                        ]
-                    },
-                    {
-                        title: { de: "Interface Vorschau", en: "Interface Preview", es: "Vista Previa Interfaz", fr: "Aperçu de l'Interface" },
-                        icon: "fa-bars-progress",
-                        type: "info",
-                        content: {
-                            de: "<p>Unter <strong>'Active Quests'</strong> siehst du deinen aktuellen Fortschritt. Unter <strong>'Completed Quests'</strong> findest du deine Erfolge.</p>",
-                            en: "<p>Under <strong>'Active Quests'</strong> you see your current progress. Under <strong>'Completed Quests'</strong> you find your achievements.</p>",
-                            es: "<p>En <strong>'Active Quests'</strong> ves tu progreso. En <strong>'Completed Quests'</strong> tus logros.</p>",
-                            fr: "<p>Sous <strong>'Active Quests'</strong> voyez vos progrès. Sous <strong>'Completed Quests'</strong> vos succès.</p>"
-                        },
-                        img: "https://i.postimg.cc/bJ1MnqHh/Bild-2024-05-17-163408358.png"
-                    },
-                    {
-                        type: "grid",
-                        items: [
-                            { title: { de: "Laufende Quests", en: "Active Quests", es: "Misiones Activas", fr: "Quêtes Actives" }, img: "https://i.postimg.cc/HWctzbns/Bild-2024-05-17-165434932.png" },
-                            { title: { de: "Abgeschlossene Quests", en: "Completed Quests", es: "Misiones Completadas", fr: "Quêtes Terminées" }, img: "https://i.postimg.cc/cLXY0JCb/Bild-2024-05-17-165503846.png" }
-                        ]
-                    }
-                ],
-                tracker: [
-                    {
-                        title: { de: "Was wird getrackt?", en: "What is tracked?", es: "¿Qué se rastrea?", fr: "Qu'est-ce qui est suivi ?" },
-                        icon: "fa-eye",
-                        type: "questGrid",
-                        content: { de: "Unser Tracker läuft im Hintergrund mit und speichert deinen Fortschritt clusterweit.", en: "Our tracker runs in the background and saves progress cluster-wide.", es: "Nuestro rastreador guarda el progreso en todo el clúster.", fr: "Notre traqueur sauvegarde la progression sur tout le cluster." },
-                        cards: [
-                            {
-                                head: { de: "Aktivitäten", en: "Activities", es: "Actividades", fr: "Activités" },
-                                rewards: {
-                                    de: ["Gesammelte Ressourcen", "Hergestellte Gegenstände", "Absolvierte Quests", "Teilnahme an Server Events"],
-                                    en: ["Harvested Resources", "Crafted Items", "Completed Quests", "Event Participation"],
-                                    es: ["Recursos recolectados", "Items fabricados", "Misiones completadas", "Participación en eventos"],
-                                    fr: ["Ressources récoltées", "Objets fabriqués", "Quêtes terminées", "Participation événements"]
-                                },
-                                simpleList: true
-                            },
-                            {
-                                head: { de: "Kampf & Zucht", en: "Combat & Breeding", es: "Combate y Crianza", fr: "Combat et Élevage" },
-                                rewards: {
-                                    de: ["Gezähmte Kreaturen", "Getötete wilde Dinos", "Getötete Bosse", "Tode (Spieler)"],
-                                    en: ["Tamed Creatures", "Killed Wild Dinos", "Killed Bosses", "Deaths (Player)"],
-                                    es: ["Criaturas tameadas", "Dinos salvajes matados", "Jefes matados", "Muertes (Jugador)"],
-                                    fr: ["Créatures apprivoisées", "Dinos sauvages tués", "Boss tués", "Morts (Joueur)"]
-                                },
-                                simpleList: true
-                            }
-                        ]
-                    },
-                    {
-                        title: { de: "Statistik Ansicht", en: "Statistics View", es: "Vista de Estadísticas", fr: "Vue Statistiques" },
-                        icon: "fa-images",
-                        type: "info",
-                        content: { de: "<p>Detaillierte Einsicht in deine Farm-Ergebnisse und Kampf-Statistiken.</p>", en: "<p>Detailed view of your farming results and combat statistics.</p>", es: "<p>Vista detallada de resultados de farmeo y combate.</p>", fr: "<p>Vue détaillée des résultats de farm et combat.</p>" },
-                        gridImages: ["https://i.postimg.cc/xd373hfm/Bild-2024-05-17-171303694.png", "https://i.postimg.cc/05hsjgb5/Bild-2024-05-17-171327220.png"]
-                    },
-                    {
-                        title: { de: "Profil Übersicht", en: "Profile Overview", es: "Resumen de Perfil", fr: "Aperçu du Profil" },
-                        icon: "fa-user-tag",
-                        type: "info",
-                        img: "https://i.postimg.cc/CLmP6kkZ/Bild-2024-05-17-171514409.png"
-                    }
-                ],
-                scoreboards: [
-                    {
-                        title: { de: "Spieler Scoreboard", en: "Player Scoreboard", es: "Tabla de Jugadores", fr: "Tableau des Joueurs" },
-                        icon: "fa-user",
-                        type: "info",
-                        content: { 
-                            de: "<p>Hier misst du dich mit jedem anderen Spieler auf dem Cluster. Die Daten werden über alle Server hinweg synchronisiert.</p><p><strong>Kategorien:</strong> Tode, Gezähmte Tiere, WildDino Kills, Gesamtspielzeit.</p>",
-                            en: "<p>Measure yourself against every other player on the cluster. Data is synced across all servers.</p><p><strong>Categories:</strong> Deaths, Tamed Creatures, Wild Dino Kills, Total Playtime.</p>",
-                            es: "<p>Compite con otros jugadores. Datos sincronizados.</p><p><strong>Categorías:</strong> Muertes, Tameos, Kills, Tiempo de Juego.</p>",
-                            fr: "<p>Mesurez-vous aux autres joueurs. Données synchronisées.</p><p><strong>Catégories :</strong> Morts, Tames, Kills, Temps de Jeu.</p>"
-                        },
-                        img: "https://i.postimg.cc/Fs7r6scZ/Bild-2024-05-17-170300086.png"
-                    },
-                    {
-                        title: { de: "Stamm Scoreboard", en: "Tribe Scoreboard", es: "Tabla de Tribus", fr: "Tableau des Tribus" },
-                        icon: "fa-users",
-                        type: "info",
-                        content: {
-                            de: "<p>Hier werden die Leistungen aller Mitglieder eines Stammes zusammengezählt. Welcher Tribe beherrscht den Server?</p>",
-                            en: "<p>The achievements of all tribe members are summed up here. Which tribe rules the server?</p>",
-                            es: "<p>Logros de la tribu sumados. ¿Qué tribu domina el servidor?</p>",
-                            fr: "<p>Les succès de tous les membres sont additionnés. Quelle tribu domine le serveur ?</p>"
-                        },
-                        img: "https://i.postimg.cc/vB7bGDb6/Bild-2024-05-17-160116864.png"
-                    }
-                ]
+            en: {
+                subtitle: "Quests, Tracker, Statistics & Scoreboards",
+                search: "Search (e.g., Daily, Kills)...",
+                nav: ["Quest System", "Tracker System", "Scoreboards"],
+                claim: "Claim Rewards:",
+                claimCmd: "Type in chat: <code>/rewards</code>",
+                note: "Note: If a quest includes tasks you already completed, it will be finished automatically."
+            },
+            es: {
+                subtitle: "Misiones, Rastreador y Estadísticas",
+                search: "Buscar...",
+                nav: ["Sistema de Misiones", "Sistema de Rastreo", "Tablas"],
+                claim: "Reclamar:",
+                claimCmd: "Escribe: <code>/recompensas</code>",
+                note: "Nota: Las tareas pasadas se marcan automáticamente."
+            },
+            fr: {
+                subtitle: "Quêtes, Suivi et Statistiques",
+                search: "Rechercher...",
+                nav: ["Système de Quêtes", "Système de Suivi", "Tableaux"],
+                claim: "Réclamer :",
+                claimCmd: "Tapez : <code>/recompenses</code>",
+                note: "Note : Les tâches passées sont marquées automatiquement."
             }
         };
 
-        // =========================================================================
-        // 2. LOGIC
-        // =========================================================================
+        const questData = {
+            quests: [
+                {
+                    title: { de: "Funktionsweise & Belohnungen", en: "How it Works & Rewards", es: "Cómo Funciona", fr: "Fonctionnement" },
+                    icon: "fa-info-circle",
+                    type: "info",
+                    text: { 
+                        de: "Unser System erfasst automatisch deine Aktionen im Spiel. Du musst keine Quests manuell annehmen – erledige einfach die Aufgaben!",
+                        en: "Our system automatically tracks your actions in-game. No need to manually accept quests!",
+                        es: "Nuestro sistema rastrea automáticamente tus acciones. No necesitas aceptar misiones.",
+                        fr: "Notre système suit automatiquement vos actions en jeu. Pas besoin d'accepter les quêtes."
+                    },
+                    list: {
+                        de: ["Farmen: Alles was du abbaust.", "Kampf: Aktive Kills.", "Zähmen: Erfolgreiche Tames.", "Handwerk: Hergestellte Gegenstände."],
+                        en: ["Farming: Everything you harvest.", "Combat: Active kills.", "Taming: Successful tames.", "Crafting: Manufactured items."],
+                        es: ["Farmeo: Todo lo cosechado.", "Combate: Bajas activas.", "Tameo: Tameos exitosos.", "Fabricación: Items creados."],
+                        fr: ["Récolte : Tout récolté.", "Combat : Éliminations.", "Taming : Tames réussis.", "Artisanat : Objets fabriqués."]
+                    }
+                },
+                {
+                    title: { de: "Quest-Typen", en: "Quest Types", es: "Tipos de Misiones", fr: "Types de Quêtes" },
+                    icon: "fa-calendar-check",
+                    type: "questGrid",
+                    cards: [
+                        {
+                            head: { de: "Daily Quests", en: "Daily Quests", es: "Diarias", fr: "Quotidiennes" },
+                            sub: { de: "Reset alle 24 Stunden.", en: "Reset every 24h.", es: "Reinicio cada 24h.", fr: "Reset toutes les 24h." },
+                            rewards: { de: ["Lebensversicherungs-Punkte", "Lootcrates", "Wyvern Milch", "XP"], en: ["Insurance Points", "Lootcrates", "Wyvern Milk", "XP"], es: ["Puntos de Seguro", "Lootcrates", "XP"], fr: ["Points d'Assurance", "Lootcrates", "XP"] },
+                            color: "#4CAF50"
+                        },
+                        {
+                            head: { de: "Weekly Quests", en: "Weekly Quests", es: "Semanales", fr: "Hebdomadaires" },
+                            sub: { de: "Reset alle 7 Tage.", en: "Reset every 7 days.", es: "Reinicio semanal.", fr: "Reset tous les 7 jours." },
+                            rewards: { de: ["Viel Punkte", "Seltene Items", "Große XP Pakete"], en: ["Many points", "Rare Items", "Large XP Packs"], es: ["Muchos puntos", "Items raros", "XP grandes"], fr: ["Beaucoup de points", "Objets rares", "Packs XP"] },
+                            color: "#9C27B0"
+                        }
+                    ]
+                },
+                {
+                    title: { de: "Interface Vorschau", en: "Interface Preview", es: "Vista de Interfaz", fr: "Aperçu de l'Interface" },
+                    icon: "fa-bars-progress",
+                    type: "grid",
+                    items: [
+                        { title: { de: "Laufende Quests", en: "Active Quests", es: "Activas", fr: "Actives" }, img: "https://i.postimg.cc/HWctzbns/Bild-2024-05-17-165434932.png" },
+                        { title: { de: "Abgeschlossene Quests", en: "Completed Quests", es: "Terminadas", fr: "Terminées" }, img: "https://i.postimg.cc/cLXY0JCb/Bild-2024-05-17-165503846.png" }
+                    ]
+                }
+            ],
+            tracker: [
+                {
+                    title: { de: "Was wird getrackt?", en: "What is tracked?", es: "¿Qué se rastrea?", fr: "Qu'est-ce qui est suivi ?" },
+                    icon: "fa-eye",
+                    type: "questGrid",
+                    cards: [
+                        {
+                            head: { de: "Aktivitäten", en: "Activities", es: "Actividades", fr: "Activités" },
+                            rewards: { de: ["Ressourcen", "Hergestellte Items", "Teilnahme Events"], en: ["Resources", "Crafted Items", "Event Participation"], es: ["Recursos", "Items creados"], fr: ["Ressources", "Objets créés"] },
+                            color: "#00bcd4"
+                        },
+                        {
+                            head: { de: "Kampf & Zucht", en: "Combat & Breeding", es: "Combate", fr: "Combat" },
+                            rewards: { de: ["Tames", "WildDino Kills", "Boss Kills", "Tode"], en: ["Tames", "Dino Kills", "Boss Kills", "Deaths"], es: ["Tameos", "Bajas", "Muertes"], fr: ["Tames", "Éliminations", "Morts"] },
+                            color: "#E53935"
+                        }
+                    ]
+                },
+                {
+                    title: { de: "Statistik & Profil", en: "Statistics & Profile", es: "Estadísticas", fr: "Statistiques" },
+                    icon: "fa-chart-column",
+                    type: "grid",
+                    items: [
+                        { title: { de: "Statistik", en: "Stats", es: "Stats", fr: "Stats" }, img: "https://i.postimg.cc/xd373hfm/Bild-2024-05-17-171303694.png" },
+                        { title: { de: "Profil", en: "Profile", es: "Perfil", fr: "Profil" }, img: "https://i.postimg.cc/CLmP6kkZ/Bild-2024-05-17-171514409.png" }
+                    ]
+                }
+            ],
+            scoreboards: [
+                {
+                    title: { de: "Spieler Scoreboard", en: "Player Scoreboard", es: "Tabla de Jugadores", fr: "Tableau Joueurs" },
+                    icon: "fa-user",
+                    type: "info",
+                    text: { de: "Messe dich mit anderen Spielern auf dem ganzen Cluster.", en: "Compete with other players across the cluster.", es: "Compite con otros jugadores.", fr: "Mesurez-vous aux autres joueurs." },
+                    img: "https://i.postimg.cc/Fs7r6scZ/Bild-2024-05-17-170300086.png"
+                },
+                {
+                    title: { de: "Stamm Scoreboard", en: "Tribe Scoreboard", es: "Tabla de Tribus", fr: "Tableau Tribus" },
+                    icon: "fa-users",
+                    type: "info",
+                    text: { de: "Welcher Tribe beherrscht das Cluster?", en: "Which tribe rules the cluster?", es: "¿Qué tribu domina el clúster?", fr: "Quelle tribu domine le cluster ?" },
+                    img: "https://i.postimg.cc/vB7bGDb6/Bild-2024-05-17-160116864.png"
+                }
+            ]
+        };
+
         let currentLang = 'de';
-        let currentSection = 'quests';
+        let activeSection = 'quests';
 
         function setLang(lang) {
             currentLang = lang;
-            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
             document.getElementById('btn-' + lang).classList.add('active');
             
-            // Render UI
-            renderUI();
-        }
-
-        function showSection(section) {
-            currentSection = section;
-            renderUI();
-        }
-
-        function renderUI() {
-            // Statics
-            document.getElementById('uiSubtitle').innerText = translations.subtitle[currentLang];
-            document.getElementById('searchInput').placeholder = translations.search[currentLang];
+            document.getElementById('uiSubtitle').innerText = translations[lang].subtitle;
+            document.getElementById('searchInput').placeholder = translations[lang].search;
             
-            // Tabs
-            const tabs = ['quests', 'tracker', 'scoreboards'];
+            renderNav();
+            renderContent();
+        }
+
+        function renderNav() {
+            const nav = document.getElementById('navContainer');
+            nav.innerHTML = '';
+            const sections = ['quests', 'tracker', 'scoreboards'];
             const icons = ['fa-scroll', 'fa-chart-pie', 'fa-trophy'];
-            
-            // Active Tab Class
-            document.querySelectorAll('.nav-tab').forEach((el, index) => {
-                el.innerHTML = `<i class="fa-solid ${icons[index]}"></i> ${translations.nav[tabs[index]][currentLang]}`;
-                el.classList.toggle('active', tabs[index] === currentSection);
-            });
 
-            // Content
+            sections.forEach((s, i) => {
+                const tab = document.createElement('div');
+                tab.className = `nav-tab ${s === activeSection ? 'active' : ''}`;
+                tab.innerHTML = `<i class="fa-solid ${icons[i]}"></i> ${translations[currentLang].nav[i]}`;
+                tab.onclick = () => { activeSection = s; renderNav(); renderContent(); };
+                nav.appendChild(tab);
+            });
+        }
+
+        function renderContent() {
             const container = document.getElementById('contentContainer');
             container.innerHTML = '';
-            
-            const data = translations.sections[currentSection];
-            const searchVal = document.getElementById('searchInput').value.toLowerCase();
+            const l = currentLang;
+            const data = questData[activeSection];
+            const filter = document.getElementById('searchInput').value.toLowerCase();
+
+            const sectionWrapper = document.createElement('div');
+            sectionWrapper.className = 'section active';
 
             data.forEach(block => {
-                // Search Filter - Fixed access to properties
-                const title = block.title ? block.title[currentLang] : "";
-                const contentText = block.content && block.content[currentLang] ? block.content[currentLang] : "";
-                const listText = block.list ? block.list[currentLang].join(" ") : "";
-                // For grids/cards
-                let extraText = "";
-                if(block.cards) extraText += block.cards.map(c => c.head[currentLang]).join(" ");
-                if(block.items) extraText += block.items.map(i => i.title[currentLang]).join(" ");
+                const blockTitle = block.title[l].toLowerCase();
+                if (filter && !blockTitle.includes(filter)) return;
 
-                if (searchVal && 
-                    !title.toLowerCase().includes(searchVal) && 
-                    !contentText.toLowerCase().includes(searchVal) &&
-                    !listText.toLowerCase().includes(searchVal) &&
-                    !extraText.toLowerCase().includes(searchVal)
-                   ) return;
-
-                const div = document.createElement('div');
-                div.className = 'info-block searchable';
+                const card = document.createElement('div');
+                card.className = 'info-block searchable';
                 
-                // Header - Only render if title exists
-                let html = "";
-                if(title) {
-                    html += `
+                let html = `
                     <div class="block-header">
-                        ${block.icon ? `<i class="fa-solid ${block.icon}" style="color:var(--c-fire)"></i>` : ''}
-                        <h3 class="block-title">${title}</h3>
-                    </div>`;
-                }
-                
-                html += `<div class="block-body">`;
+                        <i class="fa-solid ${block.icon}"></i>
+                        <h3 class="block-title">${block.title[l]}</h3>
+                    </div>
+                    <div class="block-body">`;
 
-                // Content Type Logic
                 if (block.type === 'info') {
-                    if (block.content) html += block.content[currentLang];
+                    html += `<p>${block.text[l]}</p>`;
                     if (block.list) {
-                        html += `<ul class="feature-list">` + block.list[currentLang].map(li => `<li>${li}</li>`).join('') + `</ul>`;
+                        html += `<ul class="feature-list">` + block.list[l].map(li => `<li>${li}</li>`).join('') + `</ul>`;
                     }
-                    if (block.note) {
-                         html += `<p><em>${block.note[currentLang]}</em></p>`;
+                    if (activeSection === 'quests' && block.title[l].includes('Funktion')) {
+                        html += `<p><em>${translations[l].note}</em></p>`;
+                        html += `<div class="cmd-box"><strong>${translations[l].claim}</strong><br>${translations[l].claimCmd}</div>`;
                     }
-                    if (block.cmd) {
-                        html += `<div class="cmd-box"><strong>${block.cmd.title[currentLang]}</strong><br>${block.cmd.text[currentLang]}</div>`;
-                    }
-                    if (block.img) {
-                        html += `<img src="${block.img}" onclick="openImage(this.src)" title="Klicken zum Vergrößern">`;
-                    }
-                    if (block.gridImages) {
-                         html += `<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                                    ${block.gridImages.map(src => `<img src="${src}" onclick="openImage(this.src)">`).join('')}
-                                  </div>`;
-                    }
+                    if (block.img) html += `<img src="${block.img}" onclick="openModal('${block.img}')">`;
                 } 
                 else if (block.type === 'questGrid') {
-                    if (block.content) html += `<p>${block.content[currentLang]}</p>`;
                     html += `<div class="quest-grid">`;
-                    block.cards.forEach(card => {
-                        let rewardsHTML = "";
-                        if(card.rewards) {
-                            rewardsHTML = `<ul class="reward-list">` + card.rewards[currentLang].map(r => `<li>${r}</li>`).join('') + `</ul>`;
-                        }
-                        
+                    block.cards.forEach(c => {
                         html += `
-                        <div class="quest-card">
-                            <div class="quest-head" style="color: ${card.color || '#fff'};">${card.head[currentLang]}</div>
-                            ${card.sub ? `<p style="font-size:0.9rem; color:#ccc;">${card.sub[currentLang]}</p>` : ''}
-                            ${card.rewards_title ? `<p style="font-size:0.9rem; font-weight:bold; margin-bottom:5px;">${card.rewards_title[currentLang]}</p>` : ''}
-                            ${rewardsHTML}
-                        </div>`;
+                            <div class="quest-card">
+                                <div class="quest-head" style="color:${c.color}">${c.head[l]}</div>
+                                ${c.sub ? `<p style="font-size:0.85rem; margin-bottom:8px;">${c.sub[l]}</p>` : ''}
+                                <ul class="reward-list">` + c.rewards[l].map(r => `<li>${r}</li>`).join('') + `</ul>
+                            </div>`;
                     });
                     html += `</div>`;
                 }
                 else if (block.type === 'grid') {
-                     html += `<div class="quest-grid">`;
-                     block.items.forEach(item => {
-                         html += `
-                         <div class="info-block" style="margin-bottom:0">
-                            <div class="block-header"><h3 class="block-title" style="font-size:1rem">${item.title[currentLang]}</h3></div>
-                            <div class="block-body" style="padding:10px;">
-                                <img src="${item.img}" onclick="openImage(this.src)" style="margin-top:0">
-                            </div>
-                         </div>`;
-                     });
-                     html += `</div>`;
+                    html += `<div class="quest-grid">`;
+                    block.items.forEach(i => {
+                        html += `
+                            <div class="quest-card" style="text-align:center;">
+                                <div class="quest-head">${i.title[l]}</div>
+                                <img src="${i.img}" style="margin-top:5px;" onclick="openModal('${i.img}')">
+                            </div>`;
+                    });
+                    html += `</div>`;
                 }
 
-                html += `</div>`; // End block-body
-                div.innerHTML = html;
-                container.appendChild(div);
+                html += `</div>`;
+                card.innerHTML = html;
+                sectionWrapper.appendChild(card);
             });
-            
-            // Spacer
-            const spacer = document.createElement('div');
-            spacer.style.height = "50px";
-            container.appendChild(spacer);
+
+            container.appendChild(sectionWrapper);
         }
 
-        // Search Event
-        document.getElementById('searchInput').addEventListener('input', renderUI);
+        function filterContent() { renderContent(); }
 
-        // Image Modal
-        const modal = document.getElementById('imgModal');
-        const modalImg = document.getElementById('modalImage');
-
-        function openImage(src) {
-            modalImg.src = src;
-            modal.classList.add('active');
+        function openModal(src) {
+            document.getElementById('modalImg').src = src;
+            document.getElementById('imgModal').classList.add('active');
         }
 
-        function closeModal() {
-            modal.classList.remove('active');
-        }
+        function closeModal() { document.getElementById('imgModal').classList.remove('active'); }
 
-        modal.addEventListener('click', (e) => {
-            if(e.target === modal) closeModal();
-        });
-
-        // Init
-        window.onload = function() {
-            setLang('de');
-        };
+        window.onload = () => setLang('de');
     </script>
 </body>
 </html>
