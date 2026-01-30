@@ -56,8 +56,8 @@
 
         /* Header */
         .header {
-            background-color: rgba(0, 0, 0, 0.5);
-            padding: 15px;
+            background-color: rgba(0, 0, 0, 0.8); /* Etwas dunkler */
+            padding: 20px;
             text-align: center;
             border-bottom: 2px solid var(--color-red);
             flex-shrink: 0;
@@ -68,6 +68,33 @@
             flex-direction: column;
             align-items: center;
             gap: 10px;
+            position: relative;
+        }
+
+        /* FLAGGEN SWITCHER */
+        .lang-switch {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 5px;
+            z-index: 10;
+        }
+        .lang-btn {
+            width: 25px; height: 16px;
+            cursor: pointer;
+            border-radius: 2px;
+            border: 1px solid #fff;
+            opacity: 0.5;
+            transition: transform 0.2s, opacity 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+            padding: 0;
+            display: block;
+        }
+        .lang-btn:hover, .lang-btn.active {
+            opacity: 1; transform: scale(1.15);
+            border-color: var(--color-info); /* Astraeos Blue Accent */
+            z-index: 10;
         }
 
         .title {
@@ -78,6 +105,8 @@
             margin: 0;
             text-shadow: 0 0 10px rgba(229, 57, 53, 0.6);
             letter-spacing: 1px;
+            padding-right: 40px;
+            padding-left: 40px;
         }
 
         .subtitle {
@@ -86,30 +115,36 @@
             margin-top: 5px;
         }
 
-        /* SEARCH BAR */
+        /* SEARCH BAR - FIX */
         .search-container {
             width: 100%;
             max-width: 500px;
             position: relative;
-            margin-top: 5px;
+            margin-top: 10px;
         }
 
         .search-input {
             width: 100%;
-            padding: 10px 15px 10px 40px;
-            border-radius: 20px;
-            border: 2px solid #555;
-            background-color: rgba(0, 0, 0, 0.3);
+            padding: 12px 15px 12px 45px;
+            border-radius: 25px;
+            border: 2px solid #444; /* Dunklerer Rand */
+            background-color: #1a1a1a; /* Solider dunkler Hintergrund */
             color: #fff;
             font-family: var(--font-main);
             font-size: 1rem;
-            transition: border-color 0.3s, box-shadow 0.3s;
+            transition: all 0.3s;
+            outline: none;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
         }
 
         .search-input:focus {
-            outline: none;
             border-color: var(--color-info);
+            background-color: #222;
             box-shadow: 0 0 15px var(--color-astraeos-glow);
+        }
+
+        .search-input::placeholder {
+            color: #888;
         }
 
         .search-icon {
@@ -117,7 +152,8 @@
             left: 15px;
             top: 50%;
             transform: translateY(-50%);
-            color: #aaa;
+            color: #888;
+            pointer-events: none;
         }
 
         /* Navigation Tabs */
@@ -141,6 +177,10 @@
             white-space: nowrap;
             flex-grow: 1; 
             text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
 
         .nav-tab:hover { color: #fff; background-color: rgba(255,255,255,0.05); }
@@ -161,21 +201,12 @@
         .content-area::-webkit-scrollbar { width: 8px; }
         .content-area::-webkit-scrollbar-thumb { background-color: var(--color-red); border-radius: 4px; }
 
-        /* Sections (managed by JS) */
+        /* Sections */
         .section { display: none; animation: fadeIn 0.3s ease; }
         .section.active { display: block; }
-        
-        /* Suche aktiv: Zeige alle Kreaturen-Sections an */
-        .content-area.searching .creature-section {
-            display: block !important;
-        }
-        .content-area.searching .non-creature-section {
-            display: none !important;
-        }
-        
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* General Box Styling */
+        /* Info Box */
         .info-box {
             background-color: var(--color-light-dark);
             padding: 20px;
@@ -183,11 +214,37 @@
             margin-bottom: 20px;
             border: 1px solid rgba(255,255,255,0.1);
         }
-        .info-box h3 { margin-top: 0; color: var(--color-gold); font-family: var(--font-header); border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; }
-        .info-box ul { padding-left: 20px; color: #ccc; }
-        .info-box li { margin-bottom: 5px; }
+        .info-box h3 { margin-top: 0; color: var(--color-gold); font-family: var(--font-header); border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; display: flex; align-items: center; gap: 10px; }
 
-        /* Creature Cards Grid */
+        .badge-map {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            background-color: rgba(33, 150, 243, 0.2);
+            color: var(--color-info);
+            border: 1px solid var(--color-info);
+            font-weight: bold;
+        }
+
+        /* Spawn Cards */
+        .spawn-card {
+            background-color: rgba(0,0,0,0.2);
+            border-left: 4px solid var(--color-info);
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: transform 0.2s;
+        }
+        .spawn-card:hover { transform: translateX(5px); }
+        .spawn-card i { font-size: 1.5rem; color: var(--color-info); width: 30px; text-align: center; }
+        .spawn-details strong { color: #fff; display: block; margin-bottom: 2px; font-size: 1.1rem; }
+        .spawn-details span { color: #aaa; font-size: 0.9rem; }
+
+        /* Creature Grid */
         .creature-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -196,35 +253,39 @@
 
         .creature-card {
             background-color: var(--color-light-dark);
-            border-radius: 8px;
             border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
             overflow: hidden;
             transition: transform 0.2s, box-shadow 0.2s;
-            position: relative;
             cursor: pointer;
+            display: flex;
+            flex-direction: column;
         }
-        .creature-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-            border-color: var(--color-red);
-        }
-        
-        /* Bilder Styling */
-        .creature-img {
-            width: 100%;
-            height: 180px; /* Etwas höher für Astraeos */
-            object-fit: cover;
-            border-bottom: 2px solid var(--color-red);
-            display: block;
+        .creature-card:hover { 
+            transform: translateY(-5px); 
+            box-shadow: 0 0 15px var(--color-astraeos-glow);
+            border-color: var(--color-info);
         }
 
-        .creature-content { padding: 15px; }
+        .creature-img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-bottom: 2px solid var(--color-red);
+        }
+
+        .creature-content {
+            padding: 15px;
+            flex-grow: 1;
+        }
+
         .creature-name {
             font-family: var(--font-header);
             font-size: 1.4rem;
             color: #fff;
             margin: 0 0 5px 0;
         }
+        
         .creature-type {
             font-size: 0.8rem;
             color: var(--color-gold);
@@ -233,12 +294,16 @@
             margin-bottom: 10px;
             display: block;
         }
-        .creature-info { font-size: 0.9rem; color: #ccc; margin-bottom: 10px; line-height: 1.4; }
         
+        .creature-info {
+            font-size: 0.9rem;
+            color: #ccc;
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+
         .specials-list {
-            margin: 10px 0 0 0;
-            padding: 0;
-            list-style: none;
+            margin: 0; padding: 0; list-style: none;
         }
         .specials-list li {
             padding-left: 20px;
@@ -255,167 +320,63 @@
             font-weight: bold;
         }
 
-        /* Spawn Info Cards */
-        .spawn-card {
-            background-color: rgba(0,0,0,0.2);
-            border-left: 4px solid var(--color-info);
-            padding: 15px;
-            margin-bottom: 10px;
-            border-radius: 4px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        .spawn-card i { font-size: 1.5rem; color: var(--color-info); width: 30px; text-align: center; }
-        .spawn-details strong { color: #fff; display: block; margin-bottom: 2px; }
-        .spawn-details span { color: #aaa; font-size: 0.9rem; }
-
         /* Taming Guide Styles */
         .tame-card {
             background-color: rgba(0,0,0,0.2);
             border-left: 4px solid var(--color-tame);
             padding: 15px;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             border-radius: 4px;
+            border: 1px solid rgba(255,255,255,0.05);
         }
         .tame-title {
             color: var(--color-tame);
             font-weight: bold;
             margin-bottom: 10px;
-            display: block;
+            display: flex;
+            align-items: center;
+            gap: 10px;
             font-family: var(--font-header);
-            font-size: 1.1rem;
+            font-size: 1.2rem;
         }
         .tame-req-list {
             background-color: rgba(0,0,0,0.3);
             padding: 10px;
             border-radius: 4px;
-            margin: 10px 0;
+            margin-top: 10px;
         }
         .tame-req-list div { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; color: #ddd; font-size: 0.9rem; }
         .tame-req-list i { color: var(--color-gold); width: 20px; text-align: center; }
 
-        /* Badges */
-        .badge {
-            display: inline-block;
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 0.7rem;
-            font-weight: bold;
-            margin-right: 5px;
-        }
-        .badge-map { background-color: rgba(33, 150, 243, 0.2); color: var(--color-info); border: 1px solid var(--color-info); }
-
-        /* Such-Filter Helper */
+        /* Search Highlight */
         .hidden { display: none !important; }
 
-        /* === MODAL STYLING (POPUP) === */
+        /* Modal */
         .modal {
-            display: none;
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.85);
-            z-index: 1000;
-            backdrop-filter: blur(5px);
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            opacity: 0;
-            transition: opacity 0.3s ease;
+            display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); z-index: 1000; backdrop-filter: blur(5px);
+            align-items: center; justify-content: center; padding: 20px; opacity: 0; transition: opacity 0.3s;
         }
-
         .modal.active { display: flex; opacity: 1; }
-
-        .modal-content {
-            background-color: var(--color-light-dark);
-            border: 2px solid var(--color-gold);
-            border-radius: 12px;
-            width: 95%;
-            max-width: 1300px;
-            max-height: 95%;
-            display: flex;
-            flex-direction: row;
-            overflow: hidden;
-            position: relative;
-            box-shadow: 0 0 30px rgba(0,0,0,0.8);
-            transform: scale(0.95);
-            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        .modal.active .modal-content { transform: scale(1); }
-
-        .close-btn {
-            position: absolute;
-            top: 10px;
-            right: 15px;
-            color: #fff;
-            font-size: 2rem;
-            cursor: pointer;
-            z-index: 10;
-            text-shadow: 0 0 5px #000;
-            transition: color 0.2s;
-        }
-        .close-btn:hover { color: var(--color-red); }
-
-        .modal-image-col {
-            flex: 2.5;
-            background-color: #000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-right: 2px solid var(--color-red);
-            overflow: hidden;
-        }
-
-        .modal-image-col img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            max-height: 90vh;
-        }
-
-        .modal-info-col {
-            flex: 1;
-            padding: 25px;
-            overflow-y: auto;
-            background: linear-gradient(135deg, rgba(40,40,40,1) 0%, rgba(30,30,30,1) 100%);
-        }
-
-        .modal-title {
-            font-family: var(--font-header);
-            font-size: 2rem;
-            color: var(--color-gold);
-            margin: 0 0 5px 0;
-            line-height: 1;
-        }
-
-        .modal-type {
-            display: block;
-            color: #aaa;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            font-size: 0.85rem;
-            margin-bottom: 20px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            padding-bottom: 10px;
-        }
+        .modal-box { background: #121212; border: 2px solid var(--color-info); border-radius: 8px; width: 100%; max-width: 900px; height: 80vh; display: flex; overflow: hidden; box-shadow: 0 0 50px rgba(33, 150, 243, 0.4); }
+        .modal-img-wrapper { flex: 1.5; background: #000; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .modal-img-wrapper img { width: 100%; height: 100%; object-fit: contain; }
+        .modal-info-wrapper { flex: 1; padding: 30px; overflow-y: auto; display: flex; flex-direction: column; background: linear-gradient(135deg, rgba(30,30,30,1) 0%, rgba(20,20,20,1) 100%); }
+        .modal-title { font-family: var(--font-header); font-size: 2rem; margin: 0 0 5px 0; color: var(--color-info); }
+        .modal-subtitle { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px; display: block; color: #aaa; }
+        .close-modal { position: absolute; top: 20px; right: 20px; font-size: 2rem; color: #fff; cursor: pointer; z-index: 1010; transition: color 0.2s; }
+        .close-modal:hover { color: var(--color-info); }
 
         @media (max-width: 800px) {
-            .modal-content { flex-direction: column; overflow-y: auto; }
-            .modal-image-col { flex: none; height: 40vh; border-right: none; border-bottom: 2px solid var(--color-red); }
-            .modal-info-col { flex: none; }
-            .modal-title { font-size: 1.5rem; }
+            .modal-box { flex-direction: column; height: 90vh; }
+            .modal-img-wrapper { flex: none; height: 40%; }
         }
 
-        @media (max-width: 700px) {
-            .header { padding: 10px; }
-            .title { font-size: 1.5rem; }
-            .creature-grid { grid-template-columns: 1fr; }
-            .nav-tab { padding: 10px; font-size: 0.8rem; }
+        @media (max-width: 600px) {
+            .title { font-size: 1.5rem; padding-right: 0; padding-left: 0; }
+            .nav-tab { padding: 10px; font-size: 0.85rem; }
             .search-container { max-width: 90%; }
+            .lang-switch { position: relative; top: 0; right: 0; justify-content: center; margin-bottom: 10px; }
         }
     </style>
 </head>
@@ -424,8 +385,35 @@
     <div class="astraeos-container">
         
         <div class="header">
+            <div class="lang-switch">
+                <svg class="lang-btn active" id="btn-de" onclick="setLang('de')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 5 3">
+                    <rect width="5" height="3" fill="#000"/><rect width="5" height="2" y="1" fill="#D00"/><rect width="5" height="1" y="2" fill="#FFCE00"/>
+                </svg>
+                <svg class="lang-btn" id="btn-en" onclick="setLang('en')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 30">
+                    <clipPath id="s"><path d="M0,0 v30 h60 v-30 z"/></clipPath>
+                    <clipPath id="t"><path d="M30,15 h30 v15 z v15 h-30 z h-30 v-15 z v-15 h30 z"/></clipPath>
+                    <g clip-path="url(#s)">
+                        <path d="M0,0 v30 h60 v-30 z" fill="#012169"/>
+                        <path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/>
+                        <path d="M0,0 L60,30 M60,0 L0,30" clip-path="url(#t)" stroke="#C8102E" stroke-width="4"/>
+                        <path d="M30,0 v30 M0,15 h60" stroke="#fff" stroke-width="10"/>
+                        <path d="M30,0 v30 M0,15 h60" stroke="#C8102E" stroke-width="6"/>
+                    </g>
+                </svg>
+                <svg class="lang-btn" id="btn-es" onclick="setLang('es')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 750 500">
+                    <rect width="750" height="500" fill="#AA151B"/>
+                    <rect width="750" height="250" y="125" fill="#F1BF00"/>
+                </svg>
+                <svg class="lang-btn" id="btn-fr" onclick="setLang('fr')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600">
+                    <rect width="900" height="600" fill="#ED2939"/>
+                    <rect width="600" height="600" fill="#fff"/>
+                    <rect width="300" height="600" fill="#002395"/>
+                </svg>
+            </div>
+
             <h1 class="title">Mythische Astraeos Kreaturen</h1>
-            <div class="subtitle">Fähigkeiten, Spawnchancen & Infos</div>
+            <!-- Hier ID hinzugefügt, damit setLang darauf zugreifen kann -->
+            <div class="subtitle" id="uiSubtitle">Fähigkeiten, Spawnchancen & Infos</div>
             
             <div class="search-container">
                 <i class="fa-solid fa-search search-icon"></i>
@@ -433,181 +421,26 @@
             </div>
         </div>
 
-        <!-- Navigation -->
+        <!-- Navigation Tabs -->
         <div class="nav-tabs">
-            <div class="nav-tab active" onclick="showSection('info')"><i class="fa-solid fa-map-location-dot"></i> Info & Spawns</div>
-            <div class="nav-tab" onclick="showSection('creatures')"><i class="fa-solid fa-paw"></i> Kreaturen</div>
-            <div class="nav-tab" onclick="showSection('taming')"><i class="fa-solid fa-drumstick-bite"></i> Zähm-Guides</div>
+            <div class="nav-tab active" onclick="showSection('info', this)" id="navInfo"><i class="fa-solid fa-map-location-dot"></i> Info & Spawns</div>
+            <div class="nav-tab" onclick="showSection('creatures', this)" id="navCreatures"><i class="fa-solid fa-paw"></i> Kreaturen</div>
+            <div class="nav-tab" onclick="showSection('taming', this)" id="navTaming"><i class="fa-solid fa-drumstick-bite"></i> Zähm-Guides</div>
         </div>
 
         <div class="content-area" id="contentArea">
-
-            <!-- 1. INFO & SPAWNS SECTION (Non-Creature) -->
-            <div id="info" class="section non-creature-section active">
-                
-                <div class="info-box">
-                    <h3><i class="fa-solid fa-circle-info"></i> Willkommen auf Astraeos</h3>
-                    <p style="color: #ddd; line-height: 1.5;">
-                        Diese mythischen Kreaturen sind exklusiv auf der Karte <strong>"Astraeos"</strong> zu finden. 
-                        Sie bieten einzigartige Fähigkeiten und stellen mächtige Verbündete dar.
-                    </p>
-                    <div style="margin-top: 15px;">
-                        <div class="badge badge-map"><i class="fa-solid fa-globe"></i> Map: Astraeos Only</div>
-                    </div>
-                </div>
-
-                <div class="info-box">
-                    <h3><i class="fa-solid fa-location-crosshairs"></i> Spawn Informationen</h3>
-                    
-                    <div class="spawn-card">
-                        <i class="fa-solid fa-eye"></i>
-                        <div class="spawn-details">
-                            <strong>Zyklop</strong>
-                            <span>Teilt sich den Spawn mit Gigas & Carchas.</span>
-                        </div>
-                    </div>
-
-                    <div class="spawn-card">
-                        <i class="fa-solid fa-water"></i>
-                        <div class="spawn-details">
-                            <strong>Seepferdchen</strong>
-                            <span>Überall im Wasser zu finden.</span>
-                        </div>
-                    </div>
-
-                    <div class="spawn-card">
-                        <i class="fa-solid fa-bullhorn"></i>
-                        <div class="spawn-details">
-                            <strong>Minotaurus</strong>
-                            <span>Spawnt vorwiegend in Gras-Biomen.</span>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-
-            <!-- 2. CREATURES SECTION (Creature) -->
-            <div id="creatures" class="section creature-section">
-                <div class="creature-grid">
-                    
-                    <!-- Zyklop -->
-                    <div class="creature-card" onclick="openModal(this)">
-                        <img src="https://i.postimg.cc/yxXz6QNQ/7890884.jpg" class="creature-img" alt="Zyklop">
-                        <div class="creature-content">
-                            <h4 class="creature-name">Zyklop</h4>
-                            <span class="creature-type">Der Gigant</span>
-                            <p class="creature-info">Ein mächtiger Riese, der es mit den stärksten Jägern aufnehmen kann.</p>
-                            <ul class="specials-list">
-                                <li><strong>Stats:</strong> Identisch zum Giganotosaurus, aber bessere Ausdauer.</li>
-                                <li><strong>Tame:</strong> Knockout Tame.</li>
-                                <li><strong>Zucht:</strong> Breedbar.</li>
-                                <li><strong>Spawn:</strong> Giga/Carcha Spawns.</li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <!-- Seepferdchen -->
-                    <div class="creature-card" onclick="openModal(this)">
-                        <img src="https://i.postimg.cc/9Q0ssFyN/877444.jpg" class="creature-img" alt="Seepferdchen">
-                        <div class="creature-content">
-                            <h4 class="creature-name">Seepferdchen</h4>
-                            <span class="creature-type">Agiler Schwimmer</span>
-                            <p class="creature-info">Ein flinkes Reittier für die Tiefsee, ideal zum Farmen.</p>
-                            <ul class="specials-list">
-                                <li><strong>Special:</strong> Kann Perlen farmen.</li>
-                                <li><strong>Agilität:</strong> Sehr agiles Wassermount.</li>
-                                <li><strong>Tame:</strong> Knockout Tame.</li>
-                                <li><strong>Zucht:</strong> Züchtbar.</li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <!-- Minotaurus -->
-                    <div class="creature-card" onclick="openModal(this)">
-                        <img src="https://i.postimg.cc/Y0XbxYD2/234531241.jpg" class="creature-img" alt="Minotaurus">
-                        <div class="creature-content">
-                            <h4 class="creature-name">Minotaurus</h4>
-                            <span class="creature-type">Krieger der Ebene</span>
-                            <p class="creature-info">Ein sehr starkes Reittier, das in den Graslanden heimisch ist.</p>
-                            <ul class="specials-list">
-                                <li><strong>Stärke:</strong> Sehr starkes Mount.</li>
-                                <li><strong>Tame:</strong> Knockout Tame.</li>
-                                <li><strong>Zucht:</strong> Züchtbar.</li>
-                                <li><strong>Spawn:</strong> Gras-Biome.</li>
-                            </ul>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-
-            <!-- 3. TAMING GUIDES SECTION (Non-Creature) -->
-            <div id="taming" class="section non-creature-section">
-                
-                <!-- Zyklop Guide -->
-                <div class="tame-card">
-                    <span class="tame-title"><i class="fa-solid fa-eye"></i> Zyklop Guide</span>
-                    <p>Der Zyklop wird klassisch durch <strong>Knockout</strong> gezähmt.</p>
-                    
-                    <div class="tame-req-list">
-                        <div><i class="fa-solid fa-skull"></i> Methode: Betäubungspfeile / Darts</div>
-                        <div><i class="fa-solid fa-shield-halved"></i> Strategie: Falle bauen (wie für Gigas)</div>
-                    </div>
-                    
-                    <p style="font-size: 0.9rem; color: #aaa;">
-                        <i class="fa-solid fa-triangle-exclamation"></i> <strong>Achtung:</strong> Da der Zyklop die Werte eines Giganotosaurus besitzt, ist sein Torpor-Abbau extrem hoch. Bringt genügend Narkosemittel mit!
-                    </p>
-                </div>
-
-                <!-- Seepferdchen Guide -->
-                <div class="tame-card" style="border-left-color: var(--color-info);">
-                    <span class="tame-title" style="color: var(--color-info);"><i class="fa-solid fa-water"></i> Seepferdchen Guide</span>
-                    <p>Ein Unterwasser-Knockout Tame.</p>
-
-                    <div class="tame-req-list">
-                        <div><i class="fa-solid fa-crosshairs"></i> Waffe: Armbrust oder Harpune</div>
-                        <div><i class="fa-solid fa-fish"></i> Umgebung: Unterwasser (Scuba Gear empfohlen)</div>
-                    </div>
-
-                    <p style="font-size: 0.9rem; color: #aaa;">
-                        Da es sehr agil ist, empfiehlt es sich, es in eine kleine Unterwasserfalle zu locken oder ein Netzprojektil (falls verfügbar) zu nutzen.
-                    </p>
-                </div>
-
-                <!-- Minotaurus Guide -->
-                <div class="tame-card" style="border-left-color: var(--color-warn);">
-                    <span class="tame-title" style="color: var(--color-warn);"><i class="fa-solid fa-bullhorn"></i> Minotaurus Guide</span>
-                    <p>Standard Knockout Tame an Land.</p>
-
-                    <div class="tame-req-list">
-                        <div><i class="fa-solid fa-skull"></i> Methode: Betäubungspfeile / Darts</div>
-                        <div><i class="fa-solid fa-tree"></i> Ort: Grasland / Ebenen</div>
-                    </div>
-
-                    <p style="font-size: 0.9rem; color: #aaa;">
-                        Der Minotaurus ist ein starker Kämpfer. Eine erhöhte Position oder eine Falle erleichtert den Prozess erheblich.
-                    </p>
-                </div>
-
-            </div>
-
+            <!-- Content injected via JS -->
         </div>
 
-        <!-- MODAL STRUCTURE -->
+        <!-- MODAL -->
         <div id="creatureModal" class="modal">
-            <div class="modal-content">
-                <span class="close-btn" onclick="closeModal()">&times;</span>
-                
-                <div class="modal-image-col" id="modalImgCol">
-                    <!-- Bild wird hier eingefügt -->
-                </div>
-                
-                <div class="modal-info-col">
-                    <h2 class="modal-title" id="modalTitle">Titel</h2>
-                    <span class="modal-type" id="modalType">Subtitle</span>
-                    <div id="modalBody">
-                        <!-- Inhalt wird hier kopiert -->
-                    </div>
+            <span class="close-modal" onclick="closeModal()">&times;</span>
+            <div class="modal-box">
+                <div class="modal-img-wrapper" id="modalImgWrapper"></div>
+                <div class="modal-info-wrapper">
+                    <h2 class="modal-title" id="modalTitle">Title</h2>
+                    <span class="modal-subtitle" id="modalSubtitle">Type</span>
+                    <div id="modalContent"></div>
                 </div>
             </div>
         </div>
@@ -615,63 +448,354 @@
     </div>
 
     <script>
-        function showSection(sectionId) {
-            // Reset Suche beim Tab-Wechsel
-            if(document.getElementById('searchInput').value !== '') {
-               document.getElementById('searchInput').value = '';
-               const contentArea = document.getElementById('contentArea');
-               contentArea.classList.remove('searching');
-               const cards = document.querySelectorAll('.creature-card');
-               cards.forEach(c => c.classList.remove('hidden'));
+        // Initials
+        var activeSection = 'info';
+        var currentLang = 'de';
+        // Define modal variable in global scope
+        var modal = null;
+
+        var translations = {
+            header_title: { de: "Mythische Astraeos Kreaturen", en: "Mythical Astraeos Creatures", es: "Criaturas Míticas de Astraeos", fr: "Créatures Mythiques d'Astraeos" },
+            header_subtitle: { de: "Fähigkeiten, Spawnchancen & Infos", en: "Abilities, Spawn Chances & Info", es: "Habilidades, Tasas de Aparición e Info", fr: "Capacités, Chances d'Apparition & Infos" },
+            search_placeholder: { de: "Kreatur suchen (z.B. Zyklop)...", en: "Search creature (e.g. Cyclops)...", es: "Buscar criatura...", fr: "Chercher créature..." },
+            
+            nav_info: { de: '<i class="fa-solid fa-map-location-dot"></i> Info & Spawns', en: '<i class="fa-solid fa-map-location-dot"></i> Info & Spawns', es: 'Info y Spawns', fr: 'Infos et Spawns' },
+            nav_creatures: { de: '<i class="fa-solid fa-paw"></i> Kreaturen', en: '<i class="fa-solid fa-paw"></i> Creatures', es: 'Criaturas', fr: 'Créatures' },
+            nav_taming: { de: '<i class="fa-solid fa-drumstick-bite"></i> Zähm-Guides', en: '<i class="fa-solid fa-drumstick-bite"></i> Taming Guides', es: 'Guías de Tameo', fr: 'Guides de Taming' },
+
+            info_welcome_title: { de: "Willkommen auf Astraeos", en: "Welcome to Astraeos", es: "Bienvenido a Astraeos", fr: "Bienvenue sur Astraeos" },
+            info_welcome_text: { 
+                de: "Diese mythischen Kreaturen sind exklusiv auf der Karte <strong>'Astraeos'</strong> zu finden. Sie bieten einzigartige Fähigkeiten und stellen mächtige Verbündete dar.",
+                en: "These mythical creatures are exclusive to the map <strong>'Astraeos'</strong>. They offer unique abilities and make powerful allies.",
+                es: "Estas criaturas míticas son exclusivas del mapa <strong>'Astraeos'</strong>. Ofrecen habilidades únicas y son poderosos aliados.",
+                fr: "Ces créatures mythiques sont exclusives à la carte <strong>'Astraeos'</strong>. Elles offrent des capacités uniques et sont de puissants alliés."
+            },
+            badge_map: { de: '<i class="fa-solid fa-globe"></i> Map: Astraeos Only', en: '<i class="fa-solid fa-globe"></i> Map: Astraeos Only', es: 'Mapa: Solo Astraeos', fr: 'Carte : Astraeos Uniquement' },
+            
+            info_spawn_title: { de: "Spawn Informationen", en: "Spawn Information", es: "Información de Aparición", fr: "Informations d'Apparition" },
+            spawn_cyclops: { de: "Teilt sich den Spawn mit Gigas & Carchas.", en: "Shares spawn with Gigas & Carchas.", es: "Comparte spawn con Gigas y Carchas.", fr: "Partage le spawn avec Gigas & Carchas." },
+            spawn_seahorse: { de: "Überall im Wasser zu finden.", en: "Found everywhere in the water.", es: "En todas partes en el agua.", fr: "Se trouve partout dans l'eau." },
+            spawn_minotaur: { de: "Spawnt vorwiegend in Gras-Biomen.", en: "Spawns primarily in grass biomes.", es: "Aparece principalmente en biomas de hierba.", fr: "Apparaît principalement dans les biomes d'herbe." },
+
+            creatures: [
+                {
+                    id: "cyclops",
+                    name: { de: "Zyklop", en: "Cyclops", es: "Cíclope", fr: "Cyclope" },
+                    type: { de: "Der Gigant", en: "The Giant", es: "El Gigante", fr: "Le Géant" },
+                    info: { de: "Ein mächtiger Riese, der es mit den stärksten Jägern aufnehmen kann.", en: "A powerful giant capable of taking on the strongest hunters.", es: "Un gigante poderoso.", fr: "Un géant puissant." },
+                    specials: { 
+                        de: ["<strong>Stats:</strong> Identisch zum Giganotosaurus, aber bessere Ausdauer.", "<strong>Tame:</strong> Knockout Tame.", "<strong>Zucht:</strong> Breedbar.", "<strong>Spawn:</strong> Giga/Carcha Spawns."],
+                        en: ["<strong>Stats:</strong> Same as Giga, but better stamina.", "<strong>Tame:</strong> Knockout.", "<strong>Breeding:</strong> Breedable.", "<strong>Spawn:</strong> Giga/Carcha spawns."],
+                        es: ["<strong>Stats:</strong> Igual a Giga, mejor estamina.", "<strong>Tameo:</strong> KO.", "<strong>Crianza:</strong> Sí.", "<strong>Spawn:</strong> Giga/Carcha."],
+                        fr: ["<strong>Stats :</strong> Identique au Giga, meilleure endurance.", "<strong>Tame :</strong> KO.", "<strong>Élevage :</strong> Oui.", "<strong>Spawn :</strong> Giga/Carcha."]
+                    },
+                    img: "https://i.postimg.cc/yxXz6QNQ/7890884.jpg"
+                },
+                {
+                    id: "seahorse",
+                    name: { de: "Seepferdchen", en: "Seahorse", es: "Caballito de Mar", fr: "Hippocampe" },
+                    type: { de: "Agiler Schwimmer", en: "Agile Swimmer", es: "Nadador Ágil", fr: "Nageur Agile" },
+                    info: { de: "Ein flinkes Reittier für die Tiefsee, ideal zum Farmen.", en: "A nimble mount for the deep sea, ideal for farming.", es: "Montura ágil para el mar.", fr: "Monture agile pour les profondeurs." },
+                    specials: {
+                        de: ["<strong>Special:</strong> Kann Perlen farmen.", "<strong>Agilität:</strong> Sehr agiles Wassermount.", "<strong>Tame:</strong> Knockout Tame.", "<strong>Zucht:</strong> Züchtbar."],
+                        en: ["<strong>Special:</strong> Can farm pearls.", "<strong>Agility:</strong> Very agile water mount.", "<strong>Tame:</strong> Knockout.", "<strong>Breeding:</strong> Breedable."],
+                        es: ["<strong>Especial:</strong> Farmea perlas.", "<strong>Agilidad:</strong> Muy ágil.", "<strong>Tameo:</strong> KO.", "<strong>Crianza:</strong> Sí."],
+                        fr: ["<strong>Spécial :</strong> Peut farmer des perles.", "<strong>Agilité :</strong> Très agile.", "<strong>Tame :</strong> KO.", "<strong>Élevage :</strong> Oui."]
+                    },
+                    img: "https://i.postimg.cc/9Q0ssFyN/877444.jpg"
+                },
+                {
+                    id: "minotaur",
+                    name: { de: "Minotaurus", en: "Minotaur", es: "Minotauro", fr: "Minotaure" },
+                    type: { de: "Krieger der Ebene", en: "Plains Warrior", es: "Guerrero de las Llanuras", fr: "Guerrier des Plaines" },
+                    info: { de: "Ein sehr starkes Reittier, das in den Graslanden heimisch ist.", en: "A very strong mount native to the grasslands.", es: "Montura muy fuerte de los pastizales.", fr: "Une monture très forte originaire des prairies." },
+                    specials: {
+                        de: ["<strong>Stärke:</strong> Sehr starkes Mount.", "<strong>Tame:</strong> Knockout Tame.", "<strong>Zucht:</strong> Züchtbar.", "<strong>Spawn:</strong> Gras-Biome."],
+                        en: ["<strong>Strength:</strong> Very strong mount.", "<strong>Tame:</strong> Knockout.", "<strong>Breeding:</strong> Breedable.", "<strong>Spawn:</strong> Grass biomes."],
+                        es: ["<strong>Fuerza:</strong> Muy fuerte.", "<strong>Tameo:</strong> KO.", "<strong>Crianza:</strong> Sí.", "<strong>Spawn:</strong> Pastizales."],
+                        fr: ["<strong>Force :</strong> Très fort.", "<strong>Tame :</strong> KO.", "<strong>Élevage :</strong> Oui.", "<strong>Spawn :</strong> Prairies."]
+                    },
+                    img: "https://i.postimg.cc/Y0XbxYD2/234531241.jpg"
+                }
+            ],
+
+            taming: [
+                {
+                    name: { de: "Zyklop Guide", en: "Cyclops Guide", es: "Guía Cíclope", fr: "Guide Cyclope" },
+                    desc: { de: "Der Zyklop wird klassisch durch <strong>Knockout</strong> gezähmt.", en: "The Cyclops is tamed via standard <strong>Knockout</strong>.", es: "Tameo por <strong>KO</strong>.", fr: "Tame par <strong>KO</strong>." },
+                    req: {
+                        method: { de: "Methode: Betäubungspfeile / Darts", en: "Method: Tranq Arrows / Darts", es: "Método: Flechas/Dardos", fr: "Méthode : Flèches/Fléchettes" },
+                        strat: { de: "Strategie: Falle bauen (wie für Gigas)", en: "Strategy: Build a trap (like for Gigas)", es: "Estrategia: Trampa", fr: "Stratégie : Piège" },
+                        icon1: "fa-skull", icon2: "fa-shield-halved"
+                    },
+                    note: { de: "<strong>Achtung:</strong> Da der Zyklop die Werte eines Giganotosaurus besitzt, ist sein Torpor-Abbau extrem hoch. Bringt genügend Narkosemittel mit!", en: "<strong>Warning:</strong> High torpor drain (Giga stats). Bring enough narcotics!", es: "<strong>¡Cuidado!:</strong> Baja torpor rápido. ¡Trae narcóticos!", fr: "<strong>Attention :</strong> Baisse de torpeur rapide. Apportez des narcotiques !" },
+                    color: "none"
+                },
+                {
+                    name: { de: "Seepferdchen Guide", en: "Seahorse Guide", es: "Guía Caballito", fr: "Guide Hippocampe" },
+                    desc: { de: "Ein Unterwasser-Knockout Tame.", en: "Underwater Knockout Tame.", es: "Tameo KO Submarino.", fr: "Tame KO Sous-marin." },
+                    req: {
+                        method: { de: "Waffe: Armbrust oder Harpune", en: "Weapon: Crossbow or Harpoon", es: "Arma: Ballesta/Arpón", fr: "Arme : Arbalète/Harpon" },
+                        strat: { de: "Umgebung: Unterwasser (Scuba Gear empfohlen)", en: "Env: Underwater (Scuba recommended)", es: "Entorno: Bajo el agua", fr: "Env : Sous l'eau" },
+                        icon1: "fa-crosshairs", icon2: "fa-fish"
+                    },
+                    note: { de: "Da es sehr agil ist, empfiehlt es sich, es in eine kleine Unterwasserfalle zu locken oder ein Netzprojektil (falls verfügbar) zu nutzen.", en: "Very agile. Use a trap or net projectile if available.", es: "Muy ágil. Usa trampa o red.", fr: "Très agile. Utilisez un piège ou un filet." },
+                    color: "var(--color-info)"
+                },
+                {
+                    name: { de: "Minotaurus Guide", en: "Minotaur Guide", es: "Guía Minotauro", fr: "Guide Minotaure" },
+                    desc: { de: "Standard Knockout Tame an Land.", en: "Standard Land Knockout Tame.", es: "Tameo KO en tierra.", fr: "Tame KO terrestre." },
+                    req: {
+                        method: { de: "Methode: Betäubungspfeile / Darts", en: "Method: Tranq Arrows / Darts", es: "Método: Flechas/Dardos", fr: "Méthode : Flèches/Fléchettes" },
+                        strat: { de: "Ort: Grasland / Ebenen", en: "Location: Grassland / Plains", es: "Lugar: Pastizales", fr: "Lieu : Prairies" },
+                        icon1: "fa-skull", icon2: "fa-tree"
+                    },
+                    note: { de: "Der Minotaurus ist ein starker Kämpfer. Eine erhöhte Position oder eine Falle erleichtert den Prozess erheblich.", en: "Strong fighter. Use high ground or a trap.", es: "Luchador fuerte. Usa altura o trampa.", fr: "Combattant fort. Utilisez la hauteur ou un piège." },
+                    color: "var(--color-warn)"
+                }
+            ]
+        };
+        
+        // Use 'var' to be robust
+        var currentLang = 'de';
+        var activeSection = 'info';
+
+        function setLang(lang) {
+            currentLang = lang;
+            
+            // Buttons
+            var btns = document.querySelectorAll('.lang-btn');
+            for(var i=0; i<btns.length; i++) {
+                btns[i].classList.remove('active');
+            }
+            var activeBtn = document.getElementById('btn-'+lang);
+            if(activeBtn) activeBtn.classList.add('active');
+
+            // Header Translations
+            document.querySelector('.title').innerText = translations.header_title[lang];
+            // Access the element by ID which we added
+            var subElem = document.getElementById('uiSubtitle');
+            if(subElem) subElem.innerText = translations.header_subtitle[lang];
+            
+            var searchElem = document.getElementById('searchInput');
+            if(searchElem) searchElem.placeholder = translations.search_placeholder[lang];
+
+            // Nav Translations
+            document.getElementById('navInfo').innerHTML = `<i class="fa-solid fa-map-location-dot"></i> ${translations.nav_info[lang]}`;
+            document.getElementById('navCreatures').innerHTML = `<i class="fa-solid fa-paw"></i> ${translations.nav_creatures[lang]}`;
+            document.getElementById('navTaming').innerHTML = `<i class="fa-solid fa-drumstick-bite"></i> ${translations.nav_taming[lang]}`;
+
+            renderContent();
+        }
+        
+        function showSection(id, btn) {
+            // Hide sections
+            var sections = document.querySelectorAll('.section');
+            for(var i=0; i<sections.length; i++) {
+                sections[i].classList.remove('active');
+            }
+            
+            // Update tabs
+            var tabs = document.querySelectorAll('.nav-tab');
+            for(var i=0; i<tabs.length; i++) {
+                tabs[i].classList.remove('active');
             }
 
-            // Hide all sections
-            document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+            // Show current
+            var target = document.getElementById(id);
+            if(target) target.classList.add('active');
             
-            // Deactivate all tabs
-            document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
+            if(btn) btn.classList.add('active');
+            activeSection = id;
 
-            // Show target
-            document.getElementById(sectionId).classList.add('active');
-            
-            // Activate tab
-            const tabs = document.querySelectorAll('.nav-tab');
-            tabs.forEach(tab => {
-                if(tab.getAttribute('onclick').includes(sectionId)) {
-                    tab.classList.add('active');
-                }
-            });
+            // Reset Search
+            var search = document.getElementById('searchInput');
+            if(search.value !== '') {
+                search.value = '';
+                renderContent(); // Reset filter
+            }
         }
 
-        /* --- MODAL LOGIC --- */
-        const modal = document.getElementById('creatureModal');
+        function renderContent() {
+            var searchVal = document.getElementById('searchInput').value.toLowerCase();
 
-        function openModal(cardElement) {
-            const imgElement = cardElement.querySelector('.creature-img');
-            const title = cardElement.querySelector('.creature-name').innerText;
-            const type = cardElement.querySelector('.creature-type').innerText;
-            
-            const contentSource = cardElement.querySelector('.creature-content');
-            let contentHtml = '';
-            
-            Array.from(contentSource.children).forEach(child => {
-                if(!child.classList.contains('creature-name') && !child.classList.contains('creature-type')) {
-                    contentHtml += child.outerHTML;
-                }
-            });
-
-            document.getElementById('modalTitle').innerText = title;
-            document.getElementById('modalType').innerText = type;
-            document.getElementById('modalBody').innerHTML = contentHtml;
-
-            const imgCol = document.getElementById('modalImgCol');
-            imgCol.innerHTML = ''; 
-
-            if(imgElement) {
-                const newImg = document.createElement('img');
-                newImg.src = imgElement.src;
-                imgCol.appendChild(newImg);
+            // INFO TAB
+            if (activeSection === 'info' || searchVal === '') {
+                // Info is visible
             }
+            
+            // 1. INFO CONTENT GENERATION
+            var infoContainer = document.getElementById('info');
+            var infoData = translations; 
+            
+            // Generate Info Content
+            // NOTE: Even if hidden by CSS class later due to search, we generate it.
+            infoContainer.innerHTML = `
+                <div class="info-box">
+                    <h3><i class="fa-solid fa-circle-info"></i> ${infoData.info_welcome_title[currentLang]}</h3>
+                    <p style="color: #ddd; line-height: 1.5;">${infoData.info_welcome_text[currentLang]}</p>
+                    <div style="margin-top: 15px;">
+                        <div class="badge badge-map">${infoData.badge_map[currentLang]}</div>
+                    </div>
+                </div>
+
+                <div class="info-box">
+                    <h3><i class="fa-solid fa-location-crosshairs"></i> ${infoData.info_spawn_title[currentLang]}</h3>
+                    <div class="spawn-card">
+                        <i class="fa-solid fa-eye"></i>
+                        <div class="spawn-details">
+                            <strong>${infoData.creatures[0].name[currentLang]}</strong>
+                            <span>${infoData.spawn_cyclops[currentLang]}</span>
+                        </div>
+                    </div>
+                    <div class="spawn-card">
+                        <i class="fa-solid fa-water"></i>
+                        <div class="spawn-details">
+                            <strong>${infoData.creatures[1].name[currentLang]}</strong>
+                            <span>${infoData.spawn_seahorse[currentLang]}</span>
+                        </div>
+                    </div>
+                    <div class="spawn-card">
+                        <i class="fa-solid fa-bullhorn"></i>
+                        <div class="spawn-details">
+                            <strong>${infoData.creatures[2].name[currentLang]}</strong>
+                            <span>${infoData.spawn_minotaur[currentLang]}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // 2. CREATURES GENERATION
+            // We find the 'creatures' section div. In previous code it was id="creatures".
+            // However, in this robust version, we inject into the #contentArea manually or specific containers?
+            // To match the HTML structure provided:
+            // <div class="content-area" id="contentArea">
+            //    <!-- Content injected via JS -->
+            // </div>
+            // This means we are REPLACING the whole contentArea innerHTML?
+            // NO, the function `renderContent` should ideally update specific parts OR rebuild the active section.
+            // But since `showSection` toggles classes on pre-existing divs in HTML... wait.
+            // The HTML provided in my thought process has empty divs inside contentArea?
+            // No, the previous correct HTML structure had:
+            // <div id="info" class="section">...</div>
+            // <div id="creatures" class="section">...</div>
+            // <div id="taming" class="section">...</div>
+            // BUT, since we need translation, we must regenerate the INNER HTML of these sections.
+            // Let's ensure the containers exist in the main HTML block I write.
+            
+            // I will inject the containers if they don't exist, or just clear them.
+            // Actually, to be safe, I'll just clear contentArea and rebuild the structure based on active tabs, 
+            // OR keep the containers and just update innerHTML. 
+            // Keeping containers is better for search toggling visibility.
+            
+            // Let's assume the HTML structure below:
+            /*
+            <div id="info" class="section active"></div>
+            <div id="creatures" class="section"></div>
+            <div id="taming" class="section"></div>
+            */
+           // So I need to update these specific IDs.
+           
+           // Update Creatures Grid
+            var creatureSection = document.getElementById('creatures');
+            if(creatureSection) {
+                var creatureHTML = '<div class="creature-grid">';
+                translations.creatures.forEach(function(c) {
+                    // Search Filter
+                    if (searchVal && !c.name[currentLang].toLowerCase().includes(searchVal)) return;
+
+                    var specials = c.specials[currentLang].map(function(s) { return `<li>${s}</li>`; }).join('');
+
+                    creatureHTML += `
+                        <div class="creature-card" onclick="openModal('${c.id}')">
+                            <img src="${c.img}" class="creature-img" alt="${c.name[currentLang]}">
+                            <div class="creature-content">
+                                <h4 class="creature-name">${c.name[currentLang]}</h4>
+                                <span class="creature-type">${c.type[currentLang]}</span>
+                                <p class="creature-info">${c.info[currentLang]}</p>
+                                <ul class="specials-list">${specials}</ul>
+                            </div>
+                            <!-- Hidden Data for Modal lookup -->
+                            <div id="data-${c.id}" style="display:none">
+                                <div class="m-img">${c.img}</div>
+                                <div class="m-name">${c.name[currentLang]}</div>
+                                <div class="m-type">${c.type[currentLang]}</div>
+                                <div class="m-content">
+                                    <p class="modal-text">${c.info[currentLang]}</p>
+                                    <h3 style="color:var(--color-gold); margin-top:20px; border-bottom:1px solid #333;">Details</h3>
+                                    <ul class="specials-list" style="color:#ccc;">${specials}</ul>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                creatureHTML += '</div>';
+                creatureSection.innerHTML = creatureHTML;
+            }
+
+            // Update Taming Grid
+            var tameSection = document.getElementById('taming');
+            if(tameSection) {
+                var tameHTML = '<div class="tame-grid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">';
+                translations.taming.forEach(function(t) {
+                    if (searchVal && !t.name[currentLang].toLowerCase().includes(searchVal)) return;
+
+                    var borderStyle = t.color !== 'none' ? `border-left-color:${t.color};` : '';
+                    var titleStyle = t.color !== 'none' ? `style="color:${t.color}"` : '';
+
+                    tameHTML += `
+                        <div class="tame-card" style="${borderStyle}">
+                            <span class="tame-title" ${titleStyle}><i class="fa-solid ${t.req.icon1}"></i> ${t.name[currentLang]}</span>
+                            <p>${t.desc[currentLang]}</p>
+                            <div class="tame-req-list">
+                                <div><i class="fa-solid ${t.req.icon1}"></i> ${t.req.method[currentLang]}</div>
+                                <div><i class="fa-solid ${t.req.icon2}"></i> ${t.req.strat[currentLang]}</div>
+                            </div>
+                            <p style="font-size: 0.9rem; color: #aaa;">${t.note[currentLang]}</p>
+                        </div>
+                    `;
+                });
+                tameHTML += '</div>';
+                tameSection.innerHTML = tameHTML;
+            }
+
+            // Handle Search Visibility
+            if (searchVal) {
+                // Show all sections that have results
+                document.querySelectorAll('.section').forEach(el => el.classList.add('active'));
+                document.getElementById('info').style.display = 'none'; // Hide info in search
+            } else {
+                // Restore tabs
+                document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+                document.getElementById('info').style.display = '';
+                var active = document.getElementById(activeSection);
+                if(active) active.classList.add('active');
+            }
+        }
+
+        // Search Input Event
+        var searchInput = document.getElementById('searchInput');
+        if(searchInput) {
+            searchInput.addEventListener('input', renderContent);
+        }
+
+        // Modal Logic
+        var modal = document.getElementById('creatureModal');
+
+        function openModal(id) {
+            // Retrieve data from hidden div
+            var dataDiv = document.getElementById('data-' + id);
+            if(!dataDiv) return;
+
+            var img = dataDiv.querySelector('.m-img').innerText;
+            var title = dataDiv.querySelector('.m-name').innerText;
+            var type = dataDiv.querySelector('.m-type').innerText;
+            var content = dataDiv.querySelector('.m-content').innerHTML;
+
+            document.getElementById('modalImgWrapper').innerHTML = `<img src="${img}">`;
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalSubtitle').innerText = type;
+            document.getElementById('modalContent').innerHTML = content;
 
             modal.classList.add('active');
         }
@@ -680,48 +804,23 @@
             modal.classList.remove('active');
         }
 
-        modal.addEventListener('click', (e) => {
-            if(e.target === modal) {
-                closeModal();
+        // Init safely
+        window.onload = function() {
+            modal = document.getElementById('creatureModal');
+            if(modal) {
+                modal.addEventListener('click', function(e) { if(e.target === modal) closeModal(); });
             }
-        });
-
-        // SEARCH LOGIC
-        const searchInput = document.getElementById('searchInput');
-        const creatureCards = document.querySelectorAll('.creature-card');
-        const contentArea = document.getElementById('contentArea');
-
-        searchInput.addEventListener('keyup', (e) => {
-            const term = e.target.value.toLowerCase();
             
-            if (term.length > 0) {
-                // Suche aktiv: Zeige Kreaturen-Sektion
-                contentArea.classList.add('searching');
-                
-                creatureCards.forEach(card => {
-                    const name = card.querySelector('.creature-name').innerText.toLowerCase();
-                    const type = card.querySelector('.creature-type').innerText.toLowerCase();
-                    
-                    if (name.includes(term) || type.includes(term)) {
-                        card.classList.remove('hidden');
-                    } else {
-                        card.classList.add('hidden');
-                    }
-                });
-            } else {
-                // Suche inaktiv -> Reset auf Standard
-                contentArea.classList.remove('searching');
-                creatureCards.forEach(card => card.classList.remove('hidden'));
-                
-                // Zurück zum aktiven Tab (oder Default 'info')
-                const activeTab = document.querySelector('.nav-tab.active');
-                if(activeTab) {
-                    activeTab.click(); 
-                } else {
-                    showSection('info');
-                }
-            }
-        });
+            // Build the static structure first
+            var contentArea = document.getElementById('contentArea');
+            contentArea.innerHTML = `
+                <div id="info" class="section active"></div>
+                <div id="creatures" class="section"></div>
+                <div id="taming" class="section"></div>
+            `;
+
+            setLang('de');
+        };
     </script>
 </body>
 </html>
