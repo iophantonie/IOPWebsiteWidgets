@@ -106,6 +106,32 @@
             align-items: center;
         }
 
+        /* FLAGGEN SWITCHER */
+        .lang-switch {
+            position: absolute;
+            top: 0;
+            right: 0;
+            display: flex;
+            gap: 5px;
+            z-index: 10;
+        }
+        .lang-btn {
+            width: 30px; height: 20px;
+            cursor: pointer;
+            border-radius: 3px;
+            border: 1px solid #fff;
+            opacity: 0.5;
+            transition: transform 0.2s, opacity 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+            padding: 0;
+            display: block;
+        }
+        .lang-btn:hover, .lang-btn.active {
+            opacity: 1; transform: scale(1.15);
+            border-color: #fff;
+            z-index: 10;
+        }
+
         .title {
             font-family: var(--font-header);
             font-size: 2.2rem; 
@@ -146,10 +172,10 @@
             font-family: var(--font-main);
             font-size: 1rem;
             transition: border-color 0.3s, box-shadow 0.3s;
+            outline: none;
         }
 
         .search-input:focus {
-            outline: none;
             animation: shiny-pulse 4s linear infinite;
         }
 
@@ -584,6 +610,8 @@
         @media (max-width: 600px) {
             .title { font-size: 1.5rem; }
             .shiny-grid { grid-template-columns: 1fr; }
+            .lang-switch { position: static; margin-bottom: 5px; }
+            .header-content { align-items: center; }
         }
     </style>
 </head>
@@ -593,284 +621,64 @@
         
         <div class="header">
             <div class="header-content">
+                <!-- 4 Flaggen -->
+                <div class="lang-switch">
+                    <svg class="lang-btn active" id="btn-de" onclick="setLang('de')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 5 3">
+                        <rect width="5" height="3" fill="#000"/><rect width="5" height="2" y="1" fill="#D00"/><rect width="5" height="1" y="2" fill="#FFCE00"/>
+                    </svg>
+                    <svg class="lang-btn" id="btn-en" onclick="setLang('en')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 30">
+                        <clipPath id="s"><path d="M0,0 v30 h60 v-30 z"/></clipPath>
+                        <clipPath id="t"><path d="M30,15 h30 v15 z v15 h-30 z h-30 v-15 z v-15 h30 z"/></clipPath>
+                        <g clip-path="url(#s)">
+                            <path d="M0,0 v30 h60 v-30 z" fill="#012169"/>
+                            <path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/>
+                            <path d="M0,0 L60,30 M60,0 L0,30" clip-path="url(#t)" stroke="#C8102E" stroke-width="4"/>
+                            <path d="M30,0 v30 M0,15 h60" stroke="#fff" stroke-width="10"/>
+                            <path d="M30,0 v30 M0,15 h60" stroke="#C8102E" stroke-width="6"/>
+                        </g>
+                    </svg>
+                    <svg class="lang-btn" id="btn-es" onclick="setLang('es')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 750 500">
+                        <rect width="750" height="500" fill="#AA151B"/>
+                        <rect width="750" height="250" y="125" fill="#F1BF00"/>
+                    </svg>
+                    <svg class="lang-btn" id="btn-fr" onclick="setLang('fr')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600">
+                        <rect width="900" height="600" fill="#ED2939"/>
+                        <rect width="600" height="600" fill="#fff"/>
+                        <rect width="300" height="600" fill="#002395"/>
+                    </svg>
+                </div>
+
                 <h1 class="title">Shiny's</h1>
-                <div class="subtitle">Varianten, Fähigkeiten & Fundorte</div>
+                <div class="subtitle" id="uiSubtitle">Varianten, Fähigkeiten & Fundorte</div>
                 
                 <div class="search-container">
                     <i class="fa-solid fa-search search-icon"></i>
-                    <input type="text" id="searchInput" class="search-input" placeholder="Shiny Art oder Color Set suchen...">
+                    <input type="text" id="searchInput" class="search-input" placeholder="Suche...">
                 </div>
             </div>
         </div>
 
         <!-- Navigation -->
         <div class="nav-tabs">
-            <div class="nav-tab active" onclick="showSection('faq')"><i class="fa-solid fa-circle-question"></i> Info & FAQ</div>
-            <div class="nav-tab" onclick="showSection('variants')"><i class="fa-solid fa-dna"></i> Shiny Arten</div>
-            <div class="nav-tab" onclick="showSection('tinies')"><i class="fa-solid fa-paw"></i> Tinies & Stats</div>
-            <div class="nav-tab" onclick="showSection('colors')"><i class="fa-solid fa-palette"></i> Farb Sets</div>
-            <div class="nav-tab" onclick="showSection('checker')"><i class="fa-solid fa-flask"></i> Shiny Checker</div>
-            <div class="nav-tab" onclick="showSection('combos')"><i class="fa-solid fa-layer-group"></i> Essenz Checker</div>
+            <div class="nav-tab active" onclick="showSection('faq')" id="navFaq"><i class="fa-solid fa-circle-question"></i> Info & FAQ</div>
+            <div class="nav-tab" onclick="showSection('variants')" id="navVariants"><i class="fa-solid fa-dna"></i> Shiny Arten</div>
+            <div class="nav-tab" onclick="showSection('tinies')" id="navTinies"><i class="fa-solid fa-paw"></i> Tinies & Stats</div>
+            <div class="nav-tab" onclick="showSection('colors')" id="navColors"><i class="fa-solid fa-palette"></i> Farb Sets</div>
+            <div class="nav-tab" onclick="showSection('checker')" id="navChecker"><i class="fa-solid fa-flask"></i> Shiny Checker</div>
+            <div class="nav-tab" onclick="showSection('combos')" id="navCombos"><i class="fa-solid fa-layer-group"></i> Essenz Checker</div>
         </div>
 
         <div class="content-area">
 
             <!-- 1. INFO & FAQ -->
             <div id="faq" class="section active">
-                <div class="info-box">
-                    <h3><i class="fa-solid fa-star"></i> Was sind Shinys?</h3>
-                    <p>
-                        Shinys sind spezielle Varianten von Dinos, die alle 2 Stunden auf jeder Map spawnen (Level 100-150). 
-                        Sie haben besondere optische Effekte und einzigartige Fähigkeiten. 
-                        Es können immer nur <strong>2 Shinys gleichzeitig</strong> auf einer Map sein.
-                    </p>
-                </div>
-                <div class="info-box">
-                    <h3><i class="fa-solid fa-flask"></i> Shiny Essenz & Items</h3>
-                    <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: center;">
-                        <div style="flex: 1; min-width: 250px;">
-                            <p>
-                                <strong>Rohe Essenz:</strong> Erhältlich durch das Töten von <em>Enraged Shinys</em>. Wird benötigt, um den <em>Shiny Prod</em> (Speer) zu craften.<br><br>
-                                <strong>Essenz Extrahieren:</strong> Mit dem Shiny Prod können Fähigkeiten von <em>wilden</em> Shinys extrahiert werden. Diese Essenz kann dann auf eigene Dinos <strong>derselben Art</strong> angewendet werden (z.B. Raptor-Essenz auf Raptor).<br>
-                                <em>Hinweis: Bis zu zwei Essenzen können gestapelt werden. Weitere Details zu erlaubten Kombinationen findest du im Reiter "Essenz Checker".</em>
-                            </p>
-                        </div>
-                        <div style="text-align: center; flex-basis: 300px;">
-                            <img src="https://i.postimg.cc/T3rXpxtM/Bild-2024-05-23-022659420.png" alt="Shiny Essenz" class="zoomable-img" style="width: 100%; max-width: 400px; border-radius: 8px; box-shadow: 0 0 15px rgba(156, 39, 176, 0.6);" onclick="openImageModal(this.src, 'Shiny Essenz & Prod')">
-                            <p style="font-size: 0.8rem; color: #aaa; margin-top: 5px;">(Klicken zum Vergrößern)</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="info-box">
-                    <h3><i class="fa-solid fa-circle-exclamation"></i> Wichtige Regeln</h3>
-                    <ul>
-                        <li><strong>Zucht:</strong> Shinys sind züchtbar, vererben aber <strong>keine</strong> Shiny-Fähigkeiten oder Effekte.</li>
-                        <li><strong>Reisen:</strong> Shinys können wie normale Dinos zwischen Karten reisen.</li>
-                        <li><strong>Gesperrt:</strong> "Filthy" (wegen Level-Cap) und "Only Colored" (keine Fähigkeiten) Shinys sind deaktiviert.</li>
-                    </ul>
-                </div>
+                <!-- Content injected via JS -->
             </div>
 
             <!-- 2. SHINY ARTEN (VARIANTS) -->
             <div id="variants" class="section">
-                <div class="shiny-grid">
-                    <!-- RADIOACTIVE -->
-                    <div class="shiny-card" onclick="openModal(this)">
-                        <img src="https://i.postimg.cc/nzs9ZzK6/Bild-2024-09-14-132637655.png" class="card-img" alt="Radioactive">
-                        <div class="card-content">
-                            <h3 class="card-title">Radioactive</h3>
-                            <div class="card-short-desc">Gefährliche Aura, erhöht Mutationschance.</div>
-                            <div class="hidden-details hidden">
-                                <div class="lore">Dieser Dilo ist von einer miasmatischen Diffusion umgeben. Es ist radioaktiv – und zwar extrem.</div>
-                                <div class="abilities">• Strahlungsimpuls verursacht Schaden im Umkreis.<br>• Erhöht die Mutationswahrscheinlichkeit von Babys um ca. 10% (nicht kumulativ).<br>• Immun gegen Strahlung.</div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- SHINOBI -->
-                    <div class="shiny-card" onclick="openModal(this)">
-                        <img src="https://i.postimg.cc/k4S8FF7V/Bild-2024-05-23-012449351.png" class="card-img" alt="Shinobi">
-                        <div class="card-content">
-                            <h3 class="card-title">Shinobi</h3>
-                            <div class="card-short-desc">Meister der Tarnung, reduzierte Aggro.</div>
-                            <div class="hidden-details hidden">
-                                <div class="lore">Ein prächtiges Männchen, das in aller Ruhe durch den Ort läuft und völlig unbehelligt bleibt.</div>
-                                <div class="abilities">• Deutlich reduzierte Aggro-Reichweite für wilde Dinos.<br>• Raubtiere müssen sehr nah kommen, um anzugreifen.</div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- CRYSTALLINE -->
-                    <div class="shiny-card" onclick="openModal(this)">
-                        <img src="https://i.postimg.cc/v86dNWBM/image.webp" class="card-img" alt="Crystalline">
-                        <div class="card-content">
-                            <h3 class="card-title">Crystalline</h3>
-                            <div class="card-short-desc">Glaskanone: Viel Schaden, wenig Defense.</div>
-                            <div class="hidden-details hidden">
-                                <div class="lore">Wesen, die aus Kristallen und Edelsteinen bestehen. Wunderschön, aber zerbrechlich.</div>
-                                <div class="abilities">• "Glaskanone": Verursacht mehr Schaden, erleidet aber auch mehr Schaden.<br>• Reflektiert Nahkampfschaden auf den Angreifer zurück.<br>• Kristalle können bei Treffern abbrechen.</div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- NIGHTMARE -->
-                    <div class="shiny-card" onclick="openModal(this)">
-                        <img src="https://i.postimg.cc/prjfJrZt/Bild-2024-07-07-142809912.png" class="card-img" alt="Nightmare">
-                        <div class="card-content">
-                            <h3 class="card-title">Nightmare</h3>
-                            <div class="card-short-desc">Pechschwarz, verursacht Angst & Blindheit.</div>
-                            <div class="hidden-details hidden">
-                                <div class="lore">Diese pechschwarzen Dinos kommen direkt aus einem Albtraum. Im Dunkeln fast unsichtbar.</div>
-                                <div class="abilities">• Saugt Wärme aus der Umgebung.<br>• Kackt gelegentlich Schwarze Perlen.<br>• Angriffe können einen "Angstzustand" verursachen.</div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- FATHOMLESS -->
-                    <div class="shiny-card" onclick="openModal(this)">
-                        <img src="https://i.postimg.cc/Pr7wcRNL/Bild-2024-05-23-012957933.png" class="card-img" alt="Fathomless">
-                        <div class="card-content">
-                            <h3 class="card-title">Fathomless</h3>
-                            <div class="card-short-desc">Blau gefärbt, enorme Tragekraft.</div>
-                            <div class="hidden-details hidden">
-                                <div class="lore">Tiere, die über eine ungeheure Kraft verfügen. Innen größer als außen.</div>
-                                <div class="abilities">• Gewicht aller Gegenstände im Inventar ist um 80% reduziert.<br>• Einer der nützlichsten Farmer/Transporter.</div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- ENDURANT -->
-                    <div class="shiny-card" onclick="openModal(this)">
-                        <img src="https://i.postimg.cc/gkKhDH65/Bild-2024-05-23-013632425.png" class="card-img" alt="Endurant">
-                        <div class="card-content">
-                            <h3 class="card-title">Endurant</h3>
-                            <div class="card-short-desc">Unendliche Sprint-Ausdauer.</div>
-                            <div class="hidden-details hidden">
-                                <div class="lore">Ein Tier, das unermüdlich den ganzen Tag und die ganze Nacht laufen kann.</div>
-                                <div class="abilities">• Kann unbegrenzt sprinten, ohne Ausdauer zu verlieren.<br>• (Angriffe verbrauchen weiterhin Ausdauer).</div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- BURNING -->
-                    <div class="shiny-card" onclick="openModal(this)">
-                        <img src="https://i.postimg.cc/fL9sz5NR/Bild-2024-05-23-014009009.png" class="card-img" alt="Burning">
-                        <div class="card-content">
-                            <h3 class="card-title">Burning</h3>
-                            <div class="card-short-desc">Brennt permanent, Feuer-Explosion.</div>
-                            <div class="hidden-details hidden">
-                                <div class="lore">Sein Körper war von Flammen umhüllt, die ihm jedoch keinen Schaden zufügten.</div>
-                                <div class="abilities">• Immun gegen Feuer- und Lavaschaden.<br>• Kann eine Feuerexplosion (AoE) auslösen (Strg / Spezialangriff).<br>• Visuell permanent am Brennen.</div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- FROZEN -->
-                    <div class="shiny-card" onclick="openModal(this)">
-                        <img src="https://i.postimg.cc/sDDTrxyM/Bild-2024-05-23-014324358.png" class="card-img" alt="Frozen">
-                        <div class="card-content">
-                            <h3 class="card-title">Frozen</h3>
-                            <div class="card-short-desc">Lebender Kühlschrank, Tanky.</div>
-                            <div class="hidden-details hidden">
-                                <div class="lore">Kreaturen, die vollständig aus Eis bestehen. Die Kälte hat ihnen nie etwas ausgemacht.</div>
-                                <div class="abilities">• Hält verderbliche Waren im Inventar frisch.<br>• Erleidet weniger Schaden (Tanky).<br>• Anfällig für Feuer.</div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- SPECTRAL -->
-                    <div class="shiny-card" onclick="openModal(this)">
-                        <img src="https://i.postimg.cc/4dQjW0vq/Bild-2024-05-23-014717251.png" class="card-img" alt="Spectral">
-                        <div class="card-content">
-                            <h3 class="card-title">Spectral</h3>
-                            <div class="card-short-desc">Geist, kein Fallschaden, spezielle Drops.</div>
-                            <div class="hidden-details hidden">
-                                <div class="lore">Durchsichtig und ätherisch wie Nebel. Man kann durch sie hindurchgreifen.</div>
-                                <div class="abilities">• Kein Fallschaden.<br>• Bewegt sich völlig lautlos.<br>• Man kann durch sie hindurchgehen.<br>• Kackt "spektralen Kot".</div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- HOLOGRAPHIC -->
-                    <div class="shiny-card" onclick="openModal(this)">
-                        <img src="https://i.postimg.cc/wTj3Q8cK/Bild-2024-05-23-015222386.png" class="card-img" alt="Holographic">
-                        <div class="card-content">
-                            <h3 class="card-title">Holographic</h3>
-                            <div class="card-short-desc">Tech-Scanner, findet High-Lvl Dinos.</div>
-                            <div class="hidden-details hidden">
-                                <div class="lore">Aus einer Simulation entkommen. Ein Fehler im Code, der lebendig wurde.</div>
-                                <div class="abilities">• Verleiht dem Reiter einen Tek-Helm-ähnlichen Scan.<br>• Hilft beim Erkennen von Bedrohungen und High-Level Dinos.</div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- SKELETAL -->
-                    <div class="shiny-card" onclick="openModal(this)">
-                        <img src="https://i.postimg.cc/NFwCvkDT/Bild-2024-05-23-015442688.png" class="card-img" alt="Skeletal">
-                        <div class="card-content">
-                            <h3 class="card-title">Skeletal</h3>
-                            <div class="card-short-desc">Kein Futter nötig, Pfeil-Resistent.</div>
-                            <div class="hidden-details hidden">
-                                <div class="lore">Ein wandelndes Museumsstück, nur Knochen, kein Fleisch.</div>
-                                <div class="abilities">• Muss nicht fressen und atmet nicht.<br>• Kackt nicht (sauberes Haustier).<br>• Hohe Resistenz gegen Fernkampfwaffen.</div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- TASER -->
-                    <div class="shiny-card" onclick="openModal(this)">
-                        <img src="https://i.postimg.cc/pTgrWp5K/Bild-2024-05-23-015731802.png" class="card-img" alt="Taser">
-                        <div class="card-content">
-                            <h3 class="card-title">Taser</h3>
-                            <div class="card-short-desc">Elektrische Verteidigung, betäubt Angreifer.</div>
-                            <div class="hidden-details hidden">
-                                <div class="lore">Energie sprüht um seinen Körper. Ein natürlicher Verteidigungsmechanismus.</div>
-                                <div class="abilities">• Schockt und betäubt jeden Angreifer bei Kontakt.<br>• Kann Elektrizität auf nahe Ziele überspringen lassen.</div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- PSYCHOTROP -->
-                    <div class="shiny-card" onclick="openModal(this)">
-                        <img src="https://i.postimg.cc/zBbtHX0J/Bild-2024-05-23-020136937.png" class="card-img" alt="Psychotrop">
-                        <div class="card-content">
-                            <h3 class="card-title">Psychotrop</h3>
-                            <div class="card-short-desc">Regenbogen-Effekt, Biotoxin.</div>
-                            <div class="hidden-details hidden">
-                                <div class="lore">Ein hypnotisierender, belebter Regenbogen-Effekt von seltsamer Schönheit.</div>
-                                <div class="abilities">• Visueller "Trip"-Effekt.<br>• Produziert Biotoxin im Inventar.</div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- LUNAR -->
-                    <div class="shiny-card" onclick="openModal(this)">
-                        <img src="https://i.postimg.cc/vT0tG18s/cc0aca80-188e-4a19-bd6d-d2c383f0450f.webp" class="card-img" alt="Lunar">
-                        <div class="card-content">
-                            <h3 class="card-title">Lunar</h3>
-                            <div class="card-short-desc">Geringe Schwerkraft, Mond-Sprünge.</div>
-                            <div class="hidden-details hidden">
-                                <div class="lore">Verfügt über eine Art natürlichen Auftrieb, als wäre es auf dem Mond.</div>
-                                <div class="abilities">• Trotzt der Schwerkraft: Hohe Sprünge, langsames Fallen.<br>• Kein visueller Skin (sieht normal aus).</div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- RUBBER -->
-                    <div class="shiny-card" onclick="openModal(this)">
-                        <img src="https://i.postimg.cc/5NG8pW6n/20230228192909-1.webp" class="card-img" alt="Rubber">
-                        <div class="card-content">
-                            <h3 class="card-title">Rubber</h3>
-                            <div class="card-short-desc">Bunt wie ein Gummiball, springt, reflektiert.</div>
-                            <div class="hidden-details hidden">
-                                <div class="lore">Boing! Quietscht wie Gummi beim Laufen und hat ein wirbelndes Farbmuster.</div>
-                                <div class="abilities">• Kein Fallschaden (prallt ab).<br>• Reflektiert Nahkampfangriffe.<br>• Macht Quietsch-Geräusche.</div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- DAZZLING -->
-                    <div class="shiny-card" onclick="openModal(this)">
-                        <img src="https://i.postimg.cc/0ND4QNQ7/Bild-2024-05-23-020359325.png" class="card-img" alt="Dazzling">
-                        <div class="card-content">
-                            <h3 class="card-title">Dazzling</h3>
-                            <div class="card-short-desc">Blendet Angreifer, Immun gegen Strahlung.</div>
-                            <div class="hidden-details hidden">
-                                <div class="lore">Gleicht einem polierten Edelstein. Kann einen Blitz erzeugen, der Angreifer blendet.</div>
-                                <div class="abilities">• Immun gegen Strahlung.<br>• Defensive Fähigkeit: Blendet Angreifer (Flashbang Effekt).</div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- ENRAGED -->
-                    <div class="shiny-card" onclick="openModal(this)">
-                        <img src="https://i.postimg.cc/PqXKbXrR/Screenshot-2024-02-09-235425.png" class="card-img" alt="Enraged">
-                        <div class="card-content">
-                            <h3 class="card-title">Enraged</h3>
-                            <div class="card-short-desc">Alpha-Status, nicht zähmbar, droppt Essenz.</div>
-                            <div class="hidden-details hidden">
-                                <div class="lore">Die gefährlichste Form. Größer, stärker, schneller.</div>
-                                <div class="abilities">• <strong>Nicht zähmbar!</strong><br>• Droppt beim Tod besondere Beute und <strong>Shiny Essenz</strong>.<br>• Gibt Chibi-XP.</div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- PYGMY & COLOSSAL -->
-                    <div class="shiny-card" onclick="openModal(this)">
-                        <img src="https://i.postimg.cc/3w0B1rDW/Bild-2024-05-23-020852847.png" class="card-img" alt="Pygmy & Colossal">
-                        <div class="card-content">
-                            <h3 class="card-title">Pygmy & Colossal</h3>
-                            <div class="card-short-desc">Größenveränderungen mit Stat-Anpassungen.</div>
-                            <div class="hidden-details hidden">
-                                <div class="lore">Inselzwergwuchs und Gigantismus im selben Ökosystem.</div>
-                                <div class="abilities">• <strong>Colossal:</strong> Größer, mehr HP/Melee, aber langsamer.<br>• <strong>Pygmy:</strong> Kleiner, schneller, schwerer zu treffen.</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <!-- Content injected via JS -->
+                 <div class="shiny-grid" id="variantsGrid"></div>
             </div>
 
             <!-- NEW: COLOR SETS SECTION -->
@@ -897,27 +705,27 @@
                     <div class="builder-container">
                         <!-- Controls -->
                         <div class="builder-section">
-                            <h4 style="color:var(--color-gold); margin-top:0;">1. Eigenschaften wählen</h4>
+                            <h4 style="color:var(--color-gold); margin-top:0;" id="lblStep1">1. Eigenschaften wählen</h4>
                             <div id="effectPicker">
                                 <!-- JS Generated Buttons -->
                             </div>
 
-                            <h4 style="color:var(--color-gold); margin-top:20px;">2. Farb-Set auswählen</h4>
+                            <h4 style="color:var(--color-gold); margin-top:20px;" id="lblStep2">2. Farb-Set auswählen</h4>
                             <select id="colorSetSelect" class="builder-select" onchange="updateBuilder()">
-                                <option value="">-- Kein Set --</option>
+                                <option value="" id="optNone">-- Kein Set --</option>
                                 <!-- Populated by JS -->
                             </select>
                         </div>
 
                         <!-- Results -->
                         <div class="builder-section">
-                            <h4 style="color:#2196F3; margin-top:0; border-bottom:1px solid #444; padding-bottom:10px;">Ergebnis</h4>
+                            <h4 style="color:#2196F3; margin-top:0; border-bottom:1px solid #444; padding-bottom:10px;" id="lblRes">Ergebnis</h4>
                             <div id="builderResults">
                                 <p style="color:#666; font-style:italic;">Klicke auf Effekte links, um Boni zu sehen...</p>
                             </div>
                             
                             <div id="builderColorPreview" style="margin-top:20px; display:none;">
-                                <h4 style="color:#ff00ff; margin-bottom:10px;">Farb-Vorschau</h4>
+                                <h4 style="color:#ff00ff; margin-bottom:10px;" id="lblPreview">Farb-Vorschau</h4>
                                 <div id="builderColorCircles" class="color-circles"></div>
                             </div>
                         </div>
@@ -928,9 +736,9 @@
             <!-- 3. ESSENZ CHECKER (OLD COMBINATIONS) -->
             <div id="combos" class="section">
                 <div class="info-box">
-                    <h3><i class="fa-solid fa-calculator"></i> Essenz Checker</h3>
-                    <p>
-                        Wähle hier zwei Shiny-Essenzen aus, um zu prüfen, ob sie miteinander kombinierbar sind.
+                    <h3 id="comboTitle"><i class="fa-solid fa-calculator"></i> Essenz Checker</h3>
+                    <p id="comboDesc">
+                        Wähle zwei Essenzen aus, um zu prüfen, ob sie miteinander kombinierbar sind.
                     </p>
                     
                     <a href="https://docs.google.com/spreadsheets/d/1AnCezRIAvI-tTyAQTtkTfYqnIjD5XMnk4tCDQnuAsgw/edit?pli=1#gid=0" target="_blank" class="sheet-link-btn">
@@ -942,95 +750,14 @@
                         
                         <div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; align-items: center; margin-bottom: 20px;">
                             <select id="combo1" onchange="checkCombo()" style="padding: 10px; border-radius: 6px; background: #222; color: #fff; border: 1px solid #555; flex: 1; min-width: 200px;">
-                                <option value="">-- Wähle Essenz 1 --</option>
-                                <optgroup label="Abilities (Fähigkeiten)">
-                                    <option value="Shinobi" data-cat="ability">Shinobi</option>
-                                    <option value="Fathomless" data-cat="ability">Fathomless</option>
-                                    <option value="Endurant" data-cat="ability">Endurant</option>
-                                    <option value="Lunar" data-cat="ability">Lunar</option>
-                                </optgroup>
-                                <optgroup label="Visuals (Optik)">
-                                    <option value="Burning" data-cat="visual">Burning</option>
-                                    <option value="Frozen" data-cat="visual">Frozen</option>
-                                    <option value="Taser" data-cat="visual">Taser</option>
-                                    <option value="Psychotropic" data-cat="visual">Psychotropic</option>
-                                    <option value="Radioactive" data-cat="visual">Radioactive</option>
-                                    <option value="Spectral" data-cat="visual">Spectral</option>
-                                    <option value="Holographic" data-cat="visual">Holographic</option>
-                                    <option value="Rubber" data-cat="visual">Rubber</option>
-                                    <option value="Dazzling" data-cat="visual">Dazzling</option>
-                                    <option value="Nightmare" data-cat="visual">Nightmare</option>
-                                    <option value="Crystalline" data-cat="visual">Crystalline</option>
-                                    <option value="Skeletal" data-cat="visual">Skeletal (Spezial)</option>
-                                </optgroup>
-                                <optgroup label="Size (Größe)">
-                                    <option value="Colossal" data-cat="size">Colossal</option>
-                                    <option value="Pygmy" data-cat="size">Pygmy</option>
-                                </optgroup>
-                                <optgroup label="Tinies (Shoulder)">
-                                    <option value="Bolstering" data-cat="tiny">Bolstering</option>
-                                    <option value="Hydrating" data-cat="tiny">Hydrating</option>
-                                    <option value="Invigorating" data-cat="tiny">Invigorating</option>
-                                    <option value="Obscured" data-cat="tiny">Obscured</option>
-                                    <option value="Pyrethrous" data-cat="tiny">Pyrethrous</option>
-                                    <option value="Revitalizing" data-cat="tiny">Revitalizing</option>
-                                    <option value="Serene" data-cat="tiny">Serene</option>
-                                </optgroup>
-                                <optgroup label="Stat Boosts">
-                                    <option value="Hardy" data-cat="tiny">Hardy (HP)</option>
-                                    <option value="Stalwart" data-cat="tiny">Stalwart (Stam)</option>
-                                    <option value="Inspired" data-cat="tiny">Inspired (Oxy)</option>
-                                    <option value="Satiate" data-cat="tiny">Satiate (Food)</option>
-                                    <option value="Hefty" data-cat="tiny">Hefty (Weight)</option>
-                                    <option value="Fierce" data-cat="tiny">Fierce (Melee)</option>
-                                </optgroup>
+                                <option value="" id="optDef1">-- Wähle Essenz 1 --</option>
+                                <!-- Optgroups injected via JS -->
                             </select>
 
                             <i class="fa-solid fa-plus" style="color: #aaa;"></i>
 
                             <select id="combo2" onchange="checkCombo()" style="padding: 10px; border-radius: 6px; background: #222; color: #fff; border: 1px solid #555; flex: 1; min-width: 200px;">
-                                <option value="">-- Wähle Essenz 2 --</option>
-                                <optgroup label="Abilities (Fähigkeiten)">
-                                    <option value="Shinobi" data-cat="ability">Shinobi</option>
-                                    <option value="Fathomless" data-cat="ability">Fathomless</option>
-                                    <option value="Endurant" data-cat="ability">Endurant</option>
-                                    <option value="Lunar" data-cat="ability">Lunar</option>
-                                </optgroup>
-                                <optgroup label="Visuals (Optik)">
-                                    <option value="Burning" data-cat="visual">Burning</option>
-                                    <option value="Frozen" data-cat="visual">Frozen</option>
-                                    <option value="Taser" data-cat="visual">Taser</option>
-                                    <option value="Psychotropic" data-cat="visual">Psychotropic</option>
-                                    <option value="Radioactive" data-cat="visual">Radioactive</option>
-                                    <option value="Spectral" data-cat="visual">Spectral</option>
-                                    <option value="Holographic" data-cat="visual">Holographic</option>
-                                    <option value="Rubber" data-cat="visual">Rubber</option>
-                                    <option value="Dazzling" data-cat="visual">Dazzling</option>
-                                    <option value="Nightmare" data-cat="visual">Nightmare</option>
-                                    <option value="Crystalline" data-cat="visual">Crystalline</option>
-                                    <option value="Skeletal" data-cat="visual">Skeletal (Spezial)</option>
-                                </optgroup>
-                                <optgroup label="Size (Größe)">
-                                    <option value="Colossal" data-cat="size">Colossal</option>
-                                    <option value="Pygmy" data-cat="size">Pygmy</option>
-                                </optgroup>
-                                <optgroup label="Tinies (Shoulder)">
-                                    <option value="Bolstering" data-cat="tiny">Bolstering</option>
-                                    <option value="Hydrating" data-cat="tiny">Hydrating</option>
-                                    <option value="Invigorating" data-cat="tiny">Invigorating</option>
-                                    <option value="Obscured" data-cat="tiny">Obscured</option>
-                                    <option value="Pyrethrous" data-cat="tiny">Pyrethrous</option>
-                                    <option value="Revitalizing" data-cat="tiny">Revitalizing</option>
-                                    <option value="Serene" data-cat="tiny">Serene</option>
-                                </optgroup>
-                                <optgroup label="Stat Boosts">
-                                    <option value="Hardy" data-cat="tiny">Hardy (HP)</option>
-                                    <option value="Stalwart" data-cat="tiny">Stalwart (Stam)</option>
-                                    <option value="Inspired" data-cat="tiny">Inspired (Oxy)</option>
-                                    <option value="Satiate" data-cat="tiny">Satiate (Food)</option>
-                                    <option value="Hefty" data-cat="tiny">Hefty (Weight)</option>
-                                    <option value="Fierce" data-cat="tiny">Fierce (Melee)</option>
-                                </optgroup>
+                                <option value="" id="optDef2">-- Wähle Essenz 2 --</option>
                             </select>
                         </div>
 
@@ -1038,7 +765,8 @@
                             <span style="color: #aaa; font-style: italic;">Wähle zwei Essenzen aus...</span>
                         </div>
 
-                        <div style="margin-top: 20px; overflow-x: auto;">
+                         <div style="margin-top: 20px; overflow-x: auto;">
+                            <!-- Static Matrix Table kept for reference/visual -->
                             <h4 style="color: var(--color-gold); margin-top: 0; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">Kombinations-Matrix</h4>
                             <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem; text-align: center;">
                                 <thead>
@@ -1096,26 +824,15 @@
                 <div class="info-box">
                     <h3><i class="fa-solid fa-paw"></i> Tinies (Nur Shoulder Pets)</h3>
                     <p>Spezielle Varianten, die nur für Schulter-Tiere verfügbar sind und dem Träger Boni verleihen.</p>
-                    <div class="tiny-grid" style="margin-top: 15px;">
-                        <div class="tiny-card"><h4>Bolstering</h4><p>Reduziert das Gewicht im Inventar.</p></div>
-                        <div class="tiny-card"><h4>Hydrating</h4><p>Reduziert den Wasserverbrauch.</p></div>
-                        <div class="tiny-card"><h4>Invigorating</h4><p>Stellt Ausdauer wieder her.</p></div>
-                        <div class="tiny-card"><h4>Obscured</h4><p>Reduziert Aggro-Reichweite wilder Dinos.</p></div>
-                        <div class="tiny-card"><h4>Pyrethrous</h4><p>Hält Insekten fern.</p></div>
-                        <div class="tiny-card"><h4>Revitalizing</h4><p>Regeneriert Gesundheit.</p></div>
-                        <div class="tiny-card"><h4>Serene</h4><p>Hilft beim Konzentrieren (Crafting).</p></div>
+                    <div class="tiny-grid" id="tinyGrid" style="margin-top: 15px;">
+                        <!-- JS Injected -->
                     </div>
                 </div>
                 <div class="info-box">
                     <h3><i class="fa-solid fa-chart-bar"></i> Stat-Booster Varianten</h3>
                     <p>Diese Dinos haben eine höhere Chance auf außergewöhnlich hohe Wild-Werte in einem bestimmten Attribut.</p>
-                    <div class="tiny-grid" style="margin-top: 15px;">
-                        <div class="tiny-card"><h4 style="color: #4CAF50;">Hardy</h4><p>Gesundheit</p></div>
-                        <div class="tiny-card"><h4 style="color: #FFC107;">Stalwart</h4><p>Ausdauer</p></div>
-                        <div class="tiny-card"><h4 style="color: #03A9F4;">Inspired</h4><p>Sauerstoff</p></div>
-                        <div class="tiny-card"><h4 style="color: #FF5722;">Satiate</h4><p>Nahrung</p></div>
-                        <div class="tiny-card"><h4 style="color: #9E9E9E;">Hefty</h4><p>Gewicht</p></div>
-                        <div class="tiny-card"><h4 style="color: #F44336;">Fierce</h4><p>Nahkampfschaden</p></div>
+                    <div class="tiny-grid" id="statGrid" style="margin-top: 15px;">
+                        <!-- JS Injected -->
                     </div>
                 </div>
             </div>
@@ -1142,45 +859,209 @@
     </div>
 
     <script>
-        // --- DATA ---
-        // Effects data for the builder
+        // =========================================================================
+        // 1. DATENBANK & ÜBERSETZUNGEN
+        // =========================================================================
+        const translations = {
+            subtitle: { de: "Varianten, Fähigkeiten & Fundorte", en: "Variants, Abilities & Locations", es: "Variantes, Habilidades y Ubicaciones", fr: "Variantes, Capacités et Lieux" },
+            search: { de: "Shiny Art oder Color Set suchen...", en: "Search Shiny Type or Color Set...", es: "Buscar Shiny o Color...", fr: "Chercher Type Shiny ou Couleur..." },
+            nav: {
+                faq: { de: "Info & FAQ", en: "Info & FAQ", es: "Info y FAQ", fr: "Infos et FAQ" },
+                variants: { de: "Shiny Arten", en: "Shiny Variants", es: "Variantes Shiny", fr: "Variantes Shiny" },
+                tinies: { de: "Tinies & Stats", en: "Tinies & Stats", es: "Tinies y Stats", fr: "Tinies et Stats" },
+                colors: { de: "Farb Sets", en: "Color Sets", es: "Sets de Color", fr: "Sets de Couleurs" },
+                checker: { de: "Shiny Checker", en: "Shiny Checker", es: "Verificador Shiny", fr: "Vérificateur Shiny" },
+                combos: { de: "Essenz Checker", en: "Essence Checker", es: "Verif. Esencias", fr: "Vérif. Essences" }
+            },
+            // Sections Content
+            sections: {
+                faq: {
+                    what_title: { de: "Was sind Shinys?", en: "What are Shinys?", es: "¿Qué son los Shinys?", fr: "C'est quoi les Shinys ?" },
+                    what_text: {
+                        de: "Shinys sind spezielle Varianten von Dinos, die alle 2 Stunden auf jeder Map spawnen (Level 100-150). Sie haben besondere optische Effekte und einzigartige Fähigkeiten. Es können immer nur <strong>2 Shinys gleichzeitig</strong> auf einer Map sein.",
+                        en: "Shinys are special dino variants spawning every 2 hours on each map (Lvl 100-150). They have unique visuals and abilities. Only <strong>2 Shinys</strong> can exist on a map at once.",
+                        es: "Los Shinys son variantes especiales que aparecen cada 2 horas (Nvl 100-150). Tienen efectos y habilidades únicas. Máximo <strong>2 Shinys</strong> por mapa.",
+                        fr: "Les Shinys sont des variantes spéciales apparaissant toutes les 2 heures (Niv 100-150). Ils ont des visuels et capacités uniques. Max <strong>2 Shinys</strong> par carte."
+                    },
+                    essence_title: { de: "Shiny Essenz & Items", en: "Shiny Essence & Items", es: "Esencia Shiny e Items", fr: "Essence Shiny et Objets" },
+                    essence_text: {
+                        de: "<strong>Rohe Essenz:</strong> Erhältlich durch das Töten von <em>Enraged Shinys</em>. Wird benötigt, um den <em>Shiny Prod</em> (Speer) zu craften.<br><br><strong>Essenz Extrahieren:</strong> Mit dem Shiny Prod können Fähigkeiten von <em>wilden</em> Shinys extrahiert werden. Diese Essenz kann dann auf eigene Dinos <strong>derselben Art</strong> angewendet werden (z.B. Raptor-Essenz auf Raptor).<br><em>Hinweis: Bis zu zwei Essenzen können gestapelt werden.</em>",
+                        en: "<strong>Raw Essence:</strong> Dropped by <em>Enraged Shinys</em>. Used to craft the <em>Shiny Prod</em>.<br><br><strong>Extract Essence:</strong> Use the Shiny Prod to extract abilities from <em>wild</em> Shinys. Apply to own dinos of the <strong>same species</strong>.<br><em>Note: Up to two essences can be stacked.</em>",
+                        es: "<strong>Esencia Bruta:</strong> De <em>Enraged Shinys</em>. Para crear <em>Shiny Prod</em>.<br><br><strong>Extraer:</strong> Usa el Prod en Shinys <em>salvajes</em>. Aplícalo a tus dinos de la <strong>misma especie</strong>.<br><em>Nota: Máximo dos esencias acumulables.</em>",
+                        fr: "<strong>Essence Brute :</strong> Drop des <em>Enraged Shinys</em>. Pour crafter le <em>Shiny Prod</em>.<br><br><strong>Extraire :</strong> Utilisez le Prod sur Shinys <em>sauvages</em>. Appliquez sur vos dinos de <strong>même espèce</strong>.<br><em>Note : Max deux essences cumulables.</em>"
+                    },
+                    rules_title: { de: "Wichtige Regeln", en: "Important Rules", es: "Reglas Importantes", fr: "Règles Importantes" },
+                    rules_list: {
+                        de: ["<strong>Zucht:</strong> Shinys sind züchtbar, vererben aber <strong>keine</strong> Shiny-Fähigkeiten oder Effekte.", "<strong>Reisen:</strong> Shinys können wie normale Dinos zwischen Karten reisen.", "<strong>Gesperrt:</strong> 'Filthy' und 'Only Colored' Shinys sind deaktiviert."],
+                        en: ["<strong>Breeding:</strong> Shinys can breed, but <strong>do not</strong> pass on abilities/effects.", "<strong>Travel:</strong> Shinys can travel between maps like normal dinos.", "<strong>Disabled:</strong> 'Filthy' and 'Only Colored' Shinys are disabled."],
+                        es: ["<strong>Crianza:</strong> Se crían, pero <strong>no heredan</strong> habilidades.", "<strong>Viaje:</strong> Viajan entre mapas normalmente.", "<strong>Desactivado:</strong> 'Filthy' y 'Only Colored'."],
+                        fr: ["<strong>Élevage :</strong> Reproductibles, mais <strong>n'héritent pas</strong> des capacités.", "<strong>Voyage :</strong> Voyagent entre cartes normalement.", "<strong>Désactivé :</strong> 'Filthy' et 'Only Colored'."]
+                    }
+                },
+                builder: {
+                    step1: { de: "1. Eigenschaften wählen", en: "1. Choose Traits", es: "1. Elegir Rasgos", fr: "1. Choisir Traits" },
+                    step2: { de: "2. Farb-Set auswählen", en: "2. Select Color Set", es: "2. Elegir Set de Color", fr: "2. Choisir Set Couleur" },
+                    result: { de: "Ergebnis", en: "Result", es: "Resultado", fr: "Résultat" },
+                    preview: { de: "Farb-Vorschau", en: "Color Preview", es: "Vista Previa Color", fr: "Aperçu Couleur" },
+                    empty: { de: "Klicke auf Effekte links, um Boni zu sehen...", en: "Click effects on the left to see bonuses...", es: "Clic en efectos para ver bonos...", fr: "Cliquez sur les effets pour voir les bonus..." },
+                    none: { de: "-- Kein Set --", en: "-- No Set --", es: "-- Sin Set --", fr: "-- Aucun Set --" },
+                    bonus: { de: "Bonus", en: "Bonus", es: "Bono", fr: "Bonus" }
+                },
+                combo: {
+                    title: { de: "Essenz Checker", en: "Essence Checker", es: "Verificador de Esencia", fr: "Vérificateur d'Essence" },
+                    desc: { de: "Wähle zwei Essenzen aus, um zu prüfen, ob sie kombinierbar sind.", en: "Choose two essences to check compatibility.", es: "Elige dos esencias para ver compatibilidad.", fr: "Choisissez deux essences pour vérifier la compatibilité." },
+                    select1: { de: "-- Wähle Essenz 1 --", en: "-- Select Essence 1 --", es: "-- Elige Esencia 1 --", fr: "-- Choisir Essence 1 --" },
+                    select2: { de: "-- Wähle Essenz 2 --", en: "-- Select Essence 2 --", es: "-- Elige Esencia 2 --", fr: "-- Choisir Essence 2 --" },
+                    empty_res: { de: "Wähle zwei Essenzen aus...", en: "Select two essences...", es: "Elige dos esencias...", fr: "Choisissez deux essences..." },
+                    ok: { de: "Diese Kombination ist möglich!", en: "This combination is possible!", es: "¡Combinación posible!", fr: "Combinaison possible !" },
+                    err_same: { de: "Du kannst nicht zweimal dieselbe Essenz verwenden.", en: "Cannot use the same essence twice.", es: "No puedes usar la misma esencia dos veces.", fr: "Impossible d'utiliser la même essence deux fois." },
+                    err_cat: { de: "Nicht möglich: Beide Essenzen stammen aus derselben Kategorie.", en: "Not possible: Both from same category.", es: "Imposible: Misma categoría.", fr: "Impossible : Même catégorie." },
+                    err_tiny: { de: "Nicht möglich: Tiny/Stat Boosts sind nicht mit Fähigkeiten/Größe kombinierbar.", en: "Not possible: Tiny/Stat Boosts incompatible with Abilities/Size.", es: "Imposible: Tiny incompatible con Habilidad/Tamaño.", fr: "Impossible : Tiny incompatible avec Capacité/Taille." },
+                    warn_skel: { de: "Eingeschränkt: Skeletal ändert das Mesh. Oft inkompatibel.", en: "Limited: Skeletal changes mesh. Often incompatible.", es: "Limitado: Skeletal cambia malla. A menudo incompatible.", fr: "Limité : Squelettique change le maillage. Souvent incompatible." }
+                },
+                modal: {
+                    lore: { de: "Geschichte", en: "Lore", es: "Historia", fr: "Histoire" },
+                    abilities: { de: "Fähigkeiten", en: "Abilities", es: "Habilidades", fr: "Capacités" }
+                }
+            }
+        };
+
+        // --- EFFECT DATA & VARIANTS (Fully Restored & Translated) ---
+        const VARIANT_DATA = [
+            { id: "Radioactive", title: "Radioactive", img: "https://i.postimg.cc/nzs9ZzK6/Bild-2024-09-14-132637655.png", desc: { de: "Gefährliche Aura, erhöht Mutationschance.", en: "Dangerous aura, increases mutation chance." }, lore: { de: "Dieser Dilo ist von einer miasmatischen Diffusion umgeben. Es ist radioaktiv – und zwar extrem.", en: "Surrounded by miasmatic diffusion. Extremely radioactive." }, abs: { de: "• Strahlungsimpuls verursacht Schaden im Umkreis.<br>• Erhöht die Mutationswahrscheinlichkeit von Babys um ca. 10% (nicht kumulativ).<br>• Immun gegen Strahlung.", en: "• Radiation pulse AoE damage.<br>• Increases baby mutation chance by ~10% (non-stackable).<br>• Immune to radiation." } },
+            { id: "Shinobi", title: "Shinobi", img: "https://i.postimg.cc/k4S8FF7V/Bild-2024-05-23-012449351.png", desc: { de: "Meister der Tarnung, reduzierte Aggro.", en: "Master of stealth, reduced aggro." }, lore: { de: "Ein prächtiges Männchen, das in aller Ruhe durch den Ort läuft und völlig unbehelligt bleibt.", en: "Moves calmly and stays completely unnoticed." }, abs: { de: "• Deutlich reduzierte Aggro-Reichweite für wilde Dinos.<br>• Raubtiere müssen sehr nah kommen, um anzugreifen.", en: "• Significantly reduced aggro range.<br>• Predators must get very close to attack." } },
+            { id: "Crystalline", title: "Crystalline", img: "https://i.postimg.cc/v86dNWBM/image.webp", desc: { de: "Glaskanone: Viel Schaden, wenig Defense.", en: "Glass Cannon: High dmg, low defense." }, lore: { de: "Wesen, die aus Kristallen und Edelsteinen bestehen. Wunderschön, aber zerbrechlich.", en: "Beings made of crystals and gems. Beautiful but fragile." }, abs: { de: "• 'Glaskanone': Verursacht mehr Schaden, erleidet aber auch mehr Schaden.<br>• Reflektiert Nahkampfschaden auf den Angreifer zurück.<br>• Kristalle können bei Treffern abbrechen.", en: "• Deals more damage, takes more damage.<br>• Reflects melee damage.<br>• Crystals can break off on hit." } },
+            { id: "Nightmare", title: "Nightmare", img: "https://i.postimg.cc/prjfJrZt/Bild-2024-07-07-142809912.png", desc: { de: "Pechschwarz, verursacht Angst & Blindheit.", en: "Pitch black, causes fear & blindness." }, lore: { de: "Diese pechschwarzen Dinos kommen direkt aus einem Albtraum. Im Dunkeln fast unsichtbar.", en: "Pitch black dinos straight from a nightmare. Invisible in the dark." }, abs: { de: "• Saugt Wärme aus der Umgebung.<br>• Kackt gelegentlich Schwarze Perlen.<br>• Angriffe können einen 'Angstzustand' verursachen.", en: "• Drains heat from surroundings.<br>• Poops Black Pearls.<br>• Attacks can cause 'Fear'." } },
+            { id: "Fathomless", title: "Fathomless", img: "https://i.postimg.cc/Pr7wcRNL/Bild-2024-05-23-012957933.png", desc: { de: "Blau gefärbt, enorme Tragekraft.", en: "Blue colored, enormous carry weight." }, lore: { de: "Tiere, die über eine ungeheure Kraft verfügen. Innen größer als außen.", en: "Creatures with immense strength. Bigger on the inside." }, abs: { de: "• Gewicht aller Gegenstände im Inventar ist um 80% reduziert.<br>• Einer der nützlichsten Farmer/Transporter.", en: "• Inventory weight reduced by 80%.<br>• One of the most useful farmers/transporters." } },
+            { id: "Endurant", title: "Endurant", img: "https://i.postimg.cc/gkKhDH65/Bild-2024-05-23-013632425.png", desc: { de: "Unendliche Sprint-Ausdauer.", en: "Infinite sprint stamina." }, lore: { de: "Ein Tier, das unermüdlich den ganzen Tag und die ganze Nacht laufen kann.", en: "An animal that can run tirelessly day and night." }, abs: { de: "• Kann unbegrenzt sprinten, ohne Ausdauer zu verlieren.<br>• (Angriffe verbrauchen weiterhin Ausdauer).", en: "• Unlimited sprint without stamina loss.<br>• (Attacks still consume stamina)." } },
+            { id: "Burning", title: "Burning", img: "https://i.postimg.cc/fL9sz5NR/Bild-2024-05-23-014009009.png", desc: { de: "Brennt permanent, Feuer-Explosion.", en: "Burns permanently, fire explosion." }, lore: { de: "Sein Körper war von Flammen umhüllt, die ihm jedoch keinen Schaden zufügten.", en: "Body engulfed in flames that deal no self-damage." }, abs: { de: "• Immun gegen Feuer- und Lavaschaden.<br>• Kann eine Feuerexplosion (AoE) auslösen (Strg / Spezialangriff).<br>• Visuell permanent am Brennen.", en: "• Immune to fire/lava.<br>• Can trigger Fire Explosion (AoE).<br>• Visually burning." } },
+            { id: "Frozen", title: "Frozen", img: "https://i.postimg.cc/sDDTrxyM/Bild-2024-05-23-014324358.png", desc: { de: "Lebender Kühlschrank, Tanky.", en: "Living fridge, tanky." }, lore: { de: "Kreaturen, die vollständig aus Eis bestehen. Die Kälte hat ihnen nie etwas ausgemacht.", en: "Creatures made of ice. Cold never bothered them." }, abs: { de: "• Hält verderbliche Waren im Inventar frisch.<br>• Erleidet weniger Schaden (Tanky).<br>• Anfällig für Feuer.", en: "• Preserves perishables in inventory.<br>• Takes less damage (Tanky).<br>• Vulnerable to fire." } },
+            { id: "Spectral", title: "Spectral", img: "https://i.postimg.cc/4dQjW0vq/Bild-2024-05-23-014717251.png", desc: { de: "Geist, kein Fallschaden, spezielle Drops.", en: "Ghost, no fall damage, special drops." }, lore: { de: "Durchsichtig und ätherisch wie Nebel. Man kann durch sie hindurchgreifen.", en: "Transparent and ethereal like mist." }, abs: { de: "• Kein Fallschaden.<br>• Bewegt sich völlig lautlos.<br>• Man kann durch sie hindurchgehen.<br>• Kackt 'spektralen Kot'.", en: "• No fall damage.<br>• Moves silently.<br>• Pass-through collision.<br>• Poops 'Spectral Poop'." } },
+            { id: "Holographic", title: "Holographic", img: "https://i.postimg.cc/wTj3Q8cK/Bild-2024-05-23-015222386.png", desc: { de: "Tech-Scanner, findet High-Lvl Dinos.", en: "Tech scanner, finds high-lvl dinos." }, lore: { de: "Aus einer Simulation entkommen. Ein Fehler im Code, der lebendig wurde.", en: "Escaped from a simulation. A glitch come to life." }, abs: { de: "• Verleiht dem Reiter einen Tek-Helm-ähnlichen Scan.<br>• Hilft beim Erkennen von Bedrohungen und High-Level Dinos.", en: "• Grants Tek-Helm scan to rider.<br>• Helps spot threats and high-level dinos." } },
+            { id: "Skeletal", title: "Skeletal", img: "https://i.postimg.cc/NFwCvkDT/Bild-2024-05-23-015442688.png", desc: { de: "Kein Futter nötig, Pfeil-Resistent.", en: "No food needed, arrow resistant." }, lore: { de: "Ein wandelndes Museumsstück, nur Knochen, kein Fleisch.", en: "A walking museum piece, bones only." }, abs: { de: "• Muss nicht fressen und atmet nicht.<br>• Kackt nicht (sauberes Haustier).<br>• Hohe Resistenz gegen Fernkampfwaffen.", en: "• No food/oxygen needed.<br>• Does not poop.<br>• High resistance to ranged weapons." } },
+            { id: "Taser", title: "Taser", img: "https://i.postimg.cc/pTgrWp5K/Bild-2024-05-23-015731802.png", desc: { de: "Elektrische Verteidigung, betäubt Angreifer.", en: "Electric defense, stuns attackers." }, lore: { de: "Energie sprüht um seinen Körper. Ein natürlicher Verteidigungsmechanismus.", en: "Energy sparks around its body." }, abs: { de: "• Schockt und betäubt jeden Angreifer bei Kontakt.<br>• Kann Elektrizität auf nahe Ziele überspringen lassen.", en: "• Shocks/stuns attackers on contact.<br>• Electricity arcs to nearby targets." } },
+            { id: "Psychotrop", title: "Psychotrop", img: "https://i.postimg.cc/zBbtHX0J/Bild-2024-05-23-020136937.png", desc: { de: "Regenbogen-Effekt, Biotoxin.", en: "Rainbow effect, Bio Toxin." }, lore: { de: "Ein hypnotisierender, belebter Regenbogen-Effekt von seltsamer Schönheit.", en: "Hypnotizing rainbow effect of strange beauty." }, abs: { de: "• Visueller 'Trip'-Effekt.<br>• Produziert Biotoxin im Inventar.", en: "• Visual 'Trip' effect.<br>• Produces Bio Toxin in inventory." } },
+            { id: "Lunar", title: "Lunar", img: "https://i.postimg.cc/vT0tG18s/cc0aca80-188e-4a19-bd6d-d2c383f0450f.webp", desc: { de: "Geringe Schwerkraft, Mond-Sprünge.", en: "Low gravity, moon jumps." }, lore: { de: "Verfügt über eine Art natürlichen Auftrieb, als wäre es auf dem Mond.", en: "Possesses natural buoyancy, like on the moon." }, abs: { de: "• Trotzt der Schwerkraft: Hohe Sprünge, langsames Fallen.<br>• Kein visueller Skin (sieht normal aus).", en: "• Low gravity: High jumps, slow fall.<br>• No visual skin." } },
+            { id: "Rubber", title: "Rubber", img: "https://i.postimg.cc/5NG8pW6n/20230228192909-1.webp", desc: { de: "Bunt wie ein Gummiball, springt, reflektiert.", en: "Colorful like a rubber ball, bounces, reflects." }, lore: { de: "Boing! Quietscht wie Gummi beim Laufen und hat ein wirbelndes Farbmuster.", en: "Boing! Squeaks like rubber and has swirling colors." }, abs: { de: "• Kein Fallschaden (prallt ab).<br>• Reflektiert Nahkampfangriffe.<br>• Macht Quietsch-Geräusche.", en: "• Bounces (no fall dmg).<br>• Reflects melee damage.<br>• Squeaky noises." } },
+            { id: "Dazzling", title: "Dazzling", img: "https://i.postimg.cc/0ND4QNQ7/Bild-2024-05-23-020359325.png", desc: { de: "Blendet Angreifer, Immun gegen Strahlung.", en: "Blinds attackers, Radiation immune." }, lore: { de: "Gleicht einem polierten Edelstein. Kann einen Blitz erzeugen, der Angreifer blendet.", en: "Resembles a polished gem. Creates a blinding flash." }, abs: { de: "• Immun gegen Strahlung.<br>• Defensive Fähigkeit: Blendet Angreifer (Flashbang Effekt).", en: "• Immune to radiation.<br>• Defensive: Blinds attackers (Flashbang)." } },
+            { id: "Enraged", title: "Enraged", img: "https://i.postimg.cc/PqXKbXrR/Screenshot-2024-02-09-235425.png", desc: { de: "Alpha-Status, nicht zähmbar, droppt Essenz.", en: "Alpha status, untameable, drops essence." }, lore: { de: "Die gefährlichste Form. Größer, stärker, schneller.", en: "The most dangerous form. Bigger, stronger, faster." }, abs: { de: "• <strong>Nicht zähmbar!</strong><br>• Droppt beim Tod besondere Beute und <strong>Shiny Essenz</strong>.<br>• Gibt Chibi-XP.", en: "• <strong>Untameable!</strong><br>• Drops special loot and <strong>Shiny Essence</strong> on death.<br>• Gives Chibi XP." } },
+            { id: "PygmyColossal", title: "Pygmy & Colossal", img: "https://i.postimg.cc/3w0B1rDW/Bild-2024-05-23-020852847.png", desc: { de: "Größenveränderungen mit Stat-Anpassungen.", en: "Size changes with stat adjustments." }, lore: { de: "Inselzwergwuchs und Gigantismus im selben Ökosystem.", en: "Island dwarfism and gigantism." }, abs: { de: "• <strong>Colossal:</strong> Größer, mehr HP/Melee, aber langsamer.<br>• <strong>Pygmy:</strong> Kleiner, schneller, schwerer zu treffen.", en: "• <strong>Colossal:</strong> Bigger, more HP/Melee, slower.<br>• <strong>Pygmy:</strong> Smaller, faster, harder to hit." } }
+        ];
+
+        const TINY_DATA = [
+            { title: "Bolstering", desc: { de: "Reduziert das Gewicht im Inventar.", en: "Reduces inventory weight." } },
+            { title: "Hydrating", desc: { de: "Reduziert den Wasserverbrauch.", en: "Reduces water consumption." } },
+            { title: "Invigorating", desc: { de: "Stellt Ausdauer wieder her.", en: "Restores stamina." } },
+            { title: "Obscured", desc: { de: "Reduziert Aggro-Reichweite wilder Dinos.", en: "Reduces wild dino aggro range." } },
+            { title: "Pyrethrous", desc: { de: "Hält Insekten fern.", en: "Repels insects." } },
+            { title: "Revitalizing", desc: { de: "Regeneriert Gesundheit.", en: "Regenerates health." } },
+            { title: "Serene", desc: { de: "Hilft beim Konzentrieren (Crafting).", en: "Helps focus (Crafting)." } }
+        ];
+
+        const STAT_DATA = [
+            { title: "Hardy", desc: { de: "Gesundheit", en: "Health" }, color: "#4CAF50" },
+            { title: "Stalwart", desc: { de: "Ausdauer", en: "Stamina" }, color: "#FFC107" },
+            { title: "Inspired", desc: { de: "Sauerstoff", en: "Oxygen" }, color: "#03A9F4" },
+            { title: "Satiate", desc: { de: "Nahrung", en: "Food" }, color: "#FF5722" },
+            { title: "Hefty", desc: { de: "Gewicht", en: "Weight" }, color: "#9E9E9E" },
+            { title: "Fierce", desc: { de: "Nahkampfschaden", en: "Melee Damage" }, color: "#F44336" }
+        ];
+
         const EFFECT_DATA = {
-            "Burning": { desc: "Feuer-Aura", stats: ["Feuerresistenz +50%", "Rückwurfschaden (Feuer)"], group: "Visual/Effect" },
-            "Frozen": { desc: "Eis-Aura", stats: ["Eisresistenz +50%", "Verlangsamt Angreifer"], group: "Visual/Effect" },
-            "Electro": { desc: "Elektro-Schocks", stats: ["Immun gegen Schock", "Betäubt Angreifer"], group: "Visual/Effect" },
-            "Toxic": { desc: "Gift-Aura", stats: ["Giftresistenz", "Stapelbarer Giftschaden"], group: "Visual/Effect" },
-            "Radioactive": { desc: "Strahlung", stats: ["AoE Strahlungsschaden", "Licht im Dunkeln"], group: "Visual/Effect" },
-            "Spectral": { desc: "Geist", stats: ["Kein Fallschaden", "Durchlässig für Projektile"], group: "Visual/Effect" },
-            "Holographic": { desc: "Tech", stats: ["Tek-Scan Umgebung", "Coole Optik"], group: "Visual/Effect" },
-            "Rubber": { desc: "Gummi", stats: ["Springt hoch", "Reflektiert Schaden"], group: "Visual/Effect" },
-            "Dazzling": { desc: "Blendend", stats: ["Blendet Angreifer", "Strahlungsresistenz"], group: "Visual/Effect" },
-            "Nightmare": { desc: "Albtraum", stats: ["Verursacht Angst", "Unsichtbar im Dunkeln"], group: "Visual/Effect" },
-            "Crystalline": { desc: "Kristall", stats: ["Glaskanone (Mehr Dmg rein/raus)", "Reflektiert"], group: "Visual/Effect" },
-            "Skeletal": { desc: "Skelett", stats: ["Kein Futter nötig", "Hohe Fernkampf-Resistenz"], group: "Visual/Effect" },
-            
-            "Shinobi": { desc: "Stealth", stats: ["Aggro Reichweite reduziert", "Schwer zu entdecken"], group: "Abilities" },
-            "Fathomless": { desc: "Wasser", stats: ["Unendlicher Sauerstoff", "Schnelles Schwimmen"], group: "Abilities" },
-            "Endurant": { desc: "Ausdauer", stats: ["Unendlicher Sprint"], group: "Abilities" },
-            "Lunar": { desc: "Mond", stats: ["Geringe Schwerkraft", "Hohe Sprünge"], group: "Abilities" },
-            "Floral": { desc: "Heilung", stats: ["HP Regeneration Aura"], group: "Abilities" },
-            
-            "Hardy": { desc: "Stat Boost", stats: ["Gesundheit (HP) +"], group: "Stat Boosts" },
-            "Stalwart": { desc: "Stat Boost", stats: ["Ausdauer (Stam) +"], group: "Stat Boosts" },
-            "Inspired": { desc: "Stat Boost", stats: ["Sauerstoff (Oxy) +"], group: "Stat Boosts" },
-            "Satiate": { desc: "Stat Boost", stats: ["Nahrung (Food) +"], group: "Stat Boosts" },
-            "Hefty": { desc: "Stat Boost", stats: ["Gewicht (Weight) +"], group: "Stat Boosts" },
-            "Fierce": { desc: "Stat Boost", stats: ["Nahkampfschaden (Melee) +"], group: "Stat Boosts" },
-            
-            "Bolstering": { desc: "Tiny Utility", stats: ["Reduziert Inventar-Gewicht"], group: "Tinies (Shoulder)" },
-            "Hydrating": { desc: "Tiny Utility", stats: ["Reduziert Wasserverbrauch"], group: "Tinies (Shoulder)" },
-            "Invigorating": { desc: "Tiny Utility", stats: ["Stellt Ausdauer her"], group: "Tinies (Shoulder)" },
-            "Obscured": { desc: "Tiny Utility", stats: ["Reduziert Aggro"], group: "Tinies (Shoulder)" },
-            "Pyrethrous": { desc: "Tiny Utility", stats: ["Insektenschutz"], group: "Tinies (Shoulder)" },
-            "Revitalizing": { desc: "Tiny Utility", stats: ["Regeneriert Gesundheit"], group: "Tinies (Shoulder)" },
-            "Serene": { desc: "Tiny Utility", stats: ["Crafting Fokus"], group: "Tinies (Shoulder)" },
-            
-            "Colossal": { desc: "Size Mod", stats: ["Größe +50%", "HP +++", "Speed ---"], group: "Size" },
-            "Pygmy": { desc: "Size Mod", stats: ["Größe -30%", "Speed ++", "HP -"], group: "Size" }
+            "Burning": { 
+                desc: { de: "Feuer-Aura", en: "Fire Aura", es: "Aura de Fuego", fr: "Aura de Feu" }, 
+                stats: { de: ["Feuerresistenz +50%", "Rückwurfschaden (Feuer)"], en: ["Fire Res +50%", "Reflect Dmg (Fire)"], es: ["Res. Fuego +50%", "Reflejo (Fuego)"], fr: ["Rés. Feu +50%", "Renvoi Dégâts (Feu)"] }, 
+                group: "Visual/Effect" 
+            },
+            "Frozen": { 
+                desc: { de: "Eis-Aura", en: "Ice Aura", es: "Aura de Hielo", fr: "Aura de Glace" }, 
+                stats: { de: ["Eisresistenz +50%", "Verlangsamt Angreifer"], en: ["Ice Res +50%", "Slows Attackers"], es: ["Res. Hielo +50%", "Ralentiza"], fr: ["Rés. Glace +50%", "Ralentit"] }, 
+                group: "Visual/Effect" 
+            },
+            "Electro": { 
+                desc: { de: "Elektro-Schocks", en: "Electric Shocks", es: "Choques Eléctricos", fr: "Chocs Électriques" }, 
+                stats: { de: ["Immun gegen Schock", "Betäubt Angreifer"], en: ["Shock Immune", "Stuns Attackers"], es: ["Inmune Shock", "Aturde"], fr: ["Immunisé Choc", "Étourdit"] }, 
+                group: "Visual/Effect" 
+            },
+            "Toxic": { 
+                desc: { de: "Gift-Aura", en: "Toxic Aura", es: "Aura Tóxica", fr: "Aura Toxique" }, 
+                stats: { de: ["Giftresistenz", "Stapelbarer Giftschaden"], en: ["Poison Res", "Stacking Poison Dmg"], es: ["Res. Veneno", "Veneno Acumulable"], fr: ["Rés. Poison", "Poison Cumulable"] }, 
+                group: "Visual/Effect" 
+            },
+            "Radioactive": { 
+                desc: { de: "Strahlung", en: "Radiation", es: "Radiación", fr: "Radiation" }, 
+                stats: { de: ["AoE Strahlungsschaden", "Licht im Dunkeln"], en: ["AoE Rad Dmg", "Glow in Dark"], es: ["Daño Rad AoE", "Brilla"], fr: ["Dégâts Rad AoE", "Brille"] }, 
+                group: "Visual/Effect" 
+            },
+            "Spectral": { 
+                desc: { de: "Geist", en: "Ghost", es: "Fantasma", fr: "Fantôme" }, 
+                stats: { de: ["Kein Fallschaden", "Durchlässig für Projektile"], en: ["No Fall Dmg", "Projectile Passthrough"], es: ["Sin Daño Caída", "Pasar Proyectiles"], fr: ["Pas Dégâts Chute", "Traversée Projectiles"] }, 
+                group: "Visual/Effect" 
+            },
+            "Holographic": { 
+                desc: { de: "Tech", en: "Tech", es: "Tecnología", fr: "Tech" }, 
+                stats: { de: ["Tek-Scan Umgebung", "Coole Optik"], en: ["Tek-Scan Area", "Cool Visuals"], es: ["Escaneo Tek", "Visuales"], fr: ["Scan Tek", "Visuels"] }, 
+                group: "Visual/Effect" 
+            },
+            "Rubber": { 
+                desc: { de: "Gummi", en: "Rubber", es: "Goma", fr: "Caoutchouc" }, 
+                stats: { de: ["Springt hoch", "Reflektiert Schaden"], en: ["Bouncy", "Reflects Dmg"], es: ["Rebota", "Refleja Daño"], fr: ["Rebondit", "Reflète Dégâts"] }, 
+                group: "Visual/Effect" 
+            },
+            "Dazzling": { 
+                desc: { de: "Blendend", en: "Dazzling", es: "Deslumbrante", fr: "Éblouissant" }, 
+                stats: { de: ["Blendet Angreifer", "Strahlungsresistenz"], en: ["Blinds Attackers", "Rad Res"], es: ["Ciega", "Res. Rad"], fr: ["Aveugle", "Rés. Rad"] }, 
+                group: "Visual/Effect" 
+            },
+            "Nightmare": { 
+                desc: { de: "Albtraum", en: "Nightmare", es: "Pesadilla", fr: "Cauchemar" }, 
+                stats: { de: ["Verursacht Angst", "Unsichtbar im Dunkeln"], en: ["Causes Fear", "Invisible in Dark"], es: ["Causa Miedo", "Invisible"], fr: ["Cause Peur", "Invisible"] }, 
+                group: "Visual/Effect" 
+            },
+            "Crystalline": { 
+                desc: { de: "Kristall", en: "Crystal", es: "Cristal", fr: "Cristal" }, 
+                stats: { de: ["Glaskanone (+Dmg rein/raus)", "Reflektiert"], en: ["Glass Cannon (+Dmg in/out)", "Reflects"], es: ["Cañón Cristal", "Refleja"], fr: ["Canon Verre", "Reflète"] }, 
+                group: "Visual/Effect" 
+            },
+            "Skeletal": { 
+                desc: { de: "Skelett", en: "Skeleton", es: "Esqueleto", fr: "Squelette" }, 
+                stats: { de: ["Kein Futter nötig", "Hohe Fernkampf-Resistenz"], en: ["No Food Need", "High Ranged Res"], es: ["Sin Comida", "Alta Res. Rango"], fr: ["Pas Besoin Nourr.", "Haute Rés. Distance"] }, 
+                group: "Visual/Effect" 
+            },
+            "Shinobi": { 
+                desc: { de: "Stealth", en: "Stealth", es: "Sigilo", fr: "Furtivité" }, 
+                stats: { de: ["Aggro Reichweite reduziert", "Schwer zu entdecken"], en: ["Reduced Aggro Range", "Hard to Detect"], es: ["Menos Aggro", "Difícil Detectar"], fr: ["Portée Aggro Réduite", "Difficile à Détecter"] }, 
+                group: "Abilities" 
+            },
+            "Fathomless": { 
+                desc: { de: "Wasser", en: "Water", es: "Agua", fr: "Eau" }, 
+                stats: { de: ["Unendlicher Sauerstoff", "Schnelles Schwimmen"], en: ["Infinite Oxygen", "Fast Swim"], es: ["Oxígeno Infinito", "Nado Rápido"], fr: ["Oxygène Infini", "Nage Rapide"] }, 
+                group: "Abilities" 
+            },
+            "Endurant": { 
+                desc: { de: "Ausdauer", en: "Stamina", es: "Estamina", fr: "Endurance" }, 
+                stats: { de: ["Unendlicher Sprint"], en: ["Infinite Sprint"], es: ["Sprint Infinito"], fr: ["Sprint Infini"] }, 
+                group: "Abilities" 
+            },
+            "Lunar": { 
+                desc: { de: "Mond", en: "Moon", es: "Luna", fr: "Lune" }, 
+                stats: { de: ["Geringe Schwerkraft", "Hohe Sprünge"], en: ["Low Gravity", "High Jumps"], es: ["Gravedad Baja", "Saltos Altos"], fr: ["Faible Gravité", "Sauts Hauts"] }, 
+                group: "Abilities" 
+            },
+            "Colossal": { 
+                desc: { de: "Size Mod", en: "Size Mod", es: "Mod Tamaño", fr: "Mod Taille" }, 
+                stats: { de: ["Größe +50%", "HP +++", "Speed ---"], en: ["Size +50%", "HP +++", "Speed ---"], es: ["Tamaño +50%", "HP +++", "Vel ---"], fr: ["Taille +50%", "PV +++", "Vit ---"] }, 
+                group: "Size" 
+            },
+            "Pygmy": { 
+                desc: { de: "Size Mod", en: "Size Mod", es: "Mod Tamaño", fr: "Mod Taille" }, 
+                stats: { de: ["Größe -30%", "Speed ++", "HP -"], en: ["Size -30%", "Speed ++", "HP -"], es: ["Tamaño -30%", "Vel ++", "HP -"], fr: ["Taille -30%", "Vit ++", "PV -"] }, 
+                group: "Size" 
+            },
+            // Tinies & Stat Boosts (Generic translation)
+            "Bolstering": { desc: { de: "Tiny", en: "Tiny", es: "Tiny", fr: "Tiny" }, stats: { de: ["Gewicht Reduktion"], en: ["Weight Reduction"], es: ["Reducción Peso"], fr: ["Réduction Poids"] }, group: "Tinies (Shoulder)" },
+            "Hydrating": { desc: { de: "Tiny", en: "Tiny", es: "Tiny", fr: "Tiny" }, stats: { de: ["Wasser Erhalt"], en: ["Water Retention"], es: ["Retención Agua"], fr: ["Rétention Eau"] }, group: "Tinies (Shoulder)" },
+            "Hardy": { desc: { de: "Stat", en: "Stat", es: "Stat", fr: "Stat" }, stats: { de: ["Gesundheit +"], en: ["Health +"], es: ["Salud +"], fr: ["Santé +"] }, group: "Stat Boosts" }
         };
 
         const COLOR_SETS = [
@@ -1290,6 +1171,7 @@
             { name: "Sunset", ids: [31, 72, 74, 76, 89] },
             { name: "Tatterdemalion", ids: [32, 10, 17, 22, 26] },
             { name: "Tiger", ids: [36, 38, 10, 221, 44] },
+            { name: "Toxic", ids: [83, 84, 12, 44] },
             { name: "Trans", ids: [67, 30, 36, 18, 96, 28] },
             { name: "Unprocessable Entity", ids: [89, 54, 224] },
             { name: "Unrequited", ids: [28, 67, 94, 51, 92, 57] },
@@ -1301,289 +1183,132 @@
 
         const ARK_COLORS = {
             1: "#ff0000", 2: "#0000ff", 3: "#00ff00", 4: "#ffff00", 5: "#00ffff", 6: "#ff00ff", 
-            7: "#c0ffba", 8: "#c8caca", 9: "#786759", 10: "#ffb46c", 11: "#fffa8a", 12: "#ff756c",
-            13: "#7b7b7b", 14: "#3b3b3b", 15: "#593a2a", 16: "#224900", 17: "#812118", 18: "#ffffff",
-            19: "#ffa8a8", 20: "#592b2b", 21: "#ffb694", 22: "#88532f", 23: "#cacaa0", 24: "#94946c",
-            25: "#e0ffe0", 26: "#799479", 27: "#224122", 28: "#d9e0ff", 29: "#394263", 30: "#e4d9ff",
-            31: "#403459", 32: "#ffe0ba", 33: "#684423", 34: "#a0a0a0", 35: "#383838", 36: "#f8f8f8",
-            38: "#ffe0d0", 39: "#6b4d37", 40: "#b09c87", 41: "#604733", 42: "#917760", 43: "#c1a58d",
-            44: "#683318", 45: "#3e281b", 46: "#271b12", 47: "#731f06", 48: "#141414", 49: "#2a1d5e",
-            50: "#17122e", 51: "#3e4f63", 52: "#1f2a36", 53: "#546e8c", 54: "#1e3752", 55: "#b5d4f2",
-            56: "#343434", 57: "#141725", 58: "#002a1d", 59: "#009069", 60: "#0c1911", 61: "#0b130c",
-            62: "#0a0909", 63: "#181616", 64: "#544a48", 65: "#141a17", 66: "#415c4e", 67: "#cd70ff",
-            68: "#ff0053", 69: "#2c000f", 70: "#7a000d", 71: "#360702", 72: "#660600", 73: "#dc0600",
-            74: "#ff1807", 75: "#ff3700", 76: "#ff630a", 77: "#6d2a00", 78: "#4c4c04", 79: "#000000",
-            80: "#010208", 81: "#010509", 82: "#060306", 83: "#65ff0d", 84: "#09cf3c", 85: "#003f0c",
-            86: "#001605", 87: "#001a11", 88: "#003322", 89: "#380004", 90: "#590006", 91: "#380000",
-            92: "#2a0000", 93: "#38081a", 94: "#21000e", 95: "#6e68bd", 96: "#6b2165", 97: "#5b5b5b",
-            98: "#545145", 99: "#60563b", 100: "#3d362d", 201: "#1f1f1f", 202: "#0000ff", 207: "#6c00ba",
-            208: "#ff8800", 209: "#ffffba", 210: "#ff7be1", 213: "#7b00a8", 214: "#e0e0e0", 215: "#bad4ff",
-            216: "#ffed82", 217: "#ad652c", 220: "#e71fd9", 221: "#94341f", 222: "#ff9a00", 223: "#473b2b",
-            224: "#34346c", 225: "#baba59", 226: "#595959"
+            8: "#c8caca", 10: "#ffb46c", 11: "#fffa8a", 12: "#ff756c", 18: "#ffffff", 20: "#592b2b",
+            23: "#cacaa0", 25: "#e0ffe0", 33: "#684423", 34: "#a0a0a0", 36: "#f8f8f8", 38: "#ffe0d0",
+            44: "#683318", 51: "#3e4f63", 52: "#1f2a36", 55: "#b5d4f2", 56: "#343434", 57: "#141725",
+            70: "#7a000d", 73: "#dc0600", 75: "#ff3700", 80: "#010208", 81: "#010509", 83: "#65ff0d",
+            84: "#09cf3c", 96: "#6b2165", 208: "#ff8800", 214: "#e0e0e0", 218: "#e6e6e6"
         };
         const getColorHex = (id) => ARK_COLORS[id] || '#555';
 
-        // --- NAVIGATION ---
+        // --- STATE ---
+        let currentLang = 'de';
+        const selectedEffects = new Set();
+
+        function setLang(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('btn-' + lang).classList.add('active');
+
+            // Static Text
+            document.getElementById('searchInput').placeholder = translations.search[lang];
+            
+            // Nav
+            document.getElementById('navFaq').innerHTML = `<i class="fa-solid fa-circle-info"></i> ${translations.nav.faq[lang]}`;
+            document.getElementById('navVariants').innerHTML = `<i class="fa-solid fa-dna"></i> ${translations.nav.variants[lang]}`;
+            document.getElementById('navTinies').innerHTML = `<i class="fa-solid fa-paw"></i> ${translations.nav.tinies[lang]}`;
+            document.getElementById('navColors').innerHTML = `<i class="fa-solid fa-palette"></i> ${translations.nav.colors[lang]}`;
+            document.getElementById('navChecker').innerHTML = `<i class="fa-solid fa-flask"></i> ${translations.nav.checker[lang]}`;
+            document.getElementById('navCombos').innerHTML = `<i class="fa-solid fa-layer-group"></i> ${translations.nav.combos[lang]}`;
+
+            // Re-render ALL
+            renderFAQ();
+            renderVariants(); // Updated
+            renderTinies();   // Updated
+            updateBuilder(); 
+            checkCombo(); 
+            renderColorSets(); 
+        }
+
         function showSection(sectionId) {
             document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
             document.getElementById(sectionId).classList.add('active');
             
-            const tabs = document.querySelectorAll('.nav-tab');
-            tabs.forEach(tab => {
-                if(tab.getAttribute('onclick').includes(sectionId)) {
-                    tab.classList.add('active');
-                }
-            });
+            const btn = document.querySelector(`.nav-tab[onclick*="${sectionId}"]`);
+            if(btn) btn.classList.add('active');
         }
 
-        // --- SEARCH ---
-        const searchInput = document.getElementById('searchInput');
-        const shinyCards = document.querySelectorAll('.shiny-card');
-        
-        searchInput.addEventListener('keyup', (e) => {
-            const term = e.target.value.toLowerCase();
-            // Filter Shiny Cards (if in variants tab)
-            shinyCards.forEach(card => {
-                const title = card.querySelector('.card-title').innerText.toLowerCase();
-                const desc = card.querySelector('.card-short-desc').innerText.toLowerCase();
-                if(title.includes(term) || desc.includes(term)) {
-                    card.classList.remove('hidden');
-                } else {
-                    card.classList.add('hidden');
-                }
-            });
-            // Filter Color Sets (if in colors tab)
-            document.querySelectorAll('.color-set-card').forEach(card => {
-                const title = card.querySelector('.color-set-title').innerText.toLowerCase();
-                if(title.includes(term)) card.style.display = 'block';
-                else card.style.display = 'none';
-            });
-        });
+        // --- RENDER FUNCTIONS ---
+        function renderFAQ() {
+            const data = translations.sections.faq;
+            document.getElementById('faq').innerHTML = `
+                <div class="info-box">
+                    <h3><i class="fa-solid fa-star"></i> ${data.what_title[currentLang]}</h3>
+                    <p>${data.what_text[currentLang]}</p>
+                </div>
+                <div class="info-box">
+                    <h3><i class="fa-solid fa-flask"></i> ${data.essence_title[currentLang]}</h3>
+                    <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: center;">
+                        <div style="flex: 1; min-width: 250px;">
+                            <p>${data.essence_text[currentLang]}</p>
+                        </div>
+                        <div style="text-align: center; flex-basis: 300px;">
+                            <img src="https://i.postimg.cc/T3rXpxtM/Bild-2024-05-23-022659420.png" alt="Shiny Essenz" class="zoomable-img" style="width: 100%; max-width: 400px; border-radius: 8px; box-shadow: 0 0 15px rgba(156, 39, 176, 0.6);" onclick="openImageModal(this.src, '${data.essence_title[currentLang]}')">
+                        </div>
+                    </div>
+                </div>
+                <div class="info-box">
+                    <h3><i class="fa-solid fa-circle-exclamation"></i> ${data.rules_title[currentLang]}</h3>
+                    <ul>${data.rules_list[currentLang].map(r => `<li>${r}</li>`).join('')}</ul>
+                </div>
+            `;
+        }
 
-        // --- MODAL ---
-        const modal = document.getElementById('shinyModal');
-
-        function openModal(card) {
-            const img = card.querySelector('.card-img').src;
-            const title = card.querySelector('.card-title').innerText;
-            const lore = card.querySelector('.lore').innerHTML;
-            const abilities = card.querySelector('.abilities').innerHTML;
-
-            document.getElementById('modalImg').src = img;
-            document.getElementById('modalTitle').innerText = title;
-            document.getElementById('modalLore').innerHTML = lore;
-            document.getElementById('modalAbilities').innerHTML = abilities;
+        function renderVariants() {
+            const container = document.getElementById('variantsGrid');
+            container.innerHTML = "";
             
-            // Show all sections
-            document.getElementById('loreSectionTitle').style.display = 'block';
-            document.getElementById('abilitiesSectionTitle').style.display = 'block';
-            document.getElementById('modalLore').style.display = 'block';
-            document.getElementById('modalAbilities').style.display = 'block';
+            VARIANT_DATA.forEach(v => {
+                const card = document.createElement('div');
+                card.className = 'shiny-card';
+                card.onclick = () => openModal(v);
 
-            modal.classList.add('active');
-        }
-        
-        function openImageModal(imgSrc, title) {
-            document.getElementById('modalImg').src = imgSrc;
-            document.getElementById('modalTitle').innerText = title;
-            
-            // Hide text sections for image only view
-            document.getElementById('loreSectionTitle').style.display = 'none';
-            document.getElementById('abilitiesSectionTitle').style.display = 'none';
-            document.getElementById('modalLore').style.display = 'none';
-            document.getElementById('modalAbilities').style.display = 'none';
-            
-            modal.classList.add('active');
-        }
-
-        function closeModal() {
-            modal.classList.remove('active');
-        }
-
-        modal.addEventListener('click', (e) => {
-            if(e.target === modal) closeModal();
-        });
-
-        // --- OLD COMBO CHECKER LOGIC ---
-        function checkCombo() {
-            const sel1 = document.getElementById('combo1');
-            const sel2 = document.getElementById('combo2');
-            const resDiv = document.getElementById('comboResult');
-
-            const val1 = sel1.value;
-            const val2 = sel2.value;
-
-            if (!val1 || !val2) {
-                resDiv.innerHTML = '<span style="color: #aaa; font-style: italic;">Wähle zwei Essenzen aus...</span>';
-                resDiv.style.backgroundColor = 'rgba(0,0,0,0.5)';
-                resDiv.style.border = 'none';
-                return;
-            }
-
-            const cat1 = sel1.options[sel1.selectedIndex].getAttribute('data-cat');
-            const cat2 = sel2.options[sel2.selectedIndex].getAttribute('data-cat');
-            
-            let status = 'ok';
-            let message = 'Diese Kombination ist möglich!';
-            let icon = '<i class="fa-solid fa-check-circle" style="font-size: 2rem; margin-bottom: 10px;"></i>';
-            let color = '#4CAF50'; 
-
-            if (val1 === val2) {
-                status = 'error';
-                message = 'Du kannst nicht zweimal dieselbe Essenz verwenden.';
-            } 
-            else if (cat1 === cat2) {
-                status = 'error';
-                message = 'Nicht möglich: Beide Essenzen stammen aus derselben Kategorie.';
-            }
-            else if ((cat1 === 'tiny' && cat2 === 'ability') || (cat2 === 'tiny' && cat1 === 'ability')) {
-                status = 'error';
-                message = 'Nicht möglich: Tiny/Stat Boosts sind nicht mit Fähigkeiten kombinierbar.';
-            }
-            else if ((cat1 === 'tiny' && cat2 === 'size') || (cat2 === 'tiny' && cat1 === 'size')) {
-                status = 'error';
-                message = 'Nicht möglich: Tiny/Stat Boosts sind nicht mit Größenänderungen kombinierbar.';
-            }
-            else if (val1 === 'Skeletal' || val2 === 'Skeletal') {
-                const otherCat = val1 === 'Skeletal' ? cat2 : cat1;
-                if (otherCat === 'size' || otherCat === 'tiny') {
-                    status = 'warning';
-                    message = 'Eingeschränkt: Skeletal ändert das Mesh. Oft inkompatibel mit Größe/Tiny.';
-                    color = '#FFC107'; 
-                    icon = '<i class="fa-solid fa-triangle-exclamation" style="font-size: 2rem; margin-bottom: 10px;"></i>';
-                }
-            }
-
-            if (status === 'error') {
-                color = '#F44336';
-                icon = '<i class="fa-solid fa-circle-xmark" style="font-size: 2rem; margin-bottom: 10px;"></i>';
-            }
-
-            resDiv.innerHTML = `<div style="color: ${color}; font-weight: bold;">${icon}<br>${message}</div>`;
-            resDiv.style.backgroundColor = `${color}22`;
-            resDiv.style.border = `1px solid ${color}`;
-        }
-
-        // --- NEW: SHINY CHECKER LOGIC ---
-        const selectedEffects = new Set();
-        let activeColorSet = "";
-
-        function initBuilder() {
-            // 1. Generate Effect Buttons
-            const pickerContainer = document.getElementById('effectPicker');
-            pickerContainer.innerHTML = '';
-
-            // Group effects by category
-            const groups = {};
-            for (const [key, val] of Object.entries(EFFECT_DATA)) {
-                const gName = val.group || "Other";
-                if (!groups[gName]) groups[gName] = [];
-                groups[gName].push(key);
-            }
-
-            // Render groups
-            for (const [groupName, effects] of Object.entries(groups)) {
-                const groupTitle = document.createElement('div');
-                groupTitle.className = 'effect-category-title';
-                groupTitle.innerText = groupName;
-                pickerContainer.appendChild(groupTitle);
-
-                const grid = document.createElement('div');
-                grid.className = 'effect-buttons-grid';
+                const desc = v.desc[currentLang] || v.desc.en;
                 
-                effects.sort().forEach(eff => {
-                    const btn = document.createElement('div');
-                    btn.className = 'effect-btn';
-                    btn.setAttribute('data-effect', eff);
-                    btn.innerHTML = `<i class="fa-solid fa-plus"></i> ${eff}`;
-                    btn.onclick = () => toggleEffect(eff, btn);
-                    grid.appendChild(btn);
-                });
-                pickerContainer.appendChild(grid);
-            }
-
-            // 2. Populate Color Set Dropdown
-            const select = document.getElementById('colorSetSelect');
-            COLOR_SETS.forEach(set => {
-                const opt = document.createElement('option');
-                opt.value = set.name;
-                opt.text = set.name;
-                select.appendChild(opt);
+                card.innerHTML = `
+                    <img src="${v.img}" class="card-img" alt="${v.title}">
+                    <div class="card-content">
+                        <h3 class="card-title">${v.title}</h3>
+                        <div class="card-short-desc">${desc}</div>
+                    </div>
+                `;
+                container.appendChild(card);
             });
         }
 
-        function toggleEffect(eff, btnElement) {
-            if (selectedEffects.has(eff)) {
-                // Remove
-                selectedEffects.delete(eff);
-                btnElement.classList.remove('active');
-                btnElement.innerHTML = `<i class="fa-solid fa-plus"></i> ${eff}`;
-            } else {
-                // Add
-                if (selectedEffects.size >= 5) {
-                    alert("Maximal 5 Effekte erlaubt!");
-                    return;
-                }
-                selectedEffects.add(eff);
-                btnElement.classList.add('active');
-                btnElement.innerHTML = `<i class="fa-solid fa-check"></i> ${eff}`;
-            }
-            updateBuilder();
+        function renderTinies() {
+            const tinyContainer = document.getElementById('tinyGrid');
+            const statContainer = document.getElementById('statGrid');
+            tinyContainer.innerHTML = "";
+            statContainer.innerHTML = "";
+
+            TINY_DATA.forEach(t => {
+                const div = document.createElement('div');
+                div.className = 'tiny-card';
+                div.innerHTML = `<h4>${t.title}</h4><p>${t.desc[currentLang] || t.desc.en}</p>`;
+                tinyContainer.appendChild(div);
+            });
+
+            STAT_DATA.forEach(s => {
+                const div = document.createElement('div');
+                div.className = 'tiny-card';
+                div.innerHTML = `<h4 style="color: ${s.color};">${s.title}</h4><p>${s.desc[currentLang] || s.desc.en}</p>`;
+                statContainer.appendChild(div);
+            });
         }
 
-        // Removed addEffect/removeEffect/renderBuilderChips since we use toggles now
+        function renderColorSets() {
+            const container = document.getElementById('colorSetGrid');
+            container.innerHTML = "";
+            const term = document.getElementById('searchInput').value.toLowerCase();
 
-        function updateBuilder() {
-            const resultDiv = document.getElementById('builderResults');
-            const colorSetSelect = document.getElementById('colorSetSelect');
-            activeColorSet = colorSetSelect.value;
-
-            // Render Bonuses
-            if(selectedEffects.size === 0 && !activeColorSet) {
-                resultDiv.innerHTML = '<p style="color:#666; font-style:italic;">Klicke auf Effekte links, um Boni zu sehen...</p>';
-            } else {
-                resultDiv.innerHTML = "";
-                selectedEffects.forEach(eff => {
-                    const data = EFFECT_DATA[eff] || { desc: "Unbekannt", stats: [] };
-                    const item = document.createElement('div');
-                    item.style.marginBottom = "10px";
-                    item.innerHTML = `
-                        <div style="font-weight:bold; color:#fff;">${eff}</div>
-                        <div style="font-size:0.8rem; color:#aaa; margin-bottom:4px;">${data.desc}</div>
-                        ${data.stats.map(s => `<div class="result-stat"><span>Bonus</span><span>${s}</span></div>`).join('')}
-                    `;
-                    resultDiv.appendChild(item);
-                });
-            }
-
-            // Render Color Preview
-            const previewContainer = document.getElementById('builderColorPreview');
-            const circlesContainer = document.getElementById('builderColorCircles');
-            
-            if(activeColorSet) {
-                previewContainer.style.display = 'block';
-                const setData = COLOR_SETS.find(s => s.name === activeColorSet);
-                if(setData) {
-                    circlesContainer.innerHTML = setData.ids.map(id => 
-                        `<div class="color-circle" style="background-color:${getColorHex(id)}" title="ID: ${id}"></div>`
-                    ).join('');
-                }
-            } else {
-                previewContainer.style.display = 'none';
-            }
-        }
-
-        // --- NEW: COLOR SET BROWSER LOGIC ---
-        function initColorBrowser() {
-            const grid = document.getElementById('colorSetGrid');
-            grid.innerHTML = "";
-            
             COLOR_SETS.forEach(set => {
+                if(term && !set.name.toLowerCase().includes(term)) return;
+                
                 const card = document.createElement('div');
                 card.className = 'color-set-card';
                 card.onclick = () => {
-                    // Jump to builder and select this color
                     showSection('checker');
                     document.getElementById('colorSetSelect').value = set.name;
                     updateBuilder();
@@ -1598,14 +1323,255 @@
                     <div class="color-circles">${circles}</div>
                     <div style="font-size:0.8rem; color:#666; margin-top:8px;">IDs: ${set.ids.join(', ')}</div>
                 `;
-                grid.appendChild(card);
+                container.appendChild(card);
             });
         }
 
-        // Init all
+        // --- CHECKER BUILDER ---
+        function initBuilder() {
+            const picker = document.getElementById('effectPicker');
+            if(!picker) return;
+            picker.innerHTML = '';
+            
+            const groups = {};
+            for (const [key, val] of Object.entries(EFFECT_DATA)) {
+                const g = val.group;
+                if (!groups[g]) groups[g] = [];
+                groups[g].push(key);
+            }
+
+            for (const [groupName, effects] of Object.entries(groups)) {
+                const title = document.createElement('div');
+                title.className = 'effect-category-title';
+                title.innerText = groupName;
+                picker.appendChild(title);
+
+                const grid = document.createElement('div');
+                grid.className = 'effect-buttons-grid';
+                effects.sort().forEach(eff => {
+                    const btn = document.createElement('div');
+                    btn.className = 'effect-btn';
+                    btn.setAttribute('data-effect', eff);
+                    btn.innerHTML = `<i class="fa-solid fa-plus"></i> ${eff}`;
+                    btn.onclick = () => toggleEffect(eff, btn);
+                    grid.appendChild(btn);
+                });
+                picker.appendChild(grid);
+            }
+
+            const select = document.getElementById('colorSetSelect');
+            if(select) {
+                COLOR_SETS.forEach(set => {
+                    const opt = document.createElement('option');
+                    opt.value = set.name;
+                    opt.text = set.name;
+                    select.appendChild(opt);
+                });
+            }
+            
+            // Populate Combo Dropdowns
+            const comboGroups = {
+                "Abilities": ["Shinobi", "Fathomless", "Endurant", "Lunar"],
+                "Visuals": ["Burning", "Frozen", "Taser", "Psychotropic", "Radioactive", "Spectral", "Holographic", "Rubber", "Dazzling", "Nightmare", "Crystalline", "Skeletal"],
+                "Size": ["Colossal", "Pygmy"],
+                "Tinies": ["Bolstering", "Hydrating", "Invigorating", "Obscured", "Pyrethrous", "Revitalizing", "Serene"],
+                "Stats": ["Hardy", "Stalwart", "Inspired", "Satiate", "Hefty", "Fierce"]
+            };
+
+            const fillCombo = (id) => {
+                const el = document.getElementById(id);
+                if(!el) return;
+                const first = el.firstElementChild;
+                el.innerHTML = "";
+                el.appendChild(first);
+
+                for(const [grp, items] of Object.entries(comboGroups)) {
+                    const og = document.createElement('optgroup');
+                    og.label = grp;
+                    items.forEach(it => {
+                        const op = document.createElement('option');
+                        op.value = it;
+                        op.text = it;
+                        if(grp === "Abilities") op.setAttribute('data-cat', 'ability');
+                        if(grp === "Visuals") op.setAttribute('data-cat', 'visual');
+                        if(grp === "Size") op.setAttribute('data-cat', 'size');
+                        if(grp === "Tinies" || grp === "Stats") op.setAttribute('data-cat', 'tiny');
+                        og.appendChild(op);
+                    });
+                    el.appendChild(og);
+                }
+            };
+            fillCombo('combo1');
+            fillCombo('combo2');
+        }
+
+        function toggleEffect(eff, btn) {
+            if (selectedEffects.has(eff)) {
+                selectedEffects.delete(eff);
+                btn.classList.remove('active');
+                btn.innerHTML = `<i class="fa-solid fa-plus"></i> ${eff}`;
+            } else {
+                if (selectedEffects.size >= 5) return;
+                selectedEffects.add(eff);
+                btn.classList.add('active');
+                btn.innerHTML = `<i class="fa-solid fa-check"></i> ${eff}`;
+            }
+            updateBuilder();
+        }
+
+        function updateBuilder() {
+            const resDiv = document.getElementById('builderResults');
+            if(!resDiv) return;
+            
+            const data = translations.sections.builder;
+            const activeSet = document.getElementById('colorSetSelect').value;
+
+            // Labels update
+            document.getElementById('lblStep1').innerText = data.step1[currentLang];
+            document.getElementById('lblStep2').innerText = data.step2[currentLang];
+            document.getElementById('lblRes').innerText = data.result[currentLang];
+            document.getElementById('lblPreview').innerText = data.preview[currentLang];
+            document.getElementById('optNone').innerText = data.none[currentLang];
+
+            if (selectedEffects.size === 0 && !activeSet) {
+                resDiv.innerHTML = `<p style="color:#666; font-style:italic;">${data.empty[currentLang]}</p>`;
+            } else {
+                resDiv.innerHTML = "";
+                selectedEffects.forEach(eff => {
+                    const effData = EFFECT_DATA[eff] || { desc: {de:"-"}, stats:{de:[]} };
+                    const desc = effData.desc[currentLang] || effData.desc.de || "-";
+                    const stats = effData.stats[currentLang] || effData.stats.de || [];
+                    
+                    const item = document.createElement('div');
+                    item.style.marginBottom = "10px";
+                    item.innerHTML = `
+                        <div style="font-weight:bold; color:#fff;">${eff}</div>
+                        <div style="font-size:0.8rem; color:#aaa; margin-bottom:4px;">${desc}</div>
+                        ${stats.map(s => `<div class="result-stat"><span>${data.bonus[currentLang]}</span><span>${s}</span></div>`).join('')}
+                    `;
+                    resDiv.appendChild(item);
+                });
+            }
+
+            const prevCont = document.getElementById('builderColorPreview');
+            if(activeSet) {
+                prevCont.style.display = 'block';
+                const setData = COLOR_SETS.find(s => s.name === activeSet);
+                if(setData) {
+                     document.getElementById('builderColorCircles').innerHTML = setData.ids.map(id => 
+                        `<div class="color-circle" style="background-color:${getColorHex(id)}" title="ID: ${id}"></div>`
+                    ).join('');
+                }
+            } else {
+                prevCont.style.display = 'none';
+            }
+        }
+
+        // --- COMBO CHECKER LOGIC ---
+        function checkCombo() {
+            const data = translations.sections.combo;
+            
+            document.getElementById('comboTitle').innerHTML = `<i class="fa-solid fa-calculator"></i> ${data.title[currentLang]}`;
+            document.getElementById('comboDesc').innerText = data.desc[currentLang];
+            document.getElementById('optDef1').innerText = data.select1[currentLang];
+            document.getElementById('optDef2').innerText = data.select2[currentLang];
+
+            const sel1 = document.getElementById('combo1');
+            const sel2 = document.getElementById('combo2');
+            const resDiv = document.getElementById('comboResult');
+            const val1 = sel1.value;
+            const val2 = sel2.value;
+
+            if (!val1 || !val2) {
+                resDiv.innerHTML = `<span style="color: #aaa; font-style: italic;">${data.empty_res[currentLang]}</span>`;
+                resDiv.style.backgroundColor = 'rgba(0,0,0,0.5)';
+                resDiv.style.border = 'none';
+                return;
+            }
+
+            const cat1 = sel1.options[sel1.selectedIndex].getAttribute('data-cat');
+            const cat2 = sel2.options[sel2.selectedIndex].getAttribute('data-cat');
+            let status = 'ok';
+            let message = data.ok[currentLang];
+            let icon = '<i class="fa-solid fa-check-circle" style="font-size: 2rem; margin-bottom: 10px;"></i>';
+            let color = '#4CAF50';
+
+            if (val1 === val2) {
+                status = 'error'; message = data.err_same[currentLang];
+            } else if (cat1 === cat2) {
+                status = 'error'; message = data.err_cat[currentLang];
+            } else if ((cat1 === 'tiny' && ['ability','size'].includes(cat2)) || (cat2 === 'tiny' && ['ability','size'].includes(cat1))) {
+                status = 'error'; message = data.err_tiny[currentLang];
+            } else if (val1 === 'Skeletal' || val2 === 'Skeletal') {
+                const other = val1 === 'Skeletal' ? cat2 : cat1;
+                if(other === 'size' || other === 'tiny') {
+                    status = 'warning'; message = data.warn_skel[currentLang]; color = '#FFC107'; 
+                    icon = '<i class="fa-solid fa-triangle-exclamation" style="font-size: 2rem; margin-bottom: 10px;"></i>';
+                }
+            }
+
+            if (status === 'error') {
+                color = '#F44336';
+                icon = '<i class="fa-solid fa-circle-xmark" style="font-size: 2rem; margin-bottom: 10px;"></i>';
+            }
+
+            resDiv.innerHTML = `<div style="color: ${color}; font-weight: bold;">${icon}<br>${message}</div>`;
+            resDiv.style.backgroundColor = `${color}22`;
+            resDiv.style.border = `1px solid ${color}`;
+        }
+
+        // --- SEARCH ---
+        document.getElementById('searchInput').addEventListener('keyup', (e) => {
+            const term = e.target.value.toLowerCase();
+            // Filter Cards in Variants
+            document.querySelectorAll('.shiny-card').forEach(c => {
+                const t = c.querySelector('.card-title').innerText.toLowerCase();
+                if(t.includes(term)) c.classList.remove('hidden'); else c.classList.add('hidden');
+            });
+            // Re-render colors if active
+            if(document.getElementById('colors').classList.contains('active')) renderColorSets();
+        });
+
+        // --- MODAL ---
+        const modal = document.getElementById('shinyModal');
+        
+        function openModal(data) {
+            document.getElementById('modalImg').src = data.img;
+            document.getElementById('modalTitle').innerText = data.title;
+            document.getElementById('modalLore').innerHTML = data.lore[currentLang] || data.lore.en;
+            document.getElementById('modalAbilities').innerHTML = data.abs[currentLang] || data.abs.en;
+            
+            // Labels
+            document.getElementById('loreSectionTitle').innerHTML = `<i class="fa-solid fa-scroll"></i> ${translations.sections.modal.lore[currentLang]}`;
+            document.getElementById('abilitiesSectionTitle').innerHTML = `<i class="fa-solid fa-bolt"></i> ${translations.sections.modal.abilities[currentLang]}`;
+            
+            // Show texts
+            document.getElementById('loreSectionTitle').style.display = 'block';
+            document.getElementById('abilitiesSectionTitle').style.display = 'block';
+            document.getElementById('modalLore').style.display = 'block';
+            document.getElementById('modalAbilities').style.display = 'block';
+            
+            modal.classList.add('active');
+        }
+
+        function openImageModal(src, title) {
+            document.getElementById('modalImg').src = src;
+            document.getElementById('modalTitle').innerText = title;
+            // Hide texts
+            document.getElementById('loreSectionTitle').style.display = 'none';
+            document.getElementById('abilitiesSectionTitle').style.display = 'none';
+            document.getElementById('modalLore').style.display = 'none';
+            document.getElementById('modalAbilities').style.display = 'none';
+            modal.classList.add('active');
+        }
+        
+        function closeModal() { modal.classList.remove('active'); }
+        modal.addEventListener('click', (e) => { if(e.target===modal) closeModal(); });
+
+        // Init
         document.addEventListener('DOMContentLoaded', () => {
             initBuilder();
-            initColorBrowser();
+            setLang('de');
         });
 
     </script>
