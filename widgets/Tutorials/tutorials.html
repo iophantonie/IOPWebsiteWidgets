@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IOP Start Guide Combined</title>
+    <title>IOP Start Guide - Full Edition</title>
     <link href="https://fonts.googleapis.com/css2?family=Acme&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* IOP Style Variables */
+        /* IOP Style Variablen */
         :root {
             --color-red: #E53935;
             --color-dark: rgba(20, 20, 20, 0.95);
@@ -18,6 +18,7 @@
             --color-info: #2196F3;
             --color-link: #6badde;
             --color-alert: #e76363;
+            --color-success: #4CAF50;
             
             --font-main: sans-serif;
             --font-header: 'Acme', sans-serif;
@@ -39,7 +40,7 @@
             overflow: hidden; 
         }
 
-        /* Container */
+        /* Hauptcontainer */
         .start-container {
             background-color: var(--color-dark);
             border-radius: 8px; 
@@ -51,9 +52,10 @@
             flex-direction: column;
             overflow: hidden;
             position: relative;
+            margin-top: 2.5vh;
         }
 
-        /* Header */
+        /* Header mit Hintergrundbild */
         .header {
             background-image: url('https://ark2.de/uploads/monthly_2025_11/large.ASA_Malwyn_3840x2160.png.34c661f38d3c1323561b89139471be7e.png');
             background-size: cover;
@@ -82,7 +84,7 @@
             gap: 5px;
         }
 
-        /* FLAGGEN SWITCHER */
+        /* Flaggen-Switcher */
         .lang-switch {
             position: absolute;
             top: 15px;
@@ -145,11 +147,11 @@
             transition: all 0.2s;
             flex-grow: 1; 
             text-align: center;
-            font-size: 1.1rem;
+            font-size: 1rem;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
+            gap: 8px;
             white-space: nowrap;
         }
 
@@ -160,7 +162,7 @@
             background-color: rgba(255,255,255,0.02);
         }
 
-        /* Content Area */
+        /* Inhaltsbereich */
         .content-area {
             flex-grow: 1;
             overflow-y: auto;
@@ -171,12 +173,12 @@
         .content-area::-webkit-scrollbar { width: 8px; }
         .content-area::-webkit-scrollbar-thumb { background-color: var(--color-red); border-radius: 4px; }
 
-        /* Sections */
+        /* Sektionen */
         .section { display: none; animation: fadeIn 0.4s ease; max-width: 1000px; margin: 0 auto; }
         .section.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Text Boxes */
+        /* Text Boxen */
         .info-box {
             background-color: var(--color-light-dark);
             padding: 25px;
@@ -189,7 +191,7 @@
         
         .alert-box {
             background-color: rgba(231, 99, 99, 0.1);
-            border-left: 4px solid var(--color-alert);
+            border-left: 5px solid var(--color-alert);
             padding: 20px;
             margin-bottom: 20px;
             border-radius: 4px;
@@ -236,8 +238,6 @@
         .step-title { color: #fff; font-size: 1.1rem; font-weight: bold; }
         .step-body { padding: 20px; }
         .step-text { color: #ccc; margin-bottom: 15px; font-size: 1rem; line-height: 1.5; }
-        .step-text ul { padding-left: 20px; margin-top: 5px; }
-        .step-text li { margin-bottom: 5px; }
         .step-img {
             width: 100%; border-radius: 6px; border: 2px solid #444;
             cursor: pointer; transition: transform 0.2s; display: block;
@@ -249,35 +249,46 @@
         }
         .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
 
-        /* Link Grid */
-        .link-grid {
+        /* Milestone Cards */
+        .milestone-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
             gap: 15px;
+            margin-top: 20px;
         }
-        .link-card {
-            background-color: #252525;
-            border: 1px solid #444;
-            border-radius: 6px;
-            padding: 15px;
+        .milestone-card {
+            background-color: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            padding: 20px;
             text-align: center;
-            transition: all 0.2s;
-            text-decoration: none;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 120px;
+            position: relative;
         }
-        .link-card:hover { transform: translateY(-3px); border-color: var(--color-gold); background-color: #2a2a2a; }
-        .link-icon { font-size: 2rem; color: var(--color-red); margin-bottom: 10px; }
-        .link-title { color: #fff; font-weight: bold; margin: 0; font-family: var(--font-header); font-size: 1.1rem; }
-        .link-sub { color: #888; font-size: 0.8rem; margin-top: 5px; }
-        
-        .tutorial-btn {
-            display: inline-block; background-color: var(--color-red); color: #fff; padding: 10px 20px; border-radius: 25px; text-decoration: none; font-weight: bold; transition: background-color 0.2s;
+        .milestone-count {
+            font-family: var(--font-header);
+            font-size: 1.5rem;
+            color: var(--color-gold);
+            margin-bottom: 10px;
+            display: block;
         }
-        .tutorial-btn:hover { background-color: #c62828; }
+        .milestone-rewards {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            text-align: left;
+            font-size: 0.9rem;
+        }
+        .milestone-rewards li {
+            margin-bottom: 5px;
+            padding-left: 20px;
+            position: relative;
+        }
+        .milestone-rewards li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--color-success);
+        }
 
         /* Checklist */
         .checklist-item {
@@ -293,19 +304,7 @@
         }
         .checklist-item:hover { background-color: #2a2a2a; }
         .checklist-item.important { border-left-color: var(--color-alert); }
-        .checklist-item.done { border-left-color: var(--color-info); }
         
-        .check-icon {
-            width: 30px; height: 30px;
-            border-radius: 50%;
-            background: rgba(0,0,0,0.3);
-            display: flex; align-items: center; justify-content: center;
-            color: #888;
-            font-size: 1rem;
-            flex-shrink: 0;
-        }
-        .checklist-item.done .check-icon { color: var(--color-info); }
-
         /* Modal */
         .modal {
             display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
@@ -316,9 +315,28 @@
         .modal img { max-width: 100%; max-height: 90vh; border: 2px solid var(--color-red); border-radius: 6px; box-shadow: 0 0 30px rgba(0,0,0,0.5); }
         .close-modal { position: absolute; top: 20px; right: 20px; color: #fff; font-size: 3rem; cursor: pointer; }
 
+        .btn-vote {
+            display: inline-block;
+            background-color: var(--color-info);
+            color: #fff;
+            padding: 12px 25px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            text-transform: uppercase;
+            transition: all 0.2s;
+            margin-top: 10px;
+            border: none;
+            cursor: pointer;
+        }
+        .btn-vote:hover {
+            background-color: #1976D2;
+            transform: scale(1.05);
+        }
+
         @media (max-width: 600px) {
             .title { font-size: 1.8rem; }
-            .nav-tab { padding: 10px; font-size: 0.9rem; }
+            .nav-tab { padding: 10px; font-size: 0.8rem; }
             .header { padding: 20px 10px; }
         }
     </style>
@@ -328,7 +346,6 @@
     <div class="start-container">
         
         <div class="header">
-            <!-- 4 Flaggen -->
             <div class="lang-switch">
                 <svg class="lang-btn active" id="btn-de" onclick="setLang('de')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 5 3">
                     <rect width="5" height="3" fill="#000"/><rect width="5" height="2" y="1" fill="#D00"/><rect width="5" height="1" y="2" fill="#FFCE00"/>
@@ -364,32 +381,24 @@
         <!-- Navigation Tabs -->
         <div class="nav-tabs">
             <div class="nav-tab active" onclick="showSection('general', this)" id="navGeneral"><i class="fa-solid fa-info-circle"></i> Allgemein</div>
-            <div class="nav-tab" onclick="showSection('find', this)" id="navFind"><i class="fa-solid fa-server"></i> Server Finden</div>
+            <div class="nav-tab" onclick="showSection('find', this)" id="navFind"><i class="fa-solid fa-search"></i> Server finden</div>
             <div class="nav-tab" onclick="showSection('linking', this)" id="navLinking"><i class="fa-solid fa-link"></i> Verlinkung</div>
-            <div class="nav-tab" onclick="showSection('links', this)" id="navLinks"><i class="fa-solid fa-book-open"></i> Links</div>
+            <div class="nav-tab" onclick="showSection('vote', this)" id="navVote"><i class="fa-solid fa-check-to-slot"></i> Vote</div>
+            <div class="nav-tab" onclick="showSection('rewards', this)" id="navRewards"><i class="fa-solid fa-gift"></i> Belohnungen</div>
             <div class="nav-tab" onclick="showSection('checklist', this)" id="navChecklist"><i class="fa-solid fa-list-check"></i> Checkliste</div>
         </div>
 
         <div class="content-area" id="contentArea">
-            <!-- 1. GENERAL INFO -->
             <div id="general" class="section active"></div>
-
-            <!-- 2. FIND SERVER -->
             <div id="find" class="section"></div>
-
-            <!-- 3. ACCOUNT LINKING -->
             <div id="linking" class="section"></div>
-
-            <!-- 4. LINKS -->
-            <div id="links" class="section"></div>
-
-            <!-- 5. CHECKLIST -->
+            <div id="vote" class="section"></div>
+            <div id="rewards" class="section"></div>
             <div id="checklist" class="section"></div>
         </div>
 
         <!-- MODAL -->
-        <div id="imgModal" class="modal">
-            <span class="close-modal" onclick="closeModal()">&times;</span>
+        <div id="imgModal" class="modal" onclick="closeModal()">
             <img id="modalImg" src="">
         </div>
 
@@ -398,314 +407,226 @@
     <script>
         var activeSection = 'general';
         var currentLang = 'de';
-        var modal = null;
 
         const translations = {
-            header_title: { de: "Start & Server Guide", en: "Start & Server Guide", es: "Guía de Inicio y Servidor", fr: "Guide de Démarrage & Serveur" },
+            header_title: { de: "Start & Server Guide", en: "Start & Server Guide", es: "Guía de Inicio", fr: "Guide de Démarrage" },
             header_subtitle: { de: "Alles für deinen perfekten Start", en: "Everything for your perfect start", es: "Todo para tu inicio perfecto", fr: "Tout pour un démarrage parfait" },
             
             nav: {
                 general: { de: "Allgemein", en: "General", es: "General", fr: "Général" },
-                find: { de: "Server Finden", en: "Find Server", es: "Buscar Servidor", fr: "Trouver Serveur" },
+                find: { de: "Server finden", en: "Find Server", es: "Buscar Servidor", fr: "Trouver Serveur" },
                 linking: { de: "Verlinkung", en: "Linking", es: "Vinculación", fr: "Liaison" },
-                links: { de: "Links & Tutorials", en: "Links & Tutorials", es: "Enlaces y Tutoriales", fr: "Liens et Tutoriels" },
-                checklist: { de: "Checkliste", en: "Checklist", es: "Lista de verificación", fr: "Liste de contrôle" }
+                vote: { de: "Vote", en: "Vote", es: "Votar", fr: "Voter" },
+                rewards: { de: "Belohnungen", en: "Rewards", es: "Premios", fr: "Récompenses" },
+                checklist: { de: "Checkliste", en: "Checklist", es: "Lista", fr: "Liste" }
             },
 
             general: {
-                welcome_title: { de: "Willkommen bei Infinity of Phoenix", en: "Welcome to Infinity of Phoenix", es: "Bienvenido a IOP", fr: "Bienvenue sur IOP" },
+                welcome_title: { de: "Willkommen bei Infinity of Phoenix", en: "Welcome to Infinity of Phoenix", es: "Bienvenido a IUP", fr: "Bienvenue sur IUP" },
                 welcome_text: { 
                     de: "Werde Teil einer frischen Community, und gestalte das Cluster und das Spielerlebnis mit uns zusammen!",
                     en: "Become part of a fresh community and shape the cluster and gaming experience with us!",
-                    es: "¡Forma parte de una comunidad fresca y da forma al clúster y la experiencia de juego con nosotros!",
+                    es: "¡Forma parte de einer comunidad fresca y da forma al clúster y la experiencia de juego con nosotros!",
                     fr: "Faites partie d'une communauté fraîche et façonnez le cluster et l'expérience de jeu avec nous !"
                 },
                 tribe_title: { de: "Stammes-Konsistenz", en: "Tribe Consistency", es: "Consistencia de Tribu", fr: "Cohérence de la Tribu" },
                 tribe_text: {
-                    de: "Bitte erstelle dir nach dem Join auf unseren Servern einen Stamm. Dieser Stamm muss auf allen Servern (mit Ausnahme der Overhaul Server, IOP Adventures und dem Battleground Server) identisch sein: Gleicher Stammesname, gleiche Mitglieder und Ränge.",
-                    en: "Please create a tribe after joining our servers. This tribe must be identical across all servers (except Overhaul, Adventures, Battleground): Same name, members, and ranks.",
-                    es: "Por favor, crea una tribu después de unirte. Debe ser idéntica en todos los servidores (nombre, miembros, rangos), excepto Overhaul/Adventures.",
-                    fr: "Veuillez créer une tribu après avoir rejoint. Elle doit être identique sur tous les serveurs (nom, membres, rangs), sauf Overhaul/Adventures."
+                    de: "Bitte erstelle dir nach dem Join auf unseren Servern einen Stamm. Dieser Stamm muss auf allen Servern identisch sein: Gleicher Stammesname, gleiche Mitglieder und Ränge.",
+                    en: "Please create a tribe after joining. This tribe must be identical across all servers: Same name, members, and ranks.",
+                    es: "Por favor, crea una tribu. Debe ser idéntica en todos los servidores.",
+                    fr: "Veuillez créer une tribu. Elle doit être identique sur tous les serveurs."
                 }
             },
 
             linking: {
-                title: { de: "IOP System Verlinkung (Wichtig)", en: "IOP System Linking (Important)", es: "Vinculación IOP (Importante)", fr: "Liaison IOP (Important)" },
-                text: {
-                    de: "Ohne die IOP System Verlinkung können wir deine Profil-, Stammes- sowie Charakterdaten nicht richtig verarbeiten. Um die Features und den Tokenshop nutzen zu können, sowie Tokens und Achievements erhalten zu können, ist die Verlinkung zwingend notwendig. Die Verlinkung selbst dauert nur 2-3 Minuten.",
-                    en: "Without IOP System Linking, we cannot properly process your profile, tribe, and character data. Linking is mandatory to use features, the token shop, and receive tokens/achievements. It only takes 2-3 minutes.",
-                    es: "Sin la vinculación, no podemos procesar tus datos. Es obligatorio para usar funciones, tienda de fichas y logros. Toma 2-3 minutos.",
-                    fr: "Sans la liaison, nous ne pouvons pas traiter vos données. La liaison est obligatoire pour les fonctionnalités, la boutique et les succès. Cela prend 2-3 minutes."
+                alert: {
+                    de: "Ohne die IQP System Verlinkung können wir deine Profil-, Stammes- sowie Charakterdaten nicht richtig verarbeiten. Sie ist zwingend erforderlich, um den Tokenshop, Achievements und Features zu nutzen.",
+                    en: "Without linking, we cannot process your profile, tribe, or character data. It is mandatory for using the token shop and achievements.",
+                    es: "Sin la vinculación, no podemos procesar sus datos. Es obligatorio para usar la tienda y los logros.",
+                    fr: "Sans lien, nous ne pouvons pas traiter vos données. C'est obligatoire pour utiliser la boutique et les succès."
                 },
-                button: { de: "Jetzt verlinken", en: "Link now", es: "Vincular ahora", fr: "Lier maintenant" }
+                steps: [
+                    { n: 1, t: { de: "Login auf der Webseite", en: "Login on Website" }, d: { de: "Klicke auf den 'Login' Button oben rechts auf der Webseite.", en: "Click the 'Login' button at the top right of the website." }, i: "https://i.postimg.cc/GmsGjnMJ/image.png" },
+                    { n: 2, t: { de: "Plattform wählen", en: "Select Platform" }, d: { de: "Wähle deine Plattform. Empfehlung: Discord & Steam verknüpfen. WICHTIG: Keine Sonderzeichen im Steamnamen!", en: "Choose your platform. Recommended: Link Discord & Steam. IMPORTANT: No special characters!" }, i: "https://i.postimg.cc/RZxGKcVX/Login-Player.png" },
+                    { n: 3, t: { de: "Einstellungen öffnen", en: "Open Settings" }, d: { de: "Navigiere in deinem Profil zu den 'Settings' (Einstellungen).", en: "Go to 'Settings' in your player profile." }, i: "https://i.postimg.cc/Wzhhb0CM/image.png" },
+                    { n: 4, t: { de: "Accounts verbinden", en: "Link Accounts" }, d: { de: "Verknüpfe Steam und Discord. Der Status muss danach auf 'Connected' stehen.", en: "Connect Steam and Discord. The status must be 'Connected'." }, i: "https://i.postimg.cc/fRhm5g6M/image.png" },
+                    { n: 5, t: { de: "Charakter im Spiel verlinken", en: "Link In-game Character" }, d: { de: "Generiere unter 'Option 2' einen Connect-Code. Gib diesen ingame im Lokalchat ein: !connectcode DEINCODE", en: "Generate a code under 'Option 2' and type in local chat: !connectcode YOURCODE" }, i: "" }
+                ]
             },
 
-            find_steps: [
-                {
-                    title: { de: "Suchbegriff & Kategorie", en: "Search Term & Category", es: "Término y Categoría", fr: "Terme et Catégorie" },
-                    text: { 
-                        de: "Achte darauf, dass du bei <strong>„Inoffiziell“</strong> unsere Server suchst.<br>Gib im Suchfeld <strong>„Infinity of Phoenix“</strong> ein.",
-                        en: "Make sure to search under <strong>'Unofficial'</strong>.<br>Enter <strong>'Infinity of Phoenix'</strong> in the search field.",
-                        es: "Busca en <strong>'No Oficial'</strong>.<br>Escribe <strong>'Infinity of Phoenix'</strong>.",
-                        fr: "Cherchez dans <strong>'Non Officiel'</strong>.<br>Entrez <strong>'Infinity of Phoenix'</strong>."
-                    },
-                    img: "https://i.postimg.cc/635zr86h/12345.png"
+            vote: {
+                intro: {
+                    de: "Voten unterstützt das Projekt und bringt dir tolle Vorteile! Pro Vote erhältst du 150 - 210 Tokens sowie 5 Rubine.",
+                    en: "Voting supports us and rewards you! For each vote, you get 150 - 210 tokens and 5 rubies."
                 },
-                {
-                    title: { de: "Filter Einstellungen", en: "Filter Settings", es: "Filtros", fr: "Filtres" },
-                    text: { 
-                        de: "Achte darauf, dass unten ausschließlich <strong>„Spieler-Server zeigen“</strong> angehakt ist. Andere Filter können die Ergebnisse verbergen.",
-                        en: "Make sure only <strong>'Show Player Servers'</strong> is checked at the bottom. Other filters might hide results.",
-                        es: "Marca solo <strong>'Mostrar Servidores de Jugadores'</strong>.",
-                        fr: "Cochez uniquement <strong>'Afficher Serveurs Joueurs'</strong>."
-                    },
-                    img: "https://i.postimg.cc/66DWmnsT/5678.png"
+                steps: [
+                    { n: 1, t: { de: "Voteseiten öffnen", en: "Open Vote Pages" }, d: { de: "Nutze Ingame-Shortcuts (F1) oder die Buttons auf der Website.", en: "Use in-game shortcuts (F1) or website buttons." }, i: "https://i.postimg.cc/pdmTDWGf/Unbenannt.png" },
+                    { n: 2, t: { de: "Einloggen & Voten", en: "Login & Vote" }, d: { de: "Melde dich via Steam an und klicke beim jeweiligen Server auf 'Voten'.", en: "Login via Steam and click 'Vote' on each server." }, i: "https://i.postimg.cc/8Cf1T7cF/Bild-2024-09-07-131638522.png" },
+                    { n: 3, t: { de: "Belohnung beanspruchen", en: "Claim Rewards" }, d: { de: "Gib im Discord !claim oder ingame /claim ein.", en: "Type !claim in Discord or /claim in-game." }, i: "https://i.postimg.cc/9MRY4g0X/Bild-2024-05-20-140616960.png" }
+                ],
+                steam_info: {
+                    de: "Auf der Deutschen Ark Server Website müsst ihr euer Steamprofil manuell hinterlegen!",
+                    en: "You must manually link your Steam profile on the German Ark Server website!"
                 }
-            ],
+            },
 
-            linking_steps: [
-                {
-                    title: { de: "Schritt 1: Login", en: "Step 1: Login", es: "Paso 1: Iniciar Sesión", fr: "Étape 1 : Connexion" },
-                    text: { de: "Klicke auf den 'Login' Button auf der Website.", en: "Click the 'Login' button on the website.", es: "Haz clic en 'Login'.", fr: "Cliquez sur 'Login'." },
-                    img: "https://i.postimg.cc/GmsGjnMJ/image.png"
+            rewards: {
+                earn_title: { de: "Wie erhalte ich Tokens?", en: "How to earn Tokens?" },
+                earn_list: {
+                    de: "<li>Alle 30 Min. Spielzeit: Automatischer Erhalt</li><li>Level-Aufstieg: Belohnung bei bestimmten Abschnitten</li><li>Erste Verlinkung: Startguthaben erhalten</li><li>Tägliches Voting: 150-210 Tokens pro Seite</li>",
+                    en: "<li>Every 30 mins playtime: Automatic</li><li>Level-up: Rewards at specific stages</li><li>First linking: Welcome bonus</li><li>Daily voting: 150-210 tokens per page</li>"
                 },
-                {
-                    title: { de: "Schritt 2: Plattform wählen", en: "Step 2: Choose Platform", es: "Paso 2: Plataforma", fr: "Étape 2 : Plateforme" },
-                    text: { 
-                        de: "Wähle deine Plattform (Empfohlen: Discord & Steam für Voting).<br><strong style='color:#e76363'>Wichtig:</strong> Keine Sonderzeichen im Steamnamen! Dies verursacht Probleme.", 
-                        en: "Choose platform (Recommended: Discord & Steam for voting).<br><strong style='color:#e76363'>Important:</strong> No special characters in Steam name!",
-                        es: "Elige plataforma.<br><strong>¡Sin caracteres especiales en Steam!</strong>",
-                        fr: "Choisissez la plateforme.<br><strong>Pas de caractères spéciaux dans le nom Steam !</strong>"
-                    },
-                    img: "https://i.postimg.cc/RZxGKcVX/Login-Player.png"
-                },
-                {
-                    title: { de: "Schritt 3: Einstellungen", en: "Step 3: Settings", es: "Paso 3: Ajustes", fr: "Étape 3 : Paramètres" },
-                    text: { de: "Öffne die <strong>Settings/Einstellungen</strong> deines Spielerprofiles.", en: "Open your player profile <strong>Settings</strong>.", es: "Abre los <strong>Ajustes</strong>.", fr: "Ouvrez les <strong>Paramètres</strong>." },
-                    img: "https://i.postimg.cc/Wzhhb0CM/image.png"
-                },
-                {
-                    title: { de: "Schritt 4: Konten verknüpfen", en: "Step 4: Link Accounts", es: "Paso 4: Vincular Cuentas", fr: "Étape 4 : Lier les Comptes" },
-                    text: { 
-                        de: "Verknüpfe Steam (für Vote) und Discord (für Features).<br>Sobald ein Account als 'Connected' angezeigt wird, ist er verlinkt.", 
-                        en: "Link Steam (voting) and Discord (features).<br>Linked when shown as 'Connected'.",
-                        es: "Vincula Steam y Discord.",
-                        fr: "Liez Steam et Discord."
-                    },
-                    img: "https://i.postimg.cc/fRhm5g6M/image.png"
-                },
-                {
-                    title: { de: "Schritt 5: Charakter Verlinken", en: "Step 5: Link Character", es: "Paso 5: Vincular Personaje", fr: "Étape 5 : Lier Personnage" },
-                    text: { 
-                        de: "1. Generiere einen Code bei 'Option 2 Reverse connect code'.<br>2. Gib ingame im Lokalchat ein: <code>!connectcode DEINCODE</code><br><em>Code ist 3 Minuten gültig.</em>",
-                        en: "1. Generate code at 'Option 2'.<br>2. Type in local chat: <code>!connectcode YOURCODE</code>",
-                        es: "1. Genera código.<br>2. Chat local: <code>!connectcode CODIGO</code>",
-                        fr: "1. Générez code.<br>2. Chat local : <code>!connectcode CODE</code>"
-                    },
-                    img: "" // Kein Bild im Step 5 Source Code, aber Text ist da.
-                }
-            ],
-
-            links: [
-                { title: { de: "IOP Verlinkung", en: "Account Linking", es: "Vinculación", fr: "Liaison" }, sub: { de: "Account verbinden", en: "Connect Account", es: "Conectar cuenta", fr: "Connecter compte" }, icon: "fa-link", url: "/page/102242-Charackter_mit_Website_verlinken" },
-                { title: { de: "Server Übersicht", en: "Server List", es: "Lista Servidores", fr: "Liste Serveurs" }, sub: { de: "IPs & Links", en: "IPs & Links", es: "IPs y Enlaces", fr: "IP et Liens" }, icon: "fa-server", url: "/page/101846-server_ubersicht" },
-                { title: { de: "Vote Anleitung", en: "Vote Guide", es: "Guía Voto", fr: "Guide Vote" }, sub: { de: "Punkte erhalten", en: "Get Points", es: "Obtener puntos", fr: "Obtenir points" }, icon: "fa-check-to-slot", url: "/page/102241-Vote_anleitung" },
-                { title: { de: "Regelwerk", en: "Rules", es: "Reglas", fr: "Règles" }, sub: { de: "Wichtig!", en: "Important!", es: "¡Importante!", fr: "Important !" }, icon: "fa-scale-balanced", url: "/page/101673-rules" },
-                { title: { de: "Modliste", en: "Mod List", es: "Lista Mods", fr: "Liste Mods" }, sub: { de: "Alle Mods", en: "All Mods", es: "Todos los mods", fr: "Tous les mods" }, icon: "fa-puzzle-piece", url: "/page/102303-modliste" },
-                { title: { de: "Discord", en: "Discord", es: "Discord", fr: "Discord" }, sub: { de: "Community", en: "Community", es: "Comunidad", fr: "Communauté" }, icon: "fa-brands fa-discord", url: "https://discord.gg/3EAjMhRypk" }
-            ],
-
-            checklist: {
-                title: { de: "Start-Checkliste", en: "Start Checklist", es: "Lista de inicio", fr: "Liste de démarrage" },
-                items: [
-                    { text: { de: "Discord beitreten", en: "Join Discord", es: "Unirse a Discord", fr: "Rejoindre Discord" }, important: false },
-                    { text: { de: "ARK starten & Server suchen", en: "Start ARK & Find Server", es: "Iniciar ARK y buscar", fr: "Lancer ARK et chercher" }, important: false },
-                    { text: { de: "Stamm erstellen (Identischer Name auf allen Maps!)", en: "Create Tribe (Identical Name on all maps!)", es: "Crear Tribu (¡Nombre idéntico!)", fr: "Créer Tribu (Nom identique !)" }, important: true },
-                    { text: { de: "IOP Verlinkung durchführen", en: "Complete IOP Linking", es: "Completar vinculación", fr: "Compléter liaison" }, important: true },
-                    { text: { de: "Voten & Belohnung abholen", en: "Vote & Collect Rewards", es: "Votar y recoger", fr: "Voter et récupérer" }, important: false }
+                milestone_title: { de: "Vote Meilensteine", en: "Vote Milestones" },
+                milestones: [
+                    { c: "5 Votes", r: { de: "+500 Tokens, 10 Rubine, 1 Mating Gap Potion", en: "+500 Tokens, 10 Rubies, 1 Mating Gap Potion" } },
+                    { c: "10 Votes", r: { de: "+500 Tokens, 20 Rubine, 1 Taming Potion, 24h 20% Rabatt Shop, 25x Exc. Kibble", en: "+500 Tokens, 20 Rubies, 1 Taming Potion, 24h 20% shop discount, 25x Exc. Kibble" } },
+                    { c: "20 Votes", r: { de: "+750 Tokens, 20 Rubine, 1 Gender Change, 24h 20% Rabatt Shop, 25x Extra. Kibble", en: "+750 Tokens, 20 Rubies, 1 Gender Change, 24h 20% shop discount, 25x Extra. Kibble" } },
+                    { c: "28 Votes", r: { de: "+1000 Tokens, 30 Rubine, 1 Grow Up Potion, 7 Tage 20% Rabatt, 1x Kreaturen Färbung", en: "+1000 Tokens, 30 Rubies, 1 Grow Up Potion, 7 days 20% discount, 1x Creature Color" } }
                 ]
-            }
+            },
+
+            find: [
+                { t: { de: "Kategorie wählen", en: "Select Category" }, d: { de: "Wähle in der Serverliste den Filter 'Inoffiziell' aus.", en: "Select 'Unofficial' in the server list." }, i: "https://i.postimg.cc/635zr86h/12345.png" },
+                { t: { de: "Name suchen", en: "Search Name" }, d: { de: "Gib 'Infinity of Phoenix' in das Suchfeld ein.", en: "Type 'Infinity of Phoenix' in the search field." }, i: "https://i.postimg.cc/66DWmnsT/5678.png" }
+            ],
+
+            checklist: [
+                { text: { de: "Discord beitreten", en: "Join Discord" }, important: false },
+                { text: { de: "Server unter 'Inoffiziell' suchen", en: "Search under 'Unofficial'" }, important: false },
+                { text: { de: "Stamm erstellen (Gleicher Name!)", en: "Create Tribe (Same Name!)" }, important: true },
+                { text: { de: "Charakter verlinken", en: "Link Character" }, important: true },
+                { text: { de: "Voten & Belohnung abholen", en: "Vote & Claim" }, important: false }
+            ]
         };
-        
+
         function setLang(lang) {
             currentLang = lang;
-            
-            // Buttons
-            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
-            document.getElementById('btn-'+lang).classList.add('active');
-
-            // Header Translations
+            document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('btn-' + lang).classList.add('active');
             document.getElementById('uiTitle').innerText = translations.header_title[lang];
             document.getElementById('uiSubtitle').innerText = translations.header_subtitle[lang];
 
-            // Nav Translations
             document.getElementById('navGeneral').innerHTML = `<i class="fa-solid fa-info-circle"></i> ${translations.nav.general[lang]}`;
-            document.getElementById('navFind').innerHTML = `<i class="fa-solid fa-server"></i> ${translations.nav.find[lang]}`;
+            document.getElementById('navFind').innerHTML = `<i class="fa-solid fa-search"></i> ${translations.nav.find[lang]}`;
             document.getElementById('navLinking').innerHTML = `<i class="fa-solid fa-link"></i> ${translations.nav.linking[lang]}`;
-            document.getElementById('navLinks').innerHTML = `<i class="fa-solid fa-book-open"></i> ${translations.nav.links[lang]}`;
+            document.getElementById('navVote').innerHTML = `<i class="fa-solid fa-check-to-slot"></i> ${translations.nav.vote[lang]}`;
+            document.getElementById('navRewards').innerHTML = `<i class="fa-solid fa-gift"></i> ${translations.nav.rewards[lang]}`;
             document.getElementById('navChecklist').innerHTML = `<i class="fa-solid fa-list-check"></i> ${translations.nav.checklist[lang]}`;
 
             renderContent();
         }
-        
-        function showSection(id, btn) {
-            // Hide sections
-            document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
-            // Update tabs
-            document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
 
-            // Show current
+        function showSection(id, btn) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
             document.getElementById(id).classList.add('active');
-            if(btn) btn.classList.add('active');
-            activeSection = id;
+            btn.classList.add('active');
         }
 
         function renderContent() {
-            // 1. GENERAL SECTION
-            var genData = translations.general;
-            var genContainer = document.getElementById('general');
-            genContainer.innerHTML = `
+            const l = currentLang;
+
+            // 1. General
+            document.getElementById('general').innerHTML = `
                 <div class="info-box">
-                    <h3>${genData.welcome_title[currentLang]}</h3>
-                    <p>${genData.welcome_text[currentLang]}</p>
+                    <h3>${translations.general.welcome_title[l]}</h3>
+                    <p>${translations.general.welcome_text[l]}</p>
                 </div>
                 <div class="tip-box">
-                    <strong><i class="fa-solid fa-users"></i> ${genData.tribe_title[currentLang]}</strong>
-                    <p>${genData.tribe_text[currentLang]}</p>
+                    <strong><i class="fa-solid fa-users"></i> ${translations.general.tribe_title[l]}</strong>
+                    <p>${translations.general.tribe_text[l]}</p>
                 </div>
             `;
 
-            // 2. FIND SERVER SECTION
-            var stepData = translations.find_steps;
-            var guideHTML = '';
-            stepData.forEach(function(step, index) {
-                guideHTML += `
+            // 2. Find
+            let findHTML = '';
+            translations.find.forEach((step, i) => {
+                findHTML += `
                     <div class="step-card">
-                        <div class="step-header">
-                            <div class="step-number">${index + 1}</div>
-                            <div class="step-title">${step.title[currentLang]}</div>
-                        </div>
-                        <div class="step-body">
-                            <p class="step-text">${step.text[currentLang]}</p>
-                            <img src="${step.img}" class="step-img" onclick="openModal(this.src)">
-                        </div>
-                    </div>
-                `;
+                        <div class="step-header"><div class="step-number">${i+1}</div><div class="step-title">${step.t[l]}</div></div>
+                        <div class="step-body"><p class="step-text">${step.d[l]}</p><img src="${step.i}" class="step-img" onclick="openModal(this.src)"></div>
+                    </div>`;
             });
-            document.getElementById('find').innerHTML = guideHTML;
+            document.getElementById('find').innerHTML = findHTML;
 
-            // 3. LINKING SECTION (Detailed)
-            var linkDataSteps = translations.linking_steps;
-            var linkHTML = `
-                <div class="alert-box">
-                    <strong><i class="fa-solid fa-circle-exclamation"></i> Wichtig / Important</strong>
-                    <p style="margin:0;">${translations.linking.text[currentLang]}</p>
-                </div>
-            `;
-            
-            linkDataSteps.forEach(function(step, index) {
-                var imgHTML = step.img ? `<img src="${step.img}" class="step-img" onclick="openModal(this.src)">` : '';
+            // 3. Linking
+            let linkHTML = `<div class="alert-box"><strong>Wichtig / Important</strong><p>${translations.linking.alert[l]}</p></div>`;
+            translations.linking.steps.forEach(s => {
                 linkHTML += `
                     <div class="step-card">
                         <div class="step-header">
-                            <div class="step-number">${index + 1}</div>
-                            <div class="step-title">${step.title[currentLang]}</div>
+                            <div class="step-number">${s.n}</div>
+                            <div class="step-title">${s.t[l]}</div>
                         </div>
                         <div class="step-body">
-                            <p class="step-text">${step.text[currentLang]}</p>
-                            ${imgHTML}
+                            <p class="step-text">${s.d[l]}</p>
+                            ${s.i ? `<img src="${s.i}" class="step-img" onclick="openModal(this.src)">` : ''}
                         </div>
-                    </div>
-                `;
+                    </div>`;
             });
-
-            // Add Videos for Console
-            linkHTML += `
-                <div class="info-box" style="margin-top:20px;">
-                    <h3><i class="fa-solid fa-gamepad"></i> Konsolen Hilfe (Lokalchat)</h3>
-                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
-                        <div>
-                            <strong style="color:#94bd7b">Xbox</strong>
-                            <div class="video-container"><iframe src="https://www.youtube.com/embed/OoAhKjZcxj8?rel=0&showinfo=0" frameborder="0" allowfullscreen></iframe></div>
-                        </div>
-                        <div>
-                            <strong style="color:#3984c6">Playstation</strong>
-                            <div class="video-container"><iframe src="https://www.youtube.com/embed/SbLmRf_6sSM?rel=0&showinfo=0" frameborder="0" allowfullscreen></iframe></div>
-                        </div>
-                    </div>
-                </div>
-            `;
-
+            linkHTML += `<div class="info-box"><h3><i class="fa-solid fa-gamepad"></i> Konsolen Hilfe</h3><div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;"><div><strong>Xbox</strong><div class="video-container"><iframe src="https://www.youtube.com/embed/OoAhKjZcxj8"></iframe></div></div><div><strong>Playstation</strong><div class="video-container"><iframe src="https://www.youtube.com/embed/SbLmRf_6sSM"></iframe></div></div></div></div>`;
             document.getElementById('linking').innerHTML = linkHTML;
 
-            // 4. LINKS SECTION
-            var linkDataList = translations.links;
-            var linksHTML = '<div class="link-grid">';
-            linkDataList.forEach(function(l) {
-                linksHTML += `
-                    <a href="${l.url}" target="_blank" class="link-card">
-                        <i class="${l.icon} link-icon"></i>
-                        <div class="link-title">${l.title[currentLang]}</div>
-                        <div class="link-sub">${l.sub[currentLang]}</div>
-                    </a>
-                `;
+            // 4. Vote
+            let voteHTML = `<div class="info-box"><h3>Vote Info</h3><p>${translations.vote.intro[l]}</p></div>`;
+            voteHTML += `<div class="step-card"><div class="step-header"><div class="step-number">?</div><div class="step-title">Video Anleitung</div></div><div class="step-body"><div class="video-container"><iframe src="https://www.youtube.com/embed/Lgb9KHJJJLY"></iframe></div></div></div>`;
+            translations.vote.steps.forEach(s => {
+                voteHTML += `
+                    <div class="step-card">
+                        <div class="step-header"><div class="step-number">${s.n}</div><div class="step-title">${s.t[l]}</div></div>
+                        <div class="step-body">
+                            <p class="step-text">${s.d[l]}</p>
+                            <img src="${s.i}" class="step-img" onclick="openModal(this.src)">
+                        </div>
+                    </div>`;
             });
-            linksHTML += '</div>';
-            document.getElementById('links').innerHTML = linksHTML;
+            voteHTML += `<div class="alert-box"><strong>Achtung</strong><p>${translations.vote.steam_info[l]}</p></div>`;
+            document.getElementById('vote').innerHTML = voteHTML;
 
-            // 5. CHECKLIST SECTION
-            var checkData = translations.checklist;
-            var checkHTML = `<div class="info-box"><h3><i class="fa-solid fa-list-check"></i> ${checkData.title[currentLang]}</h3><ul class="check-list">`;
-            
-            checkData.items.forEach(function(item, index) {
-                var cls = item.important ? 'checklist-item important' : 'checklist-item';
-                checkHTML += `
-                    <li class="${cls}">
-                        <div class="step-number" style="width:30px; height:30px; font-size:1rem;">${index + 1}</div>
-                        <span style="color:#fff; font-size:1.1rem;">${item.text[currentLang]}</span>
-                    </li>`;
+            // 5. Rewards
+            let rHTML = `
+                <div class="info-box">
+                    <h3>${translations.rewards.earn_title[l]}</h3>
+                    <ul class="step-text" style="padding-left: 20px;">${translations.rewards.earn_list[l]}</ul>
+                </div>
+                <div class="info-box">
+                    <h3>${translations.rewards.milestone_title[l]}</h3>
+                    <div class="milestone-grid">`;
+            translations.rewards.milestones.forEach(m => {
+                rHTML += `
+                    <div class="milestone-card">
+                        <span class="milestone-count">${m.c}</span>
+                        <ul class="milestone-rewards">
+                            ${m.r[l].split(',').map(reward => `<li>${reward.trim()}</li>`).join('')}
+                        </ul>
+                    </div>`;
             });
-            checkHTML += `</ul></div>`;
-            document.getElementById('checklist').innerHTML = checkHTML;
+            rHTML += `</div></div>`;
+            document.getElementById('rewards').innerHTML = rHTML;
+
+            // 6. Checklist
+            let cHTML = '<div class="info-box"><h3><i class="fa-solid fa-list-check"></i> Checkliste</h3>';
+            translations.checklist.forEach((item, i) => {
+                cHTML += `
+                    <div class="checklist-item ${item.important ? 'important' : ''}">
+                        <div class="step-number" style="width:30px; height:30px; font-size:1rem;">${i+1}</div>
+                        <span>${item.text[l]}</span>
+                    </div>`;
+            });
+            cHTML += '</div>';
+            document.getElementById('checklist').innerHTML = cHTML;
         }
 
-        // Modal Logic
-        var modal = document.getElementById('imgModal');
-        var modalImg = document.getElementById('modalImg');
-
         function openModal(src) {
-            modalImg.src = src;
-            modal.classList.add('active');
+            document.getElementById('modalImg').src = src;
+            document.getElementById('imgModal').classList.add('active');
         }
 
         function closeModal() {
-            modal.classList.remove('active');
+            document.getElementById('imgModal').classList.remove('active');
         }
 
-        // Safe Init
-        window.onload = function() {
-            // Ensure content containers exist (Safety Check although they are in HTML)
-            var contentArea = document.getElementById('contentArea');
-            if(!contentArea.children.length) {
-                 contentArea.innerHTML = `
-                    <div id="general" class="section active"></div>
-                    <div id="find" class="section"></div>
-                    <div id="linking" class="section"></div>
-                    <div id="links" class="section"></div>
-                    <div id="checklist" class="section"></div>
-                `;
-            }
-            
-            // Add Modal Listener
-            modal = document.getElementById('imgModal');
-            if(modal) {
-                modal.addEventListener('click', function(e) { 
-                    if(e.target === modal) closeModal(); 
-                });
-            }
-
-            setLang('de');
-        };
+        window.onload = () => setLang('de');
     </script>
 </body>
 </html>
