@@ -4,343 +4,309 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IOP Level Progress System</title>
-    <link href="https://fonts.googleapis.com/css2?family=Acme&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Acme&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* Farben und Schriftarten - IOP Style */
+        /* Farbschema: Feuerrot, Schwarz und Goldgelb */
         :root {
             --color-red: #E53935;
-            --color-dark: rgba(20, 20, 20, 0.95);
-            --color-light-dark: rgba(40, 40, 40, 0.9);
+            --color-black: #000000;
+            --color-dark: #0a0a0a;
+            --color-light-dark: #161616;
             --color-text: #f7f7f7;
-            --color-gold: #FFEB3B;
+            --color-gold: #FFD700; /* Goldgelb für Akzente */
             --color-info: #2196F3;
-            
-            --font-main: sans-serif;
             --font-header: 'Acme', sans-serif;
+            --font-body: 'Roboto', sans-serif;
         }
 
-        * { box-sizing: border-box; }
+        * { box-sizing: border-box; margin: 0; padding: 0; scroll-behavior: smooth; }
 
         body {
             background-color: transparent;
-            font-family: var(--font-main);
+            font-family: var(--font-body);
             color: var(--color-text);
-            margin: 0;
-            padding: 5px; 
+            height: 100vh;
+            width: 100vw;
             display: flex;
             flex-direction: column;
             align-items: center;
-            height: 100vh;
-            overflow: hidden; 
+            overflow: hidden;
         }
 
-        /* Hauptcontainer */
-        .progress-container {
+        /* Widget Container - Einheitliche Breite */
+        .start-container {
             background-color: var(--color-dark);
-            border-radius: 12px;
+            border-radius: 8px; 
             border: 2px solid var(--color-red);
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.8);
-            width: 100%;
-            max-width: 1200px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+            width: 98%;
+            height: 96vh;
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            height: 98%; 
-            max-height: 98vh;
+            margin-top: 2vh;
             position: relative;
         }
 
-        /* Header */
+        /* Schlichter schwarzer Header */
         .header {
-            background-color: rgba(0, 0, 0, 0.5);
-            padding: 15px;
+            background-color: var(--color-black);
+            padding: 25px 20px;
             text-align: center;
             border-bottom: 2px solid var(--color-red);
             flex-shrink: 0;
-            position: relative; /* Für Flaggen Positionierung */
+            position: relative;
         }
 
-        .title {
-            font-family: var(--font-header);
-            font-size: 1.8rem; 
-            color: var(--color-red);
-            text-transform: uppercase;
-            margin: 0;
-            text-shadow: 0 0 10px rgba(229, 57, 53, 0.4);
-            letter-spacing: 1px;
+        .header-content {
+            position: relative;
+            z-index: 2;
         }
 
-        .subtitle {
-            font-size: 0.9rem;
-            color: #aaa;
-            margin-top: 5px;
-            font-style: italic;
-        }
-
-        /* FLAGGEN SWITCHER */
+        /* Flaggen oben rechts */
         .lang-switch {
             position: absolute;
             top: 15px;
             right: 15px;
             display: flex;
-            gap: 5px;
-        }
-        .lang-btn {
-            width: 30px; height: 20px;
-            cursor: pointer;
-            border-radius: 3px;
-            border: 1px solid #fff;
-            opacity: 0.5;
-            transition: transform 0.2s, opacity 0.2s;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
-            padding: 0;
-            display: block;
-        }
-        .lang-btn:hover, .lang-btn.active {
-            opacity: 1; transform: scale(1.15);
-            border-color: var(--color-red);
+            gap: 10px;
             z-index: 10;
         }
-
-        /* Responsive Header Adjustment */
-        @media (max-width: 600px) {
-            .lang-switch {
-                position: static;
-                justify-content: center;
-                margin-bottom: 10px;
-            }
+        .lang-btn {
+            width: 25px; height: 16px;
+            cursor: pointer;
+            border-radius: 2px;
+            border: 1px solid #fff;
+            opacity: 0.6;
+            transition: 0.2s;
+            object-fit: cover;
+        }
+        .lang-btn.active, .lang-btn:hover {
+            opacity: 1;
+            transform: scale(1.15);
+            border-color: var(--color-gold);
         }
 
-        /* Content Area mit Scrollbar für alles außer Header */
+        .title {
+            font-family: var(--font-header);
+            font-size: 2.4rem; 
+            color: var(--color-red);
+            text-transform: uppercase;
+            margin: 0;
+            letter-spacing: 2px;
+        }
+
+        .subtitle {
+            color: var(--color-gold);
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 500;
+        }
+
+        /* Content Area mit Scrollbar */
         .content-scroll {
             flex-grow: 1;
             overflow-y: auto;
-            padding: 15px;
+            padding: 30px;
             scrollbar-width: thin;
-            scrollbar-color: var(--color-red) transparent;
+            scrollbar-color: var(--color-red) #111;
         }
-        .content-scroll::-webkit-scrollbar { width: 6px; }
-        .content-scroll::-webkit-scrollbar-thumb { background-color: var(--color-red); border-radius: 3px; }
+        .content-scroll::-webkit-scrollbar { width: 8px; }
+        .content-scroll::-webkit-scrollbar-thumb { background-color: var(--color-red); border-radius: 4px; }
+
+        @keyframes slideUpFade {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-wrapper {
+            animation: slideUpFade 0.4s ease-out forwards;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
 
         /* Info Boxen */
         .info-card {
             background-color: var(--color-light-dark);
-            border-left: 4px solid var(--color-info);
-            padding: 15px;
+            border-left: 4px solid var(--color-gold);
+            padding: 20px;
             border-radius: 4px;
-            margin-bottom: 15px;
-            font-size: 0.9rem;
-            line-height: 1.5;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+            font-size: 1rem;
+            line-height: 1.6;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
         }
 
         .info-card h3 {
             margin-top: 0;
-            color: var(--color-info);
+            color: var(--color-gold);
             font-family: var(--font-header);
             display: flex;
             align-items: center;
             gap: 10px;
+            font-size: 1.4rem;
         }
 
         .alert-box {
-            background-color: rgba(229, 57, 53, 0.15);
+            background-color: rgba(229, 57, 53, 0.1);
             border: 1px solid var(--color-red);
-            color: #ffcccc;
-            padding: 10px;
+            color: #ccc;
+            padding: 15px;
             border-radius: 6px;
-            margin-bottom: 20px;
-            font-size: 0.9rem;
+            margin-bottom: 30px;
+            font-size: 0.95rem;
             display: flex;
             align-items: flex-start;
-            gap: 10px;
+            gap: 15px;
         }
 
         .alert-box i {
             color: var(--color-red);
-            margin-top: 3px;
+            font-size: 1.2rem;
+            margin-top: 2px;
         }
 
-        /* Progress Liste / Tabelle */
+        .alert-box strong { color: var(--color-red); }
+
+        /* Progress Tabelle */
         .list-header {
             display: grid;
             grid-template-columns: 0.5fr 1fr 1fr;
-            padding: 10px 15px;
-            background-color: rgba(255,255,255,0.1);
+            padding: 12px 20px;
+            background-color: #000;
             font-family: var(--font-header);
             color: var(--color-gold);
             text-transform: uppercase;
-            font-size: 0.9rem;
-            border-top-left-radius: 8px;
-            border-top-right-radius: 8px;
+            font-size: 1rem;
+            border-bottom: 2px solid var(--color-red);
             position: sticky;
             top: 0;
             z-index: 10;
-            backdrop-filter: blur(5px);
         }
 
         .progress-list {
             display: flex;
             flex-direction: column;
-            gap: 2px;
+            background-color: var(--color-light-dark);
+            border: 1px solid #333;
+            border-radius: 0 0 8px 8px;
         }
 
         .progress-row {
             display: grid;
             grid-template-columns: 0.5fr 1fr 1fr;
-            background-color: rgba(255,255,255,0.03);
-            padding: 12px 15px;
+            padding: 15px 20px;
             align-items: center;
             transition: background 0.2s;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
+            border-bottom: 1px solid #222;
         }
 
-        .progress-row:hover {
-            background-color: rgba(255,255,255,0.08);
-        }
+        .progress-row:hover { background-color: rgba(255, 255, 255, 0.03); }
 
         .lvl-badge {
             font-family: var(--font-header);
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             color: #fff;
-            background-color: #333;
-            width: 45px;
-            height: 45px;
+            background-color: #000;
+            width: 45px; height: 45px;
             border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 2px solid #555;
+            display: flex; align-items: center; justify-content: center;
+            border: 2px solid #444;
         }
 
         .data-col {
             display: flex;
             align-items: center;
-            gap: 10px;
-            font-size: 1rem;
+            gap: 12px;
+            font-size: 1.1rem;
         }
 
         .data-col i {
+            color: var(--color-gold);
             width: 20px;
             text-align: center;
-            color: #aaa;
         }
 
-        /* Highlights für spezielle Level */
+        /* Milestones */
         .milestone-100 {
-            background: linear-gradient(90deg, rgba(255,235,59,0.1), transparent);
-            border-left: 3px solid var(--color-gold);
+            background: linear-gradient(90deg, rgba(255, 215, 0, 0.1), transparent);
+            border-left: 4px solid var(--color-gold);
         }
-        .milestone-100 .lvl-badge {
-            border-color: var(--color-gold);
-            color: var(--color-gold);
-            box-shadow: 0 0 10px rgba(255, 235, 59, 0.3);
-        }
+        .milestone-100 .lvl-badge { border-color: var(--color-gold); color: var(--color-gold); }
 
         .milestone-max {
             background: linear-gradient(90deg, rgba(229, 57, 53, 0.15), transparent);
-            border-left: 3px solid var(--color-red);
+            border-left: 4px solid var(--color-red);
         }
-        .milestone-max .lvl-badge {
-            border-color: var(--color-red);
-            color: var(--color-red);
-            box-shadow: 0 0 10px rgba(229, 57, 53, 0.4);
-        }
+        .milestone-max .lvl-badge { border-color: var(--color-red); color: var(--color-red); }
 
-        /* Highlight Text */
         .highlight {
-            color: var(--color-gold);
+            color: #fff;
             font-weight: bold;
         }
 
-        @media (max-width: 600px) {
-            .title { font-size: 1.4rem; }
-            .list-header, .progress-row {
-                font-size: 0.85rem;
-                padding: 10px;
-            }
-            .lvl-badge { width: 35px; height: 35px; font-size: 0.9rem; }
+        @media (max-width: 700px) {
+            .title { font-size: 1.8rem; }
+            .list-header, .progress-row { font-size: 0.85rem; padding: 10px; }
+            .lvl-badge { width: 35px; height: 35px; font-size: 1rem; }
         }
     </style>
 </head>
 <body>
 
-    <div class="progress-container">
-        
-        <div class="header">
-            <!-- 4 Flaggen -->
+    <div class="start-container">
+        <!-- Header -->
+        <header class="header">
             <div class="lang-switch">
-                <svg class="lang-btn active" id="btn-de" onclick="setLang('de')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 5 3">
-                    <rect width="5" height="3" fill="#000"/><rect width="5" height="2" y="1" fill="#D00"/><rect width="5" height="1" y="2" fill="#FFCE00"/>
-                </svg>
-                <svg class="lang-btn" id="btn-en" onclick="setLang('en')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 30">
-                    <clipPath id="s"><path d="M0,0 v30 h60 v-30 z"/></clipPath>
-                    <clipPath id="t"><path d="M30,15 h30 v15 z v15 h-30 z h-30 v-15 z v-15 h30 z"/></clipPath>
-                    <g clip-path="url(#s)">
-                        <path d="M0,0 v30 h60 v-30 z" fill="#012169"/>
-                        <path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/>
-                        <path d="M0,0 L60,30 M60,0 L0,30" clip-path="url(#t)" stroke="#C8102E" stroke-width="4"/>
-                        <path d="M30,0 v30 M0,15 h60" stroke="#fff" stroke-width="10"/>
-                        <path d="M30,0 v30 M0,15 h60" stroke="#C8102E" stroke-width="6"/>
-                    </g>
-                </svg>
-                <svg class="lang-btn" id="btn-es" onclick="setLang('es')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 750 500">
-                    <rect width="750" height="500" fill="#AA151B"/>
-                    <rect width="750" height="250" y="125" fill="#F1BF00"/>
-                </svg>
-                <svg class="lang-btn" id="btn-fr" onclick="setLang('fr')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600">
-                    <rect width="900" height="600" fill="#ED2939"/>
-                    <rect width="600" height="600" fill="#fff"/>
-                    <rect width="300" height="600" fill="#002395"/>
-                </svg>
+                <img src="https://upload.wikimedia.org/wikipedia/commons/b/ba/Flag_of_Germany.svg" class="lang-btn active" id="btn-de" onclick="setLang('de')" title="Deutsch">
+                <img src="https://upload.wikimedia.org/wikipedia/en/a/ae/Flag_of_the_United_Kingdom.svg" class="lang-btn" id="btn-en" onclick="setLang('en')" title="English">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/9/9a/Flag_of_Spain.svg" class="lang-btn" id="btn-es" onclick="setLang('es')" title="Español">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/c/c3/Flag_of_France.svg" class="lang-btn" id="btn-fr" onclick="setLang('fr')" title="Français">
             </div>
-
-            <h1 class="title" id="uiTitle">Progressives Level-Upgrade</h1>
-            <div class="subtitle" id="uiSubtitle">Strukturen & Decay Skalierung</div>
-        </div>
+            <div class="header-content">
+                <h1 class="title" id="uiTitle">Progressives Level-Upgrade</h1>
+                <div class="subtitle" id="uiSubtitle">Strukturen & Decay Skalierung</div>
+            </div>
+        </header>
 
         <div class="content-scroll">
-            
-            <!-- Erklärung -->
-            <div class="info-card">
-                <h3><i class="fa-solid fa-circle-info"></i> <span id="uiInfoHead">Wie es funktioniert</span></h3>
-                <p id="uiInfoText">
-                    Euer Strukturenlimit und Decay skalieren nun direkt mit eurem <strong>Spieler-Level</strong>. 
-                    Login löst die Achievements aus und aktualisiert eure Limits. 
-                    Die Werte sind so ausgelegt, dass die Standard-Limits (Level 100) auch ohne Bosse erreichbar sind.
-                </p>
-                <p style="margin-top: 10px; font-size: 0.85rem; color: #aaa;">
-                    <em id="uiInfoNote">Hinweis: In den ersten 100 Leveln gibt es viele kleine Schritte für schnelle Erfolgserlebnisse!</em>
-                </p>
-            </div>
+            <div class="section-wrapper">
+                <!-- Erklärung -->
+                <div class="info-card">
+                    <h3><i class="fa-solid fa-circle-info"></i> <span id="uiInfoHead">Wie es funktioniert</span></h3>
+                    <p id="uiInfoText"></p>
+                    <p style="margin-top: 10px; font-size: 0.85rem; color: #aaa;">
+                        <em id="uiInfoNote"></em>
+                    </p>
+                </div>
 
-            <div class="alert-box">
-                <i class="fa-solid fa-triangle-exclamation"></i>
-                <div>
-                    <strong id="uiAlertHead">Wichtig für Stämme:</strong><br>
-                    <span id="uiAlertText">Der Spieler mit dem <u>höchsten</u> Strukturenlimit und Decay im Stamm gibt diese Werte für alle Stammesstrukturen vor.</span>
+                <div class="alert-box">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    <div>
+                        <strong id="uiAlertHead">Wichtig für Stämme:</strong><br>
+                        <span id="uiAlertText"></span>
+                    </div>
+                </div>
+
+                <!-- Tabelle Header -->
+                <div class="list-header">
+                    <div id="thLevel">Level</div>
+                    <div id="thDecay">Decay</div>
+                    <div id="thLimit">Limit</div>
+                </div>
+
+                <!-- Liste -->
+                <div id="progressList" class="progress-list">
+                    <!-- JS Injected -->
                 </div>
             </div>
-
-            <!-- Tabelle Header -->
-            <div class="list-header">
-                <div id="thLevel">Level</div>
-                <div id="thDecay"><i class="fa-solid fa-hourglass-half"></i> Decay</div>
-                <div id="thLimit"><i class="fa-solid fa-warehouse"></i> Limit</div>
-            </div>
-
-            <!-- Liste (Generiert durch JS) -->
-            <div id="progressList" class="progress-list">
-                <!-- Items werden hier eingefügt -->
-            </div>
-
         </div>
     </div>
 
     <script>
-        // DATENBANK DER LEVEL
         const levelData = [
             { lvl: 1, decay: 5, limit: 100 },
             { lvl: 10, decay: 7, limit: 150 },
@@ -352,7 +318,7 @@
             { lvl: 70, decay: 21, limit: 2500 },
             { lvl: 80, decay: 25, limit: 4000 },
             { lvl: 90, decay: 27, limit: 5000 },
-            { lvl: 100, decay: 30, limit: 8000, milestone: "100" }, // Standard Max
+            { lvl: 100, decay: 30, limit: 8000, milestone: "100" },
             { lvl: 105, decay: 31, limit: 8050 },
             { lvl: 110, decay: 32, limit: 8100 },
             { lvl: 115, decay: 33, limit: 8150 },
@@ -372,134 +338,102 @@
             { lvl: 185, decay: 47, limit: 8850 },
             { lvl: 190, decay: 48, limit: 8900 },
             { lvl: 195, decay: 49, limit: 8950 },
-            { lvl: 200, decay: 50, limit: 9000, milestone: "max" } // Absolute Max
+            { lvl: 200, decay: 50, limit: 9000, milestone: "max" }
         ];
 
-        // --- TRANSLATION DATABASE ---
         const UI_TEXT = {
             de: {
-                title: "Progressives Level-Upgrade",
-                subtitle: "Strukturen & Decay Skalierung",
+                title: "Progressives Level-Upgrade", subtitle: "Strukturen & Decay Skalierung",
                 info_head: "Wie es funktioniert",
-                info_text: "Euer Strukturenlimit und Decay skalieren nun direkt mit eurem <strong>Spieler-Level</strong>. Login löst die Achievements aus und aktualisiert eure Limits. Die Werte sind so ausgelegt, dass die Standard-Limits (Level 100) auch ohne Bosse erreichbar sind.",
+                info_text: "Euer Strukturenlimit und Decay skalieren nun direkt mit eurem <strong>Spieler-Level</strong>. Login löst die Achievements aus und aktualisiert eure Limits.",
                 info_note: "Hinweis: In den ersten 100 Leveln gibt es viele kleine Schritte für schnelle Erfolgserlebnisse!",
                 alert_head: "Wichtig für Stämme:",
-                alert_text: "Der Spieler mit dem <u>höchsten</u> Strukturenlimit und Decay im Stamm gibt diese Werte für alle Stammesstrukturen vor.",
-                th_level: "Level",
-                th_decay: '<i class="fa-solid fa-hourglass-half"></i> Decay',
-                th_limit: '<i class="fa-solid fa-warehouse"></i> Limit',
-                unit_days: "Tage",
-                unit_pcs: "Stk."
+                alert_text: "Der Spieler mit dem höchsten Limit im Stamm gibt die Werte für alle Strukturen vor.",
+                th_level: "Level", th_decay: '<i class="fa-solid fa-hourglass-half"></i> Decay', th_limit: '<i class="fa-solid fa-warehouse"></i> Limit',
+                unit_days: "Tage", unit_pcs: "Stk."
             },
             en: {
-                title: "Progressive Level Upgrade",
-                subtitle: "Structure & Decay Scaling",
+                title: "Progressive Level Upgrade", subtitle: "Structure & Decay Scaling",
                 info_head: "How it works",
-                info_text: "Your structure limit and decay now scale directly with your <strong>Player Level</strong>. Logging in triggers achievements and updates your limits. The values are designed so standard limits (Level 100) are reachable without bosses.",
-                info_note: "Note: The first 100 levels have many small steps for quick sense of achievement!",
+                info_text: "Your structure limit and decay now scale directly with your <strong>Player Level</strong>. Logging in triggers achievements and updates your limits.",
+                info_note: "Note: The first 100 levels have many small steps for a quick sense of achievement!",
                 alert_head: "Important for Tribes:",
-                alert_text: "The player with the <u>highest</u> structure limit and decay in the tribe sets these values for all tribe structures.",
-                th_level: "Level",
-                th_decay: '<i class="fa-solid fa-hourglass-half"></i> Decay',
-                th_limit: '<i class="fa-solid fa-warehouse"></i> Limit',
-                unit_days: "Days",
-                unit_pcs: "Pcs"
+                alert_text: "The player with the highest limit in the tribe sets the values for all structures.",
+                th_level: "Level", th_decay: '<i class="fa-solid fa-hourglass-half"></i> Decay', th_limit: '<i class="fa-solid fa-warehouse"></i> Limit',
+                unit_days: "Days", unit_pcs: "Pcs"
             },
             es: {
-                title: "Mejora de Nivel Progresiva",
-                subtitle: "Escalado de Estructuras y Deterioro",
+                title: "Mejora de Nivel Progresiva", subtitle: "Escalado de Estructuras y Deterioro",
                 info_head: "Cómo funciona",
-                info_text: "Tu límite de estructuras y deterioro ahora escalan directamente con tu <strong>Nivel de Jugador</strong>. Iniciar sesión activa logros y actualiza tus límites. Los valores estándar (Nivel 100) son alcanzables sin jefes.",
+                info_text: "Tu límite de estructuras y deterioro ahora escalan directamente con tu <strong>Nivel de Jugador</strong>. Iniciar sesión activa logros y actualiza tus límites.",
                 info_note: "Nota: ¡Los primeros 100 niveles tienen muchos pasos pequeños para logros rápidos!",
                 alert_head: "Importante para Tribus:",
-                alert_text: "El jugador con el <u>mayor</u> límite de estructuras y deterioro en la tribu establece estos valores para todas las estructuras.",
-                th_level: "Nivel",
-                th_decay: '<i class="fa-solid fa-hourglass-half"></i> Deterioro',
-                th_limit: '<i class="fa-solid fa-warehouse"></i> Límite',
-                unit_days: "Días",
-                unit_pcs: "Uds"
+                alert_text: "El jugador con el mayor límite en la tribu establece los valores para todas las estructuras.",
+                th_level: "Nivel", th_decay: '<i class="fa-solid fa-hourglass-half"></i> Deterioro', th_limit: '<i class="fa-solid fa-warehouse"></i> Límite',
+                unit_days: "Días", unit_pcs: "Uds"
             },
             fr: {
-                title: "Amélioration Progressive de Niveau",
-                subtitle: "Échelle de Structures et Dégradation",
+                title: "Niveau Progressif", subtitle: "Échelle de Structures et Dégradation",
                 info_head: "Comment ça marche",
-                info_text: "Votre limite de structure et dégradation s'adaptent désormais directement à votre <strong>Niveau de Joueur</strong>. La connexion active les succès et met à jour vos limites. Les valeurs standards (Niveau 100) sont accessibles sans boss.",
-                info_note: "Remarque : Les 100 premiers niveaux comportent de nombreuses petites étapes pour des succès rapides !",
+                info_text: "Votre limite de structure et dégradation s'adaptent désormais directement à votre <strong>Niveau de Joueur</strong>. La connexion active les succès.",
+                info_note: "Remarque : Les 100 premiers niveaux comportent de nombreuses petites étapes !",
                 alert_head: "Important pour les Tribus :",
-                alert_text: "Le joueur avec la limite de structure et dégradation la <u>plus élevée</u> de la tribu définit ces valeurs pour toutes les structures.",
-                th_level: "Niveau",
-                th_decay: '<i class="fa-solid fa-hourglass-half"></i> Dégradation',
-                th_limit: '<i class="fa-solid fa-warehouse"></i> Limite',
-                unit_days: "Jours",
-                unit_pcs: "Pcs"
+                alert_text: "Le joueur avec la limite la plus élevée de la tribu définit les valeurs pour toutes les structures.",
+                th_level: "Niveau", th_decay: '<i class="fa-solid fa-hourglass-half"></i> Dégradation', th_limit: '<i class="fa-solid fa-warehouse"></i> Limite',
+                unit_days: "Jours", unit_pcs: "Pcs"
             }
         };
 
         let currentLang = 'de';
-        const listContainer = document.getElementById('progressList');
 
         function setLang(lang) {
             currentLang = lang;
-            
-            // Buttons UI
+            const l = UI_TEXT[lang];
             document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById('btn-'+lang).classList.add('active');
+            document.getElementById('btn-' + lang).classList.add('active');
 
-            // Static Text Updates
-            document.getElementById('uiTitle').innerText = UI_TEXT[lang].title;
-            document.getElementById('uiSubtitle').innerText = UI_TEXT[lang].subtitle;
-            document.getElementById('uiInfoHead').innerText = UI_TEXT[lang].info_head;
-            document.getElementById('uiInfoText').innerHTML = UI_TEXT[lang].info_text;
-            document.getElementById('uiInfoNote').innerText = UI_TEXT[lang].info_note;
-            document.getElementById('uiAlertHead').innerText = UI_TEXT[lang].alert_head;
-            document.getElementById('uiAlertText').innerHTML = UI_TEXT[lang].alert_text;
-            
-            // Table Headers
-            document.getElementById('thLevel').innerText = UI_TEXT[lang].th_level;
-            document.getElementById('thDecay').innerHTML = UI_TEXT[lang].th_decay;
-            document.getElementById('thLimit').innerHTML = UI_TEXT[lang].th_limit;
+            document.getElementById('uiTitle').innerText = l.title;
+            document.getElementById('uiSubtitle').innerText = l.subtitle;
+            document.getElementById('uiInfoHead').innerText = l.info_head;
+            document.getElementById('uiInfoText').innerHTML = l.info_text;
+            document.getElementById('uiInfoNote').innerText = l.info_note;
+            document.getElementById('uiAlertHead').innerText = l.alert_head;
+            document.getElementById('uiAlertText').innerText = l.alert_text;
+            document.getElementById('thLevel').innerText = l.th_level;
+            document.getElementById('thDecay').innerHTML = l.th_decay;
+            document.getElementById('thLimit').innerHTML = l.th_limit;
 
-            // Re-render list with new units
             renderList();
         }
 
         function renderList() {
+            const listContainer = document.getElementById('progressList');
             listContainer.innerHTML = '';
-            const daysTxt = UI_TEXT[currentLang].unit_days;
-            const pcsTxt = UI_TEXT[currentLang].unit_pcs;
-            
+            const l = UI_TEXT[currentLang];
+
             levelData.forEach(item => {
                 const row = document.createElement('div');
-                
-                // Klassen bestimmen (Milestones)
                 let rowClass = 'progress-row';
                 if (item.milestone === "100") rowClass += ' milestone-100';
                 if (item.milestone === "max") rowClass += ' milestone-max';
-
                 row.className = rowClass;
 
                 row.innerHTML = `
-                    <div>
-                        <div class="lvl-badge">${item.lvl}</div>
-                    </div>
+                    <div><div class="lvl-badge">${item.lvl}</div></div>
                     <div class="data-col">
                         <i class="fa-solid fa-hourglass-half"></i>
-                        <span><span class="highlight">${item.decay}</span> ${daysTxt}</span>
+                        <span><span class="highlight">${item.decay}</span> ${l.unit_days}</span>
                     </div>
                     <div class="data-col">
                         <i class="fa-solid fa-warehouse"></i>
-                        <span><span class="highlight">${item.limit}</span> ${pcsTxt}</span>
+                        <span><span class="highlight">${item.limit}</span> ${l.unit_pcs}</span>
                     </div>
                 `;
                 listContainer.appendChild(row);
             });
         }
 
-        // Init
-        window.onload = function() {
-            setLang('de');
-        };
-
+        window.onload = () => setLang('de');
     </script>
 </body>
 </html>
