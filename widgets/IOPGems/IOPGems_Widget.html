@@ -36,7 +36,7 @@
             overflow: hidden;
         }
 
-        /* Widget Container - Einheitliche Breite */
+        /* Widget Container */
         .start-container {
             background-color: var(--color-dark);
             border-radius: 8px; 
@@ -51,7 +51,7 @@
             position: relative;
         }
 
-        /* Schlichter schwarzer Header */
+        /* Header */
         .header {
             background-color: var(--color-black);
             padding: 25px 20px;
@@ -184,6 +184,13 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        /* Animation für den pulsierenden Schatten */
+        @keyframes pulse-glow {
+            0% { box-shadow: 0 5px 20px rgba(0,0,0,0.5), 0 0 0px var(--gem-color); }
+            50% { box-shadow: 0 8px 25px rgba(0,0,0,0.6), 0 0 15px var(--gem-color); }
+            100% { box-shadow: 0 5px 20px rgba(0,0,0,0.5), 0 0 0px var(--gem-color); }
+        }
+
         .section { display: none; max-width: 1200px; margin: 0 auto; }
         .section.active { 
             display: block; 
@@ -235,13 +242,96 @@
             font-weight: 900;
             position: absolute;
             left: 0;
-            color: var(--color-ui-gold); /* Pfeile in Goldgelb */
+            color: var(--color-ui-gold);
+        }
+
+        /* Infinity Lore Circle Styles */
+        .lore-display {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            padding: 20px; /* Padding korrigiert für gleichmäßigen Rand */
+        }
+        .infinity-circle-container {
+            position: relative;
+            width: 240px;
+            height: 240px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 40px auto 20px; /* Mehr Platz nach oben für Labels */
+        }
+        .center-logo {
+            width: 100px;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 5;
+            background: transparent;
+            border: none;
+            overflow: visible;
+            padding: 0;
+            filter: drop-shadow(0 0 15px rgba(229, 57, 53, 0.4));
+            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+        }
+        /* Logo ausblenden, wenn ein Stein im Container gehovert wird */
+        .infinity-circle-container:has(.orbiting-gem:hover) .center-logo {
+            opacity: 0;
+            transform: scale(0.8);
+        }
+        
+        .center-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        .orbiting-gem {
+            position: absolute;
+            width: 45px;
+            height: 45px;
+            transition: 0.3s;
+            cursor: default;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .orbiting-gem img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 0 5px var(--gem-color));
+        }
+        .orbiting-gem:hover {
+            transform: scale(1.3) !important;
+            filter: brightness(1.2);
+            cursor: pointer;
+        }
+        
+        .gem-name-label {
+            position: absolute;
+            bottom: -22px;
+            white-space: nowrap;
+            font-family: var(--font-header);
+            font-size: 0.75rem;
+            color: var(--gem-color);
+            text-shadow: 0 0 10px rgba(0,0,0,0.9);
+            opacity: 0;
+            transition: all 0.3s ease;
+            pointer-events: none;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transform: translateY(5px);
+        }
+        .orbiting-gem:hover .gem-name-label {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         /* Gem Grid */
         .gem-grid {
             display: grid;
-            /* auto-fill statt auto-fit verhindert das Strecken einzelner Karten */
             grid-template-columns: repeat(auto-fill, minmax(350px, 400px)); 
             gap: 20px;
             justify-content: center;
@@ -253,14 +343,41 @@
             border-radius: 8px;
             overflow: hidden;
             display: flex;
-            transition: 0.2s;
+            transition: transform 0.2s, border-color 0.2s, opacity 0.3s;
             position: relative;
             height: 100%;
         }
+
+        .gem-card.coming-soon {
+            opacity: 0.6;
+            filter: grayscale(0.5);
+        }
+        .gem-card.coming-soon:hover {
+            opacity: 0.85;
+            filter: grayscale(0.2);
+        }
+
+        .coming-soon-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: var(--color-red);
+            color: #fff;
+            padding: 3px 10px;
+            font-size: 0.7rem;
+            border-radius: 4px;
+            z-index: 10;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border: 1px solid rgba(255,255,255,0.2);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        }
+
         .gem-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 5px 20px rgba(0,0,0,0.5);
             border-color: var(--gem-color);
+            animation: pulse-glow 2s infinite ease-in-out;
         }
 
         .gem-img-container {
@@ -345,6 +462,12 @@
                 standard: { de: "Standard Gems", en: "Standard Gems", es: "Gemas Estándar", fr: "Gemmes Standard" },
                 boss: { de: "Boss & Spezial", en: "Boss & Special", es: "Jefe y Especial", fr: "Boss et Spécial" }
             },
+            comingSoonText: {
+                de: "Bald Verfügbar",
+                en: "Coming Soon",
+                es: "Próximamente",
+                fr: "Bientôt Disponible"
+            },
             sections: {
                 info: {
                     header: { de: "Das Währungssystem", en: "The Currency System", es: "Sistema de Moneda", fr: "Le Système de Devises" },
@@ -361,25 +484,75 @@
                         es: ["Compra armas, herramientas y armaduras mejoradas.", "Adquiere skins, mascotas y pociones míticas.", "Compra criaturas legendarias."],
                         fr: ["Achetez des armes, outils et armures améliorés.", "Acquérez des skins, animaux et potions mythiques.", "Achetez des créatures légendaires."]
                     },
-                    source_title: { de: "Wie erhalte ich Edelsteine?", en: "How to get Gems?", es: "¿Cómo obtener Gemas?", fr: "Comment obtenir des Gemmes ?" },
-                    source_text: { de: "<p>Edelsteine können auf verschiedenste Weisen verdient werden:</p>", en: "<p>Gems can be earned in various ways:</p>", es: "<p>Las gemas se obtienen de varias formas:</p>", fr: "<p>Les gemmes peuvent être gagnées de diverses manières :</p>" },
+                    source_title: { de: "Wie erhalte ich Edelsteine?", en: "How to get Gems?", es: "¿Cómo obtener Gemas?", fr: "Comment obtener des Gemmes ?" },
+                    source_text: { de: "<p>Edelsteine können auf verschiedenste Weisen verdient werden:</p>", en: "<p>Gems can be earned in various ways:</p>", es: "<p>Las gemas se obtienen de varias formas:</p>", fr: "<p>Les gemmes peuvent be gagnées de diverses manières :</p>" },
                     source_list: {
                         de: ["Bosskämpfe (Ark Bosse & Open World Minibosse)", "Quest-Belohnungen", "Events", "Abschluss von Tek Caves", "Verkauf von Tributen in der Spielerbank"],
                         en: ["Boss Fights (Ark Bosses & Open World Minibosses)", "Quest Rewards", "Events", "Completing Tek Caves", "Selling Tributes at the Player Bank"],
                         es: ["Jefes (Ark y Minibosses)", "Recompensas de Misiones", "Eventos", "Cuevas Tek", "Venta de Tributos"],
                         fr: ["Combats de Boss (Ark & Miniboss)", "Récompenses de Quêtes", "Événements", "Grottes Tek", "Vente de Tributs"]
+                    },
+                    lore_title: { de: "Der Ursprung der Macht", en: "The Origin of Power", es: "El Origen del Poder", fr: "L'Origine du Pouvoir" },
+                    lore_text: {
+                        de: "<p>Das System der <strong>Infinity of Phoenix</strong> Edelsteine ist inspiriert von den legendären Infinity Steinen. Jeder Stein repräsentiert eine andere Facette der Macht in unserem Ark-Cluster.</p>",
+                        en: "<p>The <strong>Infinity of Phoenix</strong> gem system is inspired by the legendary Infinity Stones. Each gem represents a different facet of power within our Ark cluster.</p>",
+                        es: "<p>El sistema de gemas <strong>Infinity of Phoenix</strong> está inspirado en las legendarias Gemas del Infinito. Cada gema representa una faceta diferente del poder.</p>",
+                        fr: "<p>Le système de gemmes <strong>Infinity of Phoenix</strong> est inspiré des légendaires Pierres d'Infinité. Chaque gemme représente une facette différente du pouvoir.</p>"
                     }
                 },
                 standard: [
                     { color: "#f7ad6b", img: "https://i.postimg.cc/T3g6Qq3q/Bernstein.png", title: { de: "Bernsteine", en: "Amber", es: "Ámbar", fr: "Ambre" }, desc: { de: "Die niedrigste Währung. Wird für kleinere Händler und erste Markt-Strukturen benötigt.", en: "Lowest currency. Used for small traders and basic market structures.", es: "Moneda más baja. Para comerciantes pequeños.", fr: "Devise la plus basse. Pour petits commerçants." }, source: { de: "Spielerbank (Tribute-Verkauf), Alpha Drops", en: "Player Bank, Alpha Drops", es: "Banco, Alpha Drops", fr: "Banque, Alpha Drops" } },
-                    { color: "#ff0000", img: "https://i.postimg.cc/xdm3X8gd/Rubin.png", title: { de: "Rubine", en: "Rubies", es: "Rubíes", fr: "Rubis" }, desc: { de: "Verdient durch Aktivität und Aufgaben.", en: "Earned through activity and tasks.", es: "Ganado por actividad y tareas.", fr: "Gagné par activité et tâches." }, source: { de: "Daily Quest: 5x | Weekly Quest: 15x | Vote: 5x", en: "Daily Quest: 5x | Weekly Quest: 15x | Vote: 5x", es: "Misión Diaria: 5x | Semanal: 15x | Voto: 5x", fr: "Quête Jour: 5x | Hebdo: 15x | Vote: 5x" } },
-                    { color: "#9966cc", img: "https://i.postimg.cc/YCMHnLG5/Anesthyt.png", title: { de: "Amethyste", en: "Amethysts", es: "Amatistas", fr: "Améthystes" }, desc: { de: "Eine mittlere Währung für diverse Händler.", en: "Medium currency for various traders.", es: "Moneda media para comerciantes.", fr: "Devise moyenne pour divers marchands." }, source: { de: "Diverse Quellen & Händler", en: "Various sources & traders", es: "Varias fuentes", fr: "Diverses sources" } }
+                    { color: "#ff0000", img: "https://i.postimg.cc/xdm3X8gd/Rubin.png", title: { de: "Rubine", en: "Rubies", es: "Rubíes", fr: "Rubis" }, desc: { de: "Verdient durch Aktivität und Aufgaben.", en: "Earned through activity and tasks.", es: "Ganado por activity y tareas.", fr: "Gagné par activité et tâches." }, source: { de: "Daily Quest: 5x | Weekly Quest: 15x | Vote: 5x", en: "Daily Quest: 5x | Weekly Quest: 15x | Vote: 5x", es: "Misión Diaria: 5x | Semanal: 15x | Voto: 5x", fr: "Quête Jour: 5x | Hebdo: 15x | Vote: 5x" } },
+                    { 
+                        comingSoon: true,
+                        color: "#9966cc", 
+                        img: "https://i.postimg.cc/YCMHnLG5/Anesthyt.png", 
+                        title: { de: "Amethyste", en: "Amethysts", es: "Amatistas", fr: "Améthystes" }, 
+                        desc: { de: "Eine mittlere Währung für diverse Händler.", en: "Medium currency for various traders.", es: "Moneda media para comerciantes.", fr: "Devise moyenne pour divers marchands." }, 
+                        source: { 
+                            de: "Extinction & Astraeos (OSDs). Genaue Anzahl und Stufen noch unbekannt.", 
+                            en: "Extinction & Astraeos (OSDs). Exact amounts and tiers unknown.", 
+                            es: "Extinction y Astraeos (OSDs). Cantidades y niveles exactos desconocidos.", 
+                            fr: "Extinction & Astraeos (OSDs). Quantités et niveaux exacts inconnus." 
+                        } 
+                    }
                 ],
                 boss: [
-                    { color: "#00ff00", img: "https://i.postimg.cc/X7ZGjhsj/Smaragd.png", title: { de: "Smaragde", en: "Emeralds", es: "Esmeraldas", fr: "Émeraudes" }, desc: { de: "Von Open World Bossen. Wichtig für bessere Ausrüstung.", en: "From Open World Bosses. Important for better gear.", es: "De Jefes de Mundo. Para mejor equipo.", fr: "Des Boss Open World. Pour meilleur équipement." }, source: { de: "Mantisqueen, Scorpionking, Beelzebufo King, Rhinobeast", en: "Mantisqueen, Scorpionking, Beelzebufo King, Rhinobeast", es: "Mantisqueen, Scorpionking...", fr: "Mantisqueen, Scorpionking..." } },
+                    { 
+                        comingSoon: true,
+                        color: "#00ff00", 
+                        img: "https://i.postimg.cc/X7ZGjhsj/Smaragd.png", 
+                        title: { de: "Smaragde", en: "Emeralds", es: "Esmeraldas", fr: "Émeraudes" }, 
+                        desc: { de: "Von Open World Bossen. Wichtig für bessere Ausrüstung.", en: "From Open World Bosses. Important for better gear.", es: "De Jefes de Mundo. Para mejor equipo.", fr: "Des Boss Open World. Pour meilleur équipement." }, 
+                        source: { de: "Mantisqueen, Scorpionking, Beelzebufo King, Rhinobeast", en: "Mantisqueen, Scorpionking, Beelzebufo King, Rhinobeast", es: "Mantisqueen, Scorpionking...", fr: "Mantisqueen, Scorpionking..." } 
+                    },
                     { color: "#0055ff", img: "https://i.postimg.cc/sXvQMN34/Saphir.png", title: { de: "Saphire", en: "Sapphires", es: "Zafiros", fr: "Saphirs" }, desc: { de: "Tauschbar gegen Teleportsteine beim Magier.", en: "Exchangeable for Teleport Stones at the Mage.", es: "Canjeable por Piedras de Teletransporte.", fr: "Échangeable contre Pierres de Téléportation." }, source: { de: "Rare Kill: 1x | Legendary Kill: 3x", en: "Rare Kill: 1x | Legendary Kill: 3x", es: "Rare Kill: 1x | Legendary Kill: 3x", fr: "Rare Kill: 1x | Legendary Kill: 3x" } },
-                    { color: "#00ffff", img: "https://i.postimg.cc/0QqFQLYL/Diamant.png", title: { de: "Diamanten", en: "Diamonds", es: "Diamantes", fr: "Diamants" }, desc: { de: "Der höchste Wert. Nur durch Ark Bosskämpfe zu erhalten.", en: "Highest value. Only obtainable from Ark Boss fights.", es: "Valor más alto. Solo de Jefes Ark.", fr: "Valeur la plus élevée. Uniquement sur Boss Ark." }, source: { de: "Gamma: 1x | Beta: 2x | Alpha: 5x", en: "Gamma: 1x | Beta: 2x | Alpha: 5x", es: "Gamma: 1x | Beta: 2x | Alpha: 5x", fr: "Gamma: 1x | Bêta: 2x | Alpha: 5x" } },
-                    { color: "#ff00ff", img: "https://i.postimg.cc/DwTx1qJX/15.png", title: { de: "Arkensteine", en: "Arkenstones", es: "Piedras del Arca", fr: "Pierres d'Arche" }, desc: { de: "Mächtiges Artefakt. Löst bei Erhalt sofortige Server-Boosts aus.", en: "Powerful artifact. Triggers immediate server boosts upon receipt.", es: "Artefacto poderoso. Activa boosts al obtenerlo.", fr: "Artefact puissant. Active des boosts immédiats." }, source: { de: "Tek Cave Abschluss (Gamma/Beta/Alpha)", en: "Tek Cave Completion", es: "Completar Cueva Tek", fr: "Fin de Grotte Tek" } }
+                    { color: "#00ffff", img: "https://i.postimg.cc/0QqFQLYL/Diamant.png", title: { de: "Diamanten", en: "Diamonds", es: "Diamantes", fr: "Diamants" }, desc: { de: "Der höchste Wert. Nur durch Ark Bosskämpfe zu erhalten.", en: "Highest value. Only obtainable from Ark Boss fights.", es: "Valor más alto. Solo de Jefes Ark.", fr: "Valeur la plus élevée. Uniquement auf Boss Ark." }, source: { de: "Gamma: 1x | Beta: 2x | Alpha: 5x", en: "Gamma: 1x | Beta: 2x | Alpha: 5x", es: "Gamma: 1x | Beta: 2x | Alpha: 5x", fr: "Gamma: 1x | Bêta: 2x | Alpha: 5x" } },
+                    { 
+                        comingSoon: true,
+                        color: "#ff00ff", 
+                        img: "https://i.postimg.cc/DwTx1qJX/15.png", 
+                        title: { de: "Arkensteine", en: "Arkenstones", es: "Piedras del Arca", fr: "Pierres d'Arche" }, 
+                        desc: { de: "Mächtiges Artefakt. Löst bei Erhalt sofortige Server-Boosts aus.", en: "Powerful artifact. Triggers immediate server boosts upon receipt.", es: "Artefacto poderoso. Activa boosts al obtenerlo.", fr: "Artefact puissant. Active des boosts immédiats." }, 
+                        source: { de: "Tek Cave Abschluss (Gamma/Beta/Alpha)", en: "Tek Cave Completion", es: "Completar Cueva Tek", fr: "Fin de Grotte Tek" } 
+                    },
+                    { 
+                        color: "#4a4a4a", 
+                        img: "https://i.postimg.cc/FHkqCf93/Morion-Icon.png", 
+                        title: { de: "Morion", en: "Morion", es: "Morion", fr: "Morion" }, 
+                        desc: { 
+                            de: "Währung für den Morion-Händler am Schwarzmarkt. Zum Kauf von fertigen Curved-Items und Sätteln (keine Blaupausen).", 
+                            en: "Currency for the Morion trader at the Black Market. Used to buy finished curved items and saddles (no blueprints).", 
+                            es: "Moneda para el comerciante Morion. Para comprar objetos curvos y monturas terminadas (sin planos).", 
+                            fr: "Monnaie pour le marchand Morion. Utilisée pour acheter des objets incurvés et des selles finis (pas de schémas)." 
+                        }, 
+                        source: { 
+                            de: "Lost Colony Outpost Missionen (Gamma: 10 | Beta: 32 | Alpha: 60)", 
+                            en: "Lost Colony Outpost Missions (Gamma: 10 | Beta: 32 | Alpha: 60)", 
+                            es: "Misiones de Outpost de Lost Colony (G: 10 | B: 32 | A: 60)", 
+                            fr: "Missions d'avant-poste de Lost Colony (G: 10 | B: 32 | A: 60)" 
+                        } 
+                    }
                 ]
             }
         };
@@ -422,6 +595,16 @@
 
             if (activeTab === 'info') {
                 const data = translations.sections.info;
+                
+                const loreGems = [
+                    { color: "#f7ad6b", img: "https://i.postimg.cc/T3g6Qq3q/Bernstein.png", title: translations.sections.standard[0].title },
+                    { color: "#ff0000", img: "https://i.postimg.cc/xdm3X8gd/Rubin.png", title: translations.sections.standard[1].title },
+                    { color: "#9966cc", img: "https://i.postimg.cc/YCMHnLG5/Anesthyt.png", title: translations.sections.standard[2].title },
+                    { color: "#00ff00", img: "https://i.postimg.cc/X7ZGjhsj/Smaragd.png", title: translations.sections.boss[0].title },
+                    { color: "#0055ff", img: "https://i.postimg.cc/sXvQMN34/Saphir.png", title: translations.sections.boss[1].title },
+                    { color: "#00ffff", img: "https://i.postimg.cc/0QqFQLYL/Diamant.png", title: translations.sections.boss[2].title }
+                ];
+
                 sectionWrapper.innerHTML = `
                     <div class="info-block searchable">
                         <div class="block-header"><i class="fa-solid fa-info-circle"></i><h3 class="block-title">${data.header[l]}</h3></div>
@@ -431,6 +614,30 @@
                             <ul class="feature-list">${data.usage_list[l].map(li => `<li>${li}</li>`).join('')}</ul>
                         </div>
                     </div>
+
+                    <div class="info-block searchable">
+                        <div class="block-header"><i class="fa-solid fa-infinity"></i><h3 class="block-title">${data.lore_title[l]}</h3></div>
+                        <div class="block-body lore-display">
+                            <div style="width: 100%;">${data.lore_text[l]}</div>
+                            <div class="infinity-circle-container">
+                                <div class="center-logo">
+                                    <img src="https://i.postimg.cc/J0yvwtb3/logo-1-min.png" alt="IOP Logo">
+                                </div>
+                                ${loreGems.map((g, i) => {
+                                    const angle = (i * 60) * (Math.PI / 180);
+                                    const radius = 95;
+                                    const x = Math.cos(angle) * radius;
+                                    const y = Math.sin(angle) * radius;
+                                    return `
+                                        <div class="orbiting-gem" style="transform: translate(${x}px, ${y}px); --gem-color: ${g.color};">
+                                            <img src="${g.img}">
+                                            <span class="gem-name-label">${g.title[l]}</span>
+                                        </div>`;
+                                }).join('')}
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="info-block searchable">
                         <div class="block-header"><i class="fa-solid fa-gem"></i><h3 class="block-title">${data.source_title[l]}</h3></div>
                         <div class="block-body">
@@ -446,17 +653,24 @@
                 
                 gems.forEach(g => {
                     const title = g.title[l].toLowerCase();
-                    if (filter && !title.includes(filter)) return;
+                    const sourceText = g.source[l].toLowerCase();
+                    const descText = g.desc[l].toLowerCase();
+                    
+                    if (filter && !title.includes(filter) && !sourceText.includes(filter) && !descText.includes(filter)) return;
 
                     const card = document.createElement('div');
-                    card.className = 'gem-card searchable';
+                    card.className = `gem-card searchable ${g.comingSoon ? 'coming-soon' : ''}`;
                     card.style.setProperty('--gem-color', g.color);
+                    
+                    let badgeHtml = g.comingSoon ? `<div class="coming-soon-badge">${translations.comingSoonText[l]}</div>` : '';
+
                     card.innerHTML = `
+                        ${badgeHtml}
                         <div class="gem-img-container"><img src="${g.img}" class="gem-img"></div>
                         <div class="gem-content">
                             <h3 class="gem-title">${g.title[l]}</h3>
                             <p class="gem-desc">${g.desc[l]}</p>
-                            <div class="gem-source"><strong>Quelle:</strong> ${g.source[l]}</div>
+                            <div class="gem-source"><strong>${l === 'de' ? 'Quelle' : 'Source'}:</strong> ${g.source[l]}</div>
                         </div>
                     `;
                     grid.appendChild(card);
@@ -465,12 +679,6 @@
             }
 
             container.appendChild(sectionWrapper);
-            if (filter) {
-                document.querySelectorAll('.searchable').forEach(el => {
-                    const text = el.innerText.toLowerCase();
-                    el.style.display = text.includes(filter) ? '' : 'none';
-                });
-            }
         }
 
         function filterContent() { renderContent(); }
