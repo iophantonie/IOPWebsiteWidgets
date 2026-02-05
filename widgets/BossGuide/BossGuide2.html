@@ -403,7 +403,6 @@
 
     <div class="widget-container">
         
-        <!-- SIDEBAR -->
         <div class="sidebar">
             <div class="sidebar-header">
                 <h2 class="sidebar-title">IOP Guide</h2>
@@ -418,7 +417,6 @@
                     <i class="fa-solid fa-search search-icon"></i>
                     <input type="text" class="search-input" id="searchInput" placeholder="Suche..." oninput="filterList(this.value)">
                 </div>
-                <!-- Tribe Tower Bonus Input (Only visible in Boss Mode) -->
                 <div class="settings-row" id="lootSettings" title="Erhöht die Menge an Element und speziellen Drops">
                     <div class="settings-label"><i class="fa-solid fa-tower-broadcast"></i> Loot Bonus %</div>
                     <input type="number" class="settings-input" id="lootBonusInput" value="0" min="0" max="30" step="1" onchange="updateLootBonus(this.value)">
@@ -426,25 +424,20 @@
             </div>
 
             <div class="boss-list" id="sidebarList">
-                <!-- Javascript fills this -->
-            </div>
+                </div>
         </div>
 
-        <!-- CONTENT -->
         <div class="content-wrapper">
             
-            <!-- TOP BAR (Only visible in Boss Mode) -->
             <div class="top-bar" id="topBar">
                 <div class="boss-header-inner" id="bossHeader">
-                    <!-- Image and Title -->
-                </div>
+                    </div>
                 <div class="controls">
                     <div class="map-select">
                         <label id="lblArena">Arena:</label>
                         <select id="mapSelector" onchange="changeMap(this.value)"></select>
                     </div>
                     
-                    <!-- NEW FLAG NAV -->
                     <div class="lang-switch">
                         <svg class="lang-btn active" id="btn-de" onclick="setLang('de')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 5 3">
                             <rect width="5" height="3" fill="#000"/><rect width="5" height="2" y="1" fill="#D00"/><rect width="5" height="1" y="2" fill="#FFCE00"/>
@@ -474,8 +467,7 @@
             </div>
 
             <div class="scroll-content" id="mainContent">
-                <!-- Content injected here -->
-            </div>
+                </div>
 
         </div>
     </div>
@@ -605,7 +597,7 @@
 
             "argi_talon": { de: "Argentavis Klaue", en: "Argentavis Talon", es: "Garra de Argentavis", fr: "Serre d'Argentavis", icon: "https://ark.wiki.gg/images/thumb/Argentavis_Talon.png/30px-Argentavis_Talon.png" },
             "sarco_skin": { de: "Sarcosuchus Haut", en: "Sarcosuchus Skin", es: "Piel de Sarcosuchus", fr: "Peau de Sarcosuchus", icon: "https://ark.wiki.gg/images/thumb/Sarcosuchus_Skin.png/30px-Sarcosuchus_Skin.png" },
-            "sauro_vert": { de: "Sauropoden Wirbel", en: "Sauropod Vertebra", es: "Vértebra de Saurópodo", fr: "Vertèbre de Sauropode", icon: "https://ark.wiki.gg/images/thumb/Sauropod_Vertebra.png/30px-Sauropod_Vertebra.png" },
+            "sauro_vert": { de: "Sauropoden Wirbel", en: "Sauropod Vertebra", es: "Vértebra de Saurópodo", fr: "Vértebre de Sauropode", icon: "https://ark.wiki.gg/images/thumb/Sauropod_Vertebra.png/30px-Sauropod_Vertebra.png" },
             "titan_venom": { de: "Titanoboa Gift", en: "Titanoboa Venom", es: "Veneno de Titanoboa", fr: "Venin de Titanoboa", icon: "https://ark.wiki.gg/images/thumb/Titanoboa_Venom.png/30px-Titanoboa_Venom.png" },
             "allo_brain": { de: "Allosaurus Hirn", en: "Allosaurus Brain", es: "Cerebro de Allosaurus", fr: "Cerveau d'Allosaure", icon: "https://ark.wiki.gg/images/thumb/Allosaurus_Brain.png/30px-Allosaurus_Brain.png" },
             "basilo_blubber": { de: "Basilosaurus Tran", en: "Basilosaurus Blubber", es: "Grasa de Basilosaurus", fr: "Graisse de Basilosaurus", icon: "https://ark.wiki.gg/images/thumb/Basilosaurus_Blubber.png/30px-Basilosaurus_Blubber.png" },
@@ -616,7 +608,7 @@
             "spino_sail": { de: "Spinosaurus Segel", en: "Spinosaurus Sail", es: "Vela de Spinosaurus", fr: "Voile de Spinosaure", icon: "https://ark.wiki.gg/images/thumb/Spinosaurus_Sail.png/30px-Spinosaurus_Sail.png" },
             "thyla_claw": { de: "Thylacoleo Hakenklaue", en: "Thylacoleo Hook-Claw", es: "Garra de Thylacoleo", fr: "Griffe de Thylacoleo", icon: "https://ark.wiki.gg/images/thumb/Thylacoleo_Hook-Claw.png/30px-Thylacoleo_Hook-Claw.png" },
             "megalania_toxin": { de: "Megalania Gift", en: "Megalania Toxin", es: "Toxina de Megalania", fr: "Toxine de Megalania", icon: "https://ark.wiki.gg/images/thumb/Megalania_Toxin.png/30px-Megalania_Toxin.png" },
-            "megalodon_tooth": { de: "Megalodon Zahn", en: "Megalodon Tooth", es: "Diente de Megalodon", fr: "Dent de Mégalodon", icon: "https://ark.wiki.gg/images/thumb/Megalodon_Tooth.png/30px-Megalodon_Tooth.png" },
+            "megalodon_tooth": { de: "Megalodon Zahn", en: "Megalodon Tooth", es: "Diente de Megalodon", fr: "Diente de Megalodon", icon: "https://ark.wiki.gg/images/thumb/Megalodon_Tooth.png/30px-Megalodon_Tooth.png" },
             "wyvern_talon_fire": { de: "Feuer Wyvern Klaue", en: "Fire Wyvern Talon", es: "Garra de Wyvern de Fuego", fr: "Serre de Wyverne de Feu", icon: "https://ark.wiki.gg/images/Fire_Talon.png" },
             "wyvern_talon_lightning": { de: "Blitz Wyvern Klaue", en: "Lightning Wyvern Talon", es: "Garra de Wyvern del Rayo", fr: "Serre de Wyverne de Foudre", icon: "https://ark.wiki.gg/images/Lightning_Talon.png" },
             "wyvern_talon_poison": { de: "Gift Wyvern Klaue", en: "Poison Wyvern Talon", es: "Garra de Wyvern de Veneno", fr: "Serre de Wyverne de Poison", icon: "https://ark.wiki.gg/images/Poison_Talon.png" },
@@ -816,9 +808,9 @@
                 strategy: { de: "<h4>Positionierung</h4>Vermeide die Klippen! Ein falscher Schritt und deine Dinos sterben sofort. Locke ihn in die Mitte oder zum Startpunkt.<br><br><h4>Dinos</h4>Rexe sind effektiv. Yutyrannus für Buffs ist Pflicht. Shadowmanes sind auch gut, da sie klein und wendig sind.", en: "<h4>Positioning</h4>Avoid the cliffs! One wrong step and your dinos die instantly. Lure him to the center or starting area.<br><br><h4>Dinos</h4>Rexes are effective. Yutyrannus for buffs is mandatory. Shadowmanes are also good as they are small and agile.", es: "<h4>Posición</h4>¡Evita los acantilados! Llévalo al centro.<br><br><h4>Dinos</h4>Rexes y Yuty. Shadowmanes son buenos por agilidad.", fr: "<h4>Position</h4>Évitez les falaises ! Attirez-le au centre.<br><br><h4>Dinos</h4>Rex et Yuty. Shadowmanes sont bons car agiles." },
                 maps: { 
                     "The Island": {
-                        "Gamma": { stats: {hp:"180,000", dmg:"400", lvl:"30"}, tributes:[{id:"art_pack", q:1},{id:"art_devourer", q:1},{id:"art_massive", q:1}], loot:[{id:"element", q:20}, {id:"trophy_mega_gamma", q:1}, {id:"flag_gorilla", q:1}], unlocks:["tek_gauntlets", "tek_hatchframe", "tek_door", "tek_window", "tek_trapdoor"] },
-                        "Beta": { stats: {hp:"396,000", dmg:"800", lvl:"50"}, tributes:[{id:"art_pack", q:1},{id:"art_devourer", q:1},{id:"art_massive", q:1},{id:"megalania_toxin", q:5},{id:"megalodon_tooth", q:5},{id:"spino_sail", q:5}], loot:[{id:"element", q:55}, {id:"trophy_mega_beta", q:1}, {id:"flag_gorilla", q:1}], unlocks:["tek_rifle", "tek_dino_gate", "tek_windowframe", "tek_doorframe", "tek_dino_gateway"] },
-                        "Alpha": { stats: {hp:"540,000", dmg:"1200", lvl:"70"}, tributes:[{id:"art_pack", q:1},{id:"art_devourer", q:1},{id:"art_massive", q:1},{id:"megalania_toxin", q:10},{id:"megalodon_tooth", q:10},{id:"spino_sail", q:10},{id:"thyla_claw", q:10}], loot:[{id:"element", q:110}, {id:"trophy_mega_alpha", q:1}, {id:"flag_gorilla", q:1}], unlocks:["tek_rex_saddle", "tek_gen", "tek_grenade"] }
+                        "Gamma": { stats: {hp:"180,000", dmg:"400", lvl:"30"}, tributes:[{id:"art_brute", q:1},{id:"art_devourer", q:1},{id:"art_pack", q:1}], loot:[{id:"element", q:20}, {id:"trophy_mega_gamma", q:1}, {id:"flag_gorilla", q:1}], unlocks:["tek_gauntlets", "tek_hatchframe", "tek_door", "tek_window", "tek_trapdoor"] },
+                        "Beta": { stats: {hp:"396,000", dmg:"800", lvl:"50"}, tributes:[{id:"art_brute", q:1},{id:"art_devourer", q:1},{id:"art_pack", q:1},{id:"megalania_toxin", q:5},{id:"megalodon_tooth", q:5},{id:"spino_sail", q:5},{id:"theri_claws", q:5},{id:"thyla_claw", q:5}], loot:[{id:"element", q:55}, {id:"trophy_mega_beta", q:1}, {id:"flag_gorilla", q:1}], unlocks:["tek_rifle", "tek_dino_gate", "tek_windowframe", "tek_doorframe", "tek_dino_gateway"] },
+                        "Alpha": { stats: {hp:"540,000", dmg:"1200", lvl:"70"}, tributes:[{id:"art_brute", q:1},{id:"art_devourer", q:1},{id:"art_pack", q:1},{id:"megalania_toxin", q:10},{id:"megalodon_tooth", q:10},{id:"spino_sail", q:10},{id:"theri_claws", q:10},{id:"thyla_claw", q:10}], loot:[{id:"element", q:110}, {id:"trophy_mega_alpha", q:1}, {id:"flag_gorilla", q:1}], unlocks:["tek_rex_saddle", "tek_gen", "tek_grenade"] }
                     },
                     "The Center": {
                          "Gamma": { stats: { hp: "352,000", dmg: "400", lvl: "?" }, tributes: [ {id:"art_clever", q:1}, {id:"art_hunter", q:1}, {id:"art_massive", q:1}, {id:"art_devious", q:1}, {id:"art_devourer", q:1}, {id:"art_immine", q:1}, {id:"art_pack", q:1}, {id:"art_skylord", q:1}, {id:"art_strong", q:1} ], loot: [ {id:"element", q:10}, {id:"trophy_mega_gamma", q:1}, {id:"flag_gorilla", q:1} ], unlocks: ["tek_gauntlets", "tek_hatchframe", "tek_door", "tek_window", "tek_trapdoor"] },
@@ -857,9 +849,9 @@
                 strategy: { de: "<h4>Flugphase</h4>Der Manticore fliegt viel. Man muss warten, bis er landet, um mit Rexen Schaden zu machen.<br><br><h4>Wyvern</h4>In dieser Arena sind Wyvern erlaubt und sehr nützlich, um ihn in der Luft zu attackieren.<br><br><h4>Torpor</h4>Achtung vor den Stacheln, sie verursachen hohen Torpor an Spielern und Dinos. Bring Stimulanzien mit!", en: "<h4>Flight Phase</h4>The Manticore flies a lot. You have to wait for it to land to deal damage with Rexes.<br><br><h4>Wyverns</h4>Wyverns are allowed in this arena and very useful for attacking him in the air.<br><br><h4>Torpor</h4>Watch out for the spikes, they cause high torpor to players and dinos. Bring stimulants!", es: "<h4>Vuelo</h4>Vuela mucho. Espera a que aterrice.<br><br><h4>Wyverns</h4>Permitidos y útiles.<br><br><h4>Torpor</h4>Las espinas causan torpor. ¡Trae estimulantes!", fr: "<h4>Vol</h4>Vole beaucoup. Attendez qu'il atterrisse.<br><br><h4>Wyvernes</h4>Autorisées et utiles.<br><br><h4>Torpeur</h4>Les épines causent de la torpeur. Apportez des stimulants !" },
                 maps: { 
                     "Scorched Earth": { 
-                        "Gamma": { stats: {hp:"100,000", dmg:"~150", lvl:"55", ascension:"+5"}, tributes:[{id:"art_clever", q:1}, {id:"art_devourer", q:1}, {id:"art_skylord", q:1}], loot:[{id:"element", q:35}, {id:"trophy_manti_gamma", q:1}, {id:"flag_manti", q:1}], unlocks:["tek_gauntlets", "tek_leggings", "tek_boots", "tek_trough", "tek_gen", "tek_light"] },
-                        "Beta": { stats: {hp:"130,000", dmg:"~300", lvl:"75", ascension:"+10"}, tributes:[{id:"art_clever", q:1}, {id:"art_devourer", q:1}, {id:"art_skylord", q:1}, {id:"wyvern_talon_fire", q:5}, {id:"wyvern_talon_lightning", q:5}, {id:"wyvern_talon_poison", q:5}], loot:[{id:"element", q:95}, {id:"trophy_manti_beta", q:1}, {id:"flag_manti", q:1}], unlocks:["tek_rifle", "tek_helmet", "tek_transmitter", "tek_shield", "tek_tapa_saddle"] },
-                        "Alpha": { stats: {hp:"160,000", dmg:"~450", lvl:"100", ascension:"+15"}, tributes:[{id:"art_clever", q:1}, {id:"art_devourer", q:1}, {id:"art_skylord", q:1}, {id:"wyvern_talon_fire", q:10}, {id:"wyvern_talon_lightning", q:10}, {id:"wyvern_talon_poison", q:10}], loot:[{id:"element", q:190}, {id:"trophy_manti_alpha", q:1}, {id:"flag_manti", q:1}], unlocks:["tek_chest", "tek_teleporter", "tek_cloning_chamber", "tek_rex_saddle", "tek_dedi"] }
+                        "Gamma": { stats: {hp:"100,000", dmg:"~150", lvl:"55", ascension:"+5"}, tributes:[{id:"art_crag", q:1}, {id:"art_destroyer", q:1}, {id:"art_gatekeeper", q:1}, {id:"wyvern_talon_fire", q:2}, {id:"wyvern_talon_lightning", q:2}, {id:"wyvern_talon_poison", q:2}], loot:[{id:"element", q:35}, {id:"trophy_manti_gamma", q:1}, {id:"flag_manti", q:1}], unlocks:["tek_gauntlets", "tek_leggings", "tek_boots", "tek_trough", "tek_gen", "tek_light"] },
+                        "Beta": { stats: {hp:"130,000", dmg:"~300", lvl:"75", ascension:"+10"}, tributes:[{id:"art_crag", q:1}, {id:"art_destroyer", q:1}, {id:"art_gatekeeper", q:1}, {id:"wyvern_talon_fire", q:10}, {id:"wyvern_talon_lightning", q:10}, {id:"wyvern_talon_poison", q:10}], loot:[{id:"element", q:95}, {id:"trophy_manti_beta", q:1}, {id:"flag_manti", q:1}], unlocks:["tek_rifle", "tek_helmet", "tek_transmitter", "tek_shield", "tek_tapa_saddle"] },
+                        "Alpha": { stats: {hp:"160,000", dmg:"~450", lvl:"100", ascension:"+15"}, tributes:[{id:"art_crag", q:1}, {id:"art_destroyer", q:1}, {id:"art_gatekeeper", q:1}, {id:"wyvern_talon_fire", q:20}, {id:"wyvern_talon_lightning", q:20}, {id:"wyvern_talon_poison", q:20}], loot:[{id:"element", q:190}, {id:"trophy_manti_alpha", q:1}, {id:"flag_manti", q:1}], unlocks:["tek_chest", "tek_teleporter", "tek_cloning_chamber", "tek_rex_saddle", "tek_dedi"] }
                     } 
                 }
             },
@@ -1002,7 +994,7 @@
                 desc:{de:"Der finale Boss von Extinction.",en:"The final Boss of Extinction.", es:"Jefe final de Extinction.", fr:"Boss final d'Extinction."}, 
                 arena: { de: "Die King Titan Arena im Norden von Extinction (Forbidden Zone).", en: "The King Titan Arena in the north of Extinction (Forbidden Zone).", es: "Arena King Titan.", fr: "Arène Roi Titan." },
                 behavior: { de: "Meteorschauer, Faustschläge, korrumpierte Tumore, Omega-Level Bedrohung.", en: "Meteor showers, fist strikes, corrupted tumors, Omega-level threat.", es: "Meteoritos, golpes, tumores.", fr: "Météores, coups de poing, tumeurs." },
-                strategy: { de: "<h4>Zentrum halten</h4>Seine Aufmerksamkeit muss in der Mitte der Arena bleiben, sonst heilt er sich.<br><br><h4>Element-Knoten</h4>Er geht in eine Phase, wo er kniet und weniger Schaden nimmt. Element-Knoten müssen verteidigt werden.<br><br><h4>Gigas & Titanen</h4>Zähmbare Titanen (Ice, Forest, Desert) sind sehr effektiv, ebenso Gigas für Burst-Schaden.<br><br><h4>Mega Mek (Alpha)</h4>Für den Alpha-Kampf ist der Mega Mek entscheidend.", en: "<h4>Keep Center</h4>Keep his attention in the center or he resets/heals.<br><br><h4>Element Nodes</h4>Phases where he kneels (dmg reduction) and nodes spawn. Defend nodes.<br><br><h4>Gigas & Titans</h4>Tamed Titans (Ice, Forest, Desert) are very effective, Gigas for burst.<br><br><h4>Mega Mek (Alpha)</h4>The Mega Mek is essential for the Alpha fight.", es: "<h4>Centro</h4>Mantenlo en el centro.<br><br><h4>Nodos</h4>Defiende los nodos.<br><br><h4>Titanes</h4>Usa Titanes y Gigas.<br><br><h4>Mega Mek</h4>Esencial en Alpha.", fr: "<h4>Centre</h4>Gardez-le au centre.<br><br><h4>Nœuds</h4>Défendez les nœuds.<br><br><h4>Titans</h4>Utilisez Titans et Gigas.<br><br><h4>Mega Mek</h4>Essentiel en Alpha." },
+                strategy: { de: "<h4>Zentrum halten</h4>Seine Aufmerksamkeit muss in der Mitte der Arena bleiben, sonst heilt er sich.<br><br><h4>Element-Knoten</h4>Er geht in eine Phase, wo er kniet und weniger Schaden nimmt. Element-Knoten müssen verteidigt werden.<br><br><h4>Gigas & Titanen</h4>Zähmbare Titanen (Ice, Forest, Desert) sind sehr effektiv, ebenso Gigas für burst-Schaden.<br><br><h4>Mega Mek (Alpha)</h4>Für den Alpha-Kampf ist der Mega Mek entscheidend.", en: "<h4>Keep Center</h4>Keep his attention in the center or he resets/heals.<br><br><h4>Element Nodes</h4>Phases where he kneels (dmg reduction) and nodes spawn. Defend nodes.<br><br><h4>Gigas & Titans</h4>Tamed Titans (Ice, Forest, Desert) are very effective, Gigas for burst.<br><br><h4>Mega Mek (Alpha)</h4>The Mega Mek is essential for the Alpha fight.", es: "<h4>Centro</h4>Mantenlo en el centro.<br><br><h4>Nodos</h4>Defiende los nodos.<br><br><h4>Titanes</h4>Usa Titanes y Gigas.<br><br><h4>Mega Mek</h4>Esencial en Alpha.", fr: "<h4>Centre</h4>Gardez-le au centre.<br><br><h4>Nœuds</h4>Défendez les nœuds.<br><br><h4>Titans</h4>Utilisez Titans et Gigas.<br><br><h4>Mega Mek</h4>Essentiel en Alpha." },
                 maps:{ "Extinction": { 
                     "Gamma": { stats: { hp: "1,500,000", dmg: "0", lvl: "1500", ascension:"+5" }, tributes: [ {id:"alpha_rex_tooth", q:5}, {id:"corrupt_heart", q:150}, {id:"titan_venom", q:10}, {id:"titan_trophy_desert", q:1}, {id:"titan_trophy_forest", q:1}, {id:"titan_trophy_ice", q:1} ], loot: [ {id:"element", q:1}, {id:"titan_flag_king", q:1} ], unlocks: [] },
                     "Beta": { stats: { hp: "1,500,000", dmg: "0", lvl: "1500", ascension:"+10" }, tributes: [ {id:"alpha_rex_tooth", q:10}, {id:"corrupt_heart", q:300}, {id:"titan_venom", q:20}, {id:"titan_trophy_desert", q:1}, {id:"titan_trophy_forest", q:1}, {id:"titan_trophy_ice", q:1}, {id:"titan_trophy_gamma", q:1} ], loot: [ {id:"element", q:1}, {id:"titan_flag_king", q:1} ], unlocks: [] },
@@ -1214,9 +1206,6 @@
             btns.forEach(b => b.classList.remove('active'));
             
             // Re-highlight active button (needed after filterList rebuild)
-            // Actually filterList handles click events to update global ID, but button needs active class
-            // Just let filterList do its job or manually set it if visible
-            // Simpler: Just rely on filterList rebuilding UI with correct active class
             filterList(document.getElementById('searchInput').value);
 
             // Update Labels
