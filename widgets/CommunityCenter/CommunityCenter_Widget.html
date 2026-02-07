@@ -213,6 +213,7 @@
         }
         .block-body h3 { color: var(--color-ui-gold); margin-bottom: 10px; font-family: var(--font-header); }
         .block-body strong { color: #fff; }
+        .block-body p { white-space: pre-line; }
 
         .feature-list { list-style: none; margin: 15px 0; }
         .feature-list li { margin-bottom: 10px; padding-left: 25px; position: relative; }
@@ -363,12 +364,10 @@
         </div>
 
         <nav class="nav-tabs" id="navContainer">
-            <!-- JS Injection -->
-        </nav>
+            </nav>
 
         <main class="content-area" id="contentContainer">
-            <!-- Dynamic Injection -->
-        </main>
+            </main>
     </div>
 
     <div id="imgModal" class="modal" onclick="closeModal()">
@@ -383,7 +382,8 @@
                 showcase: { de: "Showcase", en: "Showcase", es: "Exhibición", fr: "Vitrine" },
                 traders: { de: "Schwarzmarkt Händler", en: "Black Market Traders", es: "Comerciantes", fr: "Marchands" },
                 mounts: { de: "Exklusive Reittiere", en: "Exclusive Mounts", es: "Monturas", fr: "Montures" },
-                casino: { de: "Casino", en: "Casino", es: "Casino", fr: "Casino" }
+                casino: { de: "Casino", en: "Casino", es: "Casino", fr: "Casino" },
+                riddles: { de: "CM Center Rätsel", en: "CM Center Riddles", es: "Acertijos", fr: "Énigmes" }
             },
             sections: {
                 showcase: [
@@ -449,6 +449,39 @@
                         { title: { de: "Rennbahn", en: "Races", es: "Carreras", fr: "Courses" }, text: { de: "Raptoren.", en: "Raptors.", es: "Raptores.", fr: "Raptors." }, img: "https://i.postimg.cc/y8qGMyzN/Bild-2025-01-07-212821396.png" },
                         { title: { de: "Glücksrad", en: "Wheel", es: "Rueda", fr: "Roue" }, text: { de: "Große Gewinne.", en: "Big wins.", es: "Gana.", fr: "Gagne." }, img: "https://i.postimg.cc/FR2qhyJG/Bild-2025-01-07-212905779.png" }
                     ]}
+                ],
+                riddles: [
+                    { type: "header", icon: "fa-scroll", title: { de: "CM Center Rätsel", en: "CM Center Riddles", es: "Acertijos", fr: "Énigmes" } },
+                    { 
+                        type: "info", 
+                        title: { de: "1. Rätsel: Z-Pflanzen", en: "1. Riddle: Z-Plants", es: "Plantas Z", fr: "Plantes Z" }, 
+                        content: { de: "Der Pfad des stillen Leuchtens\n\"Willst du die Saat, die im Dunkeln gedeiht? Dann nimm dir für den Tand ein wenig Zeit. Such nicht im Gold, such nicht im Prunk, such den Spalt im Mauerstrunk.\n\nZwischen Regalen, tief versteckt, wird ein schmaler Gang entdeckt. Kriech durch den Bruch, folg dem Schacht, bis das Trio über dich wacht.\n\nDrei grüne Wächter im verborgenen Rund, geben ihre Schätze erst zur späten Stund. Bleib ein Weilchen, halt kurz inne, bis die Ernte fließt in deine Sinne.\"", en: "...", es: "...", fr: "..." }
+                    },
+                    { 
+                        type: "info", 
+                        title: { de: "2. Rätsel: Hehler", en: "2. Riddle: Fence", es: "Perista", fr: "Receleur" }, 
+                        content: { de: "\"Zwölf Türen führen in die Einsamkeit, doch nur hinter einer wartet die Freiheit. Such nicht bei der Eins, such nicht bei der Zehn, du musst zur Zahl des Glücks hinübergehn.\n\nDort, wo das Tuch die Schande verdeckt, ist der Durchbruch im Stein versteckt. Steig hinab, wo das Licht der Welt verblasst, bis du den Glanz der Kristalle erfasst.\n\nIm Bauch der Erde, fernab vom Gesetz, webt der Hehler sein Handelsnetz. Bring deine Münzen, bring deine Ware, doch hüte dein Schweigen – für viele Jahre.\"", en: "...", es: "...", fr: "..." }
+                    },
+                    { 
+                        type: "info", 
+                        title: { de: "3. Rätsel: Schatzkammer", en: "3. Riddle: Vault", es: "Tesoro", fr: "Trésor" }, 
+                        content: { de: "\"Das Eisen ist stark, das Schloss ist schwer, doch für den Klugen ist der Tresor nicht leer. Such nicht nach Schlüsseln, such nicht nach Gewalt, such die Stelle, wo das Gitter verliert seinen Halt.\n\nWas fest scheint für Augen, ist weich für den Geist, wenn du am rechten Ort zu kriechen weißt.\"", en: "...", es: "...", fr: "..." }
+                    },
+                    { 
+                        type: "info", 
+                        title: { de: "4. Rätsel: Simple Easteregg", en: "4. Riddle: Simple Easteregg", es: "Easteregg", fr: "Easteregg" }, 
+                        content: { de: "\"Wo die Stadt das Dorf im Grünen grüßt, und der Weltenbaum den Himmel küsst. Dort, wo das Wasser tosend bricht, trau deinen Augen am Ufer nicht.\n\nSchau auf den Fels im feuchten Sprung, dort tanzen zwei Wesen, agil und jung. Acht Beine im Takt, ein seltsames Paar, sie zeigen dir, was schon immer da war.\n\nGeh hinter den Schleier, der weiß und kalt, dort findet der Fremde seinen Halt. Ein Ei voller Wunder, ein Händler im Versteck, beim fallenden Wasser, am magischen Fleck.\n\nDoch gib wohl acht, was im Schatten noch weilt, ein kleiner Weiser, der die Worte gern teilt. Grün ist seine Haut, groß der Verstand, die Macht du wirst spüren im feuchten Sand.\"", en: "...", es: "...", fr: "..." }
+                    },
+                    { 
+                        type: "info", 
+                        title: { de: "5. Rätsel: Teleportriss", en: "5. Riddle: Teleport Rift", es: "Teletrans.", fr: "Téléport" }, 
+                        content: { de: "\"Wo Kräuter brodeln und Kristalle glüh'n, und Gelehrte um das Wissen der Steine sich müh'n. Beim Meister der Tränke, im lila Schein, lädt ein Riss in der Welt dich zum Sprunge ein.\n\nSuch nicht am Boden, such nicht im Tal, durchschreite den schwebenden, violetten Strahl. Lass die Erde zurück, lass die Schwerkraft bloß sein, und tritt in das Reich der Lüfte ein.\n\nWo die Welt wird klein und der Wind singt sein Lied, ein hölzerner Riese durch die Wolken zieht. Ein Schiff ohne Segel, im Himmel zu Haus, dort oben ruhst du dich vom Marktplatz aus.\n\nZwei Wege, ein Tor, verbunden durch Licht, doch wer Höhenangst hat, der findet es nicht.\"", en: "...", es: "...", fr: "..." }
+                    },
+                    { 
+                        type: "info", 
+                        title: { de: "6. Rätsel: Mjölnir", en: "6. Riddle: Mjölnir", es: "Mjölnir", fr: "Mjölnir" }, 
+                        content: { de: "\"In der Mitte des Berges, wo der Hopfen gedeiht, steht ein Haus für den Durst und die Geselligkeit. Doch wo Bier in Strömen durch die Kehlen rinnt, manch göttliches Erbe im Verborgenen beginnt.\n\nSuch nicht im Schankraum, such nicht am Tisch, wo das Gebräu im Bottich ist frisch. Ein riesiges Fass, so offen und leer, beherbergt ein Geheimnis, gewaltig und schwer.\n\nBlick hinter das Holz, wo die Angeln zerbrachen, als hätt' ein Gigant dort gewütet mit Lachen. Folge dem Pfad in die steinerne Gruft, wo die Kraft des Gewitters nach Heilung ruft.\n\nWer würdig ist, findet den Hammer im Stein, und flößt seinen Bestien neues Leben ein.\"", en: "...", es: "...", fr: "..." }
+                    }
                 ]
             }
         };
@@ -469,8 +502,8 @@
         function renderNav() {
             const nav = document.getElementById('navContainer');
             nav.innerHTML = '';
-            const sections = ['showcase', 'traders', 'mounts', 'casino'];
-            const icons = ['fa-map-location-dot', 'fa-store', 'fa-dragon', 'fa-dice'];
+            const sections = ['showcase', 'traders', 'mounts', 'casino', 'riddles'];
+            const icons = ['fa-map-location-dot', 'fa-store', 'fa-dragon', 'fa-dice', 'fa-scroll'];
             sections.forEach((s, i) => {
                 const tab = document.createElement('div');
                 tab.className = `nav-tab ${s === activeTab ? 'active' : ''}`;
@@ -498,7 +531,7 @@
                     div.className = "info-block searchable";
                     if (block.title) html += `<div class="block-header"><i class="fa-solid fa-circle-info"></i><h3 class="block-title">${block.title[l]}</h3></div>`;
                     html += `<div class="block-body">`;
-                    if (block.content) html += `<p>${block.content[l]}</p>`;
+                    if (block.content) html += `<p>${block.content[l] || block.content['de']}</p>`;
                     if (block.list) html += `<ul class="feature-list">` + block.list.map(li => `<li>${li[l] || li}</li>`).join('') + `</ul>`;
                     if (block.img) html += `<img src="${block.img}" class="big-img" onclick="openModal('${block.img}')">`;
                     html += `</div>`;
