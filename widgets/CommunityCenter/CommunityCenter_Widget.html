@@ -364,10 +364,12 @@
         </div>
 
         <nav class="nav-tabs" id="navContainer">
-            </nav>
+            <!-- JS Injection -->
+        </nav>
 
         <main class="content-area" id="contentContainer">
-            </main>
+            <!-- Dynamic Injection -->
+        </main>
     </div>
 
     <div id="imgModal" class="modal" onclick="closeModal()">
@@ -388,7 +390,7 @@
             sections: {
                 showcase: [
                     { type: "header", icon: "fa-map", title: { de: "Übersicht & Erklärung", en: "Overview & Explanation", es: "Resumen", fr: "Aperçu" } },
-                    { type: "info", title: { de: "Willkommen im Zentrum", en: "Welcome to the Center", es: "Bienvenido", fr: "Bienvenue" }, content: { de: "Diese Modkarte wurde speziell für die Community erstellt. Sie bietet auf die Community zugeschnittene Inhalte wie Logos, besondere Orte und Custom-Inhalte im Mittelalter-Fantasy-Stil. Die Karte ist als ultimative Markt- und Event-Karte geplant.", en: "This mod map was created specifically for the community. It offers community-tailored content like logos and special places in medieval fantasy style.", es: "Este mapa mod fue creado para la comunidad. Ofrece contenido personalizado en un estilo de fantasía medieval.", fr: "Cette carte mod a été créée pour la communauté dans un style médiéval fantastique." }, img: "https://i.postimg.cc/sgN2Zvv5/40.png" },
+                    { type: "info", title: { de: "Willkommen im Zentrum", en: "Welcome to the Center", es: "Bienvenido", fr: "Bienvenue" }, content: { de: "Diese Modkarte wurde speziell für die Community erstellt. Sie bietet auf die Community zugeschnittene Inhalte wie Logos, besondere Orte und Custom-Inhalte im Mittelalter-Fantasy-Stil. Die Karte ist als ultimative Markt- und Event-Karte geplant.", en: "This mod map was created specifically for the community. It offers community-tailored content like logos and special places in medieval fantasy style.", es: "Este mapa mod fue created for the community. Ofrece contenido personalizado in a medieval fantasy style.", fr: "Cette carte mod a été créée pour la communauté dans un style médiéval fantastique." }, img: "https://i.postimg.cc/sgN2Zvv5/40.png" },
                     { type: "video", title: { de: "Arena Vorschau", en: "Arena Preview", es: "Vista previa", fr: "Aperçu" }, videoId: "4dPjKiQV7Bo" },
                     { type: "locations", title: { de: "Wichtige Orte", en: "Important Places", es: "Lugares Importantes", fr: "Lieux Importants" }, list: [
                         { name: { de: "Land-Arena", en: "Land Arena", es: "Arena Terrestre", fr: "Arène Terrestre" }, sub: { de: "Tribünen & Schutz-Cube", en: "Stands & protection cube", es: "Con gradas", fr: "Avec tribunes" } },
@@ -481,6 +483,11 @@
                         type: "info", 
                         title: { de: "6. Rätsel: Mjölnir", en: "6. Riddle: Mjölnir", es: "Mjölnir", fr: "Mjölnir" }, 
                         content: { de: "\"In der Mitte des Berges, wo der Hopfen gedeiht, steht ein Haus für den Durst und die Geselligkeit. Doch wo Bier in Strömen durch die Kehlen rinnt, manch göttliches Erbe im Verborgenen beginnt.\n\nSuch nicht im Schankraum, such nicht am Tisch, wo das Gebräu im Bottich ist frisch. Ein riesiges Fass, so offen und leer, beherbergt ein Geheimnis, gewaltig und schwer.\n\nBlick hinter das Holz, wo die Angeln zerbrachen, als hätt' ein Gigant dort gewütet mit Lachen. Folge dem Pfad in die steinerne Gruft, wo die Kraft des Gewitters nach Heilung ruft.\n\nWer würdig ist, findet den Hammer im Stein, und flößt seinen Bestien neues Leben ein.\"", en: "...", es: "...", fr: "..." }
+                    },
+                    { 
+                        type: "info", 
+                        title: { de: "7. Rätsel: Eis Titan", en: "7. Riddle: Ice Titan", es: "Titán de Hielo", fr: "Titan de Glace" }, 
+                        content: { de: "\"Wo Hufe im Rausch der Geschwindigkeit fliegen,\nund Pfade zum leuchtenden Pfeiler sich biegen.\nIn der schroffen Schlucht, wo die Kälte beginnt,\nein Riese im Schatten der Felsen entsinnt.\n\nEin steinernes Portal, titanisch und schwer,\ngibt einen Spalt seines Inneren her.\nTritt durch den Riss, wo der Frost niemals weicht,\nbis dein Blick die gefesselte Urkraft erreicht.\n\nIn Ketten gelegt, in ewiger Ruh,\nsieht der Herr des Eises dem Schicksal nun zu.\"", en: "...", es: "...", fr: "..." }
                     }
                 ]
             }
