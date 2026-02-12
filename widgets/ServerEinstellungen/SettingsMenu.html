@@ -499,8 +499,10 @@
                     title: { de: 'Server Neustarts', en: 'Server Restarts', es: 'Reinicios del Servidor', fr: 'Redémarrages Serveur' },
                     desc: { de: 'Automatische Neustarts alle 12 Stunden. Countdown startet 30 Min vorher.', en: 'Automatic restarts every 12 hours. Countdown starts 30 mins prior.', es: 'Reinicios automáticos cada 12 horas. Cuenta atrás 30 min antes.', fr: 'Redémarrages auto toutes les 12 heures. Compte à rebours 30 min avant.' },
                     headers: { s: { de: 'Server / Cluster', en: 'Server / Cluster', es: 'Servidor / Clúster', fr: 'Serveur / Cluster' }, t: { de: 'Uhrzeit (MEZ)', en: 'Time (CET)', es: 'Hora (CET)', fr: 'Heure (CET)' } },
-                    cluster_official: { de: 'IOP OFFICIAL CLUSTER', en: 'IOP OFFICIAL CLUSTER', es: 'IOP CLÚSTER OFICIAL', fr: 'IOP CLUSTER OFFICIEL' },
-                    cluster_other: { de: 'ANDERE CLUSTER', en: 'OTHER CLUSTERS', es: 'OTROS CLÚSTERES', fr: 'AUTRES CLUSTERS' }
+                    cluster_official: { de: 'Hauptcluster Officials', en: 'Maincluster Officials', es: 'Maincluster Officials', fr: 'Maincluster Officials' },
+                    cluster_overhauls: { de: 'Overhaul Cluster', en: 'Overhaul Clusters', es: 'Overhaul Cluster', fr: 'Overhaul Cluster' },
+                    cluster_modmaps: { de: 'Hauptcluster Modkarten', en: 'Maincluster Mod Maps', es: 'Maincluster Mod Maps', fr: 'Maincluster Mod Maps' }
+                    cluster_other: { de: 'Community Server', en: 'Community Servers', es: 'Community Servers', fr: 'Community Servers' }
                 },
                 generic: {
                     title: { de: 'Inhalt folgt', en: 'Content coming soon', es: 'Contenido próximamente', fr: 'Contenu à venir' }
@@ -733,12 +735,17 @@
                     <thead><tr><th>${data.headers.s[lang]}</th><th style="text-align:center;">${data.headers.t[lang]}</th></tr></thead>
                     <tbody>
                         <tr><td colspan="2" style="background: rgba(229,57,53,0.15); color:var(--color-red); font-weight:700;">${data.cluster_official[lang]}</td></tr>
-                        <tr><td>The Island, Center, Scorched, Aberration, Extinction, Ragnarok, Valguero, Astraeos, Svartalfheim, Community Center</td><td class="max-value-col" style="color:var(--color-gold); text-align:center !important;">00:00 & 12:00</td></tr>
-                        <tr><td>Club Ark</td><td class="max-value-col" style="color:var(--color-gold); text-align:center !important;">01:00 & 13:00</td></tr>
+                        <tr><td>The Island, The Center, Scorched Earth, Aberration, Extinction, Ragnarok, Valguero, Astraeos, Svartalfheim, Lost Colony</td><td class="max-value-col" style="color:var(--color-gold); text-align:center !important;">00:00 & 12:00</td></tr>
+                        <tr><td>Community Center, Club Ark</td><td class="max-value-col" style="color:var(--color-gold); text-align:center !important;">00:00 & 12:00</td></tr>
+
+                        <tr><td colspan="2" style="background: rgba(229,57,53,0.15); color:var(--color-red); font-weight:700;">${data.cluster_modmaps[lang]}</td></tr>
+                        <tr><td>Svartalfheim, Insaluna, Amissa, Nyrandil, Althemia, Lost City, Forglar, Atlantis, Temptress Lagoon</td><td class="max-value-col" style="color:var(--color-gold); text-align:center !important;">00:00 & 12:00</td></tr>
+
+                        <tr><td colspan="2" style="background: rgba(229,57,53,0.15); color:var(--color-red); font-weight:700;">${data.cluster_overhauls[lang]}</td></tr>
+                        <tr><td>Primal Nemesis, Primal Chaos, Descended, Omega, DOX 2</td><td class="max-value-col" style="color:var(--color-gold); text-align:center !important;">00:00 & 12:00</td></tr>
                         
                         <tr><td colspan="2" style="background: rgba(229,57,53,0.15); color:var(--color-red); font-weight:700;">${data.cluster_other[lang]}</td></tr>
-                        <tr><td>Primal Nemesis / Primal Chaos</td><td class="max-value-col" style="color:var(--color-gold); text-align:center !important;">00:00 & 12:00</td></tr>
-                        <tr><td>Minecraft / Palworld</td><td class="max-value-col" style="color:var(--color-gold); text-align:center !important;">01:00 & 13:00</td></tr>
+                        <tr><td>Minecraft PC, Minecraft Crossplay, Palworld, 7 Days to Die, Soulmask, Valheim, Hytale, Conan Exiles (Savage Wilds, Exiled Lands, Isle of Siptah)</td><td class="max-value-col" style="color:var(--color-gold); text-align:center !important;">00:00 & 12:00</td></tr>
                     </tbody>
                 </table>`;
             }
